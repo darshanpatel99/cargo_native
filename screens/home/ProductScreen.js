@@ -1,128 +1,164 @@
-import React, { Component } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Image,
-  Text,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import MainButton from '../../components/theme/MainButton';
-
+import React, {Component} from 'react';
+import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
+import Colors from "../../constants/Colors.js";
+import firebase from '../../Firebase.js';
+import { Item } from "native-base";
 export class ProductScreen extends Component {
-  render() {
-    let pics = {
-      uri:
-        'https://cdn.pixabay.com/photo/2016/12/15/15/18/golf-1909115_960_720.jpg'
-    };
+  
+ constructor(props) {
+   super(props);
+   const { navigation } = this.props;
+    const itemId = navigation.getParam('itemId');
+   this.ref = firebase.firestore().collection('Products').doc(""+itemId);
+   this.state = {
+     pictures:[],
+     data: {},
+   } 
+   this.ref.onSnapshot(doc => {
+     this.setState({
+       pictures: doc.data().Pictures,
+       data: doc.data(),
+     });
+   });
 
-    return (
-      <View style={styles.container}>
-        <View style={styles.pictures}>
-          <Image
-            source={pics}
-            style={{ height: 350, width: 250, borderRadius: 5 }}
-          />
-        </View>
-
-        <View style={styles.infotext}>
-          <Text style={styles.productName}>
-            Golf clubs and bag only used once
-          </Text>
-
-          <View style={styles.LocViewAndPrice}>
-            <View style={styles.productLocView}>
-              <Ionicons name='ios-pin' size={18} />
-              <Text style={styles.productLoc}>Sahali, Kamloops</Text>
-            </View>
-
-            <View style={styles.priceDr}>
-              <Text style={styles.price}>2.5$</Text>
-              <Ionicons name='ios-car' size={18} />
-            </View>
-          </View>
-
-          <Text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </Text>
-        </View>
-
-        <View style={styles.BottomPart}>
-          <MainButton title='Add to cart for 125$' />
-        </View>
-      </View>
-    );
+   
   }
+  
+ render() {
+   //console.log(this.state.data);
+   return (
+    
+     <View style={styles.container}>
+     <View style={styles.pictures}>
+       <View style={{ flexDirection: 'row' }}>
+              <ScrollView
+                scrollEventThrottle={10000}
+                horizontal={true}
+                pagingEnabled={true}
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={this.changePage}
+                disableIntervalMomentum={true}
+ 
+              >
+                  {
+                this.state.pictures.map((item, key) => (
+                  <View key={key} style={{ flexDirection: 'row' }}>
+                    <View style={styles.breaks}/>
+                    <Image style={styles.images} source={{ uri: item }} />
+                    <View style={styles.breaks}/>
+                  </View>
+                    
+                      ))
+                    }
+              </ScrollView>
+              
+
+            </View>
+         </View>
+         <View style={styles.infotext}>
+         <Text style={styles.productName}>{this.state.data.Name}</Text>
+         <View style={styles.LocViewAndPrice}>
+         <View style={styles.productLocView}>
+           <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
+         </View>
+         <View style={styles.priceDr}>
+         <Text style={styles.price}>2.5$</Text>
+           <FontAwesome name='car' size={22} color={Colors.primary}/>
+         </View>
+         </View>
+         <Text>{this.state.data.Description} </Text>
+         </View>
+         <View style={styles.BottomPart}>
+           <MainButton
+           title={'Add to cart for ' + this.state.data.Price +'$' }
+           />
+         </View>
+      </View>
+ );
 }
+}
+
+
 
 const styles = StyleSheet.create({
   container: {
-    flex: 10,
+    flex:10,
     paddingTop: 20,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    
+    
   },
-  pictures: {
-    flex: 6,
-    alignItems: 'center'
+  breaks: {
+    width:Dimensions.get('window').width * 0.05,
   },
-
-  infotext: {
-    flex: 2.5,
-    paddingLeft: 8,
-    paddingRight: 5
+  images: {
+    height:Dimensions.get('window').height*0.48,
+    width: Dimensions.get('window').width*0.9,
   },
-
-  productName: {
-    fontSize: 18,
-    fontWeight: '500'
-  },
-
-  productLocView: {
-    flexDirection: 'row',
-    flex: 0.9,
-    alignItems: 'flex-start'
-  },
-  productLoc: {
-    fontSize: 18,
-    fontWeight: '500',
-    paddingLeft: 7
-  },
-  price: {
-    fontSize: 18,
-    fontWeight: '500',
-    paddingRight: 7
-  },
-  priceDr: {
-    flex: 0.2,
-    flexDirection: 'row',
-    alignItems: 'flex-end'
-  },
-  LocViewAndPrice: {
-    paddingTop: 15,
-    paddingBottom: 15,
-    flexDirection: 'row'
-  },
-  BottomPart: {
-    flex: 1,
+  pictures:{
+    flex:6,
     alignItems: 'center',
-    paddingBottom: 10,
-    paddingTop: 10
   },
 
-  purchaseButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 300,
-    height: 50,
-    borderRadius: 14,
-    backgroundColor: 'rgb(57, 124,255)'
+  infotext:{
+    flex:2.5,
+    paddingLeft:8,
+    paddingRight:5,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: '800'
-  }
+
+  productName:{
+    fontSize:18,
+    fontWeight:'500',
+  },
+
+  productLocView:{
+    flexDirection:'row',
+    flex:0.9,
+    alignItems:'flex-start',
+    
+  },
+  productLoc:{
+    fontSize:18,
+    fontWeight:'500',
+    paddingLeft:7,
+  },
+  price:{
+    fontSize:18,
+    fontWeight:'500',
+    paddingRight:7,
+  },
+  priceDr:{
+    flex:0.2,
+    flexDirection:'row',
+    alignItems:'flex-end'
+  },
+  LocViewAndPrice:{
+    paddingTop:15,
+    paddingBottom:15,
+    flexDirection:'row',
+  },
+  BottomPart:{
+    flex:1,
+    alignItems:'center',
+    paddingBottom:10,
+    paddingTop:10,
+  },
+
+  purchaseButton:{
+    alignItems:'center',
+    justifyContent:'center',
+    width:300,
+    height:50,
+    borderRadius:14,
+    backgroundColor:'rgb(57, 124,255)',
+
+  },
+  buttonText:{
+    color:'white',
+    fontSize:15,
+    fontWeight:'800',
+  },
+  
 });
