@@ -14,10 +14,12 @@ import SearchBar from '../theme/SearchBar';
 import { allow } from 'expo/build/ScreenOrientation/ScreenOrientation';
 import { tsConstructorType } from '@babel/types';
 import { Right } from 'native-base';
+import ProductFilterBar from './ProductFilterBar';
+//import ProductListComponents from '../product/ProductListComponents';
 
 let sorts =  {all: true,  trending: false, new:false, high:false, low:false};
 
-export default class ProductFilterBar extends Component {
+export default class ProductListComponents extends Component {
 
     constructor(props){
       super(props);
@@ -52,7 +54,7 @@ export default class ProductFilterBar extends Component {
       <View style={styles.mycard}>
         
 
-        <View style={styles.filterbar}>
+        <View style={styles.sortbar}>
          
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'all')}  style = {this.state.all ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}} >All</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'trending')} style = {this.state.trending ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}} >Trending</Text>
@@ -62,7 +64,8 @@ export default class ProductFilterBar extends Component {
         </View>
 
         <SearchBar searchReplacableText = "Search Categories"/>
-
+        
+        <ProductFilterBar />
       </View>
 
       </KeyboardAvoidingView>
@@ -88,12 +91,13 @@ export default class ProductFilterBar extends Component {
         
     },
 
-    filterbar: {
+    sortbar: {
       
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingLeft:15,
       paddingRight:10,
+      marginTop: 10
 
     },
   };
