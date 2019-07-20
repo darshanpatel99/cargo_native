@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import TabBarIcon from '../components/navigation/TabBarIcon';
-
 import HomeScreen from '../screens/home/Home';
 import { ProductScreen } from '../screens/home/ProductScreen';
 
@@ -16,8 +15,10 @@ export default (HomeStack = createStackNavigator({
   Details: {
     screen: ProductScreen,
     navigationOptions: {
-      // header: null,
-    }
+      // header: ({ pop }) => ({
+      //   left: <Left onPress={pop} />,
+      // }),
+    },
   },
   // Account: {
   //   screen: AccountScreen
