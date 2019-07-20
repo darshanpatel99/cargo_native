@@ -29,7 +29,7 @@ class ProductCardComponent extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.navigate('Details',  {itemId: this.props.id } ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId: this.props.id } ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
