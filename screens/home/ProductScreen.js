@@ -4,7 +4,7 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
-import { Item } from "native-base";
+import { TouchableOpacity } from 'react-native-gesture-handler';
 export class ProductScreen extends Component {
   
  constructor(props) {
@@ -15,16 +15,25 @@ export class ProductScreen extends Component {
    this.state = {
      pictures:[],
      data: {},
-   } 
+     count: 0,
+   }
    this.ref.onSnapshot(doc => {
      this.setState({
        pictures: doc.data().Pictures,
        data: doc.data(),
      });
    });
-
-   
   }
+  
+
+  static navigationOptions = (props) => {
+    return ({
+    headerRight: (
+      <FontAwesome name='shopping-cart' size={30} color={Colors.primary} onPress={() => props.navigation.navigate('Cart',
+        {count: props.navigation.state.params.count} )} />
+    )
+    })
+  };
   
  render() {
    //console.log(this.state.data);
@@ -42,16 +51,16 @@ export class ProductScreen extends Component {
                 disableIntervalMomentum={true}
  
               >
-                  {
-                this.state.pictures.map((item, key) => (
-                  <View key={key} style={{ flexDirection: 'row' }}>
-                    <View style={styles.breaks}/>
-                    <Image style={styles.images} source={{ uri: item }} />
-                    <View style={styles.breaks}/>
-                  </View>
-                    
-                      ))
-                    }
+              {
+              this.state.pictures.map((item, key) => (
+              <View key={key} style={{ flexDirection: 'row' }}>
+                <View style={styles.breaks}/>
+                <Image style={styles.images} source={{ uri: item }} />
+                <View style={styles.breaks}/>
+              </View>
+                
+                  ))
+                }
               </ScrollView>
               
 
@@ -59,6 +68,7 @@ export class ProductScreen extends Component {
          </View>
          <View style={styles.infotext}>
          <Text style={styles.productName}>{this.state.data.Name}</Text>
+         <Text>You clicked {this.state.count} times</Text>
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
@@ -71,9 +81,12 @@ export class ProductScreen extends Component {
          <Text>{this.state.data.Description} </Text>
          </View>
          <View style={styles.BottomPart}>
+          <TouchableOpacity onPress={() => this.setState({ count: this.state.count + 1 })}>
            <MainButton
-           title={'Add to cart for ' + this.state.data.Price +'$' }
-           />
+           title={'Add to cart $ '+ this.state.data.Price  }
+          />
+          </TouchableOpacity>
+         
          </View>
       </View>
  );

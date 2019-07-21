@@ -9,27 +9,14 @@ import Colors from '../../constants/Colors';
 
 class ProductCardComponent extends React.Component {
 
-
-    // constructor() {
-    //     super();
-    //     this.ref = firebase.firestore().collection('Products');
-    //     this.unsubscribe = null;
-    //     this.state = {
-    //       isLoading: true,
-    //       boards: []
-    //     };
-    //     console.log(this.ref);
-    // }
-
     constructor(props) {
         super(props);
         this.state = {title: '', description: '', price :'', image: '', id:''};
-        //console.log("Inside product card component :  " + this.props.navigation.navigate('Details'));
     }
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId: this.props.id } ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId: this.props.id} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
