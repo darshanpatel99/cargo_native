@@ -1,42 +1,83 @@
 import React, {Component} from 'react';
 import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import FlipCard from 'react-native-flip-card'
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
+let testValue;
 export class ProductScreen extends Component {
-  
+
+
+
  constructor(props) {
    super(props);
    const { navigation } = this.props;
-    const itemId = navigation.getParam('itemId');
+   const itemId = navigation.getParam('itemId');
+   
+
+
    this.ref = firebase.firestore().collection('Products').doc(""+itemId);
+   this.newRef = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
+   
+    console.log(this.newRef)
+  //  this.ref = firebase.firestore().collection('Users').doc();
    this.state = {
      pictures:[],
-     data: {},
+     //data: {},
      count: 0,
+     cart: [],
+     address: '',
+     
    }
+
+   this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
+   this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
+
+   this.newRef.onSnapshot(doc => {
+    this.setState({
+      address: doc.data().Address,
+      cart: doc.data().Cart,
+    });
+   })
+
    this.ref.onSnapshot(doc => {
      this.setState({
        pictures: doc.data().Pictures,
-       data: doc.data(),
+       //data: doc.data(),
      });
    });
+
+  }
+
+  DecreaseInCountValue() {
+    this.setState({ count: this.state.count - 1})
+    testValue= this.state.count;
+  }
+
+  IncreaseInCountValue() {
+    this.setState({ count: this.state.count + 1})
+    testValue= this.state.count;
   }
   
 
   static navigationOptions = (props) => {
     return ({
     headerRight: (
-      <FontAwesome name='shopping-cart' size={30} color={Colors.primary} onPress={() => props.navigation.navigate('Cart',
-        {count: props.navigation.state.params.count} )} />
+      <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={() => props.navigation.navigate('Cart',
+        {count: testValue} )} />
     )
     })
   };
   
  render() {
-   //console.log(this.state.data);
+  const { navigation } = this.props;
+  const title = navigation.getParam('title');
+  const description = navigation.getParam('description');
+  const price = navigation.getParam('price');
+
    return (
     
      <View style={styles.container}>
@@ -67,8 +108,8 @@ export class ProductScreen extends Component {
             </View>
          </View>
          <View style={styles.infotext}>
-         <Text style={styles.productName}>{this.state.data.Name}</Text>
-         <Text>You clicked {this.state.count} times</Text>
+         <Text style={styles.productName}>{title}</Text>
+         <Text>Cart {this.state.count} items  </Text>
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
@@ -78,15 +119,37 @@ export class ProductScreen extends Component {
            <FontAwesome name='car' size={22} color={Colors.primary}/>
          </View>
          </View>
-         <Text>{this.state.data.Description} </Text>
+         <Text>{description}</Text>
          </View>
          <View style={styles.BottomPart}>
-          <TouchableOpacity onPress={() => this.setState({ count: this.state.count + 1 })}>
+          {/* <TouchableOpacity onPress={() => this.setState({ count: this.state.count + 1 })}>
            <MainButton
            title={'Add to cart $ '+ this.state.data.Price  }
           />
-          </TouchableOpacity>
-         
+          </TouchableOpacity> */}
+
+            <FlipCard 
+              style={styles.card}
+              friction={6}
+              perspective={1000}
+              flipHorizontal={true}
+              flipVertical={false}
+              flip={false}
+              clickable={true}
+            >
+
+            {/* Face Side */}
+            <TouchableOpacity onPress={this.IncreaseInCountValue} style={styles.face}>   
+              <MainButton title={'Add to cart $ '+ JSON.stringify(price) + ' '} />
+            </TouchableOpacity>
+
+            {/* Back Side */}
+            <TouchableOpacity onPress={this.DecreaseInCountValue} style={styles.back}>
+              <MainButton title={'remove from cart '}  color= 'red'/>
+            </TouchableOpacity>
+
+          </FlipCard>
+ 
          </View>
       </View>
  );

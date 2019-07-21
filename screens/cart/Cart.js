@@ -6,6 +6,9 @@ export default class CartScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state={
+      counter: 0
+    }
   }
     render() {
     const { navigation } = this.props;
