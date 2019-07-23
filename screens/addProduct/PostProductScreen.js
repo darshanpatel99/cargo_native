@@ -19,7 +19,8 @@ import {
   Card,
   Item,
   Textarea,
-  Button
+  Button,
+  Thumbnail
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
@@ -27,7 +28,10 @@ import Colors from '../../constants/Colors';
 import { ImagePicker, Permissions, Constants } from 'expo';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
 import firebase from '../../Firebase.js';
-import MyHeader from '../../components/headerComponents/Header'
+import MyHeader from '../../components/headerComponents/Header';
+import PostProduct from '../../functions/PostProduct';
+import { Overlay } from 'react-native-elements';
+
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -36,10 +40,17 @@ export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
     storageRef = firebase.storage().ref();
+    this.state={
+      title : "",
+      description : "",
+      price : "0",
+      thumbnail : " ",
+      image: [],
+      downloadURLs : [],
+      isOverlayVisible: false
+    }
   }
-  state = {
-    image: []
-  };
+
 
   componentWillMount() {
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
@@ -66,6 +77,27 @@ export default class PostProductScreen extends Component {
     }
   };
 
+
+  //post the product
+  postTheProduct = async() =>{
+  
+    var data = {
+      Description : this.state.description,
+      Name : this.state.title,
+      Price : this.state.price,
+      Pictures : this.state.downloadURLs,
+      Thumbnail : this.state.downloadURLs[0]
+    }
+
+    //Posting the product
+    PostProduct(data);
+    console.log("Product Posted---->" + data);
+
+    //change the overlay visibility to visible
+    this.setState({isOverlayVisible:true});
+
+  }
+
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -79,9 +111,9 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-      this.uploadImageToFirebase(result.uri, 'test-image')
+      this.uploadImageToFirebase(result.uri, result.uri.toString().split('/')[result.uri.toString().split('/').length-1])
         .then(() => {
-          console.log('Success');
+          console.log('Success' + result.uri.toString().split('/')[result.uri.toString().split('/').length-1]);  
         })
         .catch(error => {
           console.log(error);
@@ -97,10 +129,11 @@ export default class PostProductScreen extends Component {
       .ref()
       .child('/images/' + imageName);
     const downloadableUrl = await ref.getDownloadURL();
+    this.state.downloadURLs.push(downloadableUrl);
     console.log('URL----> ' + downloadableUrl);
     return ref.put(blob);
   };
-
+ 
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
@@ -171,11 +204,18 @@ export default class PostProductScreen extends Component {
             </Card>
 
             <Item rounded style={{ marginBottom: 10 }}>
-              <Input placeholder='Title' />
+              <Input placeholder='Title' 
+                name="title" 
+                onChangeText={(text)=>this.setState({title:text})}
+                value={this.state.title}/>
             </Item>
             <Item rounded style={{ marginBottom: 10 }}>
               <Foundation name='dollar' size={32} style={{ padding: 10 }} />
-              <Input keyboardType='numeric' placeholder='0.00' />
+              <Input keyboardType='numeric' 
+                placeholder='0.00'
+                name="price"
+                onChangeText={(text)=>this.setState({price:text})}
+                value={this.state.price} />
             </Item>
             <CategoryPickerForPostProduct />
 
@@ -186,6 +226,9 @@ export default class PostProductScreen extends Component {
                   rowSpan={5}
                   bordered
                   placeholder='Description'
+                  name="description" 
+                  onChangeText={(text)=>this.setState({description:text})}
+                  value={this.state.description}
                   style={styles.iosDescriptionStyle}
                 />
               ) : (
@@ -193,6 +236,9 @@ export default class PostProductScreen extends Component {
                   rowSpan={5}
                   bordered
                   placeholder='Description'
+                  name="description" 
+                  onChangeText={(text)=>this.setState({description:text})}
+                  value={this.state.description}
                   style={styles.androidDescriptionStyle}
                 />
               )}
@@ -206,14 +252,25 @@ export default class PostProductScreen extends Component {
               margin: 10
             }}
           >
-            <Button style={styles.postAdButton}>
+            <Button style={styles.postAdButton} onPress={this.postTheProduct}>
               <Text>Post Ad</Text>
             </Button>
           </View>
         </Container>
         </KeyboardAvoidingView>
+
+        <Overlay
+          isVisible={this.state.isOverlayVisible}
+          windowBackgroundColor="rgba(255, 255, 255, .5)"
+          overlayBackgroundColor="red"
+          width="auto"
+          height="auto"
+          >
+          <Text>Done</Text>
+        </Overlay>
         
         </View>
+      
     );
   }
 }
