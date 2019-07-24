@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
 import TabBarIcon from '../components/navigation/TabBarIcon';
 import HomeScreen from '../screens/home/Home';
 import CartScreen from '../screens/cart/Cart';
@@ -16,16 +16,10 @@ export default (HomeStack = createStackNavigator({
   },
   Details: {
     screen: ProductScreen,
-    //navigationOptions: {
-    //   title: 'Detail',
-    //   headerRight: (
-    //     <Button
-    //       onPress={this.props.navigation.push('Cart')}
-    //       title="Cart"
-    //       color="#fff"
-    //     />
-    //   ),
-    // },
+    navigationOptions: {
+      title: 'Detail',
+      
+     },
 
     // navigationOptions : {
       
@@ -40,25 +34,40 @@ export default (HomeStack = createStackNavigator({
 
   },
 
-  Cart: {
-    screen: CartScreen,
-    navigationOptions: {
-      title: 'Cart',
-    }
-  },
+  // Cart: {
+  //   screen: CartScreen,
+  //   navigationOptions: {
+  //     title: 'Cart',
+  //   }
+  // }, 
   
 }));
 
 HomeStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
+  let headerLeft;
+  const prevScreen = navigation.getParam('PreviousScreen');
+  console.log('this is home stack gsljhgr' + prevScreen)
+
+  // const resetAction = StackActions.reset({
+  //   index: 0,
+  //   actions: [NavigationActions.navigate({ routeName: 'Home' })],
+  // });
+  // navigation.dispatch(resetAction);
+
 
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Home') {
+      if (route.routeName === 'Home' || 'Cart') {
         tabBarVisible = true;
       } 
        else {
         tabBarVisible = false;
+        // headerLeft: (
+        //   <Button
+        //     onPress={this.props.navigation.pop()}
+        //   />
+        // )
       }
     });
   }
@@ -67,9 +76,8 @@ HomeStack.navigationOptions = ({ navigation }) => {
     tabBarVisible,
     tabBarIcon: ({ focused }) => <TabBarIcon type='AntDesign' name='home' />
   };
-
-
 };
+
 
 // Details.navigationOptions = ({ navigation }) => {
         
