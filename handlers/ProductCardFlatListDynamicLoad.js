@@ -31,7 +31,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
       onCollectionUpdate = (querySnapshot) => {
         const products = [];
         querySnapshot.forEach((doc) => {
-          const { Description, Name, Price, Thumbnail } = doc.data();
+          const { Description, Name, Price, Thumbnail, Pictures } = doc.data();
             // console.log(typeof Pictures['0']);
           products.push({
             key: doc.id,
@@ -39,8 +39,8 @@ export default class ProductCardFlatListDynamicLoad extends Component {
             Name,
             Description,
             Price,
-            Thumbnail
-
+            Thumbnail,
+            Pictures
           });
         });
         this.setState({
@@ -85,7 +85,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           data={this.state.products}
           renderItem={({item}) =>
           <View >
-            <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail}/>
+            <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
           </View>
         }
         />

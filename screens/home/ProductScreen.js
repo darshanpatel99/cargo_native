@@ -1,79 +1,181 @@
 import React, {Component} from 'react';
 import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
+import { StackActions, NavigationActions } from 'react-navigation';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import FlipCard from 'react-native-flip-card'
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
-import firebase from '../../Firebase.js';
-import { Item } from "native-base";
+// import firebase from '../../Firebase.js';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 export class ProductScreen extends Component {
-  
  constructor(props) {
    super(props);
-   const { navigation } = this.props;
-    const itemId = navigation.getParam('itemId');
-   this.ref = firebase.firestore().collection('Products').doc(""+itemId);
+    // const { navigation } = this.props;
+  //  const itemId = navigation.getParam('itemId');
+   //this.ref = firebase.firestore().collection('Products').doc(""+itemId).collection("Users").doc("K3xLrQT1OrFirfNXfkYf").get();
+   //this.newRef = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
+
+  //  this.ref = firebase.firestore().collection('Users').doc();
    this.state = {
      pictures:[],
-     data: {},
-   } 
-   this.ref.onSnapshot(doc => {
-     this.setState({
-       pictures: doc.data().Pictures,
-       data: doc.data(),
-     });
-   });
+     //data: {},
+     count: 0,
+     cart: [],
+     address: {},
+     
+   }
 
-   
+   this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
+   this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
+
+  //  this.newRef.onSnapshot(doc => {
+  //   this.setState({
+  //     address: doc.data().Address,
+  //     cart: doc.data().Cart,
+  //   });
+  //  })
+
+  //  this.ref.onSnapshot(doc => {
+  //    this.setState({
+  //      pictures: doc.data().Pictures,
+  //      address: doc.data(),
+  //      cart: doc.data(),
+  //      data: doc.data(),
+  //    });
+  //  });
+
+
+  }
+
+  DecreaseInCountValue() {
+    this.setState({ count: this.state.count - 1})
+    testValue= this.state.count;
+  }
+
+  IncreaseInCountValue() {
+    this.setState({ count: this.state.count + 1})
+    testValue= this.state.count;
+  }
+
+  resetScreen() {
+    console.log('Hello');
+    // const resetAction = StackActions.reset({
+    //   index: 0,
+    //   actions: [NavigationActions.navigate({ routeName: 'Home' })],
+    // });
+    // this.props.navigation.dispatch(resetAction);
+  }
+
+  _onPressButton() {
+    const resetAction = StackActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName: 'Home' })],
+    });
+    this.props.navigation.dispatch(resetAction);
   }
   
+
+  static navigationOptions = (props) => {
+    return ({
+    //tabBarVisible: false,
+    headerRight: (
+      <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={() => props.navigation.push('Cart',
+       {PreviousScreen : 'ProductScreen'}) } />
+    ),
+
+    // headerLeft: (
+    //   <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={this.resetScreen} />
+    // )
+      })
+  };
+  
  render() {
-   //console.log(this.state.data);
+
+  const { navigation } = this.props;
+  const title = navigation.getParam('title');
+  const description = navigation.getParam('description');
+  const price = navigation.getParam('price');
+  const pictures = navigation.getParam('pictures');
+
    return (
     
      <View style={styles.container}>
      <View style={styles.pictures}>
        <View style={{ flexDirection: 'row' }}>
-              <ScrollView
-                scrollEventThrottle={10000}
-                horizontal={true}
-                pagingEnabled={true}
-                showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={this.changePage}
-                disableIntervalMomentum={true}
- 
-              >
-                  {
-                this.state.pictures.map((item, key) => (
-                  <View key={key} style={{ flexDirection: 'row' }}>
-                    <View style={styles.breaks}/>
-                    <Image style={styles.images} source={{ uri: item }} />
-                    <View style={styles.breaks}/>
-                  </View>
-                    
-                      ))
-                    }
-              </ScrollView>
-              
+          <ScrollView
+            scrollEventThrottle={10000}
+            horizontal={true}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={this.changePage}
+            disableIntervalMomentum={true}
+          >
 
+          {
+          pictures.map((item, key) => (
+            <View key={key} style={{ flexDirection: 'row' }}>
+              <View style={styles.breaks}/>
+              <Image style={styles.images} source={{ uri: item }} />
+              <View style={styles.breaks}/>
             </View>
-         </View>
+            
+            ))
+          }
+          </ScrollView>
+          
+
+        </View>
+      </View>
          <View style={styles.infotext}>
-         <Text style={styles.productName}>{this.state.data.Name}</Text>
+         <Text style={styles.productName}>{title}</Text>
+         {/* <Text>Cart {this.state.count} items  length of cart  {this.state.cart.length}</Text> */}
+         {/* <Text>{pictures}</Text> */}
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
          </View>
          <View style={styles.priceDr}>
          <Text style={styles.price}>2.5$</Text>
+
            <FontAwesome name='car' size={22} color={Colors.primary}/>
          </View>
          </View>
-         <Text>{this.state.data.Description} </Text>
+         <Text>{description}</Text>
+         <Button
+            onPress={this._onPressButton.bind(this)}
+            title="Press Me"
+          />
          </View>
          <View style={styles.BottomPart}>
+          {/* <TouchableOpacity onPress={() => this.setState({ count: this.state.count + 1 })}>
            <MainButton
-           title={'Add to cart for ' + this.state.data.Price +'$' }
-           />
+           title={'Add to cart $ '+ this.state.data.Price  }
+          />
+          </TouchableOpacity> */}
+
+            <FlipCard 
+              style={styles.card}
+              friction={6}
+              perspective={1000}
+              flipHorizontal={true}
+              flipVertical={false}
+              flip={false}
+              clickable={true}
+            >
+
+            {/* Face Side */}
+            <TouchableOpacity onPress={this.IncreaseInCountValue} style={styles.face}>   
+              <MainButton title={'Add to cart $ '+ JSON.stringify(price) + ' '} />
+            </TouchableOpacity>
+
+            {/* Back Side */}
+            <TouchableOpacity onPress={this.DecreaseInCountValue} style={styles.back}>
+              <MainButton title={'remove from cart '}  color= 'red'/>
+            </TouchableOpacity>
+
+          </FlipCard>
+ 
          </View>
       </View>
  );
