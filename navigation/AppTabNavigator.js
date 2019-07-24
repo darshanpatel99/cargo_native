@@ -22,4 +22,9 @@ const AppTabNavigator = createBottomTabNavigator(
   }
 );
 
+
+AppTabNavigator.navigationOptions = {
+  header: null,
+}
+ 
 export default createAppContainer(AppTabNavigator, AccountStack);
