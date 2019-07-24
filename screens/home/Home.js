@@ -8,12 +8,28 @@ import Header from '../../components/headerComponents/Header';
 
 export default class HomeScreen extends React.Component {
 
+  constructor(props) {
+    super(props);
+    // console.log("This is prop " + (props))
+    this.state ={
+      sort: {'Price': 'desc'}
+    }
+    //this.callbackFunction = this.callbackFunction.bind(this);
+  }
+
+  handleValues = (values) => {
+    this.setState({sort: values});
+}
+
+
+
+ 
   render() {
     return (
       <View style={styles.container}>
         <Header/>
         <View style={{ flex: 2 }}>
-          <ProductListComponents />
+          <ProductListComponents handleValueChange={this.handleValues}/>
         </View>
 
         {/* <View style={{ flex: 0.8 }}>
@@ -21,7 +37,7 @@ export default class HomeScreen extends React.Component {
         </View> */}
 
         <View style={{ flex: 6 }}>
-          <ProductCardFlatListDynamicLoad />
+          <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}/>
         </View>
 
         

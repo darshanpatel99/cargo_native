@@ -11,17 +11,20 @@ export default class ProductCardFlatListDynamicLoad extends Component {
   //In the constructor you can initializing the firebase service like firestore, authentication etc.
   //And set the initial state
     constructor(props) {
-        super();
-        this.ref = firebase.firestore().collection('Products');
-        this.unsubscribe = null;
+        super(props);
+        console.log("This is prop " + (props))
+
         this.state = {
           isLoading: true,
           products: [],
-          key :''
+          key :'',
+          sort: this.props.filtersAndSorts
         };
+        this.ref = firebase.firestore().collection('Products').orderBy('timestamp');
+        this.unsubscribe = null;
       }
 
-
+ 
       // This function is used to listen to database updates and updates the flatlist upon any change
       //We'll be pushing data to the products array as key value pairs
       //later we collect the data and render into the component whereever we want
@@ -46,8 +49,23 @@ export default class ProductCardFlatListDynamicLoad extends Component {
        });
       }
 
+      shouldComponentUpdate() {
+        console.log(Object.keys(this.state.sort)[0])
+        this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0]); 
+        this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);        
+        return false;
+      }
+
       componentDidMount() {
+        //this.ref = firebase.firestore().collection('Products').orderBy(this.state.sort);        
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+      }
+
+      static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.filtersAndSorts !== prevState.filtersAndSorts) {
+          //this.ref = firebase.firestore().collection('Products').orderBy(this.nextProps.filtersAndSorts);          
+          return ({ sort: nextProps.filtersAndSorts }) // <- this is setState equivalent
+        }
       }
 
       render() {
