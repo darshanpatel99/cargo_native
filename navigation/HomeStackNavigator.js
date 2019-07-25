@@ -58,7 +58,7 @@ HomeStack.navigationOptions = ({ navigation }) => {
 
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Home' || 'Cart') {
+      if (route.routeName === 'Home') {
         tabBarVisible = true;
       } 
        else {
