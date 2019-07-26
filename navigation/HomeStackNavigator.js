@@ -19,7 +19,7 @@ export default (HomeStack = createStackNavigator({
     navigationOptions: {
       title: 'Detail',
       
-     },
+    },
 
     // navigationOptions : {
       
@@ -49,15 +49,9 @@ HomeStack.navigationOptions = ({ navigation }) => {
   const prevScreen = navigation.getParam('PreviousScreen');
   console.log('this is home stack gsljhgr' + prevScreen)
 
-  // const resetAction = StackActions.reset({
-  //   index: 0,
-  //   actions: [NavigationActions.navigate({ routeName: 'Home' })],
-  // });
-  // navigation.dispatch(resetAction);
-
-
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
+
       if (route.routeName === 'Home') {
         tabBarVisible = true;
       } 
@@ -77,19 +71,3 @@ HomeStack.navigationOptions = ({ navigation }) => {
     tabBarIcon: ({ focused }) => <TabBarIcon type='AntDesign' name='home' />
   };
 };
-
-
-// Details.navigationOptions = ({ navigation }) => {
-        
-//   headerRight: (navigation) => {
-//     // The navigation prop has functions like setParams, goBack, and navigate.
-//     let right = (
-//       <Button
-//         title="Options"
-//         onPress={() => navigation.navigate('Cart')}
-//       />
-//     );
-//     return { right };
-//   }
-
-// }

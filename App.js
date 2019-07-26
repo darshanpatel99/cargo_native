@@ -8,6 +8,7 @@ import AppTabNavigator from './navigation/AppTabNavigator';
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
+
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
       <AppLoading
@@ -15,16 +16,17 @@ export default function App(props) {
         onError={handleLoadingError}
         onFinish={() => handleFinishLoading(setLoadingComplete)}
       />
+      
     );
   } else {
     return (
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar hidden={false} barStyle="default" />}
         <AppTabNavigator />
+
       </View>
     );
   }
-
 
 }
 

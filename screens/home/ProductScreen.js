@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import {StackActions } from 'react-navigation';
+import {FontAwesome } from '@expo/vector-icons';
 import FlipCard from 'react-native-flip-card'
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
@@ -9,12 +10,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export class ProductScreen extends Component {
  constructor(props) {
-   super(props);
-    // const { navigation } = this.props;
-  //  const itemId = navigation.getParam('itemId');
-   //this.ref = firebase.firestore().collection('Products').doc(""+itemId).collection("Users").doc("K3xLrQT1OrFirfNXfkYf").get();
-  // this.newRef = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
-
+  super(props);
   const { navigation } = this.props;
   const title = navigation.getParam('title');
   const description = navigation.getParam('description');
@@ -23,20 +19,19 @@ export class ProductScreen extends Component {
   const id = navigation.getParam('itemId');
 
 
-   this.ref = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
+  this.ref = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
 
-   this.state = {
-     pictures:[],
-     //data: {},
-     cart: [],
-     count: '',
-     address: {},
-     title,
-     description,
-     pictures,
-     price,
-     id,
-   }
+  this.state = {
+    pictures:[],
+    cart: [],
+    count: 0,
+    address: {},
+    title,
+    description,
+    pictures,
+    price,
+    id,
+  }
 
    this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
    this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
@@ -59,45 +54,35 @@ export class ProductScreen extends Component {
   IncreaseInCountValue() {
     this.setState({ count: this.state.cart.length + 1})
     testValue= this.state.count;
-    // var id = this.state.id;  // key === "ada"
-    // var adaRef = this.state.cart("Products/" + id);
-
-  // let test = this.state.cart
-  //   test.push('products/' +this.state.id)
-  //     this.ref.update({
-  //       Cart: test
-  //     })
   }
 
   NavigateToCart= ({ navigation }) => {
-    const { navigate } = this.props.navigation;
 
-    navigate('Cart',{PreviousScreen : 'ProductScreen'})
+    const { navigate } = this.props.navigation;
+    this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('Cart',{PreviousScreen : 'ProductScreen'}); 
+
     let test = this.state.cart
     test.push('products/' +this.state.id)
       this.ref.update({
         Cart: test
       })
-
-    console.log('Button clicked!');
-  
+    
   }
 
   static navigationOptions = (props) => {
 
     return ({
-    //tabBarVisible: false,
     headerRight: (
         // <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={() => props.navigation.push('Cart',
         //  {PreviousScreen : 'ProductScreen'}) } />
 
-       <TouchableHighlight onPress={this.NavigateToCart} style={{marginRight: 10}}>
+       <TouchableHighlight onPress={ () => NavigateToCart() } style={{marginRight: 10}}>
           <FontAwesome
               name="shopping-cart"
               size={50}
               color={Colors.primary}
           />
-          {/* <Text>{id}</Text> */}
         </TouchableHighlight>
     ),
 
@@ -137,10 +122,12 @@ export class ProductScreen extends Component {
 
         </View>
       </View>
+
          <View style={styles.infotext}>
          <Text style={styles.productName}>{this.state.title}</Text>
-         <Text>Cart {this.state.count} items  length of cart  {this.state.cart.length}</Text>
-         <Button title='go to cart' onPress={this.NavigateToCart} />
+         <Text>Local number => {this.state.count} </Text>
+         <Text>Total product in firebase => {this.state.cart.length}</Text>
+         <Button title='go to cart' onPress={this.NavigateToCart} />         
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
