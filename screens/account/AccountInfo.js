@@ -10,19 +10,19 @@ import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js
 export class AccountInfo extends Component {
   constructor(props){
     super(props);
-//      this.ref = firebase.firestore().collection('Users').doc('K3xLrQT1OrFirfNXfkYf');
-//    this.state = {
-//      data: {},
-//      name:'',
-//      globalAddress:'',
-//    } 
-//    this.ref.onSnapshot(doc => {
-//      this.setState({
-//      data: doc.data(),
-//      name:doc.data().FirstName + ' ' + doc.data().LastName,
-//      globalAddress:doc.data().ExtraAddresses[0] + ', ' + doc.data().ExtraAddresses[1],
-//      }); 
-// });
+     this.ref = firebase.firestore().collection('Users').doc('rh1cFdoEdRUROJP36Ulm');
+   this.state = {
+     data: {},
+     name:'',
+     globalAddress:'',
+   } 
+   this.ref.onSnapshot(doc => {
+     this.setState({
+     data: doc.data(),
+     name:doc.data().FirstName + ' ' + doc.data().LastName,
+     globalAddress:doc.data().City + ', ' + doc.data().Country,
+     }); 
+});
   }
 
 render(){
@@ -32,7 +32,7 @@ render(){
 
             <View style={styles.pictureHolder}>                  
               <View style={styles.imageView}>
-                <Image source={{uri:'https://cdn.pixabay.com/photo/2016/10/26/22/00/hamster-1772742_960_720.jpg'}} style={styles.profilePicture}/>
+                <Image source={{uri:this.state.data.ProfilePicture}} style={styles.profilePicture}/>
               </View>               
               <View style={styles.settingsButton}>
                 <Button icon transparent>
@@ -43,20 +43,20 @@ render(){
                             
             <View style={styles.infoHolder}>
               <View style={styles.nameHolder}>
-                <Text style={[styles.title,styles.name]}>Fat Hamster</Text>
+                <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
               </View>
               <View style={styles.infoBody}>
                 <View style={styles.paragrapgh}>
                   <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                  <Text style={styles.info}>Cookies Ave.</Text>
-                  <Text style={styles.info}>Buckingham, United Kingdom</Text>
+                  <Text style={styles.info}>{this.state.data.Street}</Text>
+                  <Text style={styles.info}>{this.state.globalAddress}</Text>
                 </View>                    
               </View>
               <View style={styles.infoBody}>
                 <View style={styles.paragrapgh}>
                   <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
-                  <Text style={styles.info}>+1 202 918 7276</Text>
-                  <Text style={styles.info}>fat_hamster@cargo.com</Text>
+                  <Text style={styles.info}>{this.state.data.PhoneNumber}</Text>
+                  <Text style={styles.info}>{this.state.data.Email}</Text>
                 </View>                    
               </View>
             </View>                
