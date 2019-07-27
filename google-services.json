@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "572236256696",
+    "firebase_url": "https://cargo-488e8.firebaseio.com",
+    "project_id": "cargo-488e8",
+    "storage_bucket": "cargo-488e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572236256696:android:0623418e02926c85",
+        "android_client_info": {
+          "package_name": "com.MeetCarGo.CarGo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "572236256696-2remak9vu02jhrnf7ke1okihsuj4ulvg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6f4ceKiFBZDaWNg-08-4NEPIw_TqyjQ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "572236256696-2remak9vu02jhrnf7ke1okihsuj4ulvg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
