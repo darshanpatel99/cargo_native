@@ -1,51 +1,62 @@
 import React, {Component} from 'react';
 import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
-import { StackActions, NavigationActions } from 'react-navigation';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import {StackActions } from 'react-navigation';
+import {FontAwesome } from '@expo/vector-icons';
 import FlipCard from 'react-native-flip-card'
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
-// import firebase from '../../Firebase.js';
+import firebase from '../../Firebase.js';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export class ProductScreen extends Component {
  constructor(props) {
-   super(props);
-    // const { navigation } = this.props;
-  //  const itemId = navigation.getParam('itemId');
-   //this.ref = firebase.firestore().collection('Products').doc(""+itemId).collection("Users").doc("K3xLrQT1OrFirfNXfkYf").get();
-   //this.newRef = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
+  super(props);
+  const { navigation } = this.props;
+  const title = navigation.getParam('title');
+  const description = navigation.getParam('description');
+  const price = navigation.getParam('price');
+  const pictures = navigation.getParam('pictures');
+  const id = navigation.getParam('itemId');
 
-  //  this.ref = firebase.firestore().collection('Users').doc();
-   this.state = {
-     pictures:[],
-     //data: {},
-     count: 0,
-     cart: [],
-     address: {},
-     
-   }
+
+  this.ref = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
+
+  this.state = {
+    pictures:[],
+    cart: [],
+    address: {},
+    title,
+    count: 0,
+    description,
+    pictures,
+    price,
+    id,
+  }
 
    this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
    this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
+   this.NavigateToCart = this.NavigateToCart.bind(this);
 
-  //  this.newRef.onSnapshot(doc => {
-  //   this.setState({
-  //     address: doc.data().Address,
-  //     cart: doc.data().Cart,
-  //   });
-  //  })
+   this.ref.onSnapshot(doc => {
+    this.setState({
+      address: doc.data().Address,
+      cart: doc.data().Cart,
+    });
+   })
 
-  //  this.ref.onSnapshot(doc => {
-  //    this.setState({
-  //      pictures: doc.data().Pictures,
-  //      address: doc.data(),
-  //      cart: doc.data(),
-  //      data: doc.data(),
-  //    });
-  //  });
+  }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    //return this.state.cart != nextState.cart;
+    return true;
+  }
 
+  componentDidMount(){
+    let cartLength = this.state.cart.length;
+    console.log('this is cart lenght ' + cartLength)
+    this.setState({
+      count: cartLength,
+   });
   }
 
   DecreaseInCountValue() {
@@ -54,49 +65,46 @@ export class ProductScreen extends Component {
   }
 
   IncreaseInCountValue() {
-    this.setState({ count: this.state.count + 1})
+    this.setState({ count: this.state.cart.length + 1})
     testValue= this.state.count;
   }
 
-  resetScreen() {
-    console.log('Hello');
-    // const resetAction = StackActions.reset({
-    //   index: 0,
-    //   actions: [NavigationActions.navigate({ routeName: 'Home' })],
-    // });
-    // this.props.navigation.dispatch(resetAction);
-  }
+  NavigateToCart= ({ navigation }) => {
 
-  _onPressButton() {
-    const resetAction = StackActions.reset({
-      index: 0,
-      actions: [NavigationActions.navigate({ routeName: 'Home' })],
-    });
-    this.props.navigation.dispatch(resetAction);
+    const { navigate } = this.props.navigation;
+    this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('Cart',{PreviousScreen : 'ProductScreen'}); 
+
+    let test = this.state.cart
+    test.push('products/' +this.state.id)
+      this.ref.update({
+        Cart: test
+      })
+    
   }
-  
 
   static navigationOptions = (props) => {
+
     return ({
-    //tabBarVisible: false,
     headerRight: (
-      <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={() => props.navigation.push('Cart',
-       {PreviousScreen : 'ProductScreen'}) } />
+        // <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={() => props.navigation.push('Cart',
+        //  {PreviousScreen : 'ProductScreen'}) } />
+
+       <TouchableHighlight onPress={ () => NavigateToCart() } style={{marginRight: 10}}>
+          <FontAwesome
+              name="shopping-cart"
+              size={50}
+              color={Colors.primary}
+          />
+        </TouchableHighlight>
     ),
 
-    // headerLeft: (
-    //   <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={this.resetScreen} />
-    // )
-      })
+    })
   };
   
  render() {
 
-  const { navigation } = this.props;
-  const title = navigation.getParam('title');
-  const description = navigation.getParam('description');
-  const price = navigation.getParam('price');
-  const pictures = navigation.getParam('pictures');
+  
 
    return (
     
@@ -113,7 +121,7 @@ export class ProductScreen extends Component {
           >
 
           {
-          pictures.map((item, key) => (
+          this.state.pictures.map((item, key) => (
             <View key={key} style={{ flexDirection: 'row' }}>
               <View style={styles.breaks}/>
               <Image style={styles.images} source={{ uri: item }} />
@@ -127,10 +135,12 @@ export class ProductScreen extends Component {
 
         </View>
       </View>
+
          <View style={styles.infotext}>
-         <Text style={styles.productName}>{title}</Text>
-         {/* <Text>Cart {this.state.count} items  length of cart  {this.state.cart.length}</Text> */}
-         {/* <Text>{pictures}</Text> */}
+         <Text style={styles.productName}>{this.state.title}</Text>
+         <Text>Local number => {this.state.count} </Text>
+         <Text>Total product in firebase => {this.state.cart.length}</Text>
+         <Button title='go to cart' onPress={this.NavigateToCart} />         
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
@@ -141,11 +151,8 @@ export class ProductScreen extends Component {
            <FontAwesome name='car' size={22} color={Colors.primary}/>
          </View>
          </View>
-         <Text>{description}</Text>
-         <Button
-            onPress={this._onPressButton.bind(this)}
-            title="Press Me"
-          />
+         <Text>{this.state.description}</Text>
+
          </View>
          <View style={styles.BottomPart}>
           {/* <TouchableOpacity onPress={() => this.setState({ count: this.state.count + 1 })}>
@@ -166,7 +173,7 @@ export class ProductScreen extends Component {
 
             {/* Face Side */}
             <TouchableOpacity onPress={this.IncreaseInCountValue} style={styles.face}>   
-              <MainButton title={'Add to cart $ '+ JSON.stringify(price) + ' '} />
+              <MainButton title={'Add to cart $ '+ JSON.stringify(this.state.price) + ' '} />
             </TouchableOpacity>
 
             {/* Back Side */}

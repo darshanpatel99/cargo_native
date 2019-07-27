@@ -16,9 +16,14 @@ export default class AccountScreen extends React.Component {
           title='Go to Change Login Screen'
           onPress={() => this.props.navigation.navigate('Login')}
         />
- <Button
+        <Button
           title='Go to Change Sign Up Screen'
           onPress={() => this.props.navigation.navigate('SignUp')}
+        />
+
+        <Button
+          title='Go to account info'
+          onPress={() => this.props.navigation.navigate('AccountInfo')}
         />
         
         <View style={styles.viewStyle}>

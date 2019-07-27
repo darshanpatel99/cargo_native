@@ -7,7 +7,7 @@ import firebase from '../../Firebase.js';
 import { Item,Button,Badge} from "native-base";
 import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js';
 
-export class AccountInfo extends Component {
+export default class AccountInfo extends Component {
   constructor(props){
     super(props);
      this.ref = firebase.firestore().collection('Users').doc('rh1cFdoEdRUROJP36Ulm');
