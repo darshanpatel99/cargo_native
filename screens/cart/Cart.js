@@ -3,8 +3,6 @@ import { View, Text, Button } from "react-native";
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import CartHandler from '../../handlers/CartHandler'
 
-
-
 export default class CartScreen extends React.Component {
 
   constructor(props) {
