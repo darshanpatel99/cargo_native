@@ -7,18 +7,13 @@ import ProductListComponents from '../../components/product/ProductListComponent
 import Header from '../../components/headerComponents/Header';
 
 export default class HomeScreen extends React.Component {
-  constructor(props) {
-    super(props);
-
-
-}
 
 
   constructor(props) {
     super(props);
     // console.log("This is prop " + (props))
     this.state ={
-      sort: {'Price': 'desc'}
+      sort: {'All': ''}
     }
     //this.callbackFunction = this.callbackFunction.bind(this);
   }

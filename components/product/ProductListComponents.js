@@ -45,11 +45,11 @@ export default class ProductListComponents extends Component {
       sorts[txt] = true;
       // let sortValue = txt == 'Low' ? {Price:'yr'} ? 'High' :'et'
       let sortObject = {}
-      if(txt == 'Low'){
+      if(txt == 'low'){
+        sortObject= {'Price' : ''}
+      }else if(txt == 'high'){
         sortObject= {'Price' : 'desc'}
-      }else if(txt == 'High'){
-        sortObject= {'Price' : 'asc'}
-      }else if(txt == 'Trending'){
+      }else if(txt == 'trending'){
         sortObject= {'Trending' : 'desc'}
       }else {
         sortObject ={'timestamp' : 'asc'}
@@ -76,7 +76,7 @@ export default class ProductListComponents extends Component {
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'all')}  style = {this.state.all ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}} >All</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'trending')} style = {this.state.trending ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}} >Trending</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'new')}  style = {this.state.new ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >New</Text>
-          <Text onPress = {this.handlerButtonOnClick.bind(this, 'Low')}  style = {this.state.Low ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >Low Price</Text>
+          <Text onPress = {this.handlerButtonOnClick.bind(this, 'low')}  style = {this.state.Low ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >Low Price</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'high')}  style = {this.state.high ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >High Low</Text>
         </View>
 

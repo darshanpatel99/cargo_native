@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {FlatList, View, ScrollView, ActivityIndicator } from "react-native";
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent';
+import shallowCompare from 'react-addons-shallow-compare'; // ES6
 
 
 //This component will be used to get the products from firebase and render to flatlist
@@ -20,7 +21,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           key :'',
           sort: this.props.filtersAndSorts
         };
-        this.ref = firebase.firestore().collection('Products').orderBy('timestamp');
+        this.ref = firebase.firestore().collection('Products').orderBy('Price');
         this.unsubscribe = null;
       }
 
@@ -49,11 +50,23 @@ export default class ProductCardFlatListDynamicLoad extends Component {
        });
       }
 
-      shouldComponentUpdate() {
-        console.log(Object.keys(this.state.sort)[0])
-        this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0]); 
-        this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);        
-        return false;
+      shouldComponentUpdate(nextProps, nextState) {
+        //console.log('this is nextprops ' + JSON.stringify(nextProps) );
+        //console.log('this is nextstate ' + JSON.stringify(nextState) );
+        // console.log(Object.keys(this.state.sort)[0])
+        if(this.props.filtersAndSorts != nextProps.filtersAndSorts) {
+          console.log('sort value' + Object.values(this.state.sort)[0]);
+          if(Object.values(this.state.sort)[0] != ''){
+            this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0], Object.values(this.state.sort)[0]); 
+            this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+          } else{
+            this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0]); 
+            this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+          }       
+          //return true;
+          return true;
+      } else {return false}
+        
       }
 
       componentDidMount() {
