@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import {Text, View, Button, TouchableOpacity} from 'react-native';
+import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
+import {Button} from 'native-base'
 import firebase from '../Firebase.js';
+import ProductCardComponent from '../components/product/ProductCardComponent'
+import MainButton from '../components/theme/MainButton'
 
 
 export default class CartHandler extends Component {
@@ -18,22 +21,31 @@ export default class CartHandler extends Component {
         this.ref = firebase.firestore().collection('Products').orderBy('Price');
         this.unsubscribe = null;
 
-
     }
-    async getMarkers() {
-        const markers = [];
-        await firebase.firestore().collection('events').get()
-          .then(querySnapshot => {
-            querySnapshot.docs.forEach(doc => {
-            markers.push(doc.data());
-          });
-        });
-        return markers;
-      }
 
-    async onPress (){
+    componentDidMount() {
+        (async () => {
+            await this.loadCartItems();
+        })();
+    }
+
+    async loadCartItems (){
+        let cartProducts;
         console.log('pull items from firebase trigggg..')
-        let test = ['BCduc6QJLgBMfK7tRCrb', 'DZpb4ydAcp8j01hINdLq'];
+        let cartItemsFromFirebase = firebase.firestore().collection('Users').doc('K3xLrQT1OrFirfNXfkYf');
+        var getOptions = {
+            //source: 'cache'
+        };
+        
+        // Get a document, forcing the SDK to fetch from the offline cache.
+        cartItemsFromFirebase.get(getOptions).then(function(doc) {
+            // Document was found in the cache. If no cached document exists,
+            // an error will be returned to the 'catch' block below.
+            console.log("Cached document data:", doc.data().CartTest);
+            cartProducts= doc.data().CartTest
+        }).catch(function(error) {
+            console.log("Error getting cached document:", error);
+        });
         let products= []
         // this.newRef = firebase.firestore().getAll(...test);
         // console.log(newRef)
@@ -41,9 +53,9 @@ export default class CartHandler extends Component {
         await firebase.firestore().collection('Products').get()
               .then(querySnapshot => {
                 querySnapshot.docs.forEach(doc => {
-                    if(test.includes(doc.id)) {
+                    if(cartProducts.includes(doc.id)) {
                         const { Description, Name, Price, Thumbnail, Pictures } = doc.data();                        
-                        markers.push(doc.data());
+                        products.push(doc.data());
                     }
               });
             });
@@ -52,16 +64,72 @@ export default class CartHandler extends Component {
                 products,
                 isLoading: false,
              });
-            return products;
           }
 
 
     render(){
-    return (
-        <TouchableOpacity
-                onPress={this.onPress}>
-        <Text> Touch Here </Text>
-        </TouchableOpacity>    
+        // <TouchableOpacity
+        //         onPress={this.onPress}>
+        // <Text> Touch Here </Text>
+        // </TouchableOpacity>    
+        if(this.state.isLoading){
+            return(
+              <View style={styles.activity}>
+                <ActivityIndicator size="large" color="#0000ff"/>
+              </View>
+            )
+          }
+          return (
+    <View style ={styles.container}>
+          <ScrollView style={styles.scrollContainer}>
+  
+          <FlatList
+            data={this.state.products}
+            renderItem={({item}) =>
+            <View >
+              <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
+            </View>
+          }
+          />
+
+          </ScrollView>
+          <View style={{flexDirection: 'row', justifyContent:'center'}}>
+              <MainButton title= 'Proceed to Checkout'/>
+            </View>
+          </View>
         );
     }
 }
+
+const styles = {
+    container: {
+        flex: 1,
+        paddingTop: 22,
+        justifyContent: 'center'
+       },
+       item: {
+         padding: 10,
+         fontSize: 18,
+         height: 44,
+       },
+    scrollContainer: {
+     flex: 1,
+     paddingBottom: 22,
+    //  justifyContent:'center'
+    },
+    item: {
+      padding: 10,
+      fontSize: 18,
+      height: 44,
+    },
+    activity: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+
+  }
