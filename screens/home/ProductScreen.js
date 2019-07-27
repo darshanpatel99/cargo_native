@@ -24,9 +24,9 @@ export class ProductScreen extends Component {
   this.state = {
     pictures:[],
     cart: [],
-    count: 0,
     address: {},
     title,
+    count: 0,
     description,
     pictures,
     price,
@@ -44,6 +44,19 @@ export class ProductScreen extends Component {
     });
    })
 
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    //return this.state.cart != nextState.cart;
+    return true;
+  }
+
+  componentDidMount(){
+    let cartLength = this.state.cart.length;
+    console.log('this is cart lenght ' + cartLength)
+    this.setState({
+      count: cartLength,
+   });
   }
 
   DecreaseInCountValue() {
