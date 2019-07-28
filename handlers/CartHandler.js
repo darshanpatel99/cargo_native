@@ -18,60 +18,56 @@ export default class CartHandler extends Component {
             key :'',
             sort: this.props.filtersAndSorts
         };
-        this.ref = firebase.firestore().collection('Products').orderBy('Price');
+        this.ref = firebase.firestore().collection('Users').doc('K3xLrQT1OrFirfNXfkYf');
+        //this.productsCollectionRef = firebase.firestore().collection('Products');
         this.unsubscribe = null;
+        //this.loadCartItems = this.loadCartItems.bind(this);        
+    }
+
+    componentDidMount(prevProps) {
+
+        this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
 
     }
 
-    componentDidMount() {
-        (async () => {
-            await this.loadCartItems();
-        })();
-    }
 
-    async loadCartItems (){
+
+    onDocumentUpdate = (documentSnapshot) => {
         let cartProducts;
-        console.log('pull items from firebase trigggg..')
-        let cartItemsFromFirebase = firebase.firestore().collection('Users').doc('K3xLrQT1OrFirfNXfkYf');
-        var getOptions = {
-            //source: 'cache'
-        };
-        
-        // Get a document, forcing the SDK to fetch from the offline cache.
-        cartItemsFromFirebase.get(getOptions).then(function(doc) {
-            // Document was found in the cache. If no cached document exists,
-            // an error will be returned to the 'catch' block below.
-            console.log("Cached document data:", doc.data().CartTest);
-            cartProducts= doc.data().CartTest
-        }).catch(function(error) {
-            console.log("Error getting cached document:", error);
-        });
-        let products= []
-        // this.newRef = firebase.firestore().getAll(...test);
-        // console.log(newRef)
+        let products= [];
+        cartProducts= documentSnapshot.data().Cart;            
+            firebase.firestore().collection('Products').get()
+                  .then(querySnapshot => {
+                    querySnapshot.docs.forEach(doc => {
+                        if(cartProducts.includes(doc.id)) {
+                            console.log('Name is --> ' + doc.data().Name)
+                            const { Description, Name, Price, Thumbnail, Pictures } = doc.data();                        
+                            products.push({
+                                key: doc.id,
+                                doc,
+                                Name,
+                                Description,
+                                Price,
+                                Thumbnail,
+                                Pictures
+                            }
+                            );
+                        }
+                  });
+                  
+                this.setState({
+                    products,
+                    isLoading: false,
+                  })
+  
 
-        await firebase.firestore().collection('Products').get()
-              .then(querySnapshot => {
-                querySnapshot.docs.forEach(doc => {
-                    if(cartProducts.includes(doc.id)) {
-                        const { Description, Name, Price, Thumbnail, Pictures } = doc.data();                        
-                        products.push(doc.data());
-                    }
-              });
-            });
-            console.log(products)
-            this.setState({
-                products,
-                isLoading: false,
-             });
+                 });
+
           }
 
 
     render(){
-        // <TouchableOpacity
-        //         onPress={this.onPress}>
-        // <Text> Touch Here </Text>
-        // </TouchableOpacity>    
+
         if(this.state.isLoading){
             return(
               <View style={styles.activity}>
