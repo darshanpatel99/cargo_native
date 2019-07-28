@@ -10,7 +10,7 @@ const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803
 export default class TestScreen extends React.Component {
   state = { user: null };
  
-  FacebookApiKey= "2872116616149463";
+  FacebookApiKey= '2872116616149463';
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -28,27 +28,38 @@ export default class TestScreen extends React.Component {
   };
  
   async facebookLogin() {
-    // Get an API Key from https://developers.facebook.com/ (it's pretty easy)
-    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey);
-    if (!authData) return;
-    const { type, token } = authData;
-    if (type === 'success') {
-      console.log('facebook auth success and the token is' + token);
-      return token;
-    } else {
-      // Maybe the user cancelled...
+    console.log("in facebookLogin() method");
+    try{
+      const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey);
+    
+      console.log(authData);
+      if (!authData) return;
+      const { type, token } = authData;
+      if (type === 'success') {
+        console.log('facebook auth success and the token is' + token);
+        return token;
+      } else {
+        // Maybe the user cancelled...
+      }
+    }
+    catch(message){
+      console.log(message);
+      alert(message);
+      
     }
   }
  
   loginAsync = async () => {
+    console.log('in loginAsync() method');
     // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
     const token = await this.facebookLogin();
+
     if (!token) return;
     // Use the facebook token to authenticate our user in firebase.
     const credential = firebase.auth.FacebookAuthProvider.credential(token);
     try {
       // login with credential
-      await firebase.auth().signInAndRetrieveDataWithCredential(credential);
+      await firebase.auth().signInWithCredential(credential);
     } catch ({ message }) {
       alert(message);
     }
