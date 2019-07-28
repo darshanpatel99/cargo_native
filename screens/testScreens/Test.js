@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Button, Text, TextInput, Image, StyleSheet } from 'react-native';
 
 import firebase from '../../Firebase';
-import { Facebook } from 'expo';
+import * as Facebook from 'expo-facebook';
 
 
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
@@ -33,6 +33,7 @@ export default class TestScreen extends React.Component {
     if (!authData) return;
     const { type, token } = authData;
     if (type === 'success') {
+      console.log('facebook auth success and the token is' + token);
       return token;
     } else {
       // Maybe the user cancelled...
