@@ -1,143 +1,150 @@
 import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image } from 'react-native';
-
+import { View, Button, Text, TextInput, Image, ScrollView } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import {Linking} from 'expo';
 import firebase from '../../Firebase';
 
-const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
+const captchaUrl = `https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html?appurl=${Linking.makeUrl('')}`;
 
 export default class TestScreen extends React.Component {
   constructor(props) {
-    super(props);
-    this.unsubscribe = null;
+    super(props)
     this.state = {
-      user: null,
-      message: '',
-      codeInput: '',
-      phoneNumber: '+1',
-      confirmResult: null,
-    };
-  }
-
-  componentDidMount() {
-    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({ user: user.toJSON() });
-      } else {
-        // User has been signed out, reset the state
-        this.setState({
-          user: null,
-          message: '',
-          codeInput: '',
-          phoneNumber: '+1',
-          confirmResult: null,
-        });
-      }
-    });
-  }
-
-  componentWillUnmount() {
-     if (this.unsubscribe) this.unsubscribe();
-  }
-
-  signIn = () => {
-    const { phoneNumber } = this.state;
-    this.setState({ message: 'Sending code ...' });
-
-    firebase.auth().signInWithPhoneNumber(phoneNumber)
-      .then(confirmResult => this.setState({ confirmResult, message: 'Code has been sent!' }))
-      .catch(error => this.setState({ message: `Sign In With Phone Number Error: ${error.message}` }));
-  };
-
-  confirmCode = () => {
-    const { codeInput, confirmResult } = this.state;
-
-    if (confirmResult && codeInput.length) {
-      confirmResult.confirm(codeInput)
-        .then((user) => {
-          this.setState({ message: 'Code Confirmed!' });
-        })
-        .catch(error => this.setState({ message: `Code Confirm Error: ${error.message}` }));
+        user: undefined,
+        phone: '',
+        confirmationResult: undefined,
+        code: '',
+        Token: '',
+        valid:false
     }
-  };
+    this.captcahRef = firebase.firestore().collection('reCaptcha').doc('YksTcYBgjxD6Oj26zmzl');
+      //things need to be bit more clear here
+      this.captcahRef.onSnapshot((doc)=>{
+        if(this.state.valid){
+          this.onTokenReceived(this.state.Token);
+          this.setState({valid:false});
+          console.log('Go the valid token');
+        }
+        else{
+        this.setState({Token: doc.data().Token, valid:true});
+        }
+        console.log(this.state.Token);
+     
+    });
+}
 
-  signOut = () => {
-    firebase.auth().signOut();
+onPhoneChange = (phone) => {
+    this.setState({phone});
+}
+
+//listnener for the url change
+tokenListener = ({url}) =>{
+  console.log('In the listener');
+   WebBrowser.dismissBrowser();
+   const tokenEncoded = Linking.parse(url).queryParams['token'];
+   console.log(tokenEncoded);
+   console.log(url);
+   if (tokenEncoded)
+       token = decodeURIComponent(tokenEncoded);
+}
+
+
+//Do the phone Verfiication
+onTokenReceived = async (token) =>{
+  
+  console.log("Token has been received");
+  const {phone} = this.state;
+  //fake firebase.auth.ApplicationVerifier
+  const captchaVerifier = {
+      type: 'recaptcha',
+      verify: () => Promise.resolve(token)
+  }
+  try {
+      const confirmationResult = await firebase.auth().signInWithPhoneNumber(phone, captchaVerifier);
+      console.log(confirmationResult);
+      this.setState({confirmationResult});
+  } catch (e) {
+      console.warn(e);
   }
 
-  renderPhoneNumberInput() {
-   const { phoneNumber } = this.state;
+}
 
-    return (
-      <View style={{ padding: 25 }}>
-        <Text>Enter phone number:</Text>
-        <TextInput
-          autoFocus
-          style={{ height: 40, marginTop: 15, marginBottom: 15 }}
-          onChangeText={value => this.setState({ phoneNumber: value })}
-          placeholder={'Phone number ... '}
-          value={phoneNumber}
-        />
-        <Button title="Sign In" color="green" onPress={this.signIn} />
-      </View>
-    );
-  }
+onPhoneComplete = async () => {
+    let token = null
+    
+    Linking.addEventListener('url', this.tokenListener);   
+    console.log('opening web browser');
+    await WebBrowser.openBrowserAsync(captchaUrl);
+    Linking.removeEventListener('url', this.tokenListener);  
 
-  renderMessage() {
-    const { message } = this.state;
+}
+onCodeChange = (code) => {
+    this.setState({code});
+}
+onSignIn = async () => {
+    const {confirmationResult, code} = this.state;
+    try {
+        await confirmationResult.confirm(code);
+    } catch (e) {
+        console.warn(e);
+    }
+    this.reset();
+}
+reset = () => {
+    this.setState({
+        phone: '',
+        phoneCompleted: false,
+        confirmationResult: undefined,
+        code: ''
+    });
+}
 
-    if (!message.length) return null;
+render() {
+    if (this.state.user)
+        return (
+          <ScrollView style={{padding: 20, marginTop: 20}}>
+          <TextInput
+              value={this.state.phone}
+              onChangeText={this.onPhoneChange}
+              keyboardType="phone-pad"
+              placeholder="Your phone"
+          />
+          <Button
+              onPress={this.onPhoneComplete}
+              title="Next"
+          />
+      </ScrollView>
+        )
 
-    return (
-      <Text style={{ padding: 5, backgroundColor: '#000', color: '#fff' }}>{message}</Text>
-    );
-  }
-
-  renderVerificationCodeInput() {
-    const { codeInput } = this.state;
-
-    return (
-      <View style={{ marginTop: 25, padding: 25 }}>
-        <Text>Enter verification code below:</Text>
-        <TextInput
-          autoFocus
-          style={{ height: 40, marginTop: 15, marginBottom: 15 }}
-          onChangeText={value => this.setState({ codeInput: value })}
-          placeholder={'Code ... '}
-          value={codeInput}
-        />
-        <Button title="Confirm Code" color="#841584" onPress={this.confirmCode} />
-      </View>
-    );
-  }
-
-  render() {
-    const { user, confirmResult } = this.state;
-    return (
-      <View style={{ flex: 1 }}>
-
-        {!user && !confirmResult && this.renderPhoneNumberInput()}
-
-        {this.renderMessage()}
-
-        {!user && confirmResult && this.renderVerificationCodeInput()}
-
-        {user && (
-          <View
-            style={{
-              padding: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#77dd77',
-              flex: 1,
-            }}
-          >
-            <Image source={{ uri: successImageUri }} style={{ width: 100, height: 100, marginBottom: 25 }} />
-            <Text style={{ fontSize: 25 }}>Signed In!</Text>
-            <Text>{JSON.stringify(user)}</Text>
-            <Button title="Sign Out" color="red" onPress={this.signOut} />
-          </View>
-        )}
-      </View>
-    );
-  }
+    if (!this.state.confirmationResult)
+        return (
+            <ScrollView style={{padding: 20, marginTop: 20}}>
+                <TextInput
+                    value={this.state.phone}
+                    onChangeText={this.onPhoneChange}
+                    keyboardType="phone-pad"
+                    placeholder="Your phone"
+                />
+                <Button
+                    onPress={this.onPhoneComplete}
+                    title="Next"
+                />
+            </ScrollView>
+        )
+    else
+        return (
+            <ScrollView style={{padding: 20, marginTop: 20}}>
+                <TextInput
+                    value={this.state.code}
+                    onChangeText={this.onCodeChange}
+                    keyboardType="numeric"
+                    placeholder="Code from SMS"
+                />
+                <Button
+                    onPress={this.onSignIn}
+                    title="Sign in"
+                />
+            </ScrollView>
+        )
+}
 }
