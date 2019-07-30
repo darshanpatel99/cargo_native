@@ -22,9 +22,8 @@ export default class TestScreen extends React.Component {
       this.captcahRef.onSnapshot((doc)=>{
        console.log(this.state.valid);
         if(this.state.valid){
-          
-          this.onTokenReceived(this.state.Token);
-          this.setState({valid:false});
+          this.setState({valid:false, Token: doc.data().Token});
+          this.onTokenReceived(this.state.Token);         
           console.log('Go the valid token');
         }
         else{
