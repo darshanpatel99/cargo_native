@@ -20,7 +20,9 @@ export default class TestScreen extends React.Component {
     this.captcahRef = firebase.firestore().collection('reCaptcha').doc('YksTcYBgjxD6Oj26zmzl');
       //things need to be bit more clear here
       this.captcahRef.onSnapshot((doc)=>{
+       console.log(this.state.valid);
         if(this.state.valid){
+          
           this.onTokenReceived(this.state.Token);
           this.setState({valid:false});
           console.log('Go the valid token');
