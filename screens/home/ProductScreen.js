@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
 import {StackActions } from 'react-navigation';
-import {FontAwesome } from '@expo/vector-icons';
+import {FontAwesome, Ionicons} from '@expo/vector-icons';
 import FlipCard from 'react-native-flip-card'
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
@@ -21,6 +21,7 @@ export class ProductScreen extends Component {
 
   this.ref = firebase.firestore().collection('Users').doc("K3xLrQT1OrFirfNXfkYf");
 
+
   this.state = {
     pictures:[],
     cart: [],
@@ -31,66 +32,114 @@ export class ProductScreen extends Component {
     pictures,
     price,
     id,
+    itemAlreadyInCart: false,
+    buttonTitle:'Add to Cart'
   }
+
 
    this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
    this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
    this.NavigateToCart = this.NavigateToCart.bind(this);
+   this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(this)
 
-   this.ref.onSnapshot(doc => {
-    this.setState({
-      address: doc.data().Address,
-      cart: doc.data().Cart,
-    });
-   })
+
 
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    //return this.state.cart != nextState.cart;
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   //return this.state.cart != nextState.cart;
+  //   return true;
+  // }
 
   componentDidMount(){
-    let cartLength = this.state.cart.length;
-    console.log('this is cart lenght ' + cartLength)
-    this.setState({
-      count: cartLength,
-   });
+    this.props.navigation.setParams({ handleCartItems: this.NavigateToCart })   
+    this.props.navigation.setParams({ handleGoBack: this.GoBack })
+    let cart=[]
+    let address= {}
+    let that = this // here your variable declaration    
+    // this.ref.onSnapshot(doc => {
+    //   // this.setState({
+    //     address= doc.data().Address,
+    //     cart= doc.data().Cart,
+    //     // });
+    //     console.log('this is data -- > >>>' + doc.data().Cart)
+    //   })    
+
+    this.ref.get().then(function(doc) {
+      console.log('this document data -- > ' + doc.data())
+      cart = doc.data().Cart;
+      address = doc.data().Address;
+      let cartLength = cart.length;
+      that.setState({
+        cart:cart,
+        address:address,
+        count: cartLength,
+     });
+    //  console.log('comp did update -- ' + that.state.address);
+    //  console.log('cart did update ' + that.state.cart.length);
+     if(cart.includes(that.state.id)){
+      //alert('Item exists in cart');
+      that.setState({
+        itemAlreadyInCart: true,
+      })
+      if(that.state.itemAlreadyInCart){
+        that.setState({buttonTitle: 'Remove from Cart'})
+      }
+     }
+     console.log('this is product id --> ' + that.state.id)
+    })
+
+    let cartLength = cart.length;
+
+
+   //console.log('this is cart items -->  ' + this.state.cart)
+   
   }
+
+
 
   DecreaseInCountValue() {
     this.setState({ count: this.state.count - 1})
+    this.setState({ itemAlreadyInCart: false, buttonTitle: 'Add to Cart'})    
     testValue= this.state.count;
+    let productsInCart= this.state.cart;
+    productsInCart.pop();
+    this.ref.update({
+      Cart: productsInCart,
+      itemAlreadyInCart: true
+    })
   }
 
   IncreaseInCountValue() {
     this.setState({ count: this.state.cart.length + 1})
+    this.setState({ itemAlreadyInCart: true, buttonTitle: 'Remove from Cart' })
     testValue= this.state.count;
+    let test = this.state.cart
+    test.push(this.state.id)
+      this.ref.update({
+        Cart: test,
+        itemAlreadyInCart: false
+      })
   }
 
-  NavigateToCart= ({ navigation }) => {
+  NavigateToCart = ({ navigation }) =>{
 
+    console.log('navigate to cart called')
     const { navigate } = this.props.navigation;
     this.props.navigation.dispatch(StackActions.popToTop());
     navigate('Cart',{PreviousScreen : 'ProductScreen'}); 
 
-    let test = this.state.cart
-    test.push('products/' +this.state.id)
-      this.ref.update({
-        Cart: test
-      })
     
   }
 
-  static navigationOptions = (props) => {
 
+  static navigationOptions = ({navigation}) => {
+    const { params = {} } = navigation.state
+    
     return ({
     headerRight: (
-        // <FontAwesome name='shopping-cart' size={50} color={Colors.primary} onPress={() => props.navigation.push('Cart',
-        //  {PreviousScreen : 'ProductScreen'}) } />
 
-       <TouchableHighlight onPress={ () => NavigateToCart() } style={{marginRight: 10}}>
+       <TouchableHighlight onPress={ params.handleCartItems } style={{marginRight: 10}}>
           <FontAwesome
               name="shopping-cart"
               size={50}
@@ -101,10 +150,19 @@ export class ProductScreen extends Component {
 
     })
   };
+
+
+  CheckIfProductAlreadyInCart(){
+
+    if(this.state.itemAlreadyInCart) {
+      return <View style={styles.removeFromCartButton}><Button color='#fff' title= {this.state.buttonTitle} onPress={this.DecreaseInCountValue} /></View>
+    } else{
+      return <View style={styles.addToCartButton}><Button color='#fff' title= {this.state.buttonTitle} onPress={this.IncreaseInCountValue} /></View>
+      
+    }
+  }
   
  render() {
-
-  
 
    return (
     
@@ -138,9 +196,8 @@ export class ProductScreen extends Component {
 
          <View style={styles.infotext}>
          <Text style={styles.productName}>{this.state.title}</Text>
-         <Text>Local number => {this.state.count} </Text>
-         <Text>Total product in firebase => {this.state.cart.length}</Text>
-         <Button title='go to cart' onPress={this.NavigateToCart} />         
+         {/* <Text>Local number => {this.state.count} </Text>
+         <Text>Total product in firebase => {this.state.cart.length}</Text> */}
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
@@ -155,34 +212,7 @@ export class ProductScreen extends Component {
 
          </View>
          <View style={styles.BottomPart}>
-          {/* <TouchableOpacity onPress={() => this.setState({ count: this.state.count + 1 })}>
-           <MainButton
-           title={'Add to cart $ '+ this.state.data.Price  }
-          />
-          </TouchableOpacity> */}
-
-            <FlipCard 
-              style={styles.card}
-              friction={6}
-              perspective={1000}
-              flipHorizontal={true}
-              flipVertical={false}
-              flip={false}
-              clickable={true}
-            >
-
-            {/* Face Side */}
-            <TouchableOpacity onPress={this.IncreaseInCountValue} style={styles.face}>   
-              <MainButton title={'Add to cart $ '+ JSON.stringify(this.state.price) + ' '} />
-            </TouchableOpacity>
-
-            {/* Back Side */}
-            <TouchableOpacity onPress={this.DecreaseInCountValue} style={styles.back}>
-              <MainButton title={'remove from cart '}  color= 'red'/>
-            </TouchableOpacity>
-
-          </FlipCard>
- 
+            {this.CheckIfProductAlreadyInCart()}
          </View>
       </View>
  );
@@ -269,5 +299,17 @@ const styles = StyleSheet.create({
     fontSize:15,
     fontWeight:'800',
   },
+  addToCartButton:{
+     backgroundColor: Colors.primary,
+     borderRadius: 10,
+     paddingLeft: 10,
+     paddingRight: 10
+  },
+  removeFromCartButton: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 10
+  }
   
 });

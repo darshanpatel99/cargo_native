@@ -34,7 +34,7 @@ const styles = {
     flexDirection: "row",
     marginRight: 10,
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 10
   },
 
   textInputStyle: {
