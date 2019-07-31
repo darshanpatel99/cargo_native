@@ -157,7 +157,6 @@ export class ProductScreen extends Component {
     if(this.state.itemAlreadyInCart) {
       return <View style={styles.removeFromCartButton}><Button color='#fff' title= {this.state.buttonTitle} onPress={this.DecreaseInCountValue} /></View>
     } else{
-      // return <View> <Button title= {this.state.buttonTitle} onPress={this.IncreaseInCountValue} /> </View>
       return <View style={styles.addToCartButton}><Button color='#fff' title= {this.state.buttonTitle} onPress={this.IncreaseInCountValue} /></View>
       
     }
@@ -197,8 +196,8 @@ export class ProductScreen extends Component {
 
          <View style={styles.infotext}>
          <Text style={styles.productName}>{this.state.title}</Text>
-         <Text>Local number => {this.state.count} </Text>
-         <Text>Total product in firebase => {this.state.cart.length}</Text>
+         {/* <Text>Local number => {this.state.count} </Text>
+         <Text>Total product in firebase => {this.state.cart.length}</Text> */}
          <View style={styles.LocViewAndPrice}>
          <View style={styles.productLocView}>
            <FontAwesome name='map-marker' size={20} color={Colors.primary}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
