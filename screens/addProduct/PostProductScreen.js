@@ -25,7 +25,9 @@ import {
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
 import Colors from '../../constants/Colors';
-import { ImagePicker, Permissions, Constants } from 'expo';
+import { ImagePicker } from 'expo';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
 import firebase from '../../Firebase.js';
 import MyHeader from '../../components/headerComponents/Header';
