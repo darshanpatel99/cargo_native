@@ -13,15 +13,13 @@ export default class ProductCardFlatListDynamicLoad extends Component {
   //And set the initial state
     constructor(props) {
         super(props);
-        console.log("This is prop " + (props))
-
         this.state = {
           isLoading: true,
           products: [],
           key :'',
           sort: this.props.filtersAndSorts
         };
-        this.ref = firebase.firestore().collection('Products').orderBy('Price');
+        this.ref = firebase.firestore().collection('Products');
         this.unsubscribe = null;
       }
 
@@ -50,24 +48,24 @@ export default class ProductCardFlatListDynamicLoad extends Component {
        });
       }
 
-      shouldComponentUpdate(nextProps, nextState) {
-        //console.log('this is nextprops ' + JSON.stringify(nextProps) );
-        //console.log('this is nextstate ' + JSON.stringify(nextState) );
-        // console.log(Object.keys(this.state.sort)[0])
-        if(this.props.filtersAndSorts != nextProps.filtersAndSorts) {
-          console.log('sort value' + Object.values(this.state.sort)[0]);
-          if(Object.values(this.state.sort)[0] != ''){
-            this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0], Object.values(this.state.sort)[0]); 
-            this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-          } else{
-            this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0]); 
-            this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-          }       
-          //return true;
-          return true;
-      } else {return false}
+      // shouldComponentUpdate(nextProps, nextState) {
+      //   //console.log('this is nextprops ' + JSON.stringify(nextProps) );
+      //   //console.log('this is nextstate ' + JSON.stringify(nextState) );
+      //   // console.log(Object.keys(this.state.sort)[0])
+      //   if(this.props.filtersAndSorts != nextProps.filtersAndSorts) {
+      //     console.log('sort value' + Object.values(this.state.sort)[0]);
+      //     if(Object.values(this.state.sort)[0] != ''){
+      //       this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0], Object.values(this.state.sort)[0]); 
+      //       this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+      //     } else{
+      //       this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0]); 
+      //       this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+      //     }       
+      //     //return true;
+      //     return true;
+      // } else {return false}
         
-      }
+      // }
 
       componentDidMount() {
         //this.ref = firebase.firestore().collection('Products').orderBy(this.state.sort);        
