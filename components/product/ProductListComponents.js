@@ -11,10 +11,7 @@ import {
     View,
   } from 'react-native'
 import SearchBar from '../theme/SearchBar';
-import { alLow } from 'expo/build/ScreenOrientation/ScreenOrientation';
-import { tsConstructorType } from '@babel/types';
-import { Right } from 'native-base';
-import ProductFilterBar from './ProductFilterBar';
+//import ProductFilterBar from './ProductFilterBar';
 //import ProductListComponents from '../product/ProductListComponents';
 
 let sorts =  {all: true,  trending: false, new:false, high:false, Low:false};
@@ -24,8 +21,8 @@ export default class ProductListComponents extends Component {
     constructor(props){
       super(props);
       this.state={
-          all: true,
-          trending: false,
+          all: false,
+          trending: true,
           new: false,
           high: false,
           Low: false,
@@ -71,18 +68,19 @@ export default class ProductListComponents extends Component {
       <View style={styles.mycard}>
         
 
-        <View style={styles.sortbar}>
+        {/* <View style={styles.sortbar}>
          
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'all')}  style = {this.state.all ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}} >All</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'trending')} style = {this.state.trending ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}} >Trending</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'new')}  style = {this.state.new ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >New</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'low')}  style = {this.state.Low ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >Low Price</Text>
           <Text onPress = {this.handlerButtonOnClick.bind(this, 'high')}  style = {this.state.high ?  {fontSize: 15, fontWeight: 'bold',} : {fontSize: 15, fontWeight: 'normal',}}  >High Low</Text>
-        </View>
+        
+        </View> */}
 
         <SearchBar searchReplacableText = "Search Categories"/>
         
-        <ProductFilterBar />
+        {/* <ProductFilterBar /> */}
       </View>
 
       </KeyboardAvoidingView>
@@ -108,13 +106,11 @@ export default class ProductListComponents extends Component {
         
     },
 
-    sortbar: {
-      
+    sortbar: {   
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingLeft:15,
       paddingRight:10,
       marginTop: 10
-
     },
   };
