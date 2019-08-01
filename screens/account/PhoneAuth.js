@@ -40,13 +40,13 @@ onPhoneChange = (phone) => {
 
 //listnener for the url change
 tokenListener = ({url}) =>{
-    // console.log('In the listener');
-    // WebBrowser.dismissBrowser();
-    // const tokenEncoded = Linking.parse(url).queryParams['token'];
-    // console.log(tokenEncoded);
-    // console.log(url);
-    // if (tokenEncoded)
-    //     token = decodeURIComponent(tokenEncoded);
+    console.log('In the listener');
+    WebBrowser.dismissBrowser();
+    const tokenEncoded = Linking.parse(url).queryParams['token'];
+    console.log(tokenEncoded);
+    console.log(url);
+    if (tokenEncoded)
+        token = decodeURIComponent(tokenEncoded);
 }
 
 
