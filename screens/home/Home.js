@@ -29,7 +29,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <Header/>
-        <View style={{ flex: 2 }}>
+        <View >
           <ProductListComponents handleValueChange={this.handleValues}/>
         </View>
 
@@ -41,7 +41,6 @@ export default class HomeScreen extends React.Component {
           <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}/>
         </View>
 
-        
       </View>
     );
   }

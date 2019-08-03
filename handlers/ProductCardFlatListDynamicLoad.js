@@ -64,8 +64,6 @@ export default class ProductCardFlatListDynamicLoad extends Component {
   //And set the initial state
     constructor(props) {
         super(props);
-        console.log("This is prop " + (props))
-
         this.state = {
           isLoading: true,
           products: [],

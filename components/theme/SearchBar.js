@@ -24,6 +24,7 @@ export default class SearchBar extends Component {
           color="#4383FF"
           style={styles.searchIconStyle}
         />
+
       </View>
     );
   }
@@ -43,7 +44,7 @@ const styles = {
     backgroundColor: "#f9f7f0",
     height: 40,
     borderRadius: 20,
-    width: "90%",
+    width: "70%",
     paddingLeft: 10,
     paddingRight: 10,
     marginLeft: 10
@@ -54,5 +55,13 @@ const styles = {
     marginLeft: 10,
     marginTop: 5,
     marginRight: 2
+  },
+
+  textRefineStyle:{
+    marginLeft: 10,
+    marginTop: 5,
+    marginRight: 2,
+    fontSize: 20,
   }
+
 };
