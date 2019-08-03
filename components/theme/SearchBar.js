@@ -25,9 +25,6 @@ export default class SearchBar extends Component {
           style={styles.searchIconStyle}
         />
 
-        <Text style={styles.textRefineStyle}>
-          | Refine
-        </Text>
       </View>
     );
   }
