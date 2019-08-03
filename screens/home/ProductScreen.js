@@ -214,51 +214,6 @@ export class ProductScreen extends Component {
          <View style={styles.BottomPart}>
             {this.CheckIfProductAlreadyInCart()}
          </View>
-<<<<<<< HEAD
-       <ScrollView
-         horizontal={true}
-         pagingEnabled={true}
-         showsHorizontalScrollIndicator={false}
-       >
-           <Image source={{ uri: this.state.pictures[0] }} style={styles.pics}/>
-       </ScrollView>
-
-         </View>
-
-         <View style={styles.infotext}>
-
-         <Text style={styles.productName}>{this.state.data.Name}</Text>
-
-         <View style={styles.LocViewAndPrice}>
-
-         <View style={styles.productLocView}>
-           <Ionicons name='ios-pin' size={18}/><Text style ={styles.productLoc}>Sahali, Kamloops</Text>
-         </View>
-
-         <View style={styles.priceDr}>
-         <Text style={styles.price}>2.5$</Text>
-           <Ionicons name='ios-car' size={18}/>
-         </View>
-
-         </View>
-         <Text>{this.state.data.Description} </Text>
-         </View>
-
-
-
-         <View style={styles.BottomPart}>
-
-           <MainButton
-           title={'Add to cart for ' + this.state.data.Price +'$' }
-
-           />
-
-
-         </View>
-
-
-=======
->>>>>>> upstream/master
       </View>
  );
 }

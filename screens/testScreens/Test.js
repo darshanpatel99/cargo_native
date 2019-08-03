@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image, ScrollView } from 'react-native';
+import { View, Button, Text, TextInput, Image, ScrollView, WebView } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
@@ -78,7 +78,16 @@ onPhoneComplete = async () => {
     await WebBrowser.openBrowserAsync(captchaUrl);
     Linking.removeEventListener('url', this.tokenListener);  
 
+    
+
+
 }
+
+
+
+
+
+
 onCodeChange = (code) => {
     this.setState({code});
 }
@@ -114,6 +123,11 @@ render() {
               onPress={this.onPhoneComplete}
               title="Next"
           />
+          <WebView>
+              source={{uri:'https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html'}}
+          </WebView>
+
+
       </ScrollView>
         )
 
