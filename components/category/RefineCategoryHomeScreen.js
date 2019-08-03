@@ -84,14 +84,29 @@ export default class extends Component {
         <SectionedMultiSelect
           items={items}
           uniqueKey="id"
+          hideSelect={false}
           subKey="children"
-          selectText="Select Category"
+          selectText="Refine"
           showDropDowns={true}
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
-            single={true}  
-              
+          single={false}
+          showChips={true}
+          showCancelButton={true} 
+          colors= {{chipColor: 'red'}}
+        //   selectToggleIconComponent = "filter-list"
+            styles = {{
+                backdrop: {
+                    justifyContent: 'center',
+                  },
+                  container: {
+                    width: '100%',
+                    height: '80%',
+                    flex: 0,
+                    alignSelf: 'center',
+                  }}
+            }
         />
       </View>
     );

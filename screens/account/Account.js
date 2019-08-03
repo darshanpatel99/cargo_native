@@ -112,19 +112,12 @@ export default class AccountScreen extends React.Component {
           title='Go to Change Sign Up Screen'
           onPress={() => this.props.navigation.navigate('SignUp')}
         />
-<<<<<<< HEAD
-        <Button
-          title='Sign In With Google'
-          onPress={() => this.signInWithGoogleAsync()}
-        />
-=======
 
         <Button
           title='Go to account info'
           onPress={() => this.props.navigation.navigate('AccountInfo')}
         />
         
->>>>>>> upstream/master
         <View style={styles.viewStyle}>
           <MainButton
             title='Login'
