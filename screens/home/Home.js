@@ -5,40 +5,56 @@ import ProductCardFlatListDynamicLoad from '../../handlers/ProductCardFlatListDy
 import ProductListComponents from '../../components/product/ProductListComponents';
 //import ProductFilterBar from '../../components/navigation/ProductFilterBar';
 import Header from '../../components/headerComponents/Header';
+import { SearchBar } from 'react-native-elements';
 
 export default class HomeScreen extends React.Component {
 
 
   constructor(props) {
     super(props);
-    // console.log("This is prop " + (props))
+    //console.log("This is prop " + (props))
     this.state ={
-      sort: {'All': ''}
+      sort: {'All': ''},
+      query:'',
     }
     //this.callbackFunction = this.callbackFunction.bind(this);
   }
 
   handleValues = (values) => {
     this.setState({sort: values});
-}
+  }
 
+  handleQueryChange = query =>{
+    console.log("Text => " +  query)
 
-
+    
+    this.setState(state => ({ ...state, query: query || "" }));
+  }
  
   render() {
     return (
       <View style={styles.container}>
         <Header/>
-        <View >
+
+        <SearchBar        
+            placeholder="Type Here..."        
+            lightTheme        
+            round  
+            onChangeText={this.handleQueryChange}  
+            value={this.state.query}    
+           // onChangeText={text => this.handleSearch(text)}   
+            //query={this.state.query}                        
+        /> 
+        {/* <View >
           <ProductListComponents handleValueChange={this.handleValues}/>
-        </View>
+        </View> */}
 
         {/* <View style={{ flex: 0.8 }}>
           <ProductFilterBar />
         </View> */}
 
         <View style={{ flex: 6 }}>
-          <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}/>
+          <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}  searchText = {this.state.query}/>
         </View>
 
       </View>

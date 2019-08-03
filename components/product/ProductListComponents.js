@@ -26,9 +26,12 @@ export default class ProductListComponents extends Component {
           new: false,
           high: false,
           Low: false,
+          
       }
-      this.handlerButtonOnClick = this.handlerButtonOnClick.bind(this);
-  }
+      //this.handlerButtonOnClick = this.handlerButtonOnClick.bind(this);
+
+
+      
 
     handlerButtonOnClick =(txt) =>{
       for(const item in sorts) {
@@ -55,9 +58,15 @@ export default class ProductListComponents extends Component {
 
     }
 
-    handleLangChange = () => {
-          
   }
+
+    handler() {
+      this.setState({
+          messageShown: true
+      });
+    }
+
+  
 
 
     render(){
@@ -78,7 +87,8 @@ export default class ProductListComponents extends Component {
         
         </View> */}
 
-        <SearchBar searchReplacableText = "Search Categories"/>
+        <SearchBar  action={this.handler} />
+        <Text>This is product List => {this.state.query}</Text>
         
         {/* <ProductFilterBar /> */}
       </View>
