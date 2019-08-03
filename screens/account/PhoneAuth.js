@@ -6,7 +6,7 @@ import firebase from '../../Firebase';
 
 const captchaUrl = `https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html?appurl=${Linking.makeUrl('')}`;
 
-export default class TestScreen extends React.Component {
+export default class PhoneAuth extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
