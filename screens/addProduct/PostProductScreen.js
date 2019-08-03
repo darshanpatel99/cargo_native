@@ -32,7 +32,6 @@ import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
 import uuid from 'react-native-uuid';
-
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
 ​
