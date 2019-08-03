@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-import React, { Component } from "react";
-import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import MainButton from "../components/MainButton";
-import firebase from '../Firebase.js';
-import { Item } from "native-base";
-
-export default class TestScreen extends Component {
-
- constructor(props) {
-   super(props);
-   this.ref = firebase.firestore().collection('Products').doc(this.props.id);
-   this.state = {
-     pictures:[],
-     data: {}
-   } 
-   this.ref.onSnapshot(doc => {
-     this.setState({
-       pictures: doc.data().Pictures,
-       data: doc.data()
-     });
-   });
-  }
-  
- render() {
-=======
 import React, {Component} from 'react';
 import { ScrollView, StyleSheet,View,Image,Text,Button,TouchableHighlight,Dimensions} from 'react-native';
 import {StackActions } from 'react-navigation';
