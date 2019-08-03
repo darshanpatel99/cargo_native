@@ -164,7 +164,6 @@ export class ProductScreen extends Component {
   
  render() {
 
->>>>>>> upstream/master
    return (
     
      <View style={styles.container}>
@@ -272,18 +271,6 @@ const styles = StyleSheet.create({
     flex:10,
     paddingTop: 20,
     backgroundColor: '#fff',
-<<<<<<< HEAD
-  },
-  pics : {
-    height: 350,
-    width: Dimensions.get('window').width,
-    borderRadius: 5,
-  },
-  pictures:{
-    flex:6,
-    alignItems:'center',
-  },
-=======
     
     
   },
@@ -299,32 +286,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
->>>>>>> upstream/master
   infotext:{
     flex:2.5,
     paddingLeft:8,
     paddingRight:5,
   },
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/master
   productName:{
     fontSize:18,
     fontWeight:'500',
   },
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/master
   productLocView:{
     flexDirection:'row',
     flex:0.9,
     alignItems:'flex-start',
-<<<<<<< HEAD
-=======
     
->>>>>>> upstream/master
   },
   productLoc:{
     fontSize:18,
@@ -352,10 +327,6 @@ const styles = StyleSheet.create({
     paddingBottom:10,
     paddingTop:10,
   },
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/master
   purchaseButton:{
     alignItems:'center',
     justifyContent:'center',
@@ -369,8 +340,6 @@ const styles = StyleSheet.create({
     fontSize:15,
     fontWeight:'800',
   },
-<<<<<<< HEAD
-=======
   addToCartButton:{
      backgroundColor: Colors.primary,
      borderRadius: 10,
@@ -384,5 +353,4 @@ const styles = StyleSheet.create({
     paddingRight: 10
   }
   
->>>>>>> upstream/master
 });
