@@ -40,6 +40,10 @@ async function loadResourcesAsync() {
       // remove this if you are not using it in your app
       // 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
       'origo':require('./assets/fonts/Origo.ttf'),
+      'quicksand-regular': require('./assets/fonts/Quicksand-Regular.otf'),
+      'quicksand-bold': require('./assets/fonts/Quicksand-Bold.otf'),
+      'quicksand-light': require('./assets/fonts/Quicksand-Light.otf'),
+    
     }),
   ]);
 }
