@@ -34,6 +34,8 @@ import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
 
+
+
 import uuid from 'react-native-uuid';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
@@ -50,7 +52,8 @@ export default class PostProductScreen extends Component {
       thumbnail : " ",
       image: [],
       downloadURLs : [],
-      isOverlayVisible: false
+      isOverlayVisible: false,
+      uploadProgress : 0
     }
   }
 
@@ -173,10 +176,9 @@ export default class PostProductScreen extends Component {
     this.setState({ image: array });
   }
 
-  toggleOverlay(){
-    
-   
-
+  goToHome=()=>{
+    this.setState({isOverlayVisible:true});
+    this.props.navigation.navigate('Home');
   }
 
 
@@ -301,13 +303,15 @@ export default class PostProductScreen extends Component {
         </KeyboardAvoidingView>
 
         <Overlay
-          isVisible={this.state.isOverlayVisible}
+          isVisible={!this.state.isOverlayVisible}
           windowBackgroundColor="rgba(255, 255, 255, .5)"
           overlayBackgroundColor="red"
           width="auto"
           height="auto"
           >
-          <Text onPress={this.setState({isOverlayVisible:false})}>Done</Text>
+          <Button onPress={this.goToHome}>
+            <Text>Go to Home</Text>
+          </Button>
         </Overlay>
         
         </View>
