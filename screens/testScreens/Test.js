@@ -124,7 +124,8 @@ render() {
               title="Next"
           />
           <WebView>
-              source={{uri:'https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html'}}
+              source={{uri: 'https://github.com/facebook/react-native'}}
+              style={{marginTop: 20}}
           </WebView>
 
 
@@ -144,6 +145,10 @@ render() {
                     onPress={this.onPhoneComplete}
                     title="Next"
                 />
+          <WebView>
+              source={{uri: 'https://github.com/facebook/react-native'}}
+              style={{marginTop: 20}}
+          </WebView>
             </ScrollView>
         )
     else

@@ -1,3 +1,5 @@
+// This screen will be used by customer to post the product
+
 import React, { Component } from 'react';
 import {
   Platform,
@@ -31,9 +33,12 @@ import firebase from '../../Firebase.js';
 import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
+
 import uuid from 'react-native-uuid';
+
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
+
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -48,8 +53,8 @@ export default class PostProductScreen extends Component {
       isOverlayVisible: false
     }
   }
-​
-​
+
+
   componentWillMount() {
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
@@ -59,12 +64,12 @@ export default class PostProductScreen extends Component {
         ? headerAndStatusBarHeight - 600
         : headerAndStatusBarHeight;
   }
-​
+
   componentDidMount() {
     this.getPermissionAsync();
     console.log('component did mount');
   }
-​
+
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
       console.log('ask permission');
@@ -74,8 +79,8 @@ export default class PostProductScreen extends Component {
       }
     }
   };
-​
-​
+
+
   //post the product
   postTheProduct = async() =>{
   
@@ -87,28 +92,28 @@ export default class PostProductScreen extends Component {
       Pictures : this.state.downloadURLs,
       Thumbnail : this.state.downloadURLs[0]
     }
-​
+
     //Posting the product
     PostProduct(data);
     console.log("Product Posted---->" + data);
-​
+
     //change the overlay visibility to visible
     this.setState({isOverlayVisible:true});
-​
+
   }
-​
+
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3]
     });
-​
+
     console.log(result);
-​
+
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.unshift([result.uri])
+        image: this.state.image.concat([result.uri])
       });
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
@@ -120,7 +125,7 @@ export default class PostProductScreen extends Component {
         });
     }
   };
-​
+
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -155,8 +160,8 @@ export default class PostProductScreen extends Component {
         that.state.downloadURLs.push(downloadURL);
       });
     });
-​
-​
+
+
     return 'Success';
   };
  
@@ -167,10 +172,17 @@ export default class PostProductScreen extends Component {
     array.splice(index, 1);
     this.setState({ image: array });
   }
-​
+
+  toggleOverlay(){
+    
+   
+
+  }
+
+
   _renderImages() {
     let images = [];
-​
+
     //let remainder = 4 - (this.state.devices % 4);
     this.state.image.map((item, index) => {
       images.push(
@@ -196,15 +208,18 @@ export default class PostProductScreen extends Component {
         </TouchableOpacity>
       );
     });
-​
+
+    //reverse the array
+    images.reverse();
+
     return images;
   }
-​
+
   render() {
     let { image } = this.state;
-​
+
     return (
-​
+
       <View style={{flex:1}}>
         <MyHeader/>
       
@@ -221,14 +236,14 @@ export default class PostProductScreen extends Component {
                   <Foundation name='camera' size={32} />
                 </CardItem>
               </TouchableOpacity>
-​
+
               <CardItem>
                 <ScrollView style={styles.scrollStyle} horizontal={true}>
                   {this._renderImages()}
                 </ScrollView>
               </CardItem>
             </Card>
-​
+
             <Item rounded style={{ marginBottom: 10 }}>
               <Input placeholder='Title' 
                 name="title" 
@@ -244,7 +259,7 @@ export default class PostProductScreen extends Component {
                 value={this.state.price} />
             </Item>
             <CategoryPickerForPostProduct />
-​
+
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
             <Form>
               {Platform.OS === 'ios' ? (
@@ -284,7 +299,7 @@ export default class PostProductScreen extends Component {
           </View>
         </Container>
         </KeyboardAvoidingView>
-​
+
         <Overlay
           isVisible={this.state.isOverlayVisible}
           windowBackgroundColor="rgba(255, 255, 255, .5)"
@@ -292,7 +307,7 @@ export default class PostProductScreen extends Component {
           width="auto"
           height="auto"
           >
-          <Text>Done</Text>
+          <Text onPress={this.setState({isOverlayVisible:false})}>Done</Text>
         </Overlay>
         
         </View>
@@ -300,7 +315,7 @@ export default class PostProductScreen extends Component {
     );
   }
 }
-​
+
 const styles = {
   mainConatiner: {
     flex: 1
