@@ -34,6 +34,7 @@ import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
 
+import uuid from 'react-native-uuid';
 
 
 import uuid from 'react-native-uuid';
