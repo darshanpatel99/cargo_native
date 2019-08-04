@@ -25,7 +25,7 @@ import {
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
 import Colors from '../../constants/Colors';
-import { ImagePicker } from 'expo';
+import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
@@ -34,6 +34,7 @@ import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
 
+import uuid from 'react-native-uuid';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -83,6 +84,7 @@ export default class PostProductScreen extends Component {
   //post the product
   postTheProduct = async() =>{
   
+    console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
       Description : this.state.description,
       Name : this.state.title,
@@ -113,11 +115,12 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-      this.uploadImageToFirebase(result.uri, result.uri.toString().split('/')[result.uri.toString().split('/').length-1])
+     await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
-          console.log('Success' + result.uri.toString().split('/')[result.uri.toString().split('/').length-1]);  
+          console.log('Success' + uuid.v1());  
         })
         .catch(error => {
+          console.log('Success' + uuid.v1()); 
           console.log(error);
         });
     }
@@ -126,14 +129,40 @@ export default class PostProductScreen extends Component {
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    var ref = firebase
-      .storage()
-      .ref()
-      .child('/images/' + imageName);
-    const downloadableUrl = await ref.getDownloadURL();
-    this.state.downloadURLs.push(downloadableUrl);
-    console.log('URL----> ' + downloadableUrl);
-    return ref.put(blob);
+    console.log('INside upload Image to Firebase')
+    var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+    const that = this;
+    
+    // Register three observers:
+    // 1. 'state_changed' observer, called any time the state changes
+    // 2. Error observer, called on failure
+    // 3. Completion observer, called on successful completion
+    uploadTask.on('state_changed', function(snapshot){
+      // Observe state change events such as progress, pause, and resume
+      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function(error) {
+      // Handle unsuccessful uploads
+    }, function() {
+      // Handle successful uploads on complete
+      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        console.log('File available at', downloadURL);
+        that.state.downloadURLs.push(downloadURL);
+      });
+    });
+
+
+    return 'Success';
   };
  
   deleteImageOnRemove(index) {
