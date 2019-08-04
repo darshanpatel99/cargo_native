@@ -2,15 +2,14 @@ import React from 'react';
 import {
   createStackNavigator
 } from 'react-navigation';
-
 //importing components
 import TabBarIcon from '../components/navigation/TabBarIcon';
-
 //importing screens
 import AccountScreen from '../screens/account/Account'; 
 import ChangePasswordScreen from '../screens/account/ChangePassword';
 import LoginScreen from '../screens/account/LoginScreen';
 import SignUpScreen from '../screens/account/SignUpScreen';
+import AccountInfoScreen from '../screens/account/AccountInfo';
 
 export default AccountStack = createStackNavigator({
 
@@ -43,6 +42,14 @@ export default AccountStack = createStackNavigator({
     },
   },
 
+  AccountInfo: {
+    screen: AccountInfoScreen,
+    navigationOptions: {
+      header: null,
+    },
+  },
+
+
 });
 
 AccountStack.navigationOptions = ({ navigation }) => {
@@ -50,7 +57,7 @@ AccountStack.navigationOptions = ({ navigation }) => {
 
   if (navigation.state.routes.length > 0) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Account') {
+      if (route.routeName === 'Account' || 'AccountInfo') {
         tabBarVisible = true;
       } else {
         tabBarVisible = false;
