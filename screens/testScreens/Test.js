@@ -5,6 +5,8 @@ import {Linking} from 'expo';
 import firebase from '../../Firebase';
 
 const captchaUrl = `https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html?appurl=${Linking.makeUrl('')}`;
+const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
+
 
 export default class PhoneAuth extends React.Component {
   constructor(props) {
@@ -123,12 +125,6 @@ render() {
               onPress={this.onPhoneComplete}
               title="Next"
           />
-          <WebView>
-              source={{uri: 'https://github.com/facebook/react-native'}}
-              style={{marginTop: 20}}
-          </WebView>
-
-
       </ScrollView>
         )
 
@@ -143,9 +139,9 @@ render() {
                 />
                 <Button
                     onPress={this.onPhoneComplete}
-                    title="Next"
-                />
-            </ScrollView>
+                    title="Next Please"
+                />   
+              </ScrollView>
         )
     else
         return (

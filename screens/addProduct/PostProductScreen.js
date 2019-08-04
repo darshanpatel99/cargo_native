@@ -41,6 +41,9 @@ import uuid from 'react-native-uuid';
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
 
+//Success Image Url
+const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
+
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -48,12 +51,11 @@ export default class PostProductScreen extends Component {
     this.state={
       title : "",
       description : "",
-      price : "0",
+      price : "",
       thumbnail : " ",
       image: [],
       downloadURLs : [],
       isOverlayVisible: false,
-      uploadProgress : 0
     }
   }
 
@@ -66,6 +68,7 @@ export default class PostProductScreen extends Component {
       Platform.OS === 'ios'
         ? headerAndStatusBarHeight - 600
         : headerAndStatusBarHeight;
+
   }
 
   componentDidMount() {
@@ -177,7 +180,7 @@ export default class PostProductScreen extends Component {
   }
 
   goToHome=()=>{
-    this.setState({isOverlayVisible:true});
+    this.setState({isOverlayVisible:!this.state.isOverlayVisible});
     this.props.navigation.navigate('Home');
   }
 
@@ -305,10 +308,12 @@ export default class PostProductScreen extends Component {
         <Overlay
           isVisible={!this.state.isOverlayVisible}
           windowBackgroundColor="rgba(255, 255, 255, .5)"
-          overlayBackgroundColor="red"
+          overlayBackgroundColor=" #f5f2d0"
+          
           width="auto"
           height="auto"
           >
+          <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
           <Button onPress={this.goToHome}>
             <Text>Go to Home</Text>
           </Button>
