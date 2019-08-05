@@ -288,7 +288,6 @@ const styles = StyleSheet.create({
     height:50,
     borderRadius:14,
     backgroundColor:'rgb(57, 124,255)',
-
   },
   buttonText:{
     color:'white',

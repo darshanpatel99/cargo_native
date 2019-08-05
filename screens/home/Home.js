@@ -15,8 +15,7 @@ export default class HomeScreen extends React.Component {
     super(props);
     //console.log("This is prop " + (props))
     this.state ={
-      sort: {'All': ''},
-      query:'',
+      sort: {'Price': ''}
     }
     //this.callbackFunction = this.callbackFunction.bind(this);
   }

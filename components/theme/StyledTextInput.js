@@ -42,19 +42,32 @@ export default class StyledTextInput extends Component {
                         placeholder={this.props.placeholder}
                         underlineColorAndroid="transparent"   
                     />                        
-                    <Icon name={icon}
-                        onPress={this.changePasswordVisibility}
-                        style={styles.iconstyle}/>
                 </Item>
             );
         }
+        if(this.props.eye==true && this.props.password==true){
+            return (
+                <Item style={styles.container}>                
+                <TextInput style={styles.TextInputStyle}
+                    secureTextEntry={password}
+                    placeholder={this.props.placeholder}
+                    underlineColorAndroid="transparent"   
+                />                        
+                <Icon name={icon}
+                    onPress={this.changePasswordVisibility}
+                    style={styles.iconstyle}/>
+            </Item>
+            )
+        }
         else {
             return (
-                <TextInput
-                    placeholder={this.props.placeholder}
-                    underlineColorAndroid="transparent"
-                    style={styles.TextInputStyle}
-                />
+                <View style={styles.container}>
+                    <TextInput
+                        placeholder={this.props.placeholder}
+                        underlineColorAndroid="transparent"
+                        style={styles.TextInputStyle}
+                        />
+                </View>
             );
         }
     }
@@ -63,11 +76,11 @@ export default class StyledTextInput extends Component {
 //Styles
 const styles = StyleSheet.create({
     iconstyle: {
-        paddingRight:70,
+        paddingRight:10,
     },
 
     TextInputStyle: {
-        flex: 0,
+        flex: 1,
         flexDirection: "row",
         justifyContent: "center",
         textAlign: "center",
@@ -89,6 +102,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         height: 50,
         width: 300,
+        margin:10,
         backgroundColor: "#f8f8f8",
     }
 });

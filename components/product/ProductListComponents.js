@@ -1,6 +1,7 @@
 import React, {Component}from 'react';
 import { useState} from 'react';
 import {KeyboardAvoidingView} from 'react-native';
+import RefineCategoryHomeScreen from '../category/RefineCategoryHomeScreen'
 
 
 import {
@@ -26,12 +27,11 @@ export default class ProductListComponents extends Component {
           new: false,
           high: false,
           Low: false,
-          
+          search: ''
       }
-      //this.handlerButtonOnClick = this.handlerButtonOnClick.bind(this);
-
-
-      
+      this.handlerButtonOnClick = this.handlerButtonOnClick.bind(this);
+      this.selectCategory = React.createRef();
+  }
 
     handlerButtonOnClick =(txt) =>{
       for(const item in sorts) {
@@ -58,8 +58,6 @@ export default class ProductListComponents extends Component {
 
     }
 
-  }
-
     handler() {
       this.setState({
           messageShown: true
@@ -71,6 +69,7 @@ export default class ProductListComponents extends Component {
 
     render(){
 
+      const { search } = this.state;      
     
     return (
       <KeyboardAvoidingView   behavior="height" enabled>
@@ -87,8 +86,8 @@ export default class ProductListComponents extends Component {
         
         </View> */}
 
-        <SearchBar  action={this.handler} />
-        <Text>This is product List => {this.state.query}</Text>
+        <SearchBar searchReplacableText = "Search Categories"/> 
+        <RefineCategoryHomeScreen />
         
         {/* <ProductFilterBar /> */}
       </View>
