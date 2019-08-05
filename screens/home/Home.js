@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import ProductCardFlatListDynamicLoad from '../../handlers/ProductCardFlatListDynamicLoad';
+import SearchFilterFunction from '../../handlers/ProductCardFlatListDynamicLoad';
 import ProductListComponents from '../../components/product/ProductListComponents';
 //import ProductFilterBar from '../../components/navigation/ProductFilterBar';
 import Header from '../../components/headerComponents/Header';
@@ -27,7 +28,7 @@ export default class HomeScreen extends React.Component {
   handleQueryChange = query =>{
     console.log("Text => " +  query)
 
-    
+    {SearchFilterFunction}
     this.setState(state => ({ ...state, query: query || "" }));
   }
  
