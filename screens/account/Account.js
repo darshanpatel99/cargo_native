@@ -100,7 +100,7 @@ export default class AccountScreen extends React.Component {
     return (
       <View style={{ height: '100%' }}>
         <Header />
-        <Button
+        {/* <Button
           title='Go to Change Password Screen'
           onPress={() => this.props.navigation.navigate('ChangePassword')}
         />
@@ -117,7 +117,7 @@ export default class AccountScreen extends React.Component {
           title='Go to account info'
           onPress={() => this.props.navigation.navigate('AccountInfo')}
         />
-        
+         */}
         <View style={styles.viewStyle}>
           <Button
             title='Login'
@@ -127,6 +127,11 @@ export default class AccountScreen extends React.Component {
             secondary='true'
             title='Sign Up'
             onPress={() => this.props.navigation.navigate('SignUp')}
+          />
+
+          <Button
+          title='Go to account info'
+          onPress={() => this.props.navigation.navigate('AccountInfo')}
           />
         </View>
       </View>

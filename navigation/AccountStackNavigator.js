@@ -45,7 +45,8 @@ export default AccountStack = createStackNavigator({
   AccountInfo: {
     screen: AccountInfoScreen,
     navigationOptions: {
-      header: null,
+      // header: null,
+      headerLeft: false,
     },
   },
 
@@ -57,9 +58,13 @@ AccountStack.navigationOptions = ({ navigation }) => {
 
   if (navigation.state.routes.length > 0) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Account' || 'AccountInfo') {
+      if (route.routeName === 'Account' ) {
         tabBarVisible = true;
-      } else {
+      }
+      else if (route.routeName === 'AccountInfo') {
+        tabBarVisible = true;
+      } 
+      else {
         tabBarVisible = false;
       }
     });
