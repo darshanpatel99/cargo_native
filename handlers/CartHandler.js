@@ -35,7 +35,8 @@ export default class CartHandler extends Component {
     onDocumentUpdate = (documentSnapshot) => {
         let cartProducts;
         let products= [];
-        cartProducts= documentSnapshot.data().Cart;            
+        cartProducts= documentSnapshot.data().Cart;   
+        // console.log(cartProducts)         
             firebase.firestore().collection('Products').get()
                   .then(querySnapshot => {
                     querySnapshot.docs.forEach(doc => {

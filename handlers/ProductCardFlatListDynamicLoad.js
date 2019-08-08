@@ -67,13 +67,12 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           isLoading: true,
           key :'',
           sort: this.props.filtersAndSorts,
-          query:'',
+          searchText: '',
+          searchProducts: []
         };
-        this.arrayholder = [];
+        this.searchArray = [];
         this.ref = firebase.firestore().collection('Products');
         this.unsubscribe = null;
-        this.SearchFilterFunction = this.SearchFilterFunction.bind(this);
-
       }
 
       // This function is used to listen to database updates and updates the flatlist upon any change
@@ -96,74 +95,53 @@ export default class ProductCardFlatListDynamicLoad extends Component {
         });
         this.setState({
           products,
-          isLoading: false,},
-          function() {
-            this.arrayholder = products;
-          }
+          isLoading: false,
+          searchArray: products
+        },
        );
       }
-       
-
-      
-
-      static getDerivedStateFromProps(nextProps, prevState) {
-        const that = this;
-       
-        if (nextProps.filtersAndSorts !== prevState.filtersAndSorts) {        
-          return ({ sort: nextProps.filtersAndSorts} &&  {query: nextProps.searchText} ) // <- this is setState equivalent
-        }
-      }
-
 
 
       componentDidMount() {
-        //this.ref = firebase.firestore().collection('Products').orderBy(this.state.sort);        
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-        
       }
 
-      // shouldComponentUpdate(nextProps){
-      //   console.log("Hello it's should compo..." + nextProps.searchText);
-      //   console.log("Prevprops" + nextProps.searchText);
-      //   // if (nextProps.searchText !== this.props.searchText) {
-      //   // this.SearchFilterFunction();
-      //   // return true;
-      //   // }
-      // }
+      static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.filtersAndSorts !== prevState.filtersAndSorts) {
+          //console.log('these are search pro ' + prevState.searchArray);
+              // SEARCH LOGIC SHOULD GO HERE
+              let filteredProducts =[]
+              let text = nextProps.searchText.toLowerCase()
+              let searchProducts = prevState.searchArray;
+              if(searchProducts != undefined) {
+                //const matches = prevState.searchArray.filter(s => s.includes('thi'));
+                //let indexOfSearchedElements = prevState.searchArray.findIndex(element => element.includes("Ca"))
+                                  
+                let itemData;
+                
+                  const newData = searchProducts.filter(item => {
+                    if(item.Name != undefined){      
+                      itemData = item.Name.toUpperCase();
+                      //console.log('This is item data  --> ' + itemData);
+                      const textData = text.toUpperCase();
+                      //console.log('This is TextData ************* '+ textData)
+                      if (itemData.indexOf(textData) > -1) {
+                        filteredProducts.push(item)
+                      }
+                      
+                    }
+                      
+                  });
 
-      SearchFilterFunction (){
-        // console.log('inside searachfilter func')
+          } // <- this is setState equivalent
+          return ({ sort: nextProps.filtersAndSorts } && {searchText: nextProps.searchText} && {searchProducts: filteredProducts})
+
+      }
         
-        let query = (this.state.query);
-        console.log("this is query " + this.state.query);
-        console.log("this is array holder " + this.arrayholder);
-
-       // passing the inserted text in textinput
-         const newData = this.arrayholder.filter(function(item) {
-           //applying filter for the inserted text in search bar
-           const itemData = item.Name ? item.Name.toUpperCase() : ''.toUpperCase();
-           const textData = query.toUpperCase();
-           console.log("itemdata " + itemData);
-           console.log("This is textData " + textData );
-           return itemData.indexOf(textData) > -1;
-         });
-         this.setState({
-          //setting the filtered newData on datasource
-          //After setting the data it will automatically re-render the view
-          arrayholder: newData,
-          query: this.state.query,
-        });
-         console.log("sorted array holder " + this.arrayholder.Name);
       }
 
       render() {
-        // this.SearchFilterFunction()
-        console.log( " Query from card " + JSON.stringify(this.state.query));
-        //console.log("HELOOOOOO  " + (this.state.dataSource));
-        // let  sortedProducts =  this.state.products.filter(function(hero) {
-        //   return this.state.products.Name == 'laptop';
-        // });
-    
+        
         if(this.state.isLoading){
           return(
             <View style={styles.activity}>
@@ -176,8 +154,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
         <ScrollView style={styles.scrollContainer}>
 
         <FlatList
-         data={this.state.products}
-          // data={this.arrayholder}
+          data={this.state.searchProducts}
           renderItem={({item}) =>
           <View >
             <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />

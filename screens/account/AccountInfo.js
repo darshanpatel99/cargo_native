@@ -15,7 +15,7 @@ export default class AccountInfo extends Component {
      data: {},
      name:'',
      globalAddress:'',
-   } 
+   }
    this.ref.onSnapshot(doc => {
      this.setState({
      data: doc.data(),

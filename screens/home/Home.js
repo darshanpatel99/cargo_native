@@ -15,7 +15,8 @@ export default class HomeScreen extends React.Component {
     super(props);
     //console.log("This is prop " + (props))
     this.state ={
-      sort: {'Price': ''}
+      sort: {'All': ''},
+      query:'',
     }
     //this.callbackFunction = this.callbackFunction.bind(this);
   }
@@ -25,8 +26,6 @@ export default class HomeScreen extends React.Component {
   }
 
   handleQueryChange = query =>{
-    console.log("Text => " +  query)
-
     {SearchFilterFunction}
     this.setState(state => ({ ...state, query: query || "" }));
   }
@@ -45,9 +44,9 @@ export default class HomeScreen extends React.Component {
            // onChangeText={text => this.handleSearch(text)}   
             //query={this.state.query}                        
         /> 
-        {/* <View >
+        <View >
           <ProductListComponents handleValueChange={this.handleValues}/>
-        </View> */}
+        </View> 
 
         {/* <View style={{ flex: 0.8 }}>
           <ProductFilterBar />

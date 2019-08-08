@@ -86,7 +86,7 @@ export default class ProductListComponents extends Component {
         
         </View> */}
 
-        <SearchBar searchReplacableText = "Search Categories"/> 
+        {/* <SearchBar searchReplacableText = "Search Categories"/>  */}
         <RefineCategoryHomeScreen />
         
         {/* <ProductFilterBar /> */}
