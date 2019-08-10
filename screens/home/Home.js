@@ -3,34 +3,44 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import ProductCardFlatListDynamicLoad from '../../handlers/ProductCardFlatListDynamicLoad';
 import ProductListComponents from '../../components/product/ProductListComponents';
-import ProductFilterBar from '../../components/navigation/ProductFilterBar';
+//import ProductFilterBar from '../../components/navigation/ProductFilterBar';
 import Header from '../../components/headerComponents/Header';
 
 export default class HomeScreen extends React.Component {
+
+
   constructor(props) {
     super(props);
+    // console.log("This is prop " + (props))
+    this.state ={
+      sort: {'Price': ''}
+    }
+    //this.callbackFunction = this.callbackFunction.bind(this);
+  }
 
-
+  handleValues = (values) => {
+    this.setState({sort: values});
 }
 
 
+
+ 
   render() {
     return (
       <View style={styles.container}>
         <Header/>
+        <View >
+          <ProductListComponents handleValueChange={this.handleValues}/>
+        </View>
 
-        <View style={{ flex: 0.8 }}>
+        {/* <View style={{ flex: 0.8 }}>
           <ProductFilterBar />
-        </View>
-        <View style={{ flex: 1 }}>
-          <ProductListComponents />
+        </View> */}
+
+        <View style={{ flex: 6 }}>
+          <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}/>
         </View>
 
-        <View style={{ flex: 7 }}>
-          <ProductCardFlatListDynamicLoad />
-        </View>
-
-        
       </View>
     );
   }

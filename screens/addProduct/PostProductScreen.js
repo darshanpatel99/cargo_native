@@ -19,17 +19,22 @@ import {
   Card,
   Item,
   Textarea,
-  Button
+  Button,
+  Thumbnail
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
 import Colors from '../../constants/Colors';
-import { ImagePicker } from 'expo';
+import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
 import firebase from '../../Firebase.js';
-import MyHeader from '../../components/headerComponents/Header'
+import MyHeader from '../../components/headerComponents/Header';
+import PostProduct from '../../functions/PostProduct';
+import { Overlay } from 'react-native-elements';
+
+import uuid from 'react-native-uuid';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -38,10 +43,17 @@ export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
     storageRef = firebase.storage().ref();
+    this.state={
+      title : "",
+      description : "",
+      price : "0",
+      thumbnail : " ",
+      image: [],
+      downloadURLs : [],
+      isOverlayVisible: false
+    }
   }
-  state = {
-    image: []
-  };
+
 
   componentWillMount() {
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
@@ -68,6 +80,28 @@ export default class PostProductScreen extends Component {
     }
   };
 
+
+  //post the product
+  postTheProduct = async() =>{
+  
+    console.log('Download urls --> '+this.state.downloadURLs)
+    var data = {
+      Description : this.state.description,
+      Name : this.state.title,
+      Price : this.state.price,
+      Pictures : this.state.downloadURLs,
+      Thumbnail : this.state.downloadURLs[0]
+    }
+
+    //Posting the product
+    PostProduct(data);
+    console.log("Product Posted---->" + data);
+
+    //change the overlay visibility to visible
+    this.setState({isOverlayVisible:true});
+
+  }
+
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -81,11 +115,12 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-      this.uploadImageToFirebase(result.uri, 'test-image')
+     await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
-          console.log('Success');
+          console.log('Success' + uuid.v1());  
         })
         .catch(error => {
+          console.log('Success' + uuid.v1()); 
           console.log(error);
         });
     }
@@ -94,15 +129,42 @@ export default class PostProductScreen extends Component {
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    var ref = firebase
-      .storage()
-      .ref()
-      .child('/images/' + imageName);
-    const downloadableUrl = await ref.getDownloadURL();
-    console.log('URL----> ' + downloadableUrl);
-    return ref.put(blob);
-  };
+    console.log('INside upload Image to Firebase')
+    var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+    const that = this;
+    
+    // Register three observers:
+    // 1. 'state_changed' observer, called any time the state changes
+    // 2. Error observer, called on failure
+    // 3. Completion observer, called on successful completion
+    uploadTask.on('state_changed', function(snapshot){
+      // Observe state change events such as progress, pause, and resume
+      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function(error) {
+      // Handle unsuccessful uploads
+    }, function() {
+      // Handle successful uploads on complete
+      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        console.log('File available at', downloadURL);
+        that.state.downloadURLs.push(downloadURL);
+      });
+    });
 
+
+    return 'Success';
+  };
+ 
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
@@ -173,11 +235,18 @@ export default class PostProductScreen extends Component {
             </Card>
 
             <Item rounded style={{ marginBottom: 10 }}>
-              <Input placeholder='Title' />
+              <Input placeholder='Title' 
+                name="title" 
+                onChangeText={(text)=>this.setState({title:text})}
+                value={this.state.title}/>
             </Item>
             <Item rounded style={{ marginBottom: 10 }}>
               <Foundation name='dollar' size={32} style={{ padding: 10 }} />
-              <Input keyboardType='numeric' placeholder='0.00' />
+              <Input keyboardType='numeric' 
+                placeholder='0.00'
+                name="price"
+                onChangeText={(text)=>this.setState({price:text})}
+                value={this.state.price} />
             </Item>
             <CategoryPickerForPostProduct />
 
@@ -188,6 +257,9 @@ export default class PostProductScreen extends Component {
                   rowSpan={5}
                   bordered
                   placeholder='Description'
+                  name="description" 
+                  onChangeText={(text)=>this.setState({description:text})}
+                  value={this.state.description}
                   style={styles.iosDescriptionStyle}
                 />
               ) : (
@@ -195,6 +267,9 @@ export default class PostProductScreen extends Component {
                   rowSpan={5}
                   bordered
                   placeholder='Description'
+                  name="description" 
+                  onChangeText={(text)=>this.setState({description:text})}
+                  value={this.state.description}
                   style={styles.androidDescriptionStyle}
                 />
               )}
@@ -208,14 +283,25 @@ export default class PostProductScreen extends Component {
               margin: 10
             }}
           >
-            <Button style={styles.postAdButton}>
+            <Button style={styles.postAdButton} onPress={this.postTheProduct}>
               <Text>Post Ad</Text>
             </Button>
           </View>
         </Container>
         </KeyboardAvoidingView>
+
+        <Overlay
+          isVisible={this.state.isOverlayVisible}
+          windowBackgroundColor="rgba(255, 255, 255, .5)"
+          overlayBackgroundColor="red"
+          width="auto"
+          height="auto"
+          >
+          <Text>Done</Text>
+        </Overlay>
         
         </View>
+      
     );
   }
 }
