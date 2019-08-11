@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+import Colors from '../../constants/Colors'
 
 const items = [
   // this is the parent or 'item'
@@ -62,6 +63,31 @@ const items = [
         id: 13,
       },
     ],
+
+  },
+
+  {
+    name: 'Sorts',
+    id: 1,
+    children: [
+      {
+        name: 'All',
+        id: 1,
+      },
+      {
+        name: 'High to Low',
+        id: 2,
+      },
+      {
+        name: 'Low to High',
+        id: 3,
+      },
+      {
+        name: 'New',
+        id: 4,
+      }
+    ],
+
   },
  
 
@@ -76,6 +102,7 @@ export default class extends Component {
   }
   onSelectedItemsChange = (selectedItems) => {
     this.setState({ selectedItems });
+    console.log(selectedItems)
   };
 
   render() {
@@ -91,10 +118,10 @@ export default class extends Component {
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
-          single={false}
+          single={true}
           showChips={true}
           showCancelButton={true} 
-          colors= {{chipColor: 'red'}}
+          colors= {{chipColor: Colors.primary}}
         //   selectToggleIconComponent = "filter-list"
             styles = {{
                 backdrop: {
