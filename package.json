@@ -15,10 +15,18 @@
   "dependencies": {
     "@expo/samples": "~3.0.0",
     "@expo/vector-icons": "^10.0.1",
+<<<<<<< HEAD
+=======
+    "buffer": "^5.2.1",
+>>>>>>> upstream/master
     "expo": "^33.0.0",
     "expo-asset": "^5.0.0",
     "expo-constants": "~5.0.1",
     "expo-font": "^5.0.0",
+<<<<<<< HEAD
+=======
+    "expo-image-picker": "~5.0.2",
+>>>>>>> upstream/master
     "expo-permissions": "~5.0.1",
     "expo-web-browser": "^5.0.0",
     "firebase": "^6.2.4",
@@ -33,12 +41,19 @@
     "react-native-flip-card": "^3.5.5",
     "react-native-gesture-handler": "~1.2.1",
     "react-native-image-picker": "^1.0.1",
+<<<<<<< HEAD
     "react-native-image-slider-box": "^1.0.5",
+=======
+>>>>>>> upstream/master
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-navigation": "^2.22.2",
     "react-native-sectioned-multi-select": "^0.7.0",
+<<<<<<< HEAD
     "react-native-snap-carousel": "^3.8.0",
+=======
+    "react-native-uuid": "^1.4.9",
+>>>>>>> upstream/master
     "react-native-vector-icons": "^6.6.0",
     "react-native-web": "^0.11.4",
     "react-navigation": "^3.11.0"
