@@ -75,6 +75,7 @@ export default class TestScreen extends React.Component {
   toggleAuth = () => {
     if (!!this.state.user) {
       this.logoutAsync();
+      this.props.navigation.navigate('Account');
     } else {
       this.loginAsync();
     }

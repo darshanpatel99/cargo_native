@@ -162,7 +162,6 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           }
         />
         </ScrollView>
-
         );
       }
     

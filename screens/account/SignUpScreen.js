@@ -7,6 +7,10 @@ import { Button } from "native-base";
 import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
+import AddUser from '../../functions/AddUser';
+import {StackActions,  NavigationActions } from 'react-navigation';
+
+
 const captchaUrl = `https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html?appurl=${Linking.makeUrl('')}`;
 
 
@@ -31,6 +35,10 @@ export default class SignUpScreen extends Component {
       nameRegistration:false,
       userName:'',
       email:'',
+      country:'',
+      city:'',
+      street:'',
+      UID:'',
     };
     this.captcahRef = firebase.firestore().collection('reCaptcha').doc('YksTcYBgjxD6Oj26zmzl');
       //things need to be bit more clear here
@@ -48,6 +56,24 @@ export default class SignUpScreen extends Component {
      
     });
   }
+
+  componentDidMount() {
+    // List to the authentication state
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
+ 
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    this._unsubscribe();
+  }
+
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ user });
+  };
+
+
 
 
 nextButtonFunc =(obj) =>{
@@ -74,11 +100,34 @@ nextButtonFunc =(obj) =>{
   onSignIn = async () => {
     const {confirmationResult, code} = this.state;
     try {
-        await confirmationResult.confirm(code);
+        //confirm the user with the code and get the user authentication data
+        await confirmationResult.confirm(code).then((result)=>{
+
+          var user = result.user;
+          var uid = user.uid;
+          this.setState({UID:uid});
+          console.log('Your user get the following user uid: '+ uid);
+        });
     } catch (e) {
         console.warn(e);
     }
-    this.continueToNameReg();
+
+
+    //verify user is signed up or not
+    var userUID = this.state.UID;
+    console.log('The uid that is going to be verified: ' + userUID);
+
+    firebase.firestore().collection('Users').doc(userUID.toString())
+      .get()
+      .then(docSnapshot => {
+        if(docSnapshot.exists){
+          this.props.navigation.navigate('Account');
+        }
+        else{
+          this.continueToNameReg();
+        }
+      });
+ 
 }
 
 continueToNameReg = () => {
@@ -111,7 +160,7 @@ onPhoneComplete = async () => {
     Linking.addEventListener('url', this.tokenListener);   
     console.log('opening web browser');
     await WebBrowser.openBrowserAsync(captchaUrl);
-    Linking.removeEventListener('url', this.tokenListener);  
+    Linking.removeEventListener('url', this.tokenListener); 
 }
 onCodeChange = (code) => {
     this.setState({code});
@@ -435,7 +484,7 @@ onPhoneChange = (phone) => {
     if(this.state.email.length>0){
        return(
     <View>
-      <Button full large primary rounded onPress={this.resetFunc}>
+      <Button full large primary rounded onPress={this.finishFunc}>
         <Text style={[styles.buttonText,{color:'white'}]}>finish</Text>
       </Button>
     </View>      
@@ -453,21 +502,50 @@ onPhoneChange = (phone) => {
       }    
   }
 
-  resetFunc =() =>{
-    this.setState({
-        phone: '',
-        phoneCompleted: false,
-        confirmationResult: undefined,
-        code: '',
-        email:'',
-        userName:'',
-        phoneNumber:'',
-        nameRegistration:false,
-        emailRegistration:false,
+ 
 
-    });
+  finishFunc =() =>{
+
+    var data={
+      ActiveProducts : [],
+      BoughtProducts : [],
+      Cart : [],
+      City : '',
+      Country : '',
+      Email : this.state.email,
+      FirstName : '',
+      LastName : '',
+      PhoneNumber : this.state.phoneNumber,
+      ProfilePicture : '',
+      SoldProducts : [],
+      Street : [],
+      UID: this.state.UID.toString(),
+    }
+
+    // const resetAction = StackActions.reset({
+    //   index: 0,
+    //   //action:[NavigationActions.navigate({routeName: 'AccountInfo'})]
+    // })
+    //adding the suer with the all the information we have to firebase
+    AddUser(data);
+    console.log('Hello! finished adding data');
+    console.log('following data is added ' + data);
+    // this.props.navigation.dispatch(resetAction);
+    this.props.navigation.navigate('Account');
+
+    // this.setState({
+    //     phone: '',
+    //     phoneCompleted: false,
+    //     confirmationResult: undefined,
+    //     code: '',
+    //     email:'',
+    //     userName:'',
+    //     phoneNumber:'',
+    //     nameRegistration:false,
+    //     emailRegistration:false,
+
+    // });
   }
-
 
   emailReg = () =>{
     return(
@@ -517,43 +595,42 @@ onPhoneChange = (phone) => {
           </View> )       
     }
     else{
-        if(this.state.user){
-          return (
-            <View style={styles.viewStyle}>
-              <Text style={styles.textStyle}>
-                  Enter that appers when user is true 
-              </Text>
-              <View style={styles.inputViewStyle}>
-                  <TextInput
-                      style={styles.inputStyle}                
-                      editable={true}
-                      rejectResponderTermination={true}
-                      autoCompleteType='tel'
-                      onFocus={this.hideDefault}                
-                      onChangeText={this.changeText}
-                      value= {this.state.phoneNumber}
-                      keyboardType='phone-pad'
-                      caretHidden={true}
-                      clearButtonMode='while-editing'
-                      maxLength={17}
-                      enablesReturnKeyAutomaticaly={true}
-                      returnKeyType='done'
-                      onEndEditing={this.nextButton}
-                      placeholder='+0 000 000 0000 '                                               
-                  />
-              </View>
-              <View style={styles.buttonSize}>
-                {this.nextButtonFunc(this.state.buttonOn)}                  
-              </View>       
-            </View>
-          )
-        }
-        if (!this.state.confirmationResult)
+        // if(this.state.user){
+        //   return (
+        //     <View style={styles.viewStyle}>
+        //       <Text style={styles.textStyle}>
+        //           Enter that appers when user is true 
+        //       </Text>
+        //       <View style={styles.inputViewStyle}>
+        //           <TextInput
+        //               style={styles.inputStyle}                
+        //               editable={true}
+        //               rejectResponderTermination={true}
+        //               autoCompleteType='tel'
+        //               onFocus={this.hideDefault}                
+        //               onChangeText={this.changeText}
+        //               value= {this.state.phoneNumber}
+        //               keyboardType='phone-pad'
+        //               caretHidden={true}
+        //               clearButtonMode='while-editing'
+        //               maxLength={17}
+        //               enablesReturnKeyAutomaticaly={true}
+        //               returnKeyType='done'
+        //               onEndEditing={this.nextButton}
+        //               placeholder='+0 000 000 0000 '                                               
+        //           />
+        //       </View>
+        //       <View style={styles.buttonSize}>
+        //         {this.nextButtonFunc(this.state.buttonOn)}                  
+        //       </View>       
+        //     </View>
+        //   )
+        // }
+        if(!this.state.confirmationResult)
         return (
           <View style={styles.viewStyle}>
           {this.phoneReg()}     
-          </View>
-                
+          </View>               
         )        
         else
         return (
