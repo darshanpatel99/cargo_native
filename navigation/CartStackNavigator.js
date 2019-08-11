@@ -12,17 +12,18 @@ export default (CartStack = createStackNavigator({
     //   header: null
     // }
   },
-  Checkout: {
+  Checkoutscreen: {
     screen: CheckoutScreen,
     navigationOptions: {
-      headerRight: (
-        <Button iconLeft transparent style={{ marginEnd: 10 }}>
-          <Icon style={{ fontSize: 30 }} type='EvilIcons' name='user' />
-        </Button>
-      ),
-      headerTitle: (
-        <Text style={{ fontFamily: 'quicksand-bold' }}>Checkout</Text>
-      )
+      header: null,
+      // headerRight: (
+      //   <Button iconLeft transparent style={{ marginEnd: 10 }}>
+      //     <Icon style={{ fontSize: 30 }} type='EvilIcons' name='user' />
+      //   </Button>
+      // ),
+      // headerTitle: (
+      //   <Text>Checkout</Text>
+      // )
     },
     // headerStyle: {
     //   // elevation: 0,
