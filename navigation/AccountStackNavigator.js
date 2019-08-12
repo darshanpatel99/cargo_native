@@ -12,29 +12,32 @@ import SignUpScreen from '../screens/account/SignUpScreen';
 import AccountInfoScreen from '../screens/account/AccountInfo';
 import firebase from '../Firebase';
 import { initAsync } from 'expo-google-sign-in';
+import ListingScreen from '../screens/account/ListingScreen';
+import BoughtScreen from '../screens/account/BoughtScreen';
+import SoldScreen from '../screens/account/SoldScreen';
 
 
+// checkInitialPage = ()=>{
+//   console.log("Inside function");
+//   var User = null;
 
-checkInitialPage = ()=>{
-  console.log("Inside function");
-  var User = null;
+//   firebase.auth().onAuthStateChanged((user)=>{
+//     User=user;
+//     console.log("User object:  "+ User);
+//   });
 
-  firebase.auth().onAuthStateChanged((user)=>{
-    User=user;
-    console.log("User object:  "+ User);
-  });
-
-  if(User!=null){
-    console.log('user is logged in');
-    return "AccountInfo";
-  }
-  else {
-    console.log('User is not logged in');
-    return "Account";
-  }
+//   if(User!=null){
+//     console.log('user is logged in');
+//     return "AccountInfo";
+//   }
+//   else {
+//     console.log('User is not logged in');
+//     return "Account";
+//   }
     
     
-}
+// }
+
 
 
 export default AccountStack = createStackNavigator({
@@ -76,6 +79,27 @@ export default AccountStack = createStackNavigator({
     },
   },
   
+
+  Listing:{
+    screen:ListingScreen,
+    navigationOptions: {
+      header: null,
+    },    
+  },
+
+  Bought:{
+    screen:BoughtScreen,
+    navigationOptions: {
+      header: null,
+    },    
+  },
+
+  Sold:{
+    screen:SoldScreen,
+    navigationOptions: {
+      header: null,
+    },    
+  }
 },
 
 {

@@ -6,12 +6,12 @@ import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Item,Button,Badge} from "native-base";
 import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js';
-
 export default class AccountInfo extends Component {
   constructor(props){
     super(props);
      this.ref = firebase.firestore().collection('Users').doc('rh1cFdoEdRUROJP36Ulm');
      this.state = {
+     userId:'rh1cFdoEdRUROJP36Ulm',
      data: {},
      name:'',
      globalAddress:'',
@@ -37,6 +37,7 @@ export default class AccountInfo extends Component {
   }
 
 render(){
+  const {navigate} = this.props.navigation;
     return (
 
         <View style={styles.screen}> 
@@ -74,17 +75,17 @@ render(){
 
             <View style={[styles.buttons,styles.marginBottom]}>
               <View style={styles.prodInfoButtons}>
-                <Button full large primary rounded>
+                <Button full large primary rounded onPress={() => navigate('Listing', {id:this.state.userId})}>
                   <Text style={[styles.buttonText,{color:'white'}]}>Listing</Text>
                 </Button>
               </View>
               <View style={styles.prodInfoButtons}>
-                <Button full  large primary rounded>
+                <Button full  large primary rounded onPress={() => navigate('Bought', {id:this.state.userId})} >
                   <Text style={[styles.buttonText,{color:'white'}]}>Bought</Text>
                 </Button>
               </View>
               <View style={styles.prodInfoButtons}>
-                <Button full large primary rounded>
+                <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userId})}>
                   <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
                 </Button>
               </View>
