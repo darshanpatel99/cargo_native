@@ -1,27 +1,30 @@
 import React, {Component} from 'react';
 import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
-import {Button} from 'native-base'
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent'
-import MainButton from '../components/theme/MainButton'
+
+
+
 
 
 export default class CartHandler extends Component {
 
     constructor(props){
         super(props);
-        console.log("This is prop " + (props))
-        
+        let finalcartvalue = 0;
         this.state = {
             isLoading: true,
             products: [],
+            CartAmount: 0,
             key :'',
             sort: this.props.filtersAndSorts
         };
         this.ref = firebase.firestore().collection('Users').doc('K3xLrQT1OrFirfNXfkYf');
         //this.productsCollectionRef = firebase.firestore().collection('Products');
         this.unsubscribe = null;
-        //this.loadCartItems = this.loadCartItems.bind(this);        
+        //this.loadCartItems = this.loadCartItems.bind(this); 
+        console.log('This before did mount!')
+        console.log(this.state.CartAmount);       
     }
 
     componentDidMount(prevProps) {
@@ -34,6 +37,8 @@ export default class CartHandler extends Component {
 
     onDocumentUpdate = (documentSnapshot) => {
         let cartProducts;
+        let totalCartAmount = 0;
+
         let products= [];
         cartProducts= documentSnapshot.data().Cart;   
         // console.log(cartProducts)         
@@ -42,7 +47,13 @@ export default class CartHandler extends Component {
                     querySnapshot.docs.forEach(doc => {
                         if(cartProducts.includes(doc.id)) {
                             console.log('Name is --> ' + doc.data().Name)
-                            const { Description, Name, Price, Thumbnail, Pictures } = doc.data();                        
+                            const { Description, Name, Price, Thumbnail, Pictures } = doc.data();
+                            let tempprice = doc.data().Price; 
+                            totalCartAmount = parseInt(totalCartAmount) + parseInt(doc.data().Price),                       
+                            console.log('Price is --> ' + doc.data().Price);
+                            console.log(typeof tempprice);
+                            console.log(typeof parseInt(tempprice));
+
                             products.push({
                                 key: doc.id,
                                 doc,
@@ -50,14 +61,18 @@ export default class CartHandler extends Component {
                                 Description,
                                 Price,
                                 Thumbnail,
-                                Pictures
+                                Pictures,
+                                
                             }
                             );
+                            console.log('Before the set state!')
+                            console.log(totalCartAmount);
                         }
                   });
                   
                 this.setState({
                     products,
+                    CartAmount: totalCartAmount,
                     isLoading: false,
                   })
   
@@ -67,7 +82,12 @@ export default class CartHandler extends Component {
           }
 
 
-    render(){
+    render(
+  
+    ){
+      console.log('This is in render!')
+        console.log(this.state.CartAmount);
+        finalcartvalue = this.state.CartAmount;
 
         if(this.state.isLoading){
             return(
@@ -90,9 +110,7 @@ export default class CartHandler extends Component {
           />
 
           </ScrollView>
-          <View style={{flexDirection: 'row', justifyContent:'center'}}>
-              <MainButton title= 'Proceed to Checkout'/>
-            </View>
+          
           </View>
         );
     }
