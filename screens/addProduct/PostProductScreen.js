@@ -37,8 +37,6 @@ import { Overlay } from 'react-native-elements';
 import uuid from 'react-native-uuid';
 
 
-import uuid from 'react-native-uuid';
-
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
 
