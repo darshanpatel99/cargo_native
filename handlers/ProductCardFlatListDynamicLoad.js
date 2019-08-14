@@ -5,53 +5,53 @@ import ProductCardComponent from '../components/product/ProductCardComponent';
 import shallowCompare from 'react-addons-shallow-compare'; // ES6
 
 
-//this is work around to tackle that timer warning.
-//check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97
-import {Platform, InteractionManager} from 'react-native';
+// //this is work around to tackle that timer warning.
+// //check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97
+// import {Platform, InteractionManager} from 'react-native';
 
-const _setTimeout = global.setTimeout;
-const _clearTimeout = global.clearTimeout;
-const MAX_TIMER_DURATION_MS = 60 * 1000;
-if (Platform.OS === 'android') {
-// Work around issue `Setting a timer for long time`
-// see: https://github.com/firebase/firebase-js-sdk/issues/97
-    const timerFix = {};
-    const runTask = (id, fn, ttl, args) => {
-        const waitingTime = ttl - Date.now();
-        if (waitingTime <= 1) {
-            InteractionManager.runAfterInteractions(() => {
-                if (!timerFix[id]) {
-                    return;
-                }
-                delete timerFix[id];
-                fn(...args);
-            });
-            return;
-        }
+// const _setTimeout = global.setTimeout;
+// const _clearTimeout = global.clearTimeout;
+// const MAX_TIMER_DURATION_MS = 60 * 1000;
+// if (Platform.OS === 'android') {
+// // Work around issue `Setting a timer for long time`
+// // see: https://github.com/firebase/firebase-js-sdk/issues/97
+//     const timerFix = {};
+//     const runTask = (id, fn, ttl, args) => {
+//         const waitingTime = ttl - Date.now();
+//         if (waitingTime <= 1) {
+//             InteractionManager.runAfterInteractions(() => {
+//                 if (!timerFix[id]) {
+//                     return;
+//                 }
+//                 delete timerFix[id];
+//                 fn(...args);
+//             });
+//             return;
+//         }
 
-        const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
-        timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
-    };
+//         const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
+//         timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
+//     };
 
-    global.setTimeout = (fn, time, ...args) => {
-        if (MAX_TIMER_DURATION_MS < time) {
-            const ttl = Date.now() + time;
-            const id = '_lt_' + Object.keys(timerFix).length;
-            runTask(id, fn, ttl, args);
-            return id;
-        }
-        return _setTimeout(fn, time, ...args);
-    };
+//     global.setTimeout = (fn, time, ...args) => {
+//         if (MAX_TIMER_DURATION_MS < time) {
+//             const ttl = Date.now() + time;
+//             const id = '_lt_' + Object.keys(timerFix).length;
+//             runTask(id, fn, ttl, args);
+//             return id;
+//         }
+//         return _setTimeout(fn, time, ...args);
+//     };
 
-    global.clearTimeout = id => {
-        if (typeof id === 'string' && id.startWith('_lt_')) {
-            _clearTimeout(timerFix[id]);
-            delete timerFix[id];
-            return;
-        }
-        _clearTimeout(id);
-    };
-}
+//     global.clearTimeout = id => {
+//         if (typeof id === 'string' && id.startWith('_lt_')) {
+//             _clearTimeout(timerFix[id]);
+//             delete timerFix[id];
+//             return;
+//         }
+//         _clearTimeout(id);
+//     };
+// }
 
 
 
@@ -68,8 +68,11 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           isLoading: true,
           products: [],
           key :'',
-          sort: this.props.filtersAndSorts
+          sort: this.props.filtersAndSorts,
+          searchText: '',
+          searchProducts: []
         };
+        this.searchArray = [];
         this.ref = firebase.firestore().collection('Products');
         this.unsubscribe = null;
       }
@@ -96,27 +99,11 @@ export default class ProductCardFlatListDynamicLoad extends Component {
         this.setState({
           products,
           isLoading: false,
-       });
+          searchArray: products
+        },
+       );
       }
 
-      // shouldComponentUpdate(nextProps, nextState) {
-      //   //console.log('this is nextprops ' + JSON.stringify(nextProps) );
-      //   //console.log('this is nextstate ' + JSON.stringify(nextState) );
-      //   // console.log(Object.keys(this.state.sort)[0])
-      //   if(this.props.filtersAndSorts != nextProps.filtersAndSorts) {
-      //     console.log('sort value' + Object.values(this.state.sort)[0]);
-      //     if(Object.values(this.state.sort)[0] != ''){
-      //       this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0], Object.values(this.state.sort)[0]); 
-      //       this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-      //     } else{
-      //       this.ref = firebase.firestore().collection('Products').orderBy(Object.keys(this.state.sort)[0]); 
-      //       this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-      //     }       
-      //     //return true;
-      //     return true;
-      // } else {return false}
-        
-      // }
 
       componentDidMount() {
         //this.ref = firebase.firestore().collection('Products').orderBy(this.state.sort);        
@@ -125,9 +112,43 @@ export default class ProductCardFlatListDynamicLoad extends Component {
 
       static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.filtersAndSorts !== prevState.filtersAndSorts) {
-          //this.ref = firebase.firestore().collection('Products').orderBy(this.nextProps.filtersAndSorts);          
-          return ({ sort: nextProps.filtersAndSorts }) // <- this is setState equivalent
-        }
+          //console.log('these are search pro ' + prevState.searchArray);
+              // SEARCH LOGIC SHOULD GO HERE
+              let filteredProducts =[]
+              let text = nextProps.searchText.toLowerCase()
+              let searchProducts = prevState.searchArray;
+              if(searchProducts != undefined) {
+                //const matches = prevState.searchArray.filter(s => s.includes('thi'));
+                //let indexOfSearchedElements = prevState.searchArray.findIndex(element => element.includes("Ca"))
+                                  
+                let itemData;
+                
+                  const newData = searchProducts.filter(item => {
+                    if(item.Name != undefined){      
+                      itemData = item.Name.toUpperCase();
+                      //console.log('This is item data  --> ' + itemData);
+                      const textData = text.toUpperCase();
+                      //console.log('This is TextData ************* '+ textData)
+                      if (itemData.indexOf(textData) > -1) {
+                        filteredProducts.push(item)
+                      }
+                      
+                    }
+                      
+                  });
+                  
+                  // console.log('Im in loop' + prevState.searchArray[i].Name);
+                  // if(prevState.searchArray[i].Name != undefined){
+                  //   if ( prevState.searchArray[i].Name.includes('C') )  {
+                  //     filteredProducts.push(prevState.searchArray[i])
+                  //   }
+                  // }
+
+          } // <- this is setState equivalent
+          return ({ sort: nextProps.filtersAndSorts } && {searchText: nextProps.searchText} && {searchProducts: filteredProducts})
+
+      }
+        
       }
 
       render() {
@@ -144,7 +165,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
         <ScrollView style={styles.scrollContainer}>
 
         <FlatList
-          data={this.state.products}
+          data={this.state.searchProducts}
           renderItem={({item}) =>
           <View >
             <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />

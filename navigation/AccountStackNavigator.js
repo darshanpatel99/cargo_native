@@ -10,6 +10,9 @@ import ChangePasswordScreen from '../screens/account/ChangePassword';
 import LoginScreen from '../screens/account/LoginScreen';
 import SignUpScreen from '../screens/account/SignUpScreen';
 import AccountInfoScreen from '../screens/account/AccountInfo';
+import ListingScreen from '../screens/account/ListingScreen';
+import BoughtScreen from '../screens/account/BoughtScreen';
+import SoldScreen from '../screens/account/SoldScreen';
 
 export default AccountStack = createStackNavigator({
 
@@ -49,6 +52,26 @@ export default AccountStack = createStackNavigator({
     },
   },
 
+  Listing:{
+    screen:ListingScreen,
+    navigationOptions: {
+      header: null,
+    },    
+  },
+
+  Bought:{
+    screen:BoughtScreen,
+    navigationOptions: {
+      header: null,
+    },    
+  },
+
+  Sold:{
+    screen:SoldScreen,
+    navigationOptions: {
+      header: null,
+    },    
+  }
 
 });
 

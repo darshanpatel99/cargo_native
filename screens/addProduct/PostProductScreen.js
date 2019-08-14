@@ -113,7 +113,7 @@ export default class PostProductScreen extends Component {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3]
+      
     });
 
     console.log(result);
