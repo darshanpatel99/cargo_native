@@ -26,8 +26,6 @@ export default class HomeScreen extends React.Component {
   }
 
   handleQueryChange = query =>{
-    console.log("Text => " +  query)
-
     {SearchFilterFunction}
     this.setState(state => ({ ...state, query: query || "" }));
   }
@@ -48,7 +46,7 @@ export default class HomeScreen extends React.Component {
         /> 
         <View >
           <ProductListComponents handleValueChange={this.handleValues}/>
-        </View>
+        </View> 
 
         {/* <View style={{ flex: 0.8 }}>
           <ProductFilterBar />

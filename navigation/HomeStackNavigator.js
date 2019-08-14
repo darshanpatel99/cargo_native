@@ -47,7 +47,6 @@ HomeStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   let headerLeft;
   const prevScreen = navigation.getParam('PreviousScreen');
-  console.log('this is home stack gsljhgr' + prevScreen)
 
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {

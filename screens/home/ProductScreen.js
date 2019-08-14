@@ -123,13 +123,10 @@ export class ProductScreen extends Component {
   }
 
   NavigateToCart = ({ navigation }) =>{
-
     console.log('navigate to cart called')
     const { navigate } = this.props.navigation;
     this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Cart',{PreviousScreen : 'ProductScreen'}); 
-
-    
+    navigate('Cart',{PreviousScreen : 'ProductScreen'});   
   }
 
 
@@ -147,7 +144,6 @@ export class ProductScreen extends Component {
           />
         </TouchableHighlight>
     ),
-
     })
   };
 

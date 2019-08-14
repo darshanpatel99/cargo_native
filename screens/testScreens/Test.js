@@ -100,6 +100,7 @@ onSignIn = async () => {
     } catch (e) {
         console.warn(e);
     }
+<<<<<<< HEAD
     this.reset();
 }
 reset = () => {
@@ -159,4 +160,26 @@ render() {
             </ScrollView>
         )
 }
+=======
+  }
+ 
+  toggleAuth = () => {
+    if (!!this.state.user) {
+      this.logoutAsync();
+      this.props.navigation.navigate('Account');
+    } else {
+      this.loginAsync();
+    }
+  };
+ 
+  render() {
+    const { user } = this.state;
+    const message = !!user ? 'Logout' : 'Login';
+    return (
+      <View style={styles.viewStyle}>
+        <Text onPress={this.toggleAuth}>{message}</Text>
+      </View>
+    );
+  }
+>>>>>>> upstream/master
 }
