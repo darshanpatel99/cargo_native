@@ -10,12 +10,12 @@ export default class AccountInfo extends Component {
   constructor(props){
     super(props);
      this.ref = firebase.firestore().collection('Users').doc('rh1cFdoEdRUROJP36Ulm');
-   this.state = {
+     this.state = {
      userId:'rh1cFdoEdRUROJP36Ulm',
      data: {},
      name:'',
      globalAddress:'',
-   } 
+   }
    this.ref.onSnapshot(doc => {
      this.setState({
      data: doc.data(),
@@ -23,6 +23,17 @@ export default class AccountInfo extends Component {
      globalAddress:doc.data().City + ', ' + doc.data().Country,
      }); 
 });
+  }
+
+  //Function to logo out user
+  async logoutAsync(props) {
+    try {
+      await firebase.auth().signOut();
+      props.navigation.navigate('Account');
+    
+    } catch ({ message }) {
+      alert(message);
+    }
   }
 
 render(){
@@ -77,6 +88,11 @@ render(){
                 <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userId})}>
                   <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
                 </Button>
+              </View>
+              <View style={styles.viewStyle}>
+               <Button full large primary rounded> 
+                 <Text onPress={this.logoutAsync}>Log Out</Text>
+                 </Button>
               </View>
             </View>
 
