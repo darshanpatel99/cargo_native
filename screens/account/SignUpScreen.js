@@ -58,29 +58,8 @@ export default class SignUpScreen extends Component {
     });
   }
 
-  componentDidMount() {
-    // List to the authentication state
-    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
-
-
-  }
- 
-  componentWillUnmount() {
-    // Clean up: remove the listener
-    this._unsubscribe();
-  }
-
-  onAuthStateChanged = user => {
-    // if the user logs in or out, this will be called and the state will update.
-    // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ user });
-  };
-
-
-
-
-nextButtonFunc =(obj) =>{
+nextButtonFunc =() =>{
   if(this.state.buttonOn){    
     return(
   <View>
@@ -115,7 +94,7 @@ nextButtonFunc =(obj) =>{
           var uid = user.uid;
           tempUID = uid;
           console.log('Your user get the following user uid: '+ uid);
-          this.setState({UID:uid});
+          this.setState({UID:uid, user:user});
         });
 
         //setting the UID
@@ -153,8 +132,7 @@ nextButtonFunc =(obj) =>{
       alert('Following error occured during checking whether user exists or not:  ' + e)
       console.warn(e);
     }
-
-    
+ 
 } 
 
 continueToNameReg = () => {
@@ -164,6 +142,9 @@ continueToNameReg = () => {
     });
 }
 
+/**
+ * Function Description: Called when the token is received 
+ */
 onTokenReceived = async (token) =>{
   
   console.log("Token has been received");
@@ -340,13 +321,8 @@ onPhoneChange = (phone) => {
           })
         }
       }
-
-
     }
-    
-   
-
-           
+       
   }
 
   nextButton =()=>{
@@ -358,25 +334,6 @@ onPhoneChange = (phone) => {
       buttonOn:true,
     })
   }
-
-  checkIfUserExistInFirebase() {
-    let uuid = this.state.UID;
-    console.log('Check USER EXIS ' + uuid)
-    this.firebaseRef.doc(uuid)
-      .get()
-      .then(docSnapshot => {
-        console.log('1--inside firebase snap')
-        if(docSnapshot.exists){
-          console.log('2--inside firebase snap')
-          this.props.navigation.navigate('Account');
-        }
-        else{
-          console.log('User is not sign up');
-          this.continueToNameReg();
-        }
-      });
-  }
-
 
   confirmButton = () =>{
     if(this.state.code.length==6){    
@@ -426,7 +383,7 @@ onPhoneChange = (phone) => {
             />
         </View>
         <View style={styles.buttonSize}>
-          {this.nextButtonFunc(this.state.buttonOn)}                  
+          {this.nextButtonFunc()}                  
         </View>               
       </View>
     )
