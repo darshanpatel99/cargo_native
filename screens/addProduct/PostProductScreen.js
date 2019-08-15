@@ -95,9 +95,17 @@ export default class PostProductScreen extends Component {
       Name : this.state.title,
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.downloadURLs[0]
+      Thumbnail : this.state.downloadURLs[0],
+      Owner : '',
+      Flag : true,
+      FavouriteUsers:[],
+      TimeStamp: null,
+      UserClicks:[]
     }
 
+    //Getting the current time stamp
+    var currentDate = new Date();
+    data.TimeStamp = currentDate.getTime();
     //Posting the product
     PostProduct(data);
     console.log("Product Posted---->" + data);
@@ -107,6 +115,10 @@ export default class PostProductScreen extends Component {
 
   }
 
+
+  /**
+   * Function Description:
+   */
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -305,7 +317,7 @@ export default class PostProductScreen extends Component {
         </KeyboardAvoidingView>
 
         <Overlay
-          isVisible={!this.state.isOverlayVisible}
+          isVisible={this.state.isOverlayVisible}
           windowBackgroundColor="rgba(255, 255, 255, .5)"
           overlayBackgroundColor=" #f5f2d0"
           
