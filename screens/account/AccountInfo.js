@@ -425,7 +425,7 @@ render(){
 
 }
 
-const styles = StyleSheet.create({
+const styles = {
 screen:{
   flex:10,
 },
@@ -579,4 +579,4 @@ prodInfoButtons:{
 marginBottom:{
   marginVertical:Dimensions.get('window').height*0.01,
 },
-})
+}
