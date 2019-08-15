@@ -104,27 +104,24 @@ nextButtonFunc =(obj) =>{
   onSignIn = async () => {
     console.log('ON sing in -- 1')
     const {confirmationResult, code} = this.state;
-    var uid;
-    var user;
     var tempUID = null;
     try {
-        // var tempUID = null;  
-        //confirm the user with the code and get the user authentication data
-         confirmationResult.confirm(code).then((result)=>{
+          // var tempUID = null;  
+          //confirm the user with the code and get the user authentication data
+        await confirmationResult.confirm(code).then((result)=>{
            console.log('on sign in -- 2')
 
-          user = result.user;
-          uid = user.uid;
+          var user = result.user;
+          var uid = user.uid;
           tempUID = uid;
           console.log('Your user get the following user uid: '+ uid);
           this.setState({UID:uid});
-
         });
 
         //setting the UID
         if(tempUID!=null){
           console.log("THIS is UUID =-=-=> " + tempUID)
-          // this.setState({UID:tempUID});
+          this.setState({UID:tempUID});
         }
     } catch (e) {
         console.warn('Following Error occured during the code confirmation:  ' +e);
@@ -137,19 +134,20 @@ nextButtonFunc =(obj) =>{
     console.log('The uid that is going to be verified: ' + userUID);
 
 
-    // await this.firebaseRef.doc(userUID)
-    //   .get()
-    //   .then(docSnapshot => {
-    //     console.log('1--inside firebase snap')
-    //     if(docSnapshot.exists){
-    //       console.log('2--inside firebase snap')
-    //       this.props.navigation.navigate('Account');
-    //     }
-    //     else{
-    //       console.log('User is not sign up');
-    //       this.continueToNameReg();
-    //     }
-    //   });
+    this.firebaseRef.doc(userUID)
+      .get()
+      .then(docSnapshot => {
+        console.log('1--inside firebase snap')
+        if(docSnapshot.exists){
+          console.log('2--inside firebase snap')
+          this.props.navigation.navigate('Account');
+        }
+        else{
+          console.log('User is not sign up');
+          this.setState({nameRegistration:true});
+         // this.continueToNameReg();
+        }
+      });
     }
     catch (e) {
       alert('Following error occured during checking whether user exists or not:  ' + e)
@@ -379,19 +377,12 @@ onPhoneChange = (phone) => {
       });
   }
 
-  callOnsignInAndCheckUserState(){
-    console.log('callOn sign in called')
-    this.onSignIn();
-    this.checkIfUserExistInFirebase();
-
-
-  }
 
   confirmButton = () =>{
     if(this.state.code.length==6){    
       return(
       <View>
-        <Button full large primary rounded onPress={this.callOnsignInAndCheckUserState()}>
+        <Button full large primary rounded onPress={this.onSignIn}>
           <Text style={[styles.buttonText,{color:'white'}]}>next</Text>
         </Button>
       </View>      
