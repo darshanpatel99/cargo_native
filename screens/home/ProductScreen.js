@@ -242,12 +242,10 @@ const styles = StyleSheet.create({
     paddingLeft:8,
     paddingRight:5,
   },
-
   productName:{
     fontSize:18,
     fontWeight:'500',
   },
-
   productLocView:{
     flexDirection:'row',
     flex:0.9,
@@ -280,7 +278,6 @@ const styles = StyleSheet.create({
     paddingBottom:10,
     paddingTop:10,
   },
-
   purchaseButton:{
     alignItems:'center',
     justifyContent:'center',
