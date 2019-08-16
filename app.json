@@ -35,9 +35,9 @@
     ,
     "android": {
 
-        "package": "com.MeetCarGo.CarGo",
+        "package": "com.developer.cargo",
 
-        "googleServicesFile": "./google-services.json"
+        "googleServicesFile": "/Users/sachin/Cargo/cargo-native-v1/google-services.json"
 
     }
   }

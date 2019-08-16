@@ -9,49 +9,49 @@ import shallowCompare from 'react-addons-shallow-compare'; // ES6
 //check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97
 import {Platform, InteractionManager} from 'react-native';
 
-const _setTimeout = global.setTimeout;
-const _clearTimeout = global.clearTimeout;
-const MAX_TIMER_DURATION_MS = 60 * 1000;
-if (Platform.OS === 'android') {
-// Work around issue `Setting a timer for long time`
-// see: https://github.com/firebase/firebase-js-sdk/issues/97
-    const timerFix = {};
-    const runTask = (id, fn, ttl, args) => {
-        const waitingTime = ttl - Date.now();
-        if (waitingTime <= 1) {
-            InteractionManager.runAfterInteractions(() => {
-                if (!timerFix[id]) {
-                    return;
-                }
-                delete timerFix[id];
-                fn(...args);
-            });
-            return;
-        }
+// const _setTimeout = global.setTimeout;
+// const _clearTimeout = global.clearTimeout;
+// const MAX_TIMER_DURATION_MS = 60 * 1000;
+// if (Platform.OS === 'android') {
+// // Work around issue `Setting a timer for long time`
+// // see: https://github.com/firebase/firebase-js-sdk/issues/97
+//     const timerFix = {};
+//     const runTask = (id, fn, ttl, args) => {
+//         const waitingTime = ttl - Date.now();
+//         if (waitingTime <= 1) {
+//             InteractionManager.runAfterInteractions(() => {
+//                 if (!timerFix[id]) {
+//                     return;
+//                 }
+//                 delete timerFix[id];
+//                 fn(...args);
+//             });
+//             return;
+//         }
 
-        const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
-        timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
-    };
+//         const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
+//         timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
+//     };
 
-    global.setTimeout = (fn, time, ...args) => {
-        if (MAX_TIMER_DURATION_MS < time) {
-            const ttl = Date.now() + time;
-            const id = '_lt_' + Object.keys(timerFix).length;
-            runTask(id, fn, ttl, args);
-            return id;
-        }
-        return _setTimeout(fn, time, ...args);
-    };
+//     global.setTimeout = (fn, time, ...args) => {
+//         if (MAX_TIMER_DURATION_MS < time) {
+//             const ttl = Date.now() + time;
+//             const id = '_lt_' + Object.keys(timerFix).length;
+//             runTask(id, fn, ttl, args);
+//             return id;
+//         }
+//         return _setTimeout(fn, time, ...args);
+//     };
 
-    global.clearTimeout = id => {
-        if (typeof id === 'string' && id.startWith('_lt_')) {
-            _clearTimeout(timerFix[id]);
-            delete timerFix[id];
-            return;
-        }
-        _clearTimeout(id);
-    };
-}
+//     global.clearTimeout = id => {
+//         if (typeof id === 'string' && id.startWith('_lt_')) {
+//             _clearTimeout(timerFix[id]);
+//             delete timerFix[id];
+//             return;
+//         }
+//         _clearTimeout(id);
+//     };
+// }
 
 
 
@@ -82,9 +82,10 @@ export default class ProductCardFlatListDynamicLoad extends Component {
       //We'll be pushing data to the products array as key value pairs
       //later we collect the data and render into the component whereever we want
       onCollectionUpdate = (querySnapshot) => {
+        console.log('on collection update')
         const products = [];
         querySnapshot.forEach((doc) => {
-          const { Description, Name, Price, Thumbnail, Pictures } = doc.data();
+          const { Description, Name, Price, Thumbnail, Pictures, Category } = doc.data();
             // console.log(typeof Pictures['0']);
           products.push({
             key: doc.id,
@@ -93,7 +94,8 @@ export default class ProductCardFlatListDynamicLoad extends Component {
             Description,
             Price,
             Thumbnail,
-            Pictures
+            Pictures,
+            Category,
           });
         });
         this.setState({
@@ -111,12 +113,13 @@ export default class ProductCardFlatListDynamicLoad extends Component {
       }
 
       static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.filtersAndSorts !== prevState.filtersAndSorts) {
-          //console.log('these are search pro ' + prevState.searchArray);
-              // SEARCH LOGIC SHOULD GO HERE
-              let filteredProducts =[]
+        let filteredProducts = [];
+        let searchProducts = prevState.products;
+
+              console.log("is it looping??")
+              //let filteredProducts =[]
               let text = nextProps.searchText.toLowerCase()
-              let searchProducts = prevState.searchArray;
+              //let searchProducts = prevState.searchArray;
               if(searchProducts != undefined) {
                 //const matches = prevState.searchArray.filter(s => s.includes('thi'));
                 //let indexOfSearchedElements = prevState.searchArray.findIndex(element => element.includes("Ca"))
@@ -129,25 +132,23 @@ export default class ProductCardFlatListDynamicLoad extends Component {
                       //console.log('This is item data  --> ' + itemData);
                       const textData = text.toUpperCase();
                       //console.log('This is TextData ************* '+ textData)
-                      if (itemData.indexOf(textData) > -1) {
-                        filteredProducts.push(item)
+                      //console.log(""+item)
+                      if (itemData.indexOf(textData) > -1 && nextProps.filters.length > 0) {
+                        console.log("item " + item.Name)
+                        if(item.Category == nextProps.filters[0])
+                          filteredProducts.push(item)
+                      } else if(itemData.indexOf(textData) > -1) {
+                        filteredProducts.push(item)                        
                       }
                       
                     }
                       
                   });
                   
-                  // console.log('Im in loop' + prevState.searchArray[i].Name);
-                  // if(prevState.searchArray[i].Name != undefined){
-                  //   if ( prevState.searchArray[i].Name.includes('C') )  {
-                  //     filteredProducts.push(prevState.searchArray[i])
-                  //   }
-                  // }
-
           } // <- this is setState equivalent
           return ({ sort: nextProps.filtersAndSorts } && {searchText: nextProps.searchText} && {searchProducts: filteredProducts})
 
-      }
+      
         
       }
 

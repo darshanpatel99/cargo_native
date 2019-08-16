@@ -248,6 +248,8 @@ export default class PostProductScreen extends Component {
                 onChangeText={(text)=>this.setState({price:text})}
                 value={this.state.price} />
             </Item>
+
+            {/* Pick category for the product */}
             <CategoryPickerForPostProduct />
 
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
