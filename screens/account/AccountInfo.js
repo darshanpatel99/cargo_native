@@ -1,31 +1,281 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions} from 'react-native';
+import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView,TouchableWithoutFeedback} from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Item,Button,Badge} from "native-base";
 import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js';
+import { Overlay } from 'react-native-elements';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import uuid from 'react-native-uuid';
+
+
+
+let storageRef;
 export default class AccountInfo extends Component {
+
+  
+
   constructor(props){
     super(props);
      this.ref = firebase.firestore().collection('Users').doc('rh1cFdoEdRUROJP36Ulm');
-     this.state = {
+     storageRef = firebase.storage().ref();
+   this.state = {
      userId:'rh1cFdoEdRUROJP36Ulm',
      data: {},
      name:'',
      globalAddress:'',
+     secondNumber:null,
+     
+
+     editMode:false,
+     newData:[],
+     newPicture:[],
+     currentFolio:'',     
    }
+   
+   
+
    this.ref.onSnapshot(doc => {
      this.setState({
      data: doc.data(),
      name:doc.data().FirstName + ' ' + doc.data().LastName,
      globalAddress:doc.data().City + ', ' + doc.data().Country,
      }); 
-});
+    });
   }
 
-  //Function to logo out user
+
+  componentDidMount() {
+    this.getPermissionAsync();
+    console.log('component did mount');
+  }
+
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  };
+
+  chooseanImage = async () =>{
+
+    this.setState({
+      newPicture:[this.state.data.ProfilePicture],
+    })
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3]
+    });
+
+    if(!result.cancelled){
+      console.log(result.uri);
+    }
+    await this.uploadImageToFirebase(result.uri, uuid.v1())
+        .then(() => {
+          console.log('Success' + uuid.v1());
+            
+        })
+        .catch(error => {
+          console.log('Success' + uuid.v1()); 
+          console.log(error);
+        });
+  }
+
+
+
+
+  uploadImageToFirebase = async (uri, imageName) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    console.log('INside upload Image to Firebase')
+    var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+    const that = this;
+    
+    // Register three observers:
+    // 1. 'state_changed' observer, called any time the state changes
+    // 2. Error observer, called on failure
+    // 3. Completion observer, called on successful completion
+    uploadTask.on('state_changed', function(snapshot){
+      // Observe state change events such as progress, pause, and resume
+      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function(error) {
+      // Handle unsuccessful uploads
+    }, function() {
+      // Handle successful uploads on complete
+      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        console.log('File available at', downloadURL);
+        that.state.newPicture.push(downloadURL);
+        
+        that.changeCurrentFolio();
+
+        that.setPicture();
+      });
+
+      
+    }
+    );
+    
+    
+
+    return 'Success';
+  };
+// this is a function to change the current look of the profile 
+  changeCurrentFolio =()=>{
+    console.log('changing folio');
+    if(this.state.newPicture.length==2){
+      this.setState({
+        currentFolio:this.state.newPicture[1],
+        
+      })
+    }
+  }
+// the function to set ecverything for the change mode
+  goToEdit =() =>{
+    const info = this.state.data;
+    this.setState({
+      editMode:true,
+      newData:[info.FirstName,info.LastName,info.Street,info.City,info.Country,info.Email,info.PhoneNumber],
+      newPicture:[info.ProfilePicture],
+      currentFolio:info.ProfilePicture,
+    });
+  }
+
+  
+
+  saveChanges =() =>{
+    
+    let pictureTemp='';
+    let newArray =[];
+    console.log(this.state.newPicture.length);
+
+    if(this.state.newPicture.length==2){
+      pictureTemp=this.state.newPicture[1];
+    }
+    else{
+      pictureTemp=this.state.newPicture[0];
+    }
+
+    this.ref.update({
+      FirstName:this.state.newData[0],
+      LastName:this.state.newData[1],
+      Street:this.state.newData[2],
+      City:this.state.newData[3],
+      Country:this.state.newData[4],
+      Email:this.state.newData[5],
+      PhoneNumber:this.state.newData[6],	
+      ProfilePicture:pictureTemp,
+      });
+    this.setState({
+      editMode:false,
+      newPicture:newArray,
+    })
+  }
+
+  setPicture =() =>{
+    if(!this.state.editMode){
+      
+    let pictureTemp='';
+    let newArray =[];
+    console.log(this.state.newPicture.length);
+
+    if(this.state.newPicture.length==2){
+      pictureTemp=this.state.newPicture[1];
+    }
+    else{
+      pictureTemp=this.state.newPicture[0];
+    }
+
+    this.ref.update({
+      ProfilePicture:pictureTemp,
+      });
+    this.setState({
+      newPicture:newArray,
+    })
+    }
+  }
+
+  inputText =(num) =>{
+    if(num==0 || num==1){
+      return(
+        <TextInput
+        style={[styles.inputName]}                
+          editable={true}
+          value={this.state.newData[num]}
+          onChangeText={ (value) => {this.changeValue(value,num)}}
+          keyboardType='default'
+          autoCorrect={false}                                                            
+        />
+      )
+    }
+    else if(num == 5){
+      return(<TextInput
+        style={[styles.inputInfo]}                
+          editable={true}
+          value={this.state.newData[num]}
+          onChangeText={ (value) => {this.changeValue(value,num)}}
+          keyboardType='email-address'
+          autoCorrect={false}                                                            
+        />);      
+    }
+    else {
+      return(<TextInput
+        style={[styles.inputInfo]}                
+          editable={true}
+          value={this.state.newData[num]}
+          onChangeText={ (value) => {this.changeValue(value,num)}}
+          keyboardType='name-phone-pad'
+          autoCorrect={false}                                                            
+        />);            
+    }    
+  }
+  showSecondNumber =() =>{
+    if(this.state.secondNumber){
+      return(
+        <View>
+        <Text style={styles.info}>{this.state.data.PhoneNumber}</Text>
+        <Text style={styles.info}>{this.state.secondNumber}</Text>
+        </View>
+        
+      );
+    }
+    else{
+      return(
+          <View>
+        <Text style={styles.info}>{this.state.data.PhoneNumber}</Text>
+      </View>
+      )
+            
+    }
+  }
+
+  changeValue =(value,number) =>{
+    const copy = this.state.newData;
+    copy[number]=value
+    this.setState({
+      newData:copy,
+    })
+  }
+
   async logoutAsync(props) {
     try {
       await firebase.auth().signOut();
@@ -38,72 +288,144 @@ export default class AccountInfo extends Component {
 
 render(){
   const {navigate} = this.props.navigation;
-    return (
 
-        <View style={styles.screen}> 
+            if(this.state.editMode){
+                return(
 
-            <View style={styles.pictureHolder}>                  
-              <View style={styles.imageView}>
-                <Image source={{uri:this.state.data.ProfilePicture}} style={styles.profilePicture}/>
-              </View>               
-              <View style={styles.settingsButton}>
-                <Button icon transparent>
-                  <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
-                </Button>
-              </View>            
-            </View>
-                            
-            <View style={styles.infoHolder}>
-              <View style={styles.nameHolder}>
-                <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
-              </View>
-              <View style={styles.infoBody}>
-                <View style={styles.paragrapgh}>
-                  <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                  <Text style={styles.info}>{this.state.data.Street}</Text>
-                  <Text style={styles.info}>{this.state.globalAddress}</Text>
-                </View>                    
-              </View>
-              <View style={styles.infoBody}>
-                <View style={styles.paragrapgh}>
-                  <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
-                  <Text style={styles.info}>{this.state.data.PhoneNumber}</Text>
-                  <Text style={styles.info}>{this.state.data.Email}</Text>
-                </View>                    
-              </View>
-            </View>                
+                  
 
-            <View style={[styles.buttons,styles.marginBottom]}>
-              <View style={styles.prodInfoButtons}>
-                <Button full large primary rounded onPress={() => navigate('Listing', {id:this.state.userId})}>
-                  <Text style={[styles.buttonText,{color:'white'}]}>Listing</Text>
-                </Button>
-              </View>
-              <View style={styles.prodInfoButtons}>
-                <Button full  large primary rounded onPress={() => navigate('Bought', {id:this.state.userId})} >
-                  <Text style={[styles.buttonText,{color:'white'}]}>Bought</Text>
-                </Button>
-              </View>
-              <View style={styles.prodInfoButtons}>
-                <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userId})}>
-                  <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
-                </Button>
-              </View>
-              <View style={styles.viewStyle}>
-               <Button full large primary rounded> 
-                 <Text onPress={this.logoutAsync}>Log Out</Text>
-                 </Button>
-              </View>
-            </View>
+                  <View style={styles.screen} > 
+      
+                  <View style={styles.pictureHolder}>                  
+                    <View style={styles.imageView}>
+                      <ImageBackground source={{uri:this.state.currentFolio}} ImageStyle={styles.ProfilePicture} style={styles.profileBackground}>
+                      <View style={{position:'absolute', alignSelf:'flex-end',bottom:0,justifyContent:'center',alignItems:'center'}}>
+                        <Button icon transparent onPress={this.chooseanImage}> 
+                          <FontAwesome name='camera' size={35} color={Colors.primary}/>                    
+                        </Button>
+                      </View>
+                      </ImageBackground>
+                    </View>               
+                    <View style={styles.settingsButton}>
+                      <Button icon transparent disabled>
+                        <FontAwesome name='cog' size={35} color='grey'/>                    
+                      </Button>
+                    </View>            
+                  </View>
 
-        </View>
-    );
+
+                   
+                   <KeyboardAvoidingView style={styles.infoHolder} behavior="padding" enabled>
+                    <View style={styles.nameHolder}>
+                    <View style={{flexDirection:'row',justifyContent:'evenly spaced'}}>
+                      {this.inputText(0)}
+                      {this.inputText(1)}
+                    </View>
+                      
+                    </View>
+                    <View style={styles.infoBody}>
+                      <View style={styles.paragrapgh}>
+                        <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
+                        <View style={{flexDirection:'row',justifyContent:'evenly spaced'}}>
+                          {this.inputText(2)}
+                          {this.inputText(3)}                          
+                        </View>
+                          {this.inputText(4)}                                                
+                      </View>                    
+                    </View>
+                    <View style={styles.infoBody}>
+                      <View style={styles.paragrapgh}>
+                        <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
+                        {this.inputText(5)}
+                        {this.inputText(6)}
+                      </View>                    
+                    </View>
+                  </KeyboardAvoidingView>
+
+                   
+                   
+                    
+      
+                  <View style={[styles.buttons,styles.marginBottom]}>
+                    <View style={styles.prodInfoButtons}>
+                      <Button full large primary rounded onPress={this.saveChanges}>
+                        <Text style={[styles.buttonText,{color:'white'}]}>Save</Text>
+                      </Button>
+                    </View>
+                  </View>
+      
+              </View>  
+                );
+            }
+            else{
+              return (
+
+                <View style={styles.screen}> 
+      
+                  <View style={styles.pictureHolder}>                  
+                    <View style={styles.imageView}>
+                      <Image source={{uri:this.state.data.ProfilePicture}} style={styles.profilePicture}/>
+                    </View>               
+                    <View style={styles.settingsButton}>
+                      <Button icon transparent onPress={this.goToEdit}>
+                        <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
+                      </Button>
+                    </View>            
+                  </View>
+                                  
+                  <View style={styles.infoHolder}>
+                    <View style={styles.nameHolder}>
+                      <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
+                    </View>
+                    <View style={styles.infoBody}>
+                      <View style={styles.paragrapgh}>
+                        <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
+                        <Text style={styles.info}>{this.state.data.Street}</Text>
+                        <Text style={styles.info}>{this.state.globalAddress}</Text>
+                      </View>                    
+                    </View>
+                    <View style={styles.infoBody}>
+                      <View style={styles.paragrapgh}>
+                        <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>                        
+                        <Text style={styles.info}>{this.state.data.Email}</Text>
+                        {this.showSecondNumber()}                        
+                      </View>                    
+                    </View>
+                  </View>                
+      
+                  <View style={[styles.buttons,styles.marginBottom]}>
+                    <View style={styles.prodInfoButtons}>
+                      <Button full large primary rounded onPress={() => navigate('Listing', {id:this.state.userId})}>
+                        <Text style={[styles.buttonText,{color:'white'}]}>Listing</Text>
+                      </Button>
+                    </View>
+                    <View style={styles.prodInfoButtons}>
+                      <Button full  large primary rounded onPress={() => navigate('Bought', {id:this.state.userId})} >
+                        <Text style={[styles.buttonText,{color:'white'}]}>Bought</Text>
+                      </Button>
+                    </View>
+                    <View style={styles.prodInfoButtons}>
+                      <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userId})}>
+                        <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
+                      </Button>
+                    </View>
+                    <View style={styles.prodInfoButtons}>
+                      <Button full large primary rounded onPress={this.logoutAsync}>
+                        <Text style={[styles.buttonText,{color:'white'}]}>Log Out</Text>
+                      </Button>
+                    </View>
+                  </View>
+      
+              </View>
+            );
+            }
+   
 }
 
 
 }
 
-const styles = StyleSheet.create({
+const styles = {
 screen:{
   flex:10,
 },
@@ -150,10 +472,47 @@ profilePicture:{
   borderRadius:Dimensions.get('window').width*0.16,         
 },
 
+profileBackground:
+{
+  width:Dimensions.get('window').width *0.32,
+  height:Dimensions.get('window').width*0.32,
+},
+
 infoHolder:{
   flex:7.2,
   marginLeft:Dimensions.get('window').width*0.05,
   justifyContent:'space-evenly',
+},
+
+inputText:{
+  marginVertical:Dimensions.get('window').height*0.05,
+  borderBottomColor:Colors.primary,
+  borderBottomWidth:1,
+  width:Dimensions.get('window').width*0.8,
+},
+
+inputName:{
+  textAlign:'left',
+  justifyContent:'center',
+  padding:5,
+  fontSize:30,
+  fontWeight:'700',
+  color:'grey',
+  margin:Dimensions.get('window').width*0.02,
+  borderBottomColor:Colors.primary,
+  borderBottomWidth:1,
+},
+
+inputInfo:{
+  textAlign:'left',
+  justifyContent:'center',
+  padding:5,
+  fontSize:18,
+  fontWeight:'500',
+  color:'grey',
+  margin:Dimensions.get('window').width*0.02,
+  borderBottomColor:Colors.primary,
+  borderBottomWidth:1,  
 },
 
 nameHolder:{
@@ -220,4 +579,4 @@ prodInfoButtons:{
 marginBottom:{
   marginVertical:Dimensions.get('window').height*0.01,
 },
-})
+}
