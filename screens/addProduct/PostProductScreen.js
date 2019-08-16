@@ -55,9 +55,15 @@ export default class PostProductScreen extends Component {
       image: [],
       downloadURLs : [],
       isOverlayVisible: false,
+      User:null,
     }
   }
 
+  componentDidMount() {
+    this.getPermissionAsync();
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    console.log('component did mount');
+  }
 
   componentWillMount() {
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
@@ -70,10 +76,11 @@ export default class PostProductScreen extends Component {
 
   }
 
-  componentDidMount() {
-    this.getPermissionAsync();
-    console.log('component did mount');
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    this._unsubscribe();
   }
+ 
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
@@ -82,6 +89,17 @@ export default class PostProductScreen extends Component {
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
+    }
+  };
+
+  //listens to the change in auth state
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ User: user });
+    //navigate to the account screen if the user is not logged in
+    if(user==null){
+      this.props.navigation.navigate('Account');
     }
   };
 
