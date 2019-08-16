@@ -4,6 +4,7 @@
     "slug": "cargo-native",
     "privacy": "public",
     "sdkVersion": "33.0.0",
+    "scheme": "cargo",
     "platforms": [
       "ios",
       "android",

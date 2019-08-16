@@ -123,13 +123,10 @@ export class ProductScreen extends Component {
   }
 
   NavigateToCart = ({ navigation }) =>{
-
     console.log('navigate to cart called')
     const { navigate } = this.props.navigation;
     this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Cart',{PreviousScreen : 'ProductScreen'}); 
-
-    
+    navigate('Cart',{PreviousScreen : 'ProductScreen'});   
   }
 
 
@@ -147,7 +144,6 @@ export class ProductScreen extends Component {
           />
         </TouchableHighlight>
     ),
-
     })
   };
 
@@ -246,12 +242,10 @@ const styles = StyleSheet.create({
     paddingLeft:8,
     paddingRight:5,
   },
-
   productName:{
     fontSize:18,
     fontWeight:'500',
   },
-
   productLocView:{
     flexDirection:'row',
     flex:0.9,
@@ -284,7 +278,6 @@ const styles = StyleSheet.create({
     paddingBottom:10,
     paddingTop:10,
   },
-
   purchaseButton:{
     alignItems:'center',
     justifyContent:'center',

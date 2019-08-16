@@ -1,29 +1,71 @@
 import React, { Component } from "react";
 import { View, Text, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SearchBar } from 'react-native-elements';
 import { Font } from "expo";
 
-export default class SearchBar extends Component {
+export default class SearchBarTheme extends Component {
   constructor(props) {
     super(props);
-    this.state = { text: "" };
+    this.state={
+      //text : '', 
+      query: "",
+      fullData:[],
+    }
   }
 
-  render() {
+  // searchFilterFunction = text => {
+  //   this.setState({
+  //     value: text,
+  //   });
+
+  //   console.log(text);
+
+  //   const newData = this.text.filter(item => {
+  //     const itemData = `${item.name.title.toUpperCase()} ${item.name.first.toUpperCase()} ${item.name.last.toUpperCase()}`;
+  //     const textData = text.toUpperCase();
+
+  //     return itemData.indexOf(textData) > -1;
+  //   });
+  //   this.setState({
+  //     data: newData,
+  //   });
+  // };
+
+  handleQueryChange = query =>{
+    console.log("Text => " +  query)
+
+    
+    this.setState(state => ({ ...state, query: query || "" }));
+  }
+
+  render() {  
     return (
+
       <View style={styles.containerStyle}>
-        <TextInput
+        {/* <TextInput
           style={styles.textInputStyle}
           onChangeText={text => this.setState({ text })}
           value={this.state.text}
           placeholder={this.props.searchReplacableText}
-        />
-        <Ionicons
+        /> */}
+
+          <SearchBar        
+            placeholder="Type Here..."        
+            lightTheme        
+            round  
+            onChangeText={this.handleQueryChange}  
+            value={this.state.query}    
+           // onChangeText={text => this.handleSearch(text)}   
+            //query={this.state.query}                        
+          /> 
+
+        {/* <Ionicons
           name="md-search"
           size={32}
           color="#4383FF"
           style={styles.searchIconStyle}
-        />
+        /> */}
 
       </View>
     );
@@ -32,7 +74,7 @@ export default class SearchBar extends Component {
 
 const styles = {
   containerStyle: {
-    flexDirection: "row",
+    flexDirection: "column",
     marginRight: 10,
     marginTop: 10,
     marginBottom: 10

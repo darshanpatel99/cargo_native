@@ -30,8 +30,6 @@ export default class HomeScreen extends React.Component {
   }
 
   handleQueryChange = query =>{
-    console.log("Text => " +  query)
-
     {SearchFilterFunction}
     this.setState(state => ({ ...state, query: query || "" }));
   }

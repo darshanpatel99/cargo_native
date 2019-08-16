@@ -57,9 +57,13 @@ export default class ProductListComponents extends Component {
 
     }
 
-    handleLangChange = () => {
-          
-  }
+    handler() {
+      this.setState({
+          messageShown: true
+      });
+    }
+
+  
 
 
     render(){

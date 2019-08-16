@@ -1,9 +1,30 @@
-import { AppLoading } from 'expo';
+import { AppLoading, registerRootComponent } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AppRegistry } from 'react-native';
 import AppTabNavigator from './navigation/AppTabNavigator';
+import { setCustomText, setCustomView } from 'react-native-global-props';
+
+// const CustomText ={
+//   style: {
+//     fontSize: 16,
+//     fontFamily: 'nunito-Regular',
+//     color: 'black',
+//     // marginTop:5,
+//     // marginBottom:5,
+//     // marginLeft:5,
+//     // marginRight:5
+//   }
+
+// };
+
+const customViewProps = {
+  style: {
+    backgroundColor: '#d3d3d3' // light gray
+  }
+};
+
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -42,6 +63,16 @@ async function loadResourcesAsync() {
       // remove this if you are not using it in your app
       // 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
       'origo':require('./assets/fonts/Origo.ttf'),
+      'nunito-Black':require('./assets/fonts/nunito/Nunito-Black.ttf'),
+      'nunito-Bold':require('./assets/fonts/nunito/Nunito-Bold.ttf'),
+      'nunito-ExtraBold':require('./assets/fonts/nunito/Nunito-ExtraBold.ttf'),
+      'nunito-ExtraLight':require('./assets/fonts/nunito/Nunito-ExtraLight.ttf'),
+      'nunito-Light':require('./assets/fonts/nunito/Nunito-Light.ttf'),
+      'nunito-Medium':require('./assets/fonts/nunito/Nunito-Medium.ttf'),
+      'nunito-Regular':require('./assets/fonts/nunito/Nunito-Regular.ttf'),
+      'nunito-SemiBold':require('./assets/fonts/nunito/Nunito-SemiBold.ttf'),
+      
+    
     }),
   ]);
 }
@@ -56,6 +87,8 @@ function handleLoadingError(error: Error) {
 
 function handleFinishLoading(setLoadingComplete) {
   setLoadingComplete(true);
+  //setCustomText(CustomText);
+  // setCustomView(customViewProps);
 }
 
 const styles = StyleSheet.create({
@@ -64,3 +97,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+registerRootComponent(App);
