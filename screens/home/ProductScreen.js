@@ -353,7 +353,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 15,
-    fontWeight: '800'
+    fontWeight: '800',
+
   },
   addToCartButton: {
     backgroundColor: Colors.primary,
