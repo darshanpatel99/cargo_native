@@ -36,8 +36,12 @@ import { Overlay } from 'react-native-elements';
 
 import uuid from 'react-native-uuid';
 
+
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
+
+//Success Image Url
+const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 
 export default class PostProductScreen extends Component {
   constructor(props) {
@@ -46,14 +50,20 @@ export default class PostProductScreen extends Component {
     this.state={
       title : "",
       description : "",
-      price : "0",
+      price : "",
       thumbnail : " ",
       image: [],
       downloadURLs : [],
-      isOverlayVisible: false
+      isOverlayVisible: false,
+      User:null,
     }
   }
 
+  componentDidMount() {
+    this.getPermissionAsync();
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    console.log('component did mount');
+  }
 
   componentWillMount() {
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
@@ -63,12 +73,14 @@ export default class PostProductScreen extends Component {
       Platform.OS === 'ios'
         ? headerAndStatusBarHeight - 600
         : headerAndStatusBarHeight;
+
   }
 
-  componentDidMount() {
-    this.getPermissionAsync();
-    console.log('component did mount');
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    this._unsubscribe();
   }
+ 
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
@@ -77,6 +89,17 @@ export default class PostProductScreen extends Component {
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
+    }
+  };
+
+  //listens to the change in auth state
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ User: user });
+    //navigate to the account screen if the user is not logged in
+    if(user==null){
+      this.props.navigation.navigate('Account');
     }
   };
 
@@ -90,9 +113,17 @@ export default class PostProductScreen extends Component {
       Name : this.state.title,
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.downloadURLs[0]
+      Thumbnail : this.state.downloadURLs[0],
+      Owner : '',
+      Flag : true,
+      FavouriteUsers:[],
+      TimeStamp: null,
+      UserClicks:[]
     }
 
+    //Getting the current time stamp
+    var currentDate = new Date();
+    data.TimeStamp = currentDate.getTime();
     //Posting the product
     PostProduct(data);
     console.log("Product Posted---->" + data);
@@ -102,6 +133,10 @@ export default class PostProductScreen extends Component {
 
   }
 
+
+  /**
+   * Function Description:
+   */
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -173,6 +208,12 @@ export default class PostProductScreen extends Component {
     this.setState({ image: array });
   }
 
+  goToHome=()=>{
+    this.setState({isOverlayVisible:!this.state.isOverlayVisible});
+    this.props.navigation.navigate('Home');
+  }
+
+
   _renderImages() {
     let images = [];
 
@@ -201,6 +242,9 @@ export default class PostProductScreen extends Component {
         </TouchableOpacity>
       );
     });
+
+    //reverse the array
+    images.reverse();
 
     return images;
   }
@@ -293,11 +337,15 @@ export default class PostProductScreen extends Component {
         <Overlay
           isVisible={this.state.isOverlayVisible}
           windowBackgroundColor="rgba(255, 255, 255, .5)"
-          overlayBackgroundColor="red"
+          overlayBackgroundColor=" #f5f2d0"
+          
           width="auto"
           height="auto"
           >
-          <Text>Done</Text>
+          <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
+          <Button onPress={this.goToHome}>
+            <Text>Go to Home</Text>
+          </Button>
         </Overlay>
         
         </View>
