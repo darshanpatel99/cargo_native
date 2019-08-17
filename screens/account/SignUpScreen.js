@@ -95,44 +95,44 @@ nextButtonFunc =() =>{
           tempUID = uid;
           console.log('Your user get the following user uid: '+ uid);
           this.setState({UID:uid, user:user});
-        });
-
+          
         //setting the UID
         if(tempUID!=null){
-          console.log("THIS is UUID =-=-=> " + tempUID)
-          this.setState({UID:tempUID});
-        }
+              console.log("THIS is UUID =-=-=> " + tempUID)
+              this.setState({UID:tempUID});
+            try{
+              //verify user is signed up or not
+              var userUID = this.state.UID;
+              console.log('The uid that is going to be verified: ' + userUID);
+          
+                
+              this.firebaseRef.doc(userUID)
+                .get()
+                .then(docSnapshot => {
+                  console.log('1--inside firebase snap')
+                  if(docSnapshot.exists){
+                    console.log('2--inside firebase snap')
+                    this.props.navigation.navigate('Account');
+                  }
+                  else{
+                    console.log('User is not sign up');
+                    this.setState({nameRegistration:true});
+                  // this.continueToNameReg();
+                  }
+                });
+              }
+              catch (e) {
+                alert('Following error occured during checking whether user exists or not:  ' + e)
+                console.warn(e);
+              } 
+            }
+        });
+      
+
     } catch (e) {
         console.warn('Following Error occured during the code confirmation:  ' +e);
     }
 
-
-    try{
-    //verify user is signed up or not
-    var userUID = this.state.UID;
-    console.log('The uid that is going to be verified: ' + userUID);
-
-
-    this.firebaseRef.doc(userUID)
-      .get()
-      .then(docSnapshot => {
-        console.log('1--inside firebase snap')
-        if(docSnapshot.exists){
-          console.log('2--inside firebase snap')
-          this.props.navigation.navigate('Account');
-        }
-        else{
-          console.log('User is not sign up');
-          this.setState({nameRegistration:true});
-         // this.continueToNameReg();
-        }
-      });
-    }
-    catch (e) {
-      alert('Following error occured during checking whether user exists or not:  ' + e)
-      console.warn(e);
-    }
- 
 } 
 
 continueToNameReg = () => {
