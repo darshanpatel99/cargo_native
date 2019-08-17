@@ -91,8 +91,6 @@ export default class AccountInfo extends Component {
   }
 
 
-
-
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -151,14 +149,18 @@ export default class AccountInfo extends Component {
   }
 // the function to set ecverything for the change mode
   goToEdit =() =>{
-    const info = this.state.data;
+    console.log('Hello')
+    let info = this.state.data;
+
     this.setState({
       editMode:true,
       newData:[info.FirstName,info.LastName,info.Street,info.City,info.Country,info.Email,info.PhoneNumber],
       newPicture:[info.ProfilePicture],
       currentFolio:info.ProfilePicture,
     });
+    console.log('End of Hello')
   }
+
 
   
 
@@ -307,6 +309,7 @@ render(){
                       </ImageBackground>
                     </View>               
                     <View style={styles.settingsButton}>
+
                       <Button icon transparent disabled>
                         <FontAwesome name='cog' size={35} color='grey'/>                    
                       </Button>
@@ -317,7 +320,7 @@ render(){
                    
                    <KeyboardAvoidingView style={styles.infoHolder} behavior="padding" enabled>
                     <View style={styles.nameHolder}>
-                    <View style={{flexDirection:'row',justifyContent:'evenly spaced'}}>
+                    <View style={{flexDirection:'row'}}>
                       {this.inputText(0)}
                       {this.inputText(1)}
                     </View>
@@ -326,7 +329,7 @@ render(){
                     <View style={styles.infoBody}>
                       <View style={styles.paragrapgh}>
                         <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                        <View style={{flexDirection:'row',justifyContent:'evenly spaced'}}>
+                        <View style={{flexDirection:'row'}}>
                           {this.inputText(2)}
                           {this.inputText(3)}                          
                         </View>
@@ -342,10 +345,7 @@ render(){
                     </View>
                   </KeyboardAvoidingView>
 
-                   
-                   
-                    
-      
+
                   <View style={[styles.buttons,styles.marginBottom]}>
                     <View style={styles.prodInfoButtons}>
                       <Button full large primary rounded onPress={this.saveChanges}>
