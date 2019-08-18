@@ -28,11 +28,12 @@ export class ProductScreen extends Component {
     const price = navigation.getParam('price');
     const pictures = navigation.getParam('pictures');
     const id = navigation.getParam('itemId');
+    const owner = navigation.getParam('owner');
 
-    this.ref = firebase
-      .firestore()
-      .collection('Products')
-      .doc(id);
+    // this.ref = firebase
+    //   .firestore()
+    //   .collection('Products')
+    //   .doc(id);
 
       // this.ref = firebase
       // .firestore()
@@ -49,7 +50,7 @@ export class ProductScreen extends Component {
       pictures,
       price,
       id,
-      owner:'',
+      owner,
       userID:'',
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart'
@@ -82,53 +83,53 @@ export class ProductScreen extends Component {
   //   return true;
   // }
 
-  componentWillMount() {
-    this.props.navigation.setParams({ handleCartItems: this.NavigateToCart });
-    this.props.navigation.setParams({ handleGoBack: this.GoBack });
-    let cart = [];
-    let address = {};
-    let that = this; // here your variable declaration
-    // this.ref.onSnapshot(doc => {
-    //   // this.setState({
-    //     address= doc.data().Address,
-    //     cart= doc.data().Cart,
-    //     // });
-    //     console.log('this is data -- > >>>' + doc.data().Cart)
-    //   })
+  // componentWillMount() {
+  //   this.props.navigation.setParams({ handleCartItems: this.NavigateToCart });
+  //   this.props.navigation.setParams({ handleGoBack: this.GoBack });
+  //   let cart = [];
+  //   let address = {};
+  //   let that = this; // here your variable declaration
+  //   // this.ref.onSnapshot(doc => {
+  //   //   // this.setState({
+  //   //     address= doc.data().Address,
+  //   //     cart= doc.data().Cart,
+  //   //     // });
+  //   //     console.log('this is data -- > >>>' + doc.data().Cart)
+  //   //   })
 
-    this.ref.get().then(function(doc) {
-      console.log('this document data -- > ' + JSON.stringify(doc.data()));
-      // cart = doc.data().Cart;
-      // address = doc.data().Address;
-      // let cartLength = cart.length;
-      // that.setState({
-      //   cart: cart,
-      //   address: address,
-      //   count: cartLength
-      // });
-      //  console.log('comp did update -- ' + that.state.address);
-      //  console.log('cart did update ' + that.state.cart.length);
-      that.state.owner = doc.data().Owner;
+  //   this.ref.get().then(function(doc) {
+  //     console.log('this document data -- > ' + JSON.stringify(doc.data()));
+  //     // cart = doc.data().Cart;
+  //     // address = doc.data().Address;
+  //     // let cartLength = cart.length;
+  //     // that.setState({
+  //     //   cart: cart,
+  //     //   address: address,
+  //     //   count: cartLength
+  //     // });
+  //     //  console.log('comp did update -- ' + that.state.address);
+  //     //  console.log('cart did update ' + that.state.cart.length);
+  //     that.state.owner = doc.data().Owner;
 
 
-      // if (cart.includes(that.state.id)) {
-      //   //alert('Item exists in cart');
-      //   that.setState({
-      //     itemAlreadyInCart: true
-      //   });
-      //   if (that.state.itemAlreadyInCart) {
-      //     that.setState({ buttonTitle: 'Remove from Cart' });
-      //   }
-      // }
-      //console.log('this is product id --> ' + that.state.id);
-      console.log('this is Owner id --> ' + that.state.owner);
+  //     // if (cart.includes(that.state.id)) {
+  //     //   //alert('Item exists in cart');
+  //     //   that.setState({
+  //     //     itemAlreadyInCart: true
+  //     //   });
+  //     //   if (that.state.itemAlreadyInCart) {
+  //     //     that.setState({ buttonTitle: 'Remove from Cart' });
+  //     //   }
+  //     // }
+  //     //console.log('this is product id --> ' + that.state.id);
+  //     console.log('this is Owner id --> ' + that.state.owner);
 
-    });
+  //   });
 
-    let cartLength = cart.length;
+  //   let cartLength = cart.length;
 
-    //console.log('this is cart items -->  ' + this.state.cart)
-  }
+  //   //console.log('this is cart items -->  ' + this.state.cart)
+  // }
 
 
 
@@ -203,17 +204,10 @@ export class ProductScreen extends Component {
   }
 
   render() {
-    // {
-    //   this.state.pictures.map((item, key) => (
-    //     <View key={key} style={{ flexDirection: 'row' }}>
-    //       <View style={styles.breaks}/>
-    //       <Image style={styles.images} source={{ uri: item }} />
-    //       <View style={styles.breaks}/>
-    //     </View>
+    console.log('getting owner as props ======> ' + this.state.owner);
 
-    //     ))
-    //   }
     return (
+      
       <View style={styles.container}>
         <ScrollView>
 
