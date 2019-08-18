@@ -31,8 +31,13 @@ export class ProductScreen extends Component {
 
     this.ref = firebase
       .firestore()
-      .collection('Users')
-      .doc('K3xLrQT1OrFirfNXfkYf');
+      .collection('Products')
+      .doc(id);
+
+      // this.ref = firebase
+      // .firestore()
+      // .collection('Users')
+      // .doc('K3xLrQT1OrFirfNXfkYf');
 
     this.state = {
       pictures: [],
@@ -44,7 +49,8 @@ export class ProductScreen extends Component {
       pictures,
       price,
       id,
-
+      owner:'',
+      userID:'',
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart'
     };
@@ -60,6 +66,15 @@ export class ProductScreen extends Component {
     this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(
       this
     );
+
+
+    let user = firebase.auth().currentUser;
+
+    if (user != null) {
+        console.log("  Provider-specific UID: " + user.uid);  
+      this.state.userID = user.uid;
+      console.log(" State UID: " + this.state.userID);
+    }
   }
 
   // shouldComponentUpdate(nextProps, nextState) {
@@ -82,33 +97,42 @@ export class ProductScreen extends Component {
     //   })
 
     this.ref.get().then(function(doc) {
-      console.log('this document data -- > ' + doc.data());
-      cart = doc.data().Cart;
-      address = doc.data().Address;
-      let cartLength = cart.length;
-      that.setState({
-        cart: cart,
-        address: address,
-        count: cartLength
-      });
+      console.log('this document data -- > ' + JSON.stringify(doc.data()));
+      // cart = doc.data().Cart;
+      // address = doc.data().Address;
+      // let cartLength = cart.length;
+      // that.setState({
+      //   cart: cart,
+      //   address: address,
+      //   count: cartLength
+      // });
       //  console.log('comp did update -- ' + that.state.address);
       //  console.log('cart did update ' + that.state.cart.length);
-      if (cart.includes(that.state.id)) {
-        //alert('Item exists in cart');
-        that.setState({
-          itemAlreadyInCart: true
-        });
-        if (that.state.itemAlreadyInCart) {
-          that.setState({ buttonTitle: 'Remove from Cart' });
-        }
-      }
+      that.state.owner = doc.data().Owner;
+
+
+      // if (cart.includes(that.state.id)) {
+      //   //alert('Item exists in cart');
+      //   that.setState({
+      //     itemAlreadyInCart: true
+      //   });
+      //   if (that.state.itemAlreadyInCart) {
+      //     that.setState({ buttonTitle: 'Remove from Cart' });
+      //   }
+      // }
       console.log('this is product id --> ' + that.state.id);
+      console.log('this is Owner id --> ' + that.state.owner);
     });
 
     let cartLength = cart.length;
 
     //console.log('this is cart items -->  ' + this.state.cart)
   }
+
+
+
+
+
 
   DecreaseInCountValue() {
     this.setState({ count: this.state.count - 1 });
@@ -159,23 +183,20 @@ export class ProductScreen extends Component {
   CheckIfProductAlreadyInCart() {
     if (this.state.itemAlreadyInCart) {
       return (
-        <View style={styles.removeFromCartButton}>
           <Button
-            color='#fff'
+            //color='#fff'
             title={this.state.buttonTitle}
             onPress={this.DecreaseInCountValue}
           />
-        </View>
       );
     } else {
       return (
-        <View style={styles.addToCartButton}>
           <Button
-            color='#fff'
+            //color='#fff'
             title={this.state.buttonTitle}
             onPress={this.IncreaseInCountValue}
           />
-        </View>
+
       );
     }
   }
@@ -237,15 +258,7 @@ export class ProductScreen extends Component {
           </View>
 
         
-          <Text style={styles.productDesc}>Facebook, Inc. is an American online social media and social networking service company based in Menlo Park, California. It was founded by Mark Zuckerberg, along with fellow Harvard College students and roommates Eduardo Saverin, Andrew McCollum, Dustin Moskovitz and Chris Hughes. It is considered one of the Big Four technology companies along with Amazon, Apple, and Google.[10][11]
-
-The founders initially limited the website's membership to Harvard students and subsequently Columbia, Stanford, and Yale students. Membership was eventually expanded to the remaining Ivy League schools, MIT, and higher education institutions in the Boston area, then various other universities, and lastly high school students. Since 2006, anyone who claims to be at least 13 years old has been allowed to become a registered user of Facebook, though this may vary depending on local laws. The name comes from the face book directories often given to American university students. Facebook held its initial public offering (IPO) in February 2012, valuing the company at $104 billion, the largest valuation to date for a newly listed public company. Facebook makes most of its revenue from advertisements that appear onscreen and in users' News Feeds.
-
-The Facebook service can be accessed from devices with Internet connectivity, such as personal computers, tablets and smartphones. After registering, users can create a customized profile revealing information about themselves. They can post text, photos and multimedia which is shared with any other users that have agreed to be their "friend". Users can also use various embedded apps, join common-interest groups, and receive notifications of their friends' activities. Facebook claimed that had more than 2.3 billion monthly active users as of December 2018.[12] However, it faces a big problem of fake accounts. It caught 3 billion fake accounts in the last quarter of 2018 and the first quarter of 2019.[13] Many critics questioned whether Facebook knows how many actual users it has.[14][15][13] Facebook is one of the world's most valuable companies.
-
-It receives prominent media coverage, including many controversies. These often involve user privacy (as with the Cambridge Analytica data scandal), political manipulation (as with the 2016 U.S. elections), psychological effects such as addiction and low self-esteem, and content that some users find objectionable, including fake news, conspiracy theories, and copyright infringement.[16] Facebook also does not remove false information from its pages, which brings continuous controversies.[17] Commentators have stated that Facebook helps to spread false information and fake news.[18][19][20][21]
-
-Facebook offers other products and services. It acquired Instagram, WhatsApp, Oculus, and GrokStyle[22] and independently developed Facebook Messenger, Facebook Watch, and Facebook Portal.</Text>
+          <Text style={styles.productDesc}>{this.state.description}</Text>
         {/* </View> */}
 
         </ScrollView>
@@ -297,8 +310,8 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 18,
     fontWeight: '500',
-    alignItems: 'left',
-    position: 'fixed',
+    //alignItems: 'left',
+    //position: 'fixed',
     marginRight: 10,
     marginHorizontal:10,
     marginTop: 10
@@ -317,7 +330,7 @@ const styles = StyleSheet.create({
   productDesc: {
     fontSize: 15,
     fontWeight: '100',
-    paddingLef: 7,
+    paddingLeft: 7,
     marginTop:10,
     marginLeft: 10,
     marginRight: 10 
@@ -337,6 +350,7 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   BottomPart: {
+    marginBottom: 20,
     //flex: 1,
     alignItems: 'center',
     //paddingBottom: 10,

@@ -114,7 +114,7 @@ export default class PostProductScreen extends Component {
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
       Thumbnail : this.state.downloadURLs[0],
-      Owner : '',
+      Owner : 'h4pjkrOPObgMNso3MSmeZtWgjff1',
       Flag : true,
       FavouriteUsers:[],
       TimeStamp: null,
