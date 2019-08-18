@@ -3,7 +3,7 @@ import { Button, } from 'react-native';
 import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
 import TabBarIcon from '../components/navigation/TabBarIcon';
 import HomeScreen from '../screens/home/Home';
-import CartScreen from '../screens/cart/Cart';
+import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
 
 export default (HomeStack = createStackNavigator({
@@ -20,27 +20,21 @@ export default (HomeStack = createStackNavigator({
       title: 'Detail',
       
     },
-
-    // navigationOptions : {
-      
-    //   headerRight: (
-    //     <Button
-    //       onPress={() => navigation.navigate('Cart')}
-    //       title="Info"
-          
-    //     />
-    //   ),
-    // },
+ 
 
   },
 
-  // Cart: {
-  //   screen: CartScreen,
-  //   navigationOptions: {
-  //     title: 'Cart',
-  //   }
-  // }, 
-  
+  Checkoutscreen: {
+    screen: CheckoutScreen,
+    navigationOptions: {
+      header: null,
+    },
+    headerStyle: {
+      elevation: 0,
+      shadowOpacity: 0
+    }
+  },
+
 }));
 
 HomeStack.navigationOptions = ({ navigation }) => {

@@ -11,12 +11,12 @@ class ProductCardComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {title: '', description: '', price :'', image: '', id:''};
+        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:''};
     }
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId:this.props.id, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
