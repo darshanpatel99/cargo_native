@@ -30,16 +30,6 @@ export class ProductScreen extends Component {
     const id = navigation.getParam('itemId');
     const owner = navigation.getParam('owner');
 
-    // this.ref = firebase
-    //   .firestore()
-    //   .collection('Products')
-    //   .doc(id);
-
-      // this.ref = firebase
-      // .firestore()
-      // .collection('Users')
-      // .doc('K3xLrQT1OrFirfNXfkYf');
-
     this.state = {
       pictures: [],
       cart: [],
@@ -126,7 +116,7 @@ export class ProductScreen extends Component {
   }
 
   render() {
-    console.log('getting owner as props ======> ' + this.state.owner);
+    console.log('getting price as props ======> ' + this.state.price);
 
     return (
       
@@ -137,9 +127,9 @@ export class ProductScreen extends Component {
           <SliderBox
             images={this.state.pictures}
             sliderBoxHeight={400}
-            onCurrentImagePressed={index =>
-              console.warn(`image ${index} pressed`)
-            }
+            // onCurrentImagePressed={index =>
+            //   console.warn(`image ${index} pressed`)
+            // }
             dotColor='#FFEE58'
             inactiveDotColor='#90A4AE'
             dotStyle={{
@@ -157,7 +147,7 @@ export class ProductScreen extends Component {
         {/* <View style={styles.infotext}> */}
           <View style={{flex: 1, flexDirection: 'row',justifyContent: 'space-between'}}>
             <Text style={styles.productName}>{this.state.title}</Text>
-            <Text style={styles.productPrice}>Price</Text>
+            <Text style={styles.productPrice}>$ {this.state.price}</Text>
           </View>
 
           {/* <Text>Local number => {this.state.count} </Text>
@@ -169,7 +159,6 @@ export class ProductScreen extends Component {
             </View>
             <View style={styles.priceDr}>
               <Text style={styles.price}>2.5$</Text>
-
               <FontAwesome name='car' size={22} color={Colors.primary} />
             </View>
           </View>
@@ -217,18 +206,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 10,
   },
-  productName: {
-    fontSize: 18,
-    fontWeight: '500',
-    alignItems: 'flex-start',
-    marginTop: 10,
-    marginLeft: 10,
-  },
   productPrice: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '500',
-    //alignItems: 'left',
-    //position: 'fixed',
     marginRight: 10,
     marginHorizontal:10,
     marginTop: 10
