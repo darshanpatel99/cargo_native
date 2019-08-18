@@ -71,7 +71,7 @@ export class ProductScreen extends Component {
     let user = firebase.auth().currentUser;
 
     if (user != null) {
-        console.log("  Provider-specific UID: " + user.uid);  
+        
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
     }
@@ -82,7 +82,7 @@ export class ProductScreen extends Component {
   //   return true;
   // }
 
-  componentDidMount() {
+  componentWillMount() {
     this.props.navigation.setParams({ handleCartItems: this.NavigateToCart });
     this.props.navigation.setParams({ handleGoBack: this.GoBack });
     let cart = [];
@@ -120,8 +120,9 @@ export class ProductScreen extends Component {
       //     that.setState({ buttonTitle: 'Remove from Cart' });
       //   }
       // }
-      console.log('this is product id --> ' + that.state.id);
+      //console.log('this is product id --> ' + that.state.id);
       console.log('this is Owner id --> ' + that.state.owner);
+
     });
 
     let cartLength = cart.length;
@@ -181,20 +182,20 @@ export class ProductScreen extends Component {
   };
 
   CheckIfProductAlreadyInCart() {
-    if (this.state.itemAlreadyInCart) {
+    console.log("Running after")
+    if (this.state.owner === this.state.userID ) {
       return (
           <Button
-            //color='#fff'
-            title={this.state.buttonTitle}
-            onPress={this.DecreaseInCountValue}
+            title='Edit Your product'
+            //onPress={this.DecreaseInCountValue}
           />
       );
     } else {
       return (
           <Button
             //color='#fff'
-            title={this.state.buttonTitle}
-            onPress={this.IncreaseInCountValue}
+            title='Buy Now'
+            //onPress={this.IncreaseInCountValue}
           />
 
       );
