@@ -61,9 +61,12 @@ export class ProductScreen extends Component {
       });
     };
 
+    this.NavigateToCheckout = this.NavigateToCheckout.bind(this);
+    this.NavigateToEdit = this.NavigateToEdit.bind(this);
+
     this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
     this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
-    this.NavigateToCart = this.NavigateToCart.bind(this);
+    //this.NavigateToCart = this.NavigateToCart.bind(this);
     this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(
       this
     );
@@ -160,11 +163,18 @@ export class ProductScreen extends Component {
     });
   }
 
-  NavigateToCart = ({ navigation }) => {
-    console.log('navigate to cart called');
+  NavigateToCheckout() {
+    console.log('checkout called');
     const { navigate } = this.props.navigation;
-    this.props.navigation.dispatch(StackActions.popToTop());
+    //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('Cart', { PreviousScreen: 'ProductScreen' });
+  };
+
+  NavigateToEdit(){
+    console.log(' called');
+    const { navigate } = this.props.navigation;
+    //this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('Account', { PreviousScreen: 'ProductScreen' });
   };
 
   static navigationOptions = ({ navigation }) => {
@@ -188,7 +198,7 @@ export class ProductScreen extends Component {
       return (
           <Button
             title='Edit Your product'
-            //onPress={this.DecreaseInCountValue}
+            onPress={this.NavigateToEdit}
           />
       );
     } else {
@@ -196,7 +206,7 @@ export class ProductScreen extends Component {
           <Button
             //color='#fff'
             title='Buy Now'
-            //onPress={this.IncreaseInCountValue}
+            onPress={this.NavigateToCheckout}
           />
 
       );
