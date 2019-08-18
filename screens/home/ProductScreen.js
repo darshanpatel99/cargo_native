@@ -63,15 +63,9 @@ export class ProductScreen extends Component {
 
     this.NavigateToCheckout = this.NavigateToCheckout.bind(this);
     this.NavigateToEdit = this.NavigateToEdit.bind(this);
+    this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(this);
 
-    this.DecreaseInCountValue = this.DecreaseInCountValue.bind(this);
-    this.IncreaseInCountValue = this.IncreaseInCountValue.bind(this);
-    //this.NavigateToCart = this.NavigateToCart.bind(this);
-    this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(
-      this
-    );
-
-
+    //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
     if (user != null) {
@@ -81,100 +75,18 @@ export class ProductScreen extends Component {
     }
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   //return this.state.cart != nextState.cart;
-  //   return true;
-  // }
-
-  // componentWillMount() {
-  //   this.props.navigation.setParams({ handleCartItems: this.NavigateToCart });
-  //   this.props.navigation.setParams({ handleGoBack: this.GoBack });
-  //   let cart = [];
-  //   let address = {};
-  //   let that = this; // here your variable declaration
-  //   // this.ref.onSnapshot(doc => {
-  //   //   // this.setState({
-  //   //     address= doc.data().Address,
-  //   //     cart= doc.data().Cart,
-  //   //     // });
-  //   //     console.log('this is data -- > >>>' + doc.data().Cart)
-  //   //   })
-
-  //   this.ref.get().then(function(doc) {
-  //     console.log('this document data -- > ' + JSON.stringify(doc.data()));
-  //     // cart = doc.data().Cart;
-  //     // address = doc.data().Address;
-  //     // let cartLength = cart.length;
-  //     // that.setState({
-  //     //   cart: cart,
-  //     //   address: address,
-  //     //   count: cartLength
-  //     // });
-  //     //  console.log('comp did update -- ' + that.state.address);
-  //     //  console.log('cart did update ' + that.state.cart.length);
-  //     that.state.owner = doc.data().Owner;
-
-
-  //     // if (cart.includes(that.state.id)) {
-  //     //   //alert('Item exists in cart');
-  //     //   that.setState({
-  //     //     itemAlreadyInCart: true
-  //     //   });
-  //     //   if (that.state.itemAlreadyInCart) {
-  //     //     that.setState({ buttonTitle: 'Remove from Cart' });
-  //     //   }
-  //     // }
-  //     //console.log('this is product id --> ' + that.state.id);
-  //     console.log('this is Owner id --> ' + that.state.owner);
-
-  //   });
-
-  //   let cartLength = cart.length;
-
-  //   //console.log('this is cart items -->  ' + this.state.cart)
-  // }
-
-
-
-
-
-
-  DecreaseInCountValue() {
-    this.setState({ count: this.state.count - 1 });
-    this.setState({ itemAlreadyInCart: false, buttonTitle: 'Add to Cart' });
-    testValue = this.state.count;
-    let productsInCart = this.state.cart;
-    productsInCart.pop();
-    this.ref.update({
-      Cart: productsInCart,
-      itemAlreadyInCart: true
-    });
-  }
-
-  IncreaseInCountValue() {
-    this.setState({ count: this.state.cart.length + 1 });
-    this.setState({ itemAlreadyInCart: true, buttonTitle: 'Remove from Cart' });
-    testValue = this.state.count;
-    let test = this.state.cart;
-    test.push(this.state.id);
-    this.ref.update({
-      Cart: test,
-      itemAlreadyInCart: false
-    });
-  }
-
   NavigateToCheckout() {
     console.log('checkout called');
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Cart', { PreviousScreen: 'ProductScreen' });
+    navigate('Checkoutscreen', {TotalCartAmount:100})
   };
 
   NavigateToEdit(){
     console.log(' called');
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Account', { PreviousScreen: 'ProductScreen' });
+    navigate('Account');
   };
 
   static navigationOptions = ({ navigation }) => {

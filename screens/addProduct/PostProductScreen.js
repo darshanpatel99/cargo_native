@@ -114,7 +114,7 @@ export default class PostProductScreen extends Component {
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
       Thumbnail : this.state.downloadURLs[0],
-      Owner : 'h4pjkrOPObgMNso3MSmeZtWgjff1',
+      Owner : '',
       Flag : true,
       FavouriteUsers:[],
       TimeStamp: null,
@@ -130,6 +130,13 @@ export default class PostProductScreen extends Component {
 
     //change the overlay visibility to visible
     this.setState({isOverlayVisible:true});
+
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+    if (user != null) {
+      this.state.Owner = user.uid;
+      //console.log(" State UID: " + this.state.userID);
+    }
 
   }
 
@@ -292,6 +299,8 @@ export default class PostProductScreen extends Component {
                 onChangeText={(text)=>this.setState({price:text})}
                 value={this.state.price} />
             </Item>
+
+            {/* Pick category for the product */}
             <CategoryPickerForPostProduct />
 
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
