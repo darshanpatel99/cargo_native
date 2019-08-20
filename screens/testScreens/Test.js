@@ -12,7 +12,6 @@ export default class TestScreen extends React.Component {
   render(){
     return(
       <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}><Stripe/>
-      <Facebook/>
       </View>
     )
   }

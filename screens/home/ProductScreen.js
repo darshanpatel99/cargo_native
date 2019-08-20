@@ -221,9 +221,7 @@ const styles = StyleSheet.create({
   container: {
     flex:10,
     paddingTop: 20,
-    backgroundColor: '#fff',
-    
-    
+    backgroundColor: '#fff',  
   },
   breaks: {
     width:Dimensions.get('window').width * 0.05,
