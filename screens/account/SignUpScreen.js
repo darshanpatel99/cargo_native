@@ -1,31 +1,38 @@
 import React, { Component } from "react";
 import { View, StyleSheet,Text,TextInput,Dimensions } from "react-native";
-import MainButton from "../../components/theme/MainButton";
+
+//Import related to Fancy Buttons
+import { Button } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/Colors.js";
 import { clear } from "sisteransi";
-import { Button } from "native-base";
 import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import {StackActions,  NavigationActions } from 'react-navigation';
 
+//importing packages related to the sign in
+import * as Facebook from 'expo-facebook';
+import {Google} from 'expo';
 
-const captchaUrl = `https://cargo-488e8.firebaseapp.com/CarGoCaptcha.html?appurl=${Linking.makeUrl('')}`;
 
-
- 
 
 
 export default class SignUpScreen extends Component {
+  FacebookApiKey= '2872116616149463';
+
   constructor(props){
     super(props);
+
+    //creating the firebase reference for the users collection
+    this.firebaseRef = firebase.firestore().collection('Users');
 
     this.state ={
       phoneNumber:'',
       remove:true,
       buttonOn:false,           
-      user: undefined,
+      user: null,
       phone:'',
       confirmationResult: undefined,
       code: '',
@@ -33,52 +40,221 @@ export default class SignUpScreen extends Component {
       valid:false,
       emailRegistration:false,
       nameRegistration:false,
-      userName:'',
+      firstName:'',
+      lastname:'',
       email:'',
       country:'',
       city:'',
       street:'',
       UID:'',
-    };
-    this.firebaseRef = firebase.firestore().collection('Users');
-    this.captcahRef = firebase.firestore().collection('reCaptcha').doc('YksTcYBgjxD6Oj26zmzl');
-      //things need to be bit more clear here
-      this.captcahRef.onSnapshot((doc)=>{
-       console.log(this.state.valid);
-        if(this.state.valid){
-          this.setState({valid:false, Token: doc.data().Token});
-          this.onTokenReceived(this.state.Token);         
-          console.log('Go the valid token');
-        }
-        else{
-        this.setState({Token: doc.data().Token, valid:true});
-        }
-        console.log(this.state.Token);
-     
+      profilePic:'',
+    }
+  }
+
+  componentDidMount() {
+    // List to the authentication state
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
+ 
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    this._unsubscribe();
+  }
+ 
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ user });
+  };
+
+
+//facebook Login Function
+async facebookLogin() {
+  console.log("in facebookLogin() method");
+  try{
+    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
+      permissions:['public_profile']
     });
+  
+    console.log(authData);
+    if (!authData) return;
+    const { type, token } = authData;
+    if (type === 'success') {
+      console.log('facebook auth success and the token is' + token);
+      return token;
+    } else {
+      // Maybe the user cancelled...
+    }
   }
-
-
-nextButtonFunc =() =>{
-  if(this.state.buttonOn){    
-    return(
-  <View>
-    <Button full large primary rounded onPress={this.onPhoneComplete}>
-      <Text style={[styles.buttonText,{color:'white'}]}>next</Text>
-    </Button>
-  </View>      
-    )
+  catch(message){
+    console.log(message);
+    alert(message);
+    
   }
-  else{
-    return(
-      <View>
-        <Button full large rounded disabled>
-          <Text style={[styles.buttonText,{color:'white'}]}>next</Text>
-        </Button>
-      </View>
-    )        
-  }  
 }
+
+//google login function
+async googleLogin(){
+
+  try{
+    const config ={
+        expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
+        iosClientId:'572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
+        androidClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
+        scopes:['profile', 'email']
+    };
+
+    const {type, accessToken} = await Google.logInAsync(config);
+
+    if(type=='success'){
+      alert('You got looged in with google');
+      return accessToken;
+    }
+  }catch({message}){
+    alert('login' + message);
+  }
+}
+
+//Google Login Async function
+googleLoginAsync = async () => {
+  console.log('in loginAsync() method');
+  // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const accessToken = await this.googleLogin();
+
+  if (!accessToken) return;
+  // Use the facebook token to authenticate our user in firebase.
+  const credential = firebase.auth.GoogleAuthProvider.credential(null,accessToken);
+  try {
+    // login with credential
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the Google');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      this.setState({UID:uid, user:user, email:user.email, firstName:user.displayName});
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            console.log('The uid that is going to be verified: ' + userUID);
+        
+              
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                  console.log('2--inside firebase snap')
+                  this.props.navigation.navigate('Account');
+                }
+                else{
+                  console.log('User is not sign up');
+                  //add user to the database using the finishFunc
+                  this.finishFunc();
+              
+                }
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+      
+    });;
+  } catch ({ message }) {
+    alert(message);
+  }
+};
+
+//Facebook Login Async Function
+facebookLoginAsync = async () => {
+  console.log('in facebookLoginAsync() method');
+  // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const token = await this.facebookLogin();
+
+
+
+  if (!token) return;
+
+  try {
+  //get the required user information related to the 
+  const userInfo = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+
+  var userJson = (await userInfo.json());
+  console.log(userJson.name);
+  
+  //user information
+  var firstName = userJson.name;
+
+  console.log(firstName);
+
+
+  //setting all the user information
+  this.setState({firstName:firstName });
+
+
+  // Use the facebook token to authenticate our user in firebase.
+  const credential = firebase.auth.FacebookAuthProvider.credential(token);
+ 
+    // login with credential
+    var tempUID = null ;
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the facebook');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      console.log('User phone number is: ' + user.email);
+      this.setState({UID:uid, user:user, email:user.email});
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            console.log('The uid that is going to be verified: ' + userUID);
+        
+              
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                  console.log('2--inside firebase snap')
+                  this.props.navigation.navigate('Account');
+                }
+                else{
+                  console.log('User is not sign up');
+                  //Add user to the database
+                  this.finishFunc();
+                  
+                }
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+    });
+  } catch ({ message }) {
+    alert(message);
+  }
+}
+
+
+
+
 
   onSignIn = async () => {
     console.log('ON sing in -- 1')
@@ -94,7 +270,7 @@ nextButtonFunc =() =>{
           var uid = user.uid;
           tempUID = uid;
           console.log('Your user get the following user uid: '+ uid);
-          this.setState({UID:uid, user:user});
+          this.setState({UID:uid, user:user, userName:user.name, email:user.email, phoneNumber:user.PhoneNumber});
           
         //setting the UID
         if(tempUID!=null){
@@ -135,387 +311,11 @@ nextButtonFunc =() =>{
 
 } 
 
-continueToNameReg = () => {
-    this.setState({
-        userName:'',
-        nameRegistration:true,
-    });
-}
-
-/**
- * Function Description: Called when the token is received 
- */
-onTokenReceived = async (token) =>{
-  
-  console.log("Token has been received");
-  const {phoneNumber} = this.state;
-  //fake firebase.auth.ApplicationVerifier
-  const captchaVerifier = {
-      type: 'recaptcha',
-      verify: () => Promise.resolve(token)
-  }
-  try {
-      const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, captchaVerifier);
-      console.log(confirmationResult);
-      this.setState({confirmationResult});
-  } catch (e) {
-      console.warn(e);
-  }
-}
-onPhoneComplete = async () => {
-    let token = null
-    
-//    Linking.addEventListener('url', this.tokenListener);   
-    console.log('opening web browser');
-    await WebBrowser.openBrowserAsync(captchaUrl);
-  //  Linking.removeEventListener('url', this.tokenListener); 
-
-
-    // //for testing purposes
-    // this.setState({confirmationResult:{
-    //   "a": "hello",
-    //   "verificationId": "AM5PThCwJWA469GCX2yeXD8QrV02CFEugCFgdYNhmH8fyaPQBTdCEnOQygiKGxPx205yC9YC7Vfg7O8WBouBJfINY0hOY9xzctVHfqL1lw-MsQ0M_J8lXscyUBhGk2tYXz8F9iZ_cLmT",
-    // }});
-}
-onCodeChange = (code) => {
-    this.setState({code});
-}
-
-
-onPhoneChange = (phone) => {
-    this.setState({phone});
-}
-
-
-
-  hideDefault = () =>{
-    if(this.state.remove){
-      this.setState({
-        remove:false,
-        phoneNumber:'+',
-        buttonOn:false,        
-      })
-    }
-  }
-
-
-  changeText =(phoneNumber) =>{
-    //this.setState({phone:phoneNumber});
-    //console.log(phoneNumber + '  and  '+ this.state.phoneNumber);
-    if(this.state.phoneNumber.length>phoneNumber.length){
-      this.removingText(phoneNumber);
-    }else{
-      this.textManager(phoneNumber);
-    }     
-  }
-
-  textManager =(number)=>{
-    if(this.state.phoneNumber.length==0){
-      this.setState({
-        phoneNumber:'+',
-        buttonOn:false,
-      })
-    }
-
-    if(this.state.phoneNumber.length==1){
-      this.setState({
-        phoneNumber: number+ ' (',
-      })
-    }
-    else{
-      if(this.state.phoneNumber.length==4){
-        var temp = this.state.phoneNumber.substring(0,4);
-        var str= number+'';
-        var num = str.charAt(number.length-1)       
-        this.setState({
-          phoneNumber: temp + num,
-        })      
-      }
-
-      if(this.state.phoneNumber.length==5){
-        var temp = this.state.phoneNumber.substring(0,5);
-        var str= number+'';
-        var num = str.charAt(number.length-1)       
-        this.setState({
-          phoneNumber: temp + num,
-        })        
-      }
-      
-      if(this.state.phoneNumber.length==6){
-        var temp = this.state.phoneNumber.substring(0,6);
-        var str= number+'';
-        var num = str.charAt(number.length-1)       
-        this.setState({
-          phoneNumber: temp + num + ') ',
-        })        
-      }
-
-      if(this.state.phoneNumber.length>8 && this.state.phoneNumber.length <12){
-
-
-        var str= number+'';
-        var num = str.charAt(number.length-1)        
-        this.setState({
-          phoneNumber: this.state.phoneNumber + num,
-        })         
-      }
-
-      if(this.state.phoneNumber.length ==11){
-        var str= number+'';
-        var num = str.charAt(number.length-1)        
-        this.setState({
-          phoneNumber: this.state.phoneNumber + num + '-',
-        })        
-      }
-
-      if(this.state.phoneNumber.length>12 && this.state.phoneNumber.length <17){
-
-
-        var str= number+'';
-        var num = str.charAt(number.length-1)        
-        this.setState({
-          phoneNumber: this.state.phoneNumber + num,
-        })         
-      }
-      
-      if(this.state.phoneNumber.length==16){
-
-
-        var str= number+'';
-        var num = str.charAt(number.length-1)        
-        this.setState({
-          phoneNumber: this.state.phoneNumber + num,
-          buttonOn:true,
-        })         
-      }
-
-    }    
-  }
-
-  removingText=(number)=>{
-    //console.log(number.length);
-    if(number.length==12){
-      this.setState({
-        phoneNumber:number.substring(0,11),        
-      })      
-    }
-    else{
-
-      if(number.length==8){
-        this.setState({
-          phoneNumber:number.substring(0,6),        
-        })      
-      }
-      else{
-        
-        
-        if(number.length==3){
-          this.setState({
-            phoneNumber:'+',        
-          })      
-        }
-        else{
-          this.setState({
-            phoneNumber:number,
-            buttonOn:false,
-          })
-        }
-      }
-    }
-       
-  }
-
-  nextButton =()=>{
-    //console.log('its stoped')
-
-    if(this.state.phoneNumber>9)
-
-    this.setState({
-      buttonOn:true,
-    })
-  }
-
-  confirmButton = () =>{
-    if(this.state.code.length==6){    
-      return(
-      <View>
-        <Button full large primary rounded onPress={this.onSignIn}>
-          <Text style={[styles.buttonText,{color:'white'}]}>next</Text>
-        </Button>
-      </View>      
-        )
-      }
-    else{
-      return(
-          <View>
-            <Button full large rounded disabled>
-              <Text style={[styles.buttonText,{color:'white'}]}>next</Text>
-            </Button>
-          </View>
-      )        
-    }    
-  }
-
-
-  phoneReg =()=>{
-    return(
-      <View style={styles.viewStyle}>
-      <Text style={styles.textStyle}>
-            Enter phone number!
-        </Text>
-        <View style={styles.inputViewStyle}>
-            <TextInput
-                style={styles.inputStyle}                
-                editable={true}
-                rejectResponderTermination={true}
-                autoCompleteType='tel'
-                onFocus={this.hideDefault}                
-                onChangeText={this.changeText}
-                value= {this.state.phoneNumber}
-                keyboardType='phone-pad'
-                caretHidden={true}
-                clearButtonMode='while-editing'
-                maxLength={17}
-                enablesReturnKeyAutomaticaly={true}
-                returnKeyType='done'
-                onEndEditing={this.nextButton}
-                placeholder='+0 000 000 0000 '                                               
-            />
-        </View>
-        <View style={styles.buttonSize}>
-          {this.nextButtonFunc()}                  
-        </View>               
-      </View>
-    )
-            
-  }
-
-  phoneConfirm =() =>{
-    return(
-      <View style={styles.viewStyle}>
-          <Text style={styles.textStyle}>
-              Enter verification code!
-          </Text>
-          <View style={styles.inputViewStyle}>
-              <TextInput
-                  style={styles.inputStyle}                
-                  editable={true}               
-                  onChangeText={this.onCodeChange}
-                  value= {this.state.code}
-                  keyboardType='phone-pad'
-                  caretHidden={true}
-                  clearButtonMode='while-editing'
-                  maxLength={6}
-                  enablesReturnKeyAutomaticaly={true}
-                  returnKeyType='done'
-                  placeholder='Code from SMS'                                               
-              />
-          </View>
-          <View style={styles.buttonSize}>
-            {this.confirmButton()}                  
-          </View>       
-        </View>
-    )
-  }
-
-  nameReg =() =>{
-     return(
-      <View style={styles.viewStyle}>
-          <Text style={styles.textStyle}>
-              Enter your full name
-          </Text>
-          <View style={styles.inputViewStyle}>
-              <TextInput
-                  style={styles.inputStyle}                
-                  editable={true}               
-                  onChangeText={this.changeName}
-                  value= {this.state.userName}
-                  keyboardType='default'
-                  caretHidden={false}
-                  clearButtonMode='while-editing'
-                  maxLength={30}
-                  enablesReturnKeyAutomaticaly={true}
-                  returnKeyType='done'
-                  placeholder='First Last'                                               
-              />
-          </View>
-          <View style={styles.buttonSize}>
-            {this.proceedButton()}                  
-          </View>       
-        </View>
-     )    
-  }
-
-  changeName =(name) =>{
-    this.setState({
-      userName:name,
-      })
-  }
-
-  proceedButton =() =>{
-
-    if(this.state.userName.length>0){
-       return(
-    <View>
-      <Button full large primary rounded onPress={this.goToEmail}>
-        <Text style={[styles.buttonText,{color:'white'}]}>go</Text>
-      </Button>
-    </View>      
-      )
-      }
-      else{
-        return(
-          <View>
-      <Button full large primary rounded disabled>
-        <Text style={[styles.buttonText,{color:'white'}]}>go</Text>
-      </Button>
-    </View>
-        )
-                
-      }
-  }
-
-
-  goToEmail =() =>{
-    this.setState({
-      email:'',
-      emailRegistration:true,
-    })
-  }
-
-  changeMail =(mail) =>{
-    this.setState({
-      email:mail,
-    })
-  }
-
-  finish = () =>{
-
-    if(this.state.email.length>0){
-       return(
-    <View>
-      <Button full large primary rounded onPress={this.finishFunc}>
-        <Text style={[styles.buttonText,{color:'white'}]}>finish</Text>
-      </Button>
-    </View>      
-      )
-      }
-      else{
-        return(
-          <View>
-        <Button full large rounded disabled>
-          <Text style={[styles.buttonText,{color:'white'}]}>finish</Text>
-        </Button>
-    </View> 
-        )
-               
-      }    
-  }
-
  
 
   finishFunc =() =>{
 
+    //Sample dat object for each user
     var data={
       ActiveProducts : [],
       BoughtProducts : [],
@@ -523,12 +323,12 @@ onPhoneChange = (phone) => {
       City : '',
       Country : '',
       Email : this.state.email,
-      FirstName : '',
-      LastName : '',
+      FirstName : this.state.firstName,
+      LastName : this.state.lastname,
       PhoneNumber : this.state.phoneNumber,
-      ProfilePicture : '',
+      ProfilePicture : this.state.profilePic,
       SoldProducts : [],
-      Street : [],
+      Street : '',
       UID: this.state.UID.toString(),
     }
 
@@ -557,146 +357,84 @@ onPhoneChange = (phone) => {
     // });
   }
 
-  emailReg = () =>{
-    return(
-      <View style={styles.viewStyle}>
-          <Text style={styles.textStyle}>
-              Enter your email address
-          </Text>
-          <View style={styles.inputViewStyle}>
-              <TextInput
-                  style={styles.inputStyle}                
-                  editable={true}               
-                  onChangeText={this.changeMail}
-                  value= {this.state.email}
-                  keyboardType='default'
-                  caretHidden={false}
-                  clearButtonMode='while-editing'
-                  maxLength={100}
-                  //enablesReturnKeyAutomaticaly={true}
-                  //returnKeyType='done'
-                  placeholder='cargo@cargo.com'                                               
-              />
-          </View>
-          <View style={styles.buttonSize}>
-            {this.finish()}                  
-          </View>       
-        </View>
-     )
-  }
-
-
   render() {
-
-    if(this.state.emailRegistration){
-      return(
-        <View style={styles.viewStyle}>
-        {this.emailReg()}
-        </View>
-      )
-            
-    }
-    else{
-
-    if(this.state.nameRegistration){
-      return(
+    return (
       <View style={styles.viewStyle}>
-          {this.nameReg()}     
-          </View> )       
-    }
-    else{
-        // if(this.state.user){
-        //   return (
-        //     <View style={styles.viewStyle}>
-        //       <Text style={styles.textStyle}>
-        //           Enter that appers when user is true 
-        //       </Text>
-        //       <View style={styles.inputViewStyle}>
-        //           <TextInput
-        //               style={styles.inputStyle}                
-        //               editable={true}
-        //               rejectResponderTermination={true}
-        //               autoCompleteType='tel'
-        //               onFocus={this.hideDefault}                
-        //               onChangeText={this.changeText}
-        //               value= {this.state.phoneNumber}
-        //               keyboardType='phone-pad'
-        //               caretHidden={true}
-        //               clearButtonMode='while-editing'
-        //               maxLength={17}
-        //               enablesReturnKeyAutomaticaly={true}
-        //               returnKeyType='done'
-        //               onEndEditing={this.nextButton}
-        //               placeholder='+0 000 000 0000 '                                               
-        //           />
-        //       </View>
-        //       <View style={styles.buttonSize}>
-        //         {this.nextButtonFunc(this.state.buttonOn)}                  
-        //       </View>       
-        //     </View>
-        //   )
-        // }
-        if(!this.state.confirmationResult)
-        return (
-          <View style={styles.viewStyle}>
-          {this.phoneReg()}     
-          </View>               
-        )        
-        else
-        return (
-          <View style={styles.viewStyle}>
-          {this.phoneConfirm()}
-          </View>        
-          )
+        <Button primary rounded large style={styles.button}>
+            <Ionicons
+              size={30}
+              color="#fff"
+              style={styles.icon}
+              name='logo-facebook'
+            />
+            <Text style={styles.lightText} onPress={this.facebookLoginAsync}>Facebook SignUp</Text>
+          </Button>
+          <Button primary rounded large style={styles.button}>
+            <Ionicons
+              size={30}
+              color="#fff"
+              style={styles.icon}
+              name='logo-google'
+            />
+            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google SignUp</Text>
+          </Button>
 
-      }
-    }
-
-
+      </View>
+    );
   }
 }
-
-
-
-
-
 
 const styles = StyleSheet.create({
   viewStyle: {
     flex: 1,
-    alignItems:'center',    
-    justifyContent:'center',
-    marginBottom:Dimensions.get('window').height*0.11,    
+    flexDirection: 'column',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-
-  textStyle:{
-    fontSize:30,
-    fontWeight:'700',
-    color:Colors.secondary,                  
+  button: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 300,
+    margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
   },
-
-  inputViewStyle:{
-    marginVertical:Dimensions.get('window').height*0.05,
-    borderBottomColor:Colors.primary,
-    borderBottomWidth:1,
-    width:Dimensions.get('window').width*0.8,
+  secondaryButton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 300,
+    margin: 5
   },
-
-  inputStyle:{    
-    textAlign:'center',
-    justifyContent:'center',
-    padding:5,
-    fontSize:20,
-    fontWeight:'300',
-    color:'grey',        
+  text: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "600",
+    letterSpacing: 1.2
   },
-
-  buttonText:{
-    fontSize:30,
-    fontWeight:'500',    
+  secondaryText: {
+    color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
   },
-
-  buttonSize:{
-    width: Dimensions.get('window').width*0.25,
+  lightText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+  icon: {
+    padding: 5,
+    paddingRight: 10
   }
 });
+
