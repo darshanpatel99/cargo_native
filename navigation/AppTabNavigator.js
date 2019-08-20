@@ -11,14 +11,16 @@ import AddProductStack from './AddProductStackNavigator';
 import CartStack from './CartStackNavigator';
 import TestStack from './TestStackNavigator';
 import AccountStack from './AccountStackNavigator';
+import MessageStack from './MessageStackNavigator';
 
 const AppTabNavigator = createBottomTabNavigator(
   {
     Home: HomeStack,
     Account: AccountStack,
     AddProduct:AddProductStack,
-    Cart:CartStack,
-    Test:TestStack,
+    //Cart:CartStack,
+    Message:MessageStack,
+    //Test:TestStack,
   }
 );
 

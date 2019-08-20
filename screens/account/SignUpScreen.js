@@ -10,7 +10,6 @@ import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
-import {StackActions,  NavigationActions } from 'react-navigation';
 
 //importing packages related to the sign in
 import * as Facebook from 'expo-facebook';
