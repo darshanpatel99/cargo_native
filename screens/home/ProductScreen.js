@@ -110,13 +110,12 @@ export class ProductScreen extends Component {
             title='Buy Now'
             onPress={this.NavigateToCheckout}
           />
-
       );
     }
   }
 
   render() {
-    console.log('getting price as props ======> ' + this.state.price);
+    console.log('getting price as props ======> ' + this.state.id);
 
     return (
       
