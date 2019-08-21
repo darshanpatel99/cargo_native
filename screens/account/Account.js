@@ -247,7 +247,7 @@ onAuthStateChanged = user => {
             */}
             <View style={styles.viewStyle}>
             <Button full large primary rounded> 
-              <Text onPress={() => this.props.navigation.navigate('SignUp')}>Login</Text>
+              <Text onPress={() => this.props.navigation.navigate('Login')}>Login</Text>
             </Button>
 
             <Button full large primary rounded> 
