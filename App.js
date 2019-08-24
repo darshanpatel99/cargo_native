@@ -71,6 +71,8 @@ async function loadResourcesAsync() {
       'nunito-Medium':require('./assets/fonts/nunito/Nunito-Medium.ttf'),
       'nunito-Regular':require('./assets/fonts/nunito/Nunito-Regular.ttf'),
       'nunito-SemiBold':require('./assets/fonts/nunito/Nunito-SemiBold.ttf'),
+      'Roboto': require('./node_modules/native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('./node_modules/native-base/Fonts/Roboto_medium.ttf'),
       
     
     }),
