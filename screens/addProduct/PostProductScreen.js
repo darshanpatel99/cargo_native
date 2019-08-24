@@ -131,6 +131,13 @@ export default class PostProductScreen extends Component {
     //change the overlay visibility to visible
     this.setState({isOverlayVisible:true});
 
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+    if (user != null) {
+      this.state.Owner = user.uid;
+      //console.log(" State UID: " + this.state.userID);
+    }
+
   }
 
 

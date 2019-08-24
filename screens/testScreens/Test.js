@@ -1,20 +1,28 @@
-import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image, StyleSheet } from 'react-native';
-import Stripe from '../../components/payments/stripe';
-import Facebook from '../../components/Facebook/facebook'
+import React, {Component} from 'react';
+import {View, Text } from 'react-native';
+import Stripe from '../../components/payments/stripe'
 
-export default class TestScreen extends React.Component {
-  
+export default class TestScreen extends Component {
+
   constructor(){
     super();
   }
 
-  render(){
+  render() {
     return(
-      <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}><Stripe/>
+      <View style= {styles.TestContainer}> 
+        <Stripe/>
       </View>
     )
   }
-  
+
 }
 
+const styles = {
+  TestContainer: {
+    flex:1,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center'
+  }
+}

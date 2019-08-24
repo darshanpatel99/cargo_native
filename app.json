@@ -26,7 +26,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "example.expo.googlesignin",
+      "bundleIdentifier": "com.developer.cargo",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.572236256696-m327o3i0d6qvb73qu366hqmhvb47v38f"

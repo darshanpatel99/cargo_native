@@ -49,7 +49,6 @@ export default class Stripe extends React.Component {
             console.log(card)
             var token = card.id;
             if('card' in card) {
-              alert('card exist');
               this.sendTokenToStripe(token);
             } else {
               console.log(Object.keys(card))
@@ -82,6 +81,7 @@ export default class Stripe extends React.Component {
 
         //AWS lambda function call
         makeLambdaCal(token) {
+          try{
           fetch('https://5nhq1a2ccj.execute-api.us-west-1.amazonaws.com/dev/processStripePayment', {
             method: 'POST',
             headers: {
@@ -93,8 +93,17 @@ export default class Stripe extends React.Component {
               'stripeToken': token,
               'charge': '87',
             }),
+          })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            console.log('response JSon ' + JSON.stringify(responseJson))
+            alert(JSON.stringify(responseJson))
           });
-          console.log('success');
+
+        }
+        catch(error) {
+          console.log(error)
+        }
       }
 
 
@@ -124,8 +133,8 @@ export default class Stripe extends React.Component {
         
     
         render() {
-          const EnabledButton = <Button primary onPress={this.onPayment}><Text style={styles.payButtonText}> Pay Now</Text></Button>
-          const DisabledButton = <Button primary disabled onPress={this.onPayment} ><Text style={styles.payButtonText}>Pay Now</Text></Button>
+          const EnabledButton = <Button primary onPress={this.onPayment}><Text style={{paddingLeft: 10, paddingRight: 10, color: '#fff'}}> Pay Now</Text></Button>
+          const DisabledButton = <Button primary disabled onPress={this.onPayment} ><Text style={{paddingLeft: 10, paddingRight: 10}}>Pay Now</Text></Button>
 
           return (
             <View style={styles.mainContainer}>
@@ -163,7 +172,6 @@ const styles= {
   payButtonText: {
     paddingLeft: 10, 
     paddingRight: 10, 
-    color: '#fff',
-    fontWeight: 800
+    color: '#fff'
   }
 }
