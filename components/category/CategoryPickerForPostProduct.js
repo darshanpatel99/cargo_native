@@ -62,8 +62,21 @@ const items = [
         id: 13,
       },
     ],
+
   },
- 
+
+  {
+    name: 'SubCategories',
+    id: 1,
+    // these are the children or 'sub items'
+    children: [
+      {
+        name: 'Lala lalal',
+        id: 99
+      }
+    ]
+
+  }
 
 ];
 
@@ -71,11 +84,13 @@ export default class extends Component {
   constructor() {
     super();
     this.state = {
-      selectedItems: [],
+      selectedItems:[],
     };
   }
   onSelectedItemsChange = (selectedItems) => {
     this.setState({ selectedItems });
+    console.log(typeof selectedItems);
+    this.props.parentCallback(selectedItems);
   };
 
   render() {

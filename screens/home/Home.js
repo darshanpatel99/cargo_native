@@ -7,6 +7,8 @@ import ProductListComponents from '../../components/product/ProductListComponent
 //import ProductFilterBar from '../../components/navigation/ProductFilterBar';
 import Header from '../../components/headerComponents/Header';
 import { SearchBar } from 'react-native-elements';
+import RefineCategoryHomeScreen from '../../components/category/RefineCategoryHomeScreen'
+
 
 export default class HomeScreen extends React.Component {
 
@@ -17,17 +19,24 @@ export default class HomeScreen extends React.Component {
     this.state ={
       sort: {'All': ''},
       query:'',
+      filters: [],
     }
     //this.callbackFunction = this.callbackFunction.bind(this);
   }
 
   handleValues = (values) => {
-    this.setState({sort: values});
+    console.log('function called handleValues')
+    this.setState({filters: values});
   }
 
   handleQueryChange = query =>{
     {SearchFilterFunction}
     this.setState(state => ({ ...state, query: query || "" }));
+  }
+
+  callbackFunction = (childData) => {
+    this.setState({filters: childData})
+    console.log("from home ==> "+ childData)
   }
  
   render() {
@@ -43,17 +52,19 @@ export default class HomeScreen extends React.Component {
             value={this.state.query}    
            // onChangeText={text => this.handleSearch(text)}   
             //query={this.state.query}                        
-        /> 
+        />
+        <RefineCategoryHomeScreen parentCallback = {this.callbackFunction} />
+{/* 
         <View >
           <ProductListComponents handleValueChange={this.handleValues}/>
-        </View> 
+        </View> */}
 
         {/* <View style={{ flex: 0.8 }}>
           <ProductFilterBar />
         </View> */}
         
         <View style={{ flex: 6 }}>
-          <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}  searchText = {this.state.query}/>
+          <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}  searchText = {this.state.query} filters= {this.state.filters}/>
         </View>
 
       </View>

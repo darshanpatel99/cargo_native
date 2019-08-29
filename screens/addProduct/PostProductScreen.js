@@ -56,6 +56,7 @@ export default class PostProductScreen extends Component {
       downloadURLs : [],
       isOverlayVisible: false,
       User:null,
+      Category: 0,
       owner: "",
     }
 
@@ -74,7 +75,8 @@ export default class PostProductScreen extends Component {
     console.log('component did mount');
   }
 
-  componentWillMount() {
+   componentWillMount() {
+
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
@@ -127,7 +129,9 @@ export default class PostProductScreen extends Component {
       Flag : true,
       FavouriteUsers:[],
       TimeStamp: null,
-      UserClicks:[]
+      UserClicks:[],
+      Category: this.state.Category,
+
     }
 
     //Getting the current time stamp
@@ -258,6 +262,13 @@ export default class PostProductScreen extends Component {
     return images;
   }
 
+  //this functions gets the category id from the child component
+  callbackFunction = (childData) => {
+    this.setState({Category: childData[0]})
+    console.log("from post product screen ==> "+ typeof childData[0])
+  }
+
+
   render() {
     let { image } = this.state;
 
@@ -303,7 +314,7 @@ export default class PostProductScreen extends Component {
             </Item>
 
             {/* Pick category for the product */}
-            <CategoryPickerForPostProduct />
+            <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
 
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
             <Form>
