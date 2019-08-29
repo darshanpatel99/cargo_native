@@ -62,7 +62,7 @@ export default class HomeScreen extends React.Component {
         {/* <View style={{ flex: 0.8 }}>
           <ProductFilterBar />
         </View> */}
-
+        
         <View style={{ flex: 6 }}>
           <ProductCardFlatListDynamicLoad filtersAndSorts = {this.state.sort}  searchText = {this.state.query} filters= {this.state.filters}/>
         </View>

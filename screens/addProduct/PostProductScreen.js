@@ -57,7 +57,16 @@ export default class PostProductScreen extends Component {
       isOverlayVisible: false,
       User:null,
       Category: 0,
+      owner: "",
     }
+
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+    if (user != null) {
+      this.state.owner = user.uid;
+      console.log(" State UID ==> from  " + this.state.Owner);
+    }
+
   }
 
   componentDidMount() {
@@ -116,7 +125,7 @@ export default class PostProductScreen extends Component {
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
       Thumbnail : this.state.downloadURLs[0],
-      Owner : '',
+      Owner : this.state.owner,
       Flag : true,
       FavouriteUsers:[],
       TimeStamp: null,
@@ -134,13 +143,6 @@ export default class PostProductScreen extends Component {
 
     //change the overlay visibility to visible
     this.setState({isOverlayVisible:true});
-
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-    if (user != null) {
-      this.state.Owner = user.uid;
-      //console.log(" State UID: " + this.state.userID);
-    }
 
   }
 
