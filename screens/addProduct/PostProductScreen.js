@@ -31,6 +31,7 @@ import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
 import firebase from '../../Firebase.js';
 import MyHeader from '../../components/headerComponents/Header';
+import Login from '../../components/navigation/NavigateLogin';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
 
@@ -107,9 +108,7 @@ export default class PostProductScreen extends Component {
     // This value can also be accessed via: firebase.auth().currentUser
     this.setState({ User: user });
     //navigate to the account screen if the user is not logged in
-    if(user==null){
-      this.props.navigation.navigate('Account');
-    }
+
   };
 
 
@@ -260,6 +259,16 @@ export default class PostProductScreen extends Component {
 
   render() {
     let { image } = this.state;
+
+    // if(this.state.User==null){
+    //   return (
+    //     <View style={{flex:1}}>
+    //       <MyHeader/>
+    //       <Login />
+          
+    //     </View>
+    //   )
+    // }
 
     return (
 
