@@ -37,8 +37,7 @@
     "android": {
 
         "package": "com.developer.cargo",
-
-        "googleServicesFile": "/Users/sachin/Cargo/cargo-native-v1/google-services.json"
+        "googleServicesFile": "google-services.json"
 
     }
   }
