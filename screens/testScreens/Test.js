@@ -11,18 +11,18 @@ export default class TestScreen extends Component {
   render() {
     return(
       <View style= {styles.TestContainer}> 
-        <Stripe/>
+        {/* <Stripe/> */}
       </View>
     )
   }
 
 }
 
-const styles = {
-  TestContainer: {
-    flex:1,
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center'
-  }
-}
+// const styles = {
+//   TestContainer: {
+//     flex:1,
+//     flexDirection:'row',
+//     alignItems:'center',
+//     justifyContent:'center'
+//   }
+// }
