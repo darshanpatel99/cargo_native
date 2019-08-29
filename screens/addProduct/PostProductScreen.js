@@ -66,7 +66,7 @@ export default class PostProductScreen extends Component {
     console.log('component did mount');
   }
 
-  componentWillMount() {
+   componentWillMount() {
 
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;

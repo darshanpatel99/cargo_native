@@ -65,6 +65,19 @@ const items = [
 
   },
 
+  {
+    name: 'SubCategories',
+    id: 1,
+    // these are the children or 'sub items'
+    children: [
+      {
+        name: 'Lala lalal',
+        id: 99
+      }
+    ]
+
+  }
+
 ];
 
 export default class extends Component {
