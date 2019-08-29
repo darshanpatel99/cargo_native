@@ -65,35 +65,11 @@ const items = [
     ],
 
   },
-
-  {
-    name: 'Sorts',
-    id: 1,
-    children: [
-      {
-        name: 'All',
-        id: 1,
-      },
-      {
-        name: 'High to Low',
-        id: 2,
-      },
-      {
-        name: 'Low to High',
-        id: 3,
-      },
-      {
-        name: 'New',
-        id: 4,
-      }
-    ],
-
-  },
  
 
 ];
 
-export default class extends Component {
+export default class RefineCategoryHomeScreen extends Component {
   constructor() {
     super();
     this.state = {
@@ -102,8 +78,11 @@ export default class extends Component {
   }
   onSelectedItemsChange = (selectedItems) => {
     this.setState({ selectedItems });
+    this.props.parentCallback(selectedItems);
     console.log(selectedItems)
   };
+
+
 
   render() {
     return (
@@ -118,9 +97,11 @@ export default class extends Component {
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
-          single={true}
+          single={false}
           showChips={true}
-          showCancelButton={true} 
+          showCancelButton={true}
+          showRemoveAll ={true}
+          removeAllText= "Remove All"
           colors= {{chipColor: Colors.primary}}
         //   selectToggleIconComponent = "filter-list"
             styles = {{

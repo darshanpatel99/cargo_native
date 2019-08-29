@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
+import {Button} from 'react-native';
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent'
-
-
-
-
+import MainButton from '../components/theme/MainButton'
+import StripePayment from '../components/payments/stripe'
 
 export default class CartHandler extends Component {
 
@@ -30,6 +29,12 @@ export default class CartHandler extends Component {
     componentDidMount(prevProps) {
 
         this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
+
+    }
+    //strip function
+    stripeIt=()=>{
+
+
 
     }
 
@@ -110,7 +115,11 @@ export default class CartHandler extends Component {
           />
 
           </ScrollView>
-          
+          <View style={{flexDirection: 'row', justifyContent:'center'}}>
+              <MainButton title= 'Proceed to Checkout' />
+              <Button onPress={this.stripeIt} title='Stripe IT'/>
+            </View>
+            <StripePayment/>
           </View>
         );
     }
