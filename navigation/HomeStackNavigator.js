@@ -5,6 +5,7 @@ import TabBarIcon from '../components/navigation/TabBarIcon';
 import HomeScreen from '../screens/home/Home';
 import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
+import EditProductScreen from '../screens/home/EditProductScreen';
 
 export default (HomeStack = createStackNavigator({
   Home: {
@@ -33,6 +34,15 @@ export default (HomeStack = createStackNavigator({
       elevation: 0,
       shadowOpacity: 0
     }
+  },
+
+  EditProduct: {
+    screen: EditProductScreen,
+    navigationOptions: {
+      header: null,
+      
+    },
+
   },
 
 }));
