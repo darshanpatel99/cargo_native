@@ -15,9 +15,6 @@ import AddUser from '../../functions/AddUser';
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
 
-
-
-
 export default class SignUpScreen extends Component {
   FacebookApiKey= '2872116616149463';
 

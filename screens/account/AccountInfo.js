@@ -450,10 +450,10 @@ pictureHolder:{
 
 settingsButton:{
   flexDirection:'row',
-  justifyContent:'flex-start',
+  justifyContent:'flex-end',
   width:Dimensions.get('window').width*0.078,      
   marginRight:Dimensions.get('window').width*0.05,
-  marginTop:Dimensions.get('window').height*0.02,       
+  marginTop:Dimensions.get('window').height*0.20,       
   shadowColor: 'black',
   shadowOpacity: 0.2,      
   shadowOffset: {

@@ -63,17 +63,16 @@ export class ProductScreen extends Component {
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
     }
+
   }
 
   NavigateToCheckout() {
-    console.log('checkout called');
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('Checkoutscreen', {TotalCartAmount:100})
   };
 
   NavigateToEdit(){
-    console.log(' called');
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     //navigate('EditProduct');
@@ -118,8 +117,9 @@ export class ProductScreen extends Component {
   };
 
   CheckIfProductAlreadyInCart() {
-    console.log("Running after")
+
     if (this.state.owner === this.state.userID ) {
+
       return (
           <Button
             title='Edit Your product'
