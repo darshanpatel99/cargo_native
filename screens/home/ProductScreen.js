@@ -8,7 +8,10 @@ import {
   TouchableHighlight,
   Dimensions
 } from 'react-native';
-import { FontAwesome, AntDesign } from '@expo/vector-icons';
+import { StackActions, NavigationActions } from 'react-navigation';
+import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
+import FlipCard from 'react-native-flip-card';
+import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
@@ -66,21 +69,43 @@ export class ProductScreen extends Component {
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
     }
+
   }
 
   NavigateToCheckout() {
-    console.log('checkout called');
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('Checkoutscreen', {TotalCartAmount:100})
   };
 
   NavigateToEdit(){
-    console.log(' called');
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Account');
+    //navigate('EditProduct');
+
+    const data = {
+      title:this.state.title,
+      price:this.state.price,
+      pictures:this.state.pictures,
+      description:this.state.description,
+      id:this.state.id,
+    }
+    this.resetStack(data);
   };
+
+  resetStack = (data) => {
+    this.props
+      .navigation
+      .dispatch(StackActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({
+            routeName: 'EditProduct',
+            params: { data: data },
+          }),
+        ],
+      }))
+   }
 
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
@@ -109,8 +134,9 @@ export class ProductScreen extends Component {
   }
 
   CheckIfProductAlreadyInCart() {
-    console.log("Running after")
+
     if (this.state.owner === this.state.userID ) {
+
       return (
           <Button
             title='Edit Your product'

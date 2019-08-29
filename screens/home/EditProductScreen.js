@@ -31,10 +31,9 @@ import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
 import firebase from '../../Firebase.js';
 import MyHeader from '../../components/headerComponents/Header';
-import Login from '../../components/navigation/NavigateLogin';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
-
+import { StackActions, NavigationActions } from 'react-navigation';
 import uuid from 'react-native-uuid';
 
 
@@ -44,9 +43,12 @@ let storageRef;
 //Success Image Url
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 
-export default class PostProductScreen extends Component {
+export default class EditProductScreen extends Component {
   constructor(props) {
     super(props);
+    const{navigation} = this.props;
+    const reference = navigation.getParam('data');
+    this.productRef = firebase.firestore().collection('Products').doc(reference.id + ''),
     storageRef = firebase.storage().ref();
     this.state={
       title : "",
@@ -57,27 +59,38 @@ export default class PostProductScreen extends Component {
       downloadURLs : [],
       isOverlayVisible: false,
       User:null,
-      Category: 0,
       owner: "",
+      
     }
 
     //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-    if (user != null) {
-      this.state.owner = user.uid;
-      console.log(" State UID ==> from  " + this.state.Owner);
-    }
+    // let user = firebase.auth().currentUser;
+    // if (user != null) {
+    //   this.state.owner = user.uid;
+    //   console.log(" State UID ==> from  " + this.state.Owner);
+    // }
 
   }
 
   componentDidMount() {
-    this.getPermissionAsync();
-    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    // this.getPermissionAsync();
+    // this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
+
+    const{navigation} = this.props;
+
+    const newData = navigation.getParam('data');
+
+    this.setState({
+        title: newData.title,
+        price:newData.price,
+        image:newData.pictures,
+        downloadURLs:newData.pictures,
+        description:newData.description,
+    })
   }
 
-   componentWillMount() {
-
+  componentWillMount() {
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
@@ -90,60 +103,60 @@ export default class PostProductScreen extends Component {
 
   componentWillUnmount() {
     // Clean up: remove the listener
-    this._unsubscribe();
+   // this._unsubscribe();
   }
  
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      console.log('ask permission');
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
+//   getPermissionAsync = async () => {
+//     if (Constants.platform.ios) {
+//       console.log('ask permission');
+//       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+//       if (status !== 'granted') {
+//         alert('Sorry, we need camera roll permissions to make this work!');
+//       }
+//     }
+//   };
 
   //listens to the change in auth state
-  onAuthStateChanged = user => {
-    // if the user logs in or out, this will be called and the state will update.
-    // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: user });
-    //navigate to the account screen if the user is not logged in
-
-  };
+//   onAuthStateChanged = user => {
+//     // if the user logs in or out, this will be called and the state will update.
+//     // This value can also be accessed via: firebase.auth().currentUser
+//     this.setState({ User: user });
+//     //navigate to the account screen if the user is not logged in
+//     if(user==null){
+//       this.props.navigation.navigate('Account');
+//     }
+//   };
 
 
   //post the product
-  postTheProduct = async() =>{
+//   postTheProduct = async() =>{
   
-    console.log('Download urls --> '+this.state.downloadURLs)
-    var data = {
-      Description : this.state.description,
-      Name : this.state.title,
-      Price : this.state.price,
-      Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.downloadURLs[0],
-      Owner : this.state.owner,
-      Flag : true,
-      FavouriteUsers:[],
-      TimeStamp: null,
-      UserClicks:[],
-      Category: this.state.Category,
+//     console.log('Download urls --> '+this.state.downloadURLs)
+//     var data = {
+//       Description : this.state.description,
+//       Name : this.state.title,
+//       Price : this.state.price,
+//       Pictures : this.state.downloadURLs,
+//       Thumbnail : this.state.downloadURLs[0],
+//       Owner : this.state.owner,
+//       Flag : true,
+//       FavouriteUsers:[],
+//       TimeStamp: null,
+//       UserClicks:[]
+//     }
 
-    }
+//     //Getting the current time stamp
+//     var currentDate = new Date();
+//     data.TimeStamp = currentDate.getTime();
+//     //Posting the product
+//     PostProduct(data);
+//     console.log("Product Posted---->" + data);
 
-    //Getting the current time stamp
-    var currentDate = new Date();
-    data.TimeStamp = currentDate.getTime();
-    //Posting the product
-    PostProduct(data);
-    console.log("Product Posted---->" + data);
+//     //change the overlay visibility to visible
+//     this.setState({isOverlayVisible:true});
 
-    //change the overlay visibility to visible
-    this.setState({isOverlayVisible:true});
-
-  }
+//   }
 
 
   /**
@@ -215,15 +228,45 @@ export default class PostProductScreen extends Component {
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
-    this.uploadImageToFirebase(array);
+    //this.uploadImageToFirebase(array);
     array.splice(index, 1);
-    this.setState({ image: array });
+    var fireArray = [...this.state.downloadURLs];
+    fireArray.splice(index,1);
+    //console.log(array);
+    this.setState({ image: array, downloadURLs:fireArray });
+  }
+
+  saveChanges = async()=>{
+
+    console.log('this is a length of the downloadURLs array' + this.state.downloadURLs.length);
+    this.productRef.update({
+        Name:this.state.title,
+        Pictures:this.state.downloadURLs,
+        Price:this.state.price,
+        Thumbnail:this.state.downloadURLs[0], 
+        Description:this.state.description,       
+    });
+
+    this.setState({isOverlayVisible:true});
   }
 
   goToHome=()=>{
     this.setState({isOverlayVisible:!this.state.isOverlayVisible});
-    this.props.navigation.navigate('Home');
+    this.resetStack();
   }
+
+  resetStack = () => {
+    this.props
+      .navigation
+      .dispatch(StackActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({
+            routeName: 'Home',
+          }),
+        ],
+      }))
+   }
 
 
   _renderImages() {
@@ -261,25 +304,8 @@ export default class PostProductScreen extends Component {
     return images;
   }
 
-  //this functions gets the category id from the child component
-  callbackFunction = (childData) => {
-    this.setState({Category: childData[0]})
-    console.log("from post product screen ==> "+ typeof childData[0])
-  }
-
-
   render() {
     let { image } = this.state;
-
-    // if(this.state.User==null){
-    //   return (
-    //     <View style={{flex:1}}>
-    //       <MyHeader/>
-    //       <Login />
-          
-    //     </View>
-    //   )
-    // }
 
     return (
 
@@ -323,7 +349,7 @@ export default class PostProductScreen extends Component {
             </Item>
 
             {/* Pick category for the product */}
-            <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
+            <CategoryPickerForPostProduct />
 
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
             <Form>
@@ -358,8 +384,8 @@ export default class PostProductScreen extends Component {
               margin: 10
             }}
           >
-            <Button style={styles.postAdButton} onPress={this.postTheProduct}>
-              <Text>Post Ad</Text>
+            <Button style={styles.postAdButton} onPress={this.saveChanges}>
+              <Text>Save changes</Text>
             </Button>
           </View>
         </Container>
