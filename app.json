@@ -37,7 +37,6 @@
     "android": {
 
         "package": "com.developer.cargo",
-
         "googleServicesFile": "google-services.json"
 
     }

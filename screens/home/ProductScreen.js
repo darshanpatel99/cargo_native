@@ -3,7 +3,6 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  Image,
   Text,
   Button,
   TouchableHighlight,
@@ -15,9 +14,13 @@ import FlipCard from 'react-native-flip-card';
 import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SliderBox } from 'react-native-image-slider-box';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import uuid from 'react-native-uuid';
+import ReportAd from '../../functions/ReportAd';
 
+
+let storageRef;
 export class ProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -29,6 +32,8 @@ export class ProductScreen extends Component {
     const pictures = navigation.getParam('pictures');
     const id = navigation.getParam('itemId');
     const owner = navigation.getParam('owner');
+
+    //storageRef = firebase.storage().ref();
 
     this.state = {
       pictures: [],
@@ -54,6 +59,7 @@ export class ProductScreen extends Component {
     this.NavigateToCheckout = this.NavigateToCheckout.bind(this);
     this.NavigateToEdit = this.NavigateToEdit.bind(this);
     this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(this);
+    this.flagTheItem = this.flagTheItem.bind(this);
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -115,6 +121,17 @@ export class ProductScreen extends Component {
       )
     };
   };
+
+  flagTheItem(){
+    var documentID = uuid.v1();
+    console.log(documentID)
+    //this.storageRef.collection("FlaggedItems").doc(flaggedITems).set({productId: this.state.id});
+    var data = {
+      ProductId : this.state.id,
+    }
+    ReportAd(data);
+    alert('Ad was reported, Thanks for your feedback!')
+  }
 
   CheckIfProductAlreadyInCart() {
 
@@ -190,7 +207,11 @@ export class ProductScreen extends Component {
         {/* </View> */}
 
         </ScrollView>
-
+         <View >
+           <TouchableOpacity onPress={this.flagTheItem}>
+           <Text style={styles.reportAd}> Report Ad </Text>
+           </TouchableOpacity>
+         </View>
         <View style={styles.BottomPart}>
           {this.CheckIfProductAlreadyInCart()}
         </View>
@@ -300,5 +321,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingLeft: 10,
     paddingRight: 10
+  },
+  reportAd: {
+    color: Colors.primary,
+    alignSelf: 'flex-end',
   }
 });
