@@ -36,8 +36,6 @@ export default class AccountInfo extends Component {
      newPicture:[],
      currentFolio:'',     
    }
-   
-   
 
    this.ref.onSnapshot(doc => {
      this.setState({

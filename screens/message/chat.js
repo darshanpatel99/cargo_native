@@ -4,22 +4,25 @@ import firebase from '../../Firebase';
 
 
 export default class TestScreen extends React.Component {
-  state = { user: null };
+
+  state = { 
+    User: null 
+  };
  
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
   }
- 
+  
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
   }
- 
+  
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ user });
+    this.setState({ User: user });
   };
  
   loginAsync = async () => {
@@ -27,21 +30,6 @@ export default class TestScreen extends React.Component {
     navigate('Account');
   };
  
-  async logoutAsync() {
-    try {
-      await firebase.auth().signOut();
-    } catch ({ message }) {
-      alert(message);
-    }
-  }
- 
-  toggleAuth = () => {
-    if (!!this.state.user) {
-      this.logoutAsync();
-    } else {
-      this.loginAsync();
-    }
-  };
  
   render() {
     const { user } = this.state;
@@ -57,14 +45,12 @@ export default class TestScreen extends React.Component {
         );
     }
     else{
-        return (
-        
+        return (   
             <View style={styles.viewStyle}>
               <Button title = "Go to login" onPress={() => this.props.navigation.navigate('Account')} />
-            </View>
-
-             
+            </View>  
           );
+
     }
   }
 }
