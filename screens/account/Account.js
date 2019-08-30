@@ -39,17 +39,21 @@ export default class AccountScreen extends React.Component {
         
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.onSnapshot(doc => {
+        this.setState({
+        data: doc.data(),
+        name:doc.data().FirstName + ' ' + doc.data().LastName,
+        globalAddress:doc.data().City + ', ' + doc.data().Country,
+        }); 
+    });
+  
+
     }
+    
 
-    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    // this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-    this.ref.onSnapshot(doc => {
-      this.setState({
-      data: doc.data(),
-      name:doc.data().FirstName + ' ' + doc.data().LastName,
-      globalAddress:doc.data().City + ', ' + doc.data().Country,
-      }); 
-  });
 
 }
 
@@ -61,6 +65,7 @@ componentDidMount() {
 
 componentWillUnmount() {
   // Clean up: remove the listener
+  console.log('COMPonenet mount----')
   this._unsubscribe();
 }
 
@@ -392,6 +397,7 @@ onAuthStateChanged = user => {
   
 
   render() {
+    const {navigate} = this.props.navigation;
     if(this.state.User != null){
 
       if(this.state.editMode){
@@ -510,17 +516,17 @@ onAuthStateChanged = user => {
 
               <View style={[styles.buttons,styles.marginBottom]}>
                 <View style={styles.prodInfoButtons}>
-                  <Button full large primary rounded>
+                  <Button full large primary rounded onPress={() => navigate('Listing', {id:this.state.userID})}>
                     <Text style={[styles.buttonText,{color:'white'}]}>Listing</Text>
                   </Button>
                 </View>
                 <View style={styles.prodInfoButtons}>
-                  <Button full  large primary rounded>
+                  <Button full  large primary rounded onPress={() => navigate('Bought', {id:this.state.userID})}>
                     <Text style={[styles.buttonText,{color:'white'}]}>Bought</Text>
                   </Button>
                 </View>
                 <View style={styles.prodInfoButtons}>
-                  <Button full large primary rounded>
+                  <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userID})}>
                     <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
                   </Button>
                 </View>
@@ -562,7 +568,7 @@ onAuthStateChanged = user => {
             />
             */}
             <View style={styles.viewStyle}>
-            <Button full large primary rounded> 
+            <Button full large primary rounded > 
               <Text onPress={() => this.props.navigation.navigate('Login')}>Login</Text>
             </Button>
 
