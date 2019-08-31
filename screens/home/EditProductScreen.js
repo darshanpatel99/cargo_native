@@ -60,7 +60,8 @@ export default class EditProductScreen extends Component {
       isOverlayVisible: false,
       User:null,
       owner: "",
-      
+      Category: 0,
+      Avability:[],
     }
 
     //checking the current user and setting uid
@@ -87,6 +88,8 @@ export default class EditProductScreen extends Component {
         image:newData.pictures,
         downloadURLs:newData.pictures,
         description:newData.description,
+        Category: newData.Category,
+        Avability: newData.Avability,
     })
   }
 
@@ -244,7 +247,9 @@ export default class EditProductScreen extends Component {
         Pictures:this.state.downloadURLs,
         Price:this.state.price,
         Thumbnail:this.state.downloadURLs[0], 
-        Description:this.state.description,       
+        Description:this.state.description,
+        Category: this.state.Category,
+        Avability: this.state.Avability,    
     });
 
     this.setState({isOverlayVisible:true});
@@ -388,7 +393,7 @@ export default class EditProductScreen extends Component {
             </Form>
 
             <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
-            
+
           </Content>
           <View
             style={{
