@@ -29,6 +29,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
+import DaysPickerForPostProductScreen from '../../components/category/DaysPickerForPostProductScreen';
 import firebase from '../../Firebase.js';
 import MyHeader from '../../components/headerComponents/Header';
 import Login from '../../components/navigation/NavigateLogin';
@@ -58,6 +59,7 @@ export default class PostProductScreen extends Component {
       isOverlayVisible: false,
       User:null,
       Category: 0,
+      Avability:[],
       owner: "",
     }
 
@@ -130,7 +132,7 @@ export default class PostProductScreen extends Component {
       TimeStamp: null,
       UserClicks:[],
       Category: this.state.Category,
-
+      Avability: this.state.Avability,
     }
 
     //Getting the current time stamp
@@ -267,26 +269,20 @@ export default class PostProductScreen extends Component {
     console.log("from post product screen ==> "+ typeof childData[0])
   }
 
+  avabilitycallbackFunction = (childData) => {
+    this.setState({Avability: childData})
+    console.log("product screen ==> "+ JSON.stringify(childData));
+  }
+
 
   render() {
     let { image } = this.state;
-
-    // if(this.state.User==null){
-    //   return (
-    //     <View style={{flex:1}}>
-    //       <MyHeader/>
-    //       <Login />
-          
-    //     </View>
-    //   )
-    // }
-
     return (
-
       <View style={{flex:1}}>
         <MyHeader/>
       
       <KeyboardAvoidingView
+
         style={{ flex: 1 }}
         behavior='padding'
         keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
@@ -349,6 +345,9 @@ export default class PostProductScreen extends Component {
                 />
               )}
             </Form>
+
+            <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
+          
           </Content>
           <View
             style={{
