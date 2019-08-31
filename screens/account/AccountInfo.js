@@ -10,7 +10,7 @@ import { Overlay } from 'react-native-elements';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
-// import uuid from 'react-native-uuid';
+import uuid from 'react-native-uuid';
 
 
 
