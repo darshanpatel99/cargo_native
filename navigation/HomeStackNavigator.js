@@ -22,8 +22,6 @@ export default (HomeStack = createStackNavigator({
       title: 'Detail',
       
     },
- 
-
   },
 
   StripeScreen: {
@@ -37,7 +35,8 @@ export default (HomeStack = createStackNavigator({
   Checkoutscreen: {
     screen: CheckoutScreen,
     navigationOptions: {
-      header: null,
+      title: 'Checkout',
+      //header: null,
     },
     headerStyle: {
       elevation: 0,
