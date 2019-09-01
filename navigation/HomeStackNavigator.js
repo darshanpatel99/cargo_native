@@ -6,6 +6,7 @@ import HomeScreen from '../screens/home/Home';
 import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
 import EditProductScreen from '../screens/home/EditProductScreen';
+import StripeScreen from '../screens/payments/StripeScreen'
 
 export default (HomeStack = createStackNavigator({
   Home: {
@@ -22,6 +23,14 @@ export default (HomeStack = createStackNavigator({
       
     },
   },
+
+  StripeScreen: {
+    screen: StripeScreen,
+    navigationOptions: {
+      title: 'Payment',  
+    },
+  },
+
 
   Checkoutscreen: {
     screen: CheckoutScreen,
