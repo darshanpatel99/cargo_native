@@ -271,15 +271,6 @@ export default class PostProductScreen extends Component {
   render() {
     let { image } = this.state;
 
-    // if(this.state.User==null){
-    //   return (
-    //     <View style={{flex:1}}>
-    //       <MyHeader/>
-    //       <Login />
-          
-    //     </View>
-    //   )
-    // }
 
     return (
 

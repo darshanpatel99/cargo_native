@@ -75,7 +75,7 @@ export class ProductScreen extends Component {
   NavigateToCheckout() {
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Checkoutscreen', {TotalCartAmount:100})
+    navigate('Checkoutscreen', {TotalCartAmount:this.state.price})
   };
 
   NavigateToEdit(){
