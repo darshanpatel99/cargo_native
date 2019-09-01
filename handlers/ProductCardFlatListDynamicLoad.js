@@ -73,7 +73,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           searchProducts: []
         };
         this.searchArray = [];
-        this.ref = firebase.firestore().collection('Products');
+        this.ref = firebase.firestore().collection('Products').where('Status', '==', 'active');
         this.unsubscribe = null;
       }
 

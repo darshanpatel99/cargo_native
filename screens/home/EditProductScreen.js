@@ -60,21 +60,23 @@ export default class EditProductScreen extends Component {
       isOverlayVisible: false,
       User:null,
       owner: "",
+
+      canUpload:true,
       
     }
 
     //checking the current user and setting uid
-    // let user = firebase.auth().currentUser;
-    // if (user != null) {
-    //   this.state.owner = user.uid;
-    //   console.log(" State UID ==> from  " + this.state.Owner);
-    // }
+    let user = firebase.auth().currentUser;
+    if (user != null) {
+      this.state.owner = user.uid;
+      console.log(" State UID ==> from  " + this.state.Owner);
+    }
 
   }
 
   componentDidMount() {
     // this.getPermissionAsync();
-    // this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
 
     const{navigation} = this.props;
@@ -103,30 +105,30 @@ export default class EditProductScreen extends Component {
 
   componentWillUnmount() {
     // Clean up: remove the listener
-   // this._unsubscribe();
+    this._unsubscribe();
   }
  
 
-//   getPermissionAsync = async () => {
-//     if (Constants.platform.ios) {
-//       console.log('ask permission');
-//       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-//       if (status !== 'granted') {
-//         alert('Sorry, we need camera roll permissions to make this work!');
-//       }
-//     }
-//   };
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  };
 
   //listens to the change in auth state
-//   onAuthStateChanged = user => {
-//     // if the user logs in or out, this will be called and the state will update.
-//     // This value can also be accessed via: firebase.auth().currentUser
-//     this.setState({ User: user });
-//     //navigate to the account screen if the user is not logged in
-//     if(user==null){
-//       this.props.navigation.navigate('Account');
-//     }
-//   };
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ User: user });
+    //navigate to the account screen if the user is not logged in
+    if(user==null){
+      this.props.navigation.navigate('Account');
+    }
+  };
 
 
   //post the product
@@ -173,7 +175,8 @@ export default class EditProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]),
+        canUpload:false,
       });
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
@@ -218,6 +221,9 @@ export default class EditProductScreen extends Component {
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
         console.log('File available at', downloadURL);
         that.state.downloadURLs.push(downloadURL);
+        that.setState({
+          canUpload:true,
+        })
       });
     });
 
@@ -304,6 +310,39 @@ export default class EditProductScreen extends Component {
     return images;
   }
 
+   saveButton =() =>{
+     if(this.state.canUpload){
+      return(
+        <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: 10
+            }}
+          >
+            <Button style={styles.postAdButton} onPress={this.saveChanges}>
+              <Text>Save changes</Text>
+            </Button>
+          </View>
+      );
+     }
+     else{
+      <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 10
+      }}
+    >
+      <Button disabled style={styles.postAdButton} onPress={this.saveChanges}>
+        <Text>Save changes</Text>
+      </Button>
+    </View>
+     }
+   }
+
   render() {
     let { image } = this.state;
 
@@ -376,18 +415,7 @@ export default class EditProductScreen extends Component {
               )}
             </Form>
           </Content>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              margin: 10
-            }}
-          >
-            <Button style={styles.postAdButton} onPress={this.saveChanges}>
-              <Text>Save changes</Text>
-            </Button>
-          </View>
+          {this.saveButton()}
         </Container>
         </KeyboardAvoidingView>
 
