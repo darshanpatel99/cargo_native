@@ -21,14 +21,13 @@ export default (HomeStack = createStackNavigator({
       title: 'Detail',
       
     },
- 
-
   },
 
   Checkoutscreen: {
     screen: CheckoutScreen,
     navigationOptions: {
-      header: null,
+      title: 'Checkout',
+      //header: null,
     },
     headerStyle: {
       elevation: 0,

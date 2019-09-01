@@ -14,7 +14,6 @@ export default class TestScreen extends React.Component {
     this.showAlert = this.showAlert.bind(this);
   };
 
-
   showAlert(){
     this.setState({
       showAlert: true
