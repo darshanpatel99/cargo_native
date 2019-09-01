@@ -130,6 +130,7 @@ export default class PostProductScreen extends Component {
       TimeStamp: null,
       UserClicks:[],
       Category: this.state.Category,
+      Status:'active',
 
     }
 
@@ -215,9 +216,13 @@ export default class PostProductScreen extends Component {
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
-    this.uploadImageToFirebase(array);
+    //this.uploadImageToFirebase(array);
     array.splice(index, 1);
-    this.setState({ image: array });
+
+    var fireArray = [...this.state.downloadURLs];
+    fireArray.splice(index,1);
+    //console.log(array);
+    this.setState({ image: array, downloadURLs:fireArray });
   }
 
   goToHome=()=>{

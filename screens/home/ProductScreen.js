@@ -48,7 +48,8 @@ export class ProductScreen extends Component {
       owner,
       userID:'',
       itemAlreadyInCart: false,
-      buttonTitle: 'Add to Cart'
+      buttonTitle: 'Add to Cart',
+      soldArray:[],
     };
     onLayout = e => {
       this.setState({
@@ -64,12 +65,46 @@ export class ProductScreen extends Component {
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
+    
+
     if (user != null) {
-        
+      const that = this;
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.get().then(function(doc) {
+        if (doc.exists) {
+            console.log("Document data:", doc.data().SoldProducts);
+            that.setState({
+              soldArray:doc.data().SoldProducts,
+            })
+            console.log(this.state.soldArray);
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+    
+    
     }
 
+  }
+
+  getData =()=>{
+//     var docRef = db.collection("cities").doc("SF");
+
+// docRef.get().then(function(doc) {
+//     if (doc.exists) {
+//         console.log("Document data:", doc.data());
+//     } else {
+//         // doc.data() will be undefined in this case
+//         console.log("No such document!");
+//     }
+// }).catch(function(error) {
+//     console.log("Error getting document:", error);
+// });
   }
 
   NavigateToCheckout() {
@@ -138,10 +173,17 @@ export class ProductScreen extends Component {
     if (this.state.owner === this.state.userID ) {
 
       return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
           <Button
             title='Edit Your product'
             onPress={this.NavigateToEdit}
           />
+          <Button
+            title='Mark as sold'
+            onPress={this.sooldItem}
+          />
+        </View>
+          
       );
     } else {
       return (
@@ -152,6 +194,24 @@ export class ProductScreen extends Component {
           />
       );
     }
+  }
+
+  sooldItem =() =>{
+    console.log(this.state.soldArray);
+    var tempArray = [...this.state.soldArray];
+    tempArray.push(this.state.id)
+
+    this.ref.update({
+      SoldProducts:tempArray,
+      
+    })  
+    var updateProduct = firebase.firestore().collection('Products').doc(this.state.id);
+
+    updateProduct.update({
+      Status:'sold',
+    })
+
+
   }
 
   render() {

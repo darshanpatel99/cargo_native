@@ -73,7 +73,7 @@ onAuthStateChanged = user => {
   // if the user logs in or out, this will be called and the state will update.
   // This value can also be accessed via: firebase.auth().currentUser
   this.setState({ User: user });
-};
+};  
 
   //Function to logo out user
   async logoutAsync(props) {
