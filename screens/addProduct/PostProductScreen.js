@@ -35,7 +35,7 @@ import MyHeader from '../../components/headerComponents/Header';
 import Login from '../../components/navigation/NavigateLogin';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
-
+import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 
 
@@ -50,6 +50,7 @@ export default class PostProductScreen extends Component {
     super(props);
     storageRef = firebase.storage().ref();
     this.state={
+      showAlert: true,
       title : "",
       description : "",
       price : "",
@@ -69,7 +70,7 @@ export default class PostProductScreen extends Component {
       this.state.owner = user.uid;
       console.log(" State UID ==> from  " + this.state.Owner);
     }
-
+    this.showAlert = this.showAlert.bind(this);
   }
 
   componentDidMount() {
@@ -95,6 +96,19 @@ export default class PostProductScreen extends Component {
     this._unsubscribe();
   }
  
+  showAlert(){
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: true
+    });
+    navigate('Account');
+  };
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
@@ -276,111 +290,153 @@ export default class PostProductScreen extends Component {
 
 
   render() {
+
     let { image } = this.state;
-    return (
-      <View style={{flex:1}}>
-        <MyHeader/>
-      
-      <KeyboardAvoidingView
-
-        style={{ flex: 1 }}
-        behavior='padding'
-        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
-      >
-        <Container style={styles.mainConatiner}>
-          <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
-            <Card>
-              <TouchableOpacity onPress={this._pickImage}>
-                <CardItem style={styles.imageUploadStyle}>
-                  <Foundation name='camera' size={32} />
-                </CardItem>
-              </TouchableOpacity>
-
-              <CardItem>
-                <ScrollView style={styles.scrollStyle} horizontal={true}>
-                  {this._renderImages()}
-                </ScrollView>
-              </CardItem>
-            </Card>
-
-            <Item rounded style={{ marginBottom: 10 }}>
-              <Input placeholder='Title' 
-                name="title" 
-                onChangeText={(text)=>this.setState({title:text})}
-                value={this.state.title}/>
-            </Item>
-            <Item rounded style={{ marginBottom: 10 }}>
-              <Foundation name='dollar' size={32} style={{ padding: 10 }} />
-              <Input keyboardType='numeric' 
-                placeholder='0.00'
-                name="price"
-                onChangeText={(text)=>this.setState({price:text})}
-                value={this.state.price} />
-            </Item>
-
-            {/* Pick category for the product */}
-            <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
-
-            {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
-            <Form>
-              {Platform.OS === 'ios' ? (
-                <Textarea
-                  rowSpan={5}
-                  bordered
-                  placeholder='Description'
-                  name="description" 
-                  onChangeText={(text)=>this.setState({description:text})}
-                  value={this.state.description}
-                  style={styles.iosDescriptionStyle}
-                />
-              ) : (
-                <Textarea
-                  rowSpan={5}
-                  bordered
-                  placeholder='Description'
-                  name="description" 
-                  onChangeText={(text)=>this.setState({description:text})}
-                  value={this.state.description}
-                  style={styles.androidDescriptionStyle}
-                />
-              )}
-            </Form>
-
-            <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
-          
-          </Content>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              margin: 10
-            }}
-          >
-            <Button style={styles.postAdButton} onPress={this.postTheProduct}>
-              <Text>Post Ad</Text>
-            </Button>
-          </View>
-        </Container>
-        </KeyboardAvoidingView>
-
-        <Overlay
-          isVisible={this.state.isOverlayVisible}
-          windowBackgroundColor="rgba(255, 255, 255, .5)"
-          overlayBackgroundColor=" #f5f2d0"
-          
-          width="auto"
-          height="auto"
-          >
-          <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
-          <Button onPress={this.goToHome}>
-            <Text>Go to Home</Text>
-          </Button>
-        </Overlay>
+    const { user } = this.state;
+    const {showAlert} = this.state;
+    
+    if(this.state.User != null){
+      return (
+        <View style={{flex:1}}>
         
-        </View>
+        <KeyboardAvoidingView
+
+          style={{ flex: 1 }}
+          behavior='padding'
+          keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+        >
+          <Container style={styles.mainConatiner}>
+            <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
+              <Card>
+                <TouchableOpacity onPress={this._pickImage}>
+                  <CardItem style={styles.imageUploadStyle}>
+                    <Foundation name='camera' size={32} />
+                  </CardItem>
+                </TouchableOpacity>
+
+                <CardItem>
+                  <ScrollView style={styles.scrollStyle} horizontal={true}>
+                    {this._renderImages()}
+                  </ScrollView>
+                </CardItem>
+              </Card>
+
+              <Item rounded style={{ marginBottom: 10 }}>
+                <Input placeholder='Title' 
+                  name="title" 
+                  onChangeText={(text)=>this.setState({title:text})}
+                  value={this.state.title}/>
+              </Item>
+              <Item rounded style={{ marginBottom: 10 }}>
+                <Foundation name='dollar' size={32} style={{ padding: 10 }} />
+                <Input keyboardType='numeric' 
+                  placeholder='0.00'
+                  name="price"
+                  onChangeText={(text)=>this.setState({price:text})}
+                  value={this.state.price} />
+              </Item>
+
+              {/* Pick category for the product */}
+              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
+
+              {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
+              <Form>
+                {Platform.OS === 'ios' ? (
+                  <Textarea
+                    rowSpan={5}
+                    bordered
+                    placeholder='Description'
+                    name="description" 
+                    onChangeText={(text)=>this.setState({description:text})}
+                    value={this.state.description}
+                    style={styles.iosDescriptionStyle}
+                  />
+                ) : (
+                  <Textarea
+                    rowSpan={5}
+                    bordered
+                    placeholder='Description'
+                    name="description" 
+                    onChangeText={(text)=>this.setState({description:text})}
+                    value={this.state.description}
+                    style={styles.androidDescriptionStyle}
+                  />
+                )}
+              </Form>
+
+              <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
+            
+            </Content>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: 10
+              }}
+            >
+              <Button style={styles.postAdButton} onPress={this.postTheProduct}>
+                <Text>Post Ad</Text>
+              </Button>
+            </View>
+          </Container>
+          </KeyboardAvoidingView>
+
+          <Overlay
+            isVisible={this.state.isOverlayVisible}
+            windowBackgroundColor="rgba(255, 255, 255, .5)"
+            overlayBackgroundColor=" #f5f2d0"
+            
+            width="auto"
+            height="auto"
+            >
+            <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
+            <Button onPress={this.goToHome}>
+              <Text>Go to Home</Text>
+            </Button>
+          </Overlay>
+          
+          </View>
+        
+      );
+
+    }
+    else{
       
-    );
+      return (
+       
+        <View style={styles.container}>   
+{/* 
+        <TouchableOpacity onPress={() => {
+          this.showAlert();
+        }}>
+          <View style={styles.button}>
+            <Text style={styles.text}>Try me!</Text>
+          </View>
+        </TouchableOpacity> */}
+
+          <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="Alert"
+            message="Please login first!"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="Go to login!!"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+              this.hideAlert();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert();
+            }}
+          />
+        </View>
+      );
+    }
   }
 }
 
@@ -414,5 +470,22 @@ const styles = {
   },
   postAdButton: {
     backgroundColor: Colors.secondary
-  }
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  button: {
+    margin: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 5,
+    backgroundColor: "#AEDEF4",
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15
+  },
 };
