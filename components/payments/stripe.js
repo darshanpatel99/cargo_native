@@ -73,6 +73,7 @@ export default class Stripe extends React.Component {
               });
           });
         }
+        
 
         sendTokenToStripe =(token) =>{
           console.log('stripe function called');
