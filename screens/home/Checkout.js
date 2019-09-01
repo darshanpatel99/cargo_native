@@ -87,27 +87,12 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
   }
 
-  // onDocumentUpdate = documentSnapshot => {
-  //   const { Street, Country, City } = documentSnapshot.data();
+  NavigateToStripe() {
+    const { navigate } = this.props.navigation;
+    //this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('StripeScreen', {TotalCartAmount:this.state.totalAmount})
+  };
 
-  //   let defaultAddress = Street + ', ' + Country + ', ' + City;
-
-  //   let tipAmount = '';
-  //   let subTotal = 100;
-  //   let deliveryFee = 5;
-  //   let totalAmount = subTotal + tipAmount + deliveryFee;
-
-  //   console.log(JSON.stringify(defaultAddress));
-
-  //   this.setState({
-  //     defaultAddress,
-  //     tipAmount,
-  //     subTotal,
-  //     deliveryFee,
-  //     totalAmount,
-  //     isLoading: false
-  //   });
-  // };
 
   render() {
     if (this.state.isLoading) {
@@ -287,7 +272,7 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
           </View>
 
           <View style={Styles.payButton}>
-            <Button large-green style= {{flex:1, justifyContent: 'center'}}>
+            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {TotalCartAmount:this.state.totalAmount})}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
           </View>

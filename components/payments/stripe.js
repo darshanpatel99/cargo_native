@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
 import { Button } from 'native-base';
+import AwesomeAlert from 'react-native-awesome-alerts';
+
 
 
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
@@ -30,6 +32,7 @@ export default class Stripe extends React.Component {
           cvc: 0,
           name:'',
           paymentSuccess: false,
+          loading: false
         }
         this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
         this.onPayment = this.onPayment.bind(this);
@@ -53,7 +56,7 @@ export default class Stripe extends React.Component {
             } else {
               console.log(Object.keys(card))
               console.log(card.error.code)
-              alert(card.error.message)
+              alert(card.error.message, { cancelable: false })
               this.sendTokenToStripe(token);
             }
             // this.setState({token})
@@ -70,6 +73,7 @@ export default class Stripe extends React.Component {
               });
           });
         }
+        
 
         sendTokenToStripe =(token) =>{
           console.log('stripe function called');
@@ -82,6 +86,9 @@ export default class Stripe extends React.Component {
         //AWS lambda function call
         makeLambdaCal(token) {
           try{
+
+            this.state.loading =false;
+
           fetch('https://5nhq1a2ccj.execute-api.us-west-1.amazonaws.com/dev/processStripePayment', {
             method: 'POST',
             headers: {
@@ -91,13 +98,16 @@ export default class Stripe extends React.Component {
             },
             body: JSON.stringify({
               'stripeToken': token,
-              'charge': '87',
+              'charge': this.props.charge+'',
             }),
+
           })
           .then((response) => response.json())
           .then((responseJson) => {
             console.log('response JSon ' + JSON.stringify(responseJson))
+            this.state.loading=true;
             alert(JSON.stringify(responseJson))
+            
           });
 
         }
@@ -136,10 +146,18 @@ export default class Stripe extends React.Component {
           const EnabledButton = <Button primary onPress={this.onPayment}><Text style={{paddingLeft: 10, paddingRight: 10, color: '#fff'}}> Pay Now</Text></Button>
           const DisabledButton = <Button primary disabled onPress={this.onPayment} ><Text style={{paddingLeft: 10, paddingRight: 10}}>Pay Now</Text></Button>
 
+          // let spinner;
+          // if (isLoggedIn) {
+          //   spinner = <LogoutButton onClick={this.handleLogoutClick} />;
+          // } else {
+          //   button = <LoginButton onClick={this.handleLoginClick} />;
+          // }
+
           return (
             <View style={styles.mainContainer}>
               <CreditCardInput onChange={this._onChange} />
               {/* <Button title="Stripe" onPress={this.onPayment}/> */}
+              
               <View style = {styles.payButton}>
                 {this.state.valid ? EnabledButton : DisabledButton}
               </View>
