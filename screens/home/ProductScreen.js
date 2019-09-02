@@ -253,8 +253,6 @@ export class ProductScreen extends Component {
     updateProduct.update({
       Status:'sold',
     })
-
-
   }
 
   render() {

@@ -1,10 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Keyboard,  TouchableWithoutFeedback} from 'react-native';
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
 import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
-
 
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 
@@ -18,11 +16,18 @@ let information = {
   }
 }
 
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
+
 export default class Stripe extends React.Component {
     
       constructor(props) {
         super(props);
         this.state={
+          showAlert: false,
           counter: 0,
           token:'',
           valid: false,
@@ -32,11 +37,30 @@ export default class Stripe extends React.Component {
           cvc: 0,
           name:'',
           paymentSuccess: false,
-          loading: false
+          loading: false,
+          responseJson:'',
         }
         this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
         this.onPayment = this.onPayment.bind(this);
+        this.showAlert = this.showAlert.bind(this);
       }
+
+      showAlert = () => {
+        this.setState({
+          showAlert: true
+        });
+      };
+     
+      hideAlert = () => {
+        const { navigate } = this.props.navigation;
+        
+        this.setState({
+          showAlert: false
+        });
+        navigate('Home');
+      };
+    
+
         async onPayment() {
             //alert('Payment processed..')
             let information = {
@@ -106,7 +130,9 @@ export default class Stripe extends React.Component {
           .then((responseJson) => {
             console.log('response JSon ' + JSON.stringify(responseJson))
             this.state.loading=true;
-            alert(JSON.stringify(responseJson))
+            this.state.responseJson = responseJson;
+            this.showAlert();
+            //alert(JSON.stringify(responseJson))
             
           });
 
@@ -115,6 +141,7 @@ export default class Stripe extends React.Component {
           console.log(error)
         }
       }
+
 
 
         _onChange = (formData) => {
@@ -135,7 +162,7 @@ export default class Stripe extends React.Component {
             this.setState({exp_year: expiryYear})
             this.setState({cvc})
             //this.setState({card_number: cardNumber}, {exp_month: expiryMonth}, {exp_year: expiryYear}, {cvc})
-
+            
           }
           // if()
         };
@@ -145,6 +172,7 @@ export default class Stripe extends React.Component {
         render() {
           const EnabledButton = <Button primary onPress={this.onPayment}><Text style={{paddingLeft: 10, paddingRight: 10, color: '#fff'}}> Pay Now</Text></Button>
           const DisabledButton = <Button primary disabled onPress={this.onPayment} ><Text style={{paddingLeft: 10, paddingRight: 10}}>Pay Now</Text></Button>
+          const {showAlert} = this.state;
 
           // let spinner;
           // if (isLoggedIn) {
@@ -154,16 +182,37 @@ export default class Stripe extends React.Component {
           // }
 
           return (
+            <DismissKeyboard>
             <View style={styles.mainContainer}>
               <CreditCardInput onChange={this._onChange} />
               {/* <Button title="Stripe" onPress={this.onPayment}/> */}
-              
-              <View style = {styles.payButton}>
-                {this.state.valid ? EnabledButton : DisabledButton}
-              </View>
+
+                <View style = {styles.payButton}>
+                  {this.state.valid ? EnabledButton : DisabledButton}
+                </View>
+
+              <AwesomeAlert
+                show={showAlert}
+                showProgress={false}
+                title="Hello!!"
+                message={this.state.responseJson}
+                closeOnTouchOutside={false}
+                closeOnHardwareBackPress={false}
+                //showCancelButton={true}
+                showConfirmButton={true}
+                cancelText="No, cancel"
+                confirmText="OK"
+                confirmButtonColor="#DD6B55"
+                onCancelPressed={() => {
+                  this.hideAlert();
+                }}
+                onConfirmPressed={() => {
+                  this.hideAlert();
+                }}
+              />
 
             </View>
-
+            </DismissKeyboard>
           );
         
       }
@@ -176,6 +225,17 @@ const styles= {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'stretch',
+  },
+  button: {
+    margin: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 5,
+    backgroundColor: "#AEDEF4",
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15
   },
   payButton: {
     marginTop: 10,
