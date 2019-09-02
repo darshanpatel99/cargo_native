@@ -1,25 +1,47 @@
 import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image, StyleSheet } from 'react-native';
+import { View, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import firebase from '../../Firebase';
-
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 export default class TestScreen extends React.Component {
-  state = { user: null };
+
+  constructor(props) {
+    super(props);
+    this.state = { 
+      showAlert: true,
+      User: null 
+    };
+    this.showAlert = this.showAlert.bind(this);
+  };
+
+  showAlert(){
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: true
+    });
+    navigate('Account');
+  };
  
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
   }
- 
+  
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
   }
- 
+  
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ user });
+    this.setState({ User: user });
   };
  
   loginAsync = async () => {
@@ -27,25 +49,12 @@ export default class TestScreen extends React.Component {
     navigate('Account');
   };
  
-  async logoutAsync() {
-    try {
-      await firebase.auth().signOut();
-    } catch ({ message }) {
-      alert(message);
-    }
-  }
- 
-  toggleAuth = () => {
-    if (!!this.state.user) {
-      this.logoutAsync();
-    } else {
-      this.loginAsync();
-    }
-  };
- 
+
   render() {
+    
     const { user } = this.state;
-    const message = !!user ? 'Logout' : 'Login';
+    const {showAlert} = this.state;
+    
     if(this.state.User != null){
         console.log('User is logged in, From chat screen');
         return (
@@ -57,14 +66,40 @@ export default class TestScreen extends React.Component {
         );
     }
     else{
-        return (
-        
-            <View style={styles.viewStyle}>
-              <Button title = "Go to login" onPress={() => this.props.navigation.navigate('Account')} />
-            </View>
+      
+      return (
+       
+        <View style={styles.container}>   
+{/* 
+        <TouchableOpacity onPress={() => {
+          this.showAlert();
+        }}>
+          <View style={styles.button}>
+            <Text style={styles.text}>Try me!</Text>
+          </View>
+        </TouchableOpacity> */}
 
-             
-          );
+          <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="Alert"
+            message="Please login first!"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="Go to login!!"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+              this.hideAlert();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert();
+            }}
+          />
+        </View>
+      );
     }
   }
 }
@@ -76,5 +111,22 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center'
-  }
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  button: {
+    margin: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 5,
+    backgroundColor: "#AEDEF4",
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15
+  },
 })

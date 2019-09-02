@@ -1,5 +1,4 @@
 // This screen will be used by customer to post the product
-
 import React, { Component } from 'react';
 import {
   Platform,
@@ -29,6 +28,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
+import DaysPickerForPostProductScreen from '../../components/category/DaysPickerForPostProductScreen';
 import firebase from '../../Firebase.js';
 import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
@@ -60,9 +60,9 @@ export default class EditProductScreen extends Component {
       isOverlayVisible: false,
       User:null,
       owner: "",
-
+      Category: 0,
+      Avability:[],
       canUpload:true,
-      
     }
 
     //checking the current user and setting uid
@@ -89,6 +89,8 @@ export default class EditProductScreen extends Component {
         image:newData.pictures,
         downloadURLs:newData.pictures,
         description:newData.description,
+        Category: newData.Category,
+        Avability: newData.Avability,
     })
   }
 
@@ -250,7 +252,9 @@ export default class EditProductScreen extends Component {
         Pictures:this.state.downloadURLs,
         Price:this.state.price,
         Thumbnail:this.state.downloadURLs[0], 
-        Description:this.state.description,       
+        Description:this.state.description,
+        Category: this.state.Category,
+        Avability: this.state.Avability,    
     });
 
     this.setState({isOverlayVisible:true});
@@ -310,6 +314,16 @@ export default class EditProductScreen extends Component {
     return images;
   }
 
+  //this functions gets the category id from the child component
+  callbackFunction = (childData) => {
+    this.setState({Category: childData[0]})
+    console.log("from post product screen ==> "+ typeof childData[0])
+  }
+
+  avabilitycallbackFunction = (childData) => {
+    this.setState({Avability: childData})
+    console.log("product screen ==> "+ JSON.stringify(childData));
+  }
    saveButton =() =>{
      if(this.state.canUpload){
       return(
@@ -388,7 +402,7 @@ export default class EditProductScreen extends Component {
             </Item>
 
             {/* Pick category for the product */}
-            <CategoryPickerForPostProduct />
+            <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
 
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
             <Form>
@@ -414,6 +428,9 @@ export default class EditProductScreen extends Component {
                 />
               )}
             </Form>
+
+            <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
+
           </Content>
           {this.saveButton()}
         </Container>

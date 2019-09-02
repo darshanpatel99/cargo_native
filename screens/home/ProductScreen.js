@@ -170,7 +170,8 @@ export class ProductScreen extends Component {
 
   CheckIfProductAlreadyInCart() {
 
-    if (this.state.owner === this.state.userID ) {
+    
+    if (this.state.owner != '' && this.state.owner === this.state.userID ) {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
