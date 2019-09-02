@@ -34,7 +34,7 @@ import MyHeader from '../../components/headerComponents/Header';
 import Login from '../../components/navigation/NavigateLogin';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
-
+import GooglePlaces from '../../components/maps/GooglePlaces'
 import uuid from 'react-native-uuid';
 
 
@@ -67,6 +67,8 @@ export default class PostProductScreen extends Component {
       this.state.owner = user.uid;
       console.log(" State UID ==> from  " + this.state.Owner);
     }
+
+
 
   }
 
@@ -320,7 +322,7 @@ export default class PostProductScreen extends Component {
 
             {/* Pick category for the product */}
             <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
-
+            <GooglePlaces />
             {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
             <Form>
               {Platform.OS === 'ios' ? (
@@ -354,6 +356,11 @@ export default class PostProductScreen extends Component {
               margin: 10
             }}
           >
+
+
+
+
+
             <Button style={styles.postAdButton} onPress={this.postTheProduct}>
               <Text>Post Ad</Text>
             </Button>
