@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView} from 'react-native';
+import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
@@ -15,6 +15,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 let storageRef;
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+ );
+
 export default class AccountScreen extends React.Component {
 
   constructor(props){
@@ -44,7 +51,7 @@ export default class AccountScreen extends React.Component {
       this.ref.onSnapshot(doc => {
         this.setState({
         data: doc.data(),
-        name:doc.data().FirstName + ' ' + doc.data().LastName,
+        name:doc.data().FirstName,
         globalAddress:doc.data().City + ', ' + doc.data().Country,
         }); 
     });
@@ -332,30 +339,48 @@ onAuthStateChanged = user => {
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='default'
-          autoCorrect={false}                                                            
+          autoCorrect={false}
+          maxLength={20}
+          defaultValue ='Full name'                                                            
         />
       )
     }
-    else if(num == 5){
+    else if(num == 6){
       return(<TextInput
         style={[styles.inputInfo]}                
           editable={true}
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
-          keyboardType='email-address'
-          autoCorrect={false}                                                            
+          keyboardType='phone-pad'
+          autoCorrect={false}
+          defaultValue= 'phone number'                                                            
         />);      
     }
-    else {
-      return(<TextInput
+    else 
+      if(num==2){
+        return(<TextInput
         style={[styles.inputInfo]}                
           editable={true}
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
-          keyboardType='name-phone-pad'
-          autoCorrect={false}                                                            
-        />);            
-    }    
+          keyboardType=''
+          autoCorrect={false}
+          defaultValue='Street'                                                            
+        />);   
+      }
+      else {
+        return(<TextInput
+          style={[styles.inputInfo]}                
+            editable={true}
+            value={this.state.newData[num]}
+            onChangeText={ (value) => {this.changeValue(value,num)}}
+            keyboardType='decimal-pad'
+            autoCorrect={false}
+            defaultValue='Street #'                                                            
+          />); 
+      }
+               
+        
   }
 
   changeValue =(value,number) =>{
@@ -381,7 +406,7 @@ onAuthStateChanged = user => {
 
     this.ref.update({
       FirstName:this.state.newData[0],
-      LastName:this.state.newData[1],
+      //LastName:this.state.newData[1],
       Street:this.state.newData[2],
       City:this.state.newData[3],
       Country:this.state.newData[4],
@@ -404,6 +429,8 @@ onAuthStateChanged = user => {
       if(this.state.editMode){
         console.log('editing');
         return (
+          <DismissKeyboard>
+
           <View style={styles.screen}> 
 
               <View style={styles.pictureHolder}>                  
@@ -431,7 +458,7 @@ onAuthStateChanged = user => {
                     <View style={styles.nameHolder}>
                     <View style={{flexDirection:'row'}}>
                       {this.inputText(0)}
-                      {this.inputText(1)}
+                      {/* {this.inputText(1)} */}
                     </View>
                       
                     </View>
@@ -447,9 +474,9 @@ onAuthStateChanged = user => {
                     </View>
                     <View style={styles.infoBody}>
                       <View style={styles.paragrapgh}>
-                        <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
-                        {this.inputText(5)}
+                        <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>                        
                         {this.inputText(6)}
+                        <Text style={styles.info}>{this.state.data.Email}</Text>
                       </View>                    
                     </View>
                   </KeyboardAvoidingView>                
@@ -463,6 +490,8 @@ onAuthStateChanged = user => {
                   </View>
 
           </View>
+          </DismissKeyboard>
+
       );
 
       }

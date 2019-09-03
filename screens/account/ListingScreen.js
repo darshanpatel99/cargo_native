@@ -21,7 +21,12 @@ constructor(props){
         key :'',
         sort: this.props.filtersAndSorts 
     };
-    this.ref = firebase.firestore().collection('Users').doc(id+'');
+    //console.log(id);
+    //currentProducts = firebase.firestore().collection('Products').where('Status', '==' , 'active').where('UID' , '==' , id);
+    this.ref = firebase.firestore().collection('Products').where('Status', '==', 'active').where('Owner' , '==' , id);
+    //console.log(this.ref);
+    //currentProducts.where('UID' , '==' , id);
+    //this.ref = firebase.firestore().collection('Users').doc(id+'');
     //this.productsCollectionRef = firebase.firestore().collection('Products');
     this.unsubscribe = null;
     //this.loadCartItems = this.loadCartItems.bind(this);        
@@ -35,37 +40,29 @@ componentDidMount(prevProps) {
 
 
 
-onDocumentUpdate = (documentSnapshot) => {
-    let cartProducts;
-    let products= [];
-    cartProducts= documentSnapshot.data().ActiveProducts;            
-        firebase.firestore().collection('Products').get()
-              .then(querySnapshot => {
-                querySnapshot.docs.forEach(doc => {
-                    if(cartProducts.includes(doc.id)) {
-                        console.log('Name is --> ' + doc.data().Name)
-                        const { Description, Name, Price, Thumbnail, Pictures } = doc.data();                        
-                        products.push({
-                            key: doc.id,
-                            doc,
-                            Name,
-                            Description,
-                            Price,
-                            Thumbnail,
-                            Pictures
-                        }
-                        );
-                    }
-              });
-              
-            this.setState({
-                products,
-                isLoading: false,
-              })
-
-
-             });
-
+onDocumentUpdate = (querySnapshot) => {
+  console.log('on collection update')
+  const products = [];
+  querySnapshot.forEach((doc) => {
+    const { Description, Name, Price, Thumbnail, Pictures, Category, Owner} = doc.data();
+      // console.log(typeof Pictures['0']);
+    products.push({
+      key: doc.id,
+      doc,
+      Name,
+      Description,
+      Owner,
+      Price,
+      Thumbnail,
+      Pictures,
+      Category,
+    });
+  });
+  this.setState({
+    products,
+    isLoading: false,
+  },
+ );
       }
 
 
