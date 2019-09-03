@@ -20,11 +20,13 @@ export default class SignUpScreen extends Component {
 
   constructor(props){
     super(props);
+    
 
     //creating the firebase reference for the users collection
     this.firebaseRef = firebase.firestore().collection('Users');
 
     this.state ={
+      prevPage:'',
       phoneNumber:'',
       remove:true,
       buttonOn:false,           
@@ -45,6 +47,8 @@ export default class SignUpScreen extends Component {
       UID:'',
       profilePic:'',
     }
+    
+
   }
 
   componentDidMount() {
@@ -354,16 +358,19 @@ facebookLoginAsync = async () => {
   }
 
   render() {
+    const { navigation } = this.props;
+    const prevPage = navigation.getParam('prevPage');
+    console.log('This is signup screen ' + prevPage);
     return (
       <View style={styles.viewStyle}>
         <Button primary rounded large style={styles.button}>
             <Ionicons
               size={30}
-              color="#fff"
+              color="#fff"  
               style={styles.icon}
               name='logo-facebook'
             />
-            <Text style={styles.lightText} onPress={this.facebookLoginAsync}>Facebook SignUp</Text>
+            <Text style={styles.lightText} onPress={this.facebookLoginAsync}>Facebook {prevPage}</Text>
           </Button>
           <Button primary rounded large style={styles.button}>
             <Ionicons
@@ -372,7 +379,7 @@ facebookLoginAsync = async () => {
               style={styles.icon}
               name='logo-google'
             />
-            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google SignUp</Text>
+            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google {prevPage}</Text>
           </Button>
 
       </View>

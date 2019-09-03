@@ -260,8 +260,8 @@ export class ProductScreen extends Component {
     const {showAlert} = this.state;
 
     return (
-      
-      <View style={styles.container}>
+    
+    <View style={styles.container}>
         <ScrollView>
 
         <View style={styles.pictures}>

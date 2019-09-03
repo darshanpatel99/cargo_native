@@ -548,7 +548,6 @@ onAuthStateChanged = user => {
         return (
           <View style={{ height: '100%' }}>
             <Header />
-            <Text>Hello Hello</Text>
             {/* <Button
               title='Go to Change Password Screen'
               onPress={() => this.props.navigation.navigate('ChangePassword')}
@@ -569,13 +568,13 @@ onAuthStateChanged = user => {
             */}
             <View style={styles.viewStyle}>
             <Button full large primary rounded > 
-              <Text onPress={() => this.props.navigation.navigate('Login')}>Login</Text>
+              <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>Login</Text>
             </Button>
 
             <Button full large primary rounded> 
-              <Text onPress={() => this.props.navigation.navigate('SignUp')}>SignUp</Text>
+              <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>SignUp</Text>
             </Button>
-
+            
             <Button full large primary rounded> 
               <Text onPress={() => this.props.navigation.navigate('AccountInfo')}>Account Info</Text>
             </Button>
