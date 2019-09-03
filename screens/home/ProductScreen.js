@@ -6,18 +6,22 @@ import {
   Text,
   Button,
   TouchableHighlight,
-  Dimensions
+  Dimensions,
+  Platform
 } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
-import FlipCard from 'react-native-flip-card';
-import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import ReportAd from '../../functions/ReportAd';
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+
+
 
 
 let storageRef;
@@ -32,10 +36,18 @@ export class ProductScreen extends Component {
     const pictures = navigation.getParam('pictures');
     const id = navigation.getParam('itemId');
     const owner = navigation.getParam('owner');
+    const pickupAddress = navigation.getParam('pickupAddress')
 
     //storageRef = firebase.storage().ref();
 
+
+
+
+
     this.state = {
+      location: null,
+      errorMessage: null,
+      deliveryCharge:'',
       pictures: [],
       cart: [],
       address: {},
@@ -50,6 +62,7 @@ export class ProductScreen extends Component {
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
       soldArray:[],
+      pickupAddress: pickupAddress,
     };
     onLayout = e => {
       this.setState({
@@ -70,15 +83,12 @@ export class ProductScreen extends Component {
     if (user != null) {
       const that = this;
       this.state.userID = user.uid;
-      console.log(" State UID: " + this.state.userID);
       this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
       this.ref.get().then(function(doc) {
         if (doc.exists) {
-            console.log("Document data:", doc.data().SoldProducts);
             that.setState({
               soldArray:doc.data().SoldProducts,
             })
-            console.log(this.state.soldArray);
         } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
@@ -90,7 +100,70 @@ export class ProductScreen extends Component {
     
     }
 
+
+    // console.log('DIstance calc +++++++++++++++++')
+    // let latlong = pickupAddress;
+    // console.log('Latititititititi ----> ' + latlong)
+    // console.log(getDistance(
+    //   { latitude: latlong[0], longitude: latlong[1] },
+    //   { latitude: 50.675124, longitude: -120.337546 }, 
+    // ));
+    // console.log('DIstance calc +++++++++++++++++')
+
+
   }
+
+
+  componentWillMount() {
+    if (Platform.OS === 'android' && !Constants.isDevice) {
+      this.setState({
+        errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+      });
+    } else {
+      this._getLocationAsync();
+    }
+  }
+
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    this.setState({ location });
+    let currentDeviceLatitude = this.state.location.coords.latitude;
+    let currentDeviceLongitude = this.state.location.coords.longitude;
+
+    let productLocationLatitude = this.state.pickupAddress[0];
+    let productLocationLongitude = this.state.pickupAddress[1];
+
+    
+
+    fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //return responseJson.movies;
+        console.log(productLocationLatitude);
+        console.log(productLocationLongitude)
+        console.log('&&&&&&&&&&&&&&&&&')
+        console.log(responseJson.rows[0].elements[0].distance.value);
+        const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
+        let deliveryCharge = distanceInMeters * 0.0012;
+        deliveryCharge = deliveryCharge.toFixed(2);
+        this.setState({
+          deliveryCharge: deliveryCharge
+        })
+
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+
 
   getData =()=>{
 //     var docRef = db.collection("cities").doc("SF");
@@ -159,7 +232,7 @@ export class ProductScreen extends Component {
 
   flagTheItem(){
     var documentID = uuid.v1();
-    console.log(documentID)
+
     //this.storageRef.collection("FlaggedItems").doc(flaggedITems).set({productId: this.state.id});
     var data = {
       ProductId : this.state.id,
@@ -216,8 +289,6 @@ export class ProductScreen extends Component {
   }
 
   render() {
-    console.log('getting price as props ======> ' + this.state.id);
-
     return (
       
       <View style={styles.container}>
@@ -245,9 +316,9 @@ export class ProductScreen extends Component {
         </View>
 
         {/* <View style={styles.infotext}> */}
-          <View style={{flex: 1, flexDirection: 'row',justifyContent: 'space-between'}}>
-            <Text style={styles.productName}>{this.state.title}</Text>
-            <Text style={styles.productPrice}>$ {this.state.price}</Text>
+          <View style={{flex: 1 }}>
+            <Text style={styles.productName} numberOfLines={2} ellipsizeMode="tail">{this.state.title}</Text>
+            <Text style={styles.productPrice} numberOfLines={2} ellipsizeMode="tail">$ {this.state.price}</Text>
           </View>
 
           {/* <Text>Local number => {this.state.count} </Text>
@@ -258,7 +329,7 @@ export class ProductScreen extends Component {
               <Text style={styles.productLoc}>Sahali, Kamloops</Text>
             </View>
             <View style={styles.priceDr}>
-              <Text style={styles.price}>2.5$</Text>
+              <Text style={styles.price}>$ {this.state.deliveryCharge}</Text>
               <FontAwesome name='car' size={22} color={Colors.primary} />
             </View>
           </View>
@@ -287,7 +358,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 10,
     //paddingTop: 20,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   breaks: {
     width: Dimensions.get('window').width * 0.05
@@ -309,13 +380,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginTop: 10,
     marginLeft: 10,
+    flexWrap: 'wrap',
+    marginLeft: 10,
+    paddingLeft: 10
   },
   productPrice: {
     fontSize: 20,
     fontWeight: '500',
-    marginRight: 10,
     marginHorizontal:10,
-    marginTop: 10
+    marginTop: 10,
+    flexWrap: 'wrap'
+
   },
   productLocView: {
     flexDirection: 'row',

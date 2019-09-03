@@ -36,6 +36,7 @@ export default class Stripe extends React.Component {
         }
         this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
         this.onPayment = this.onPayment.bind(this);
+        const { navigation } = this.props;
       }
         async onPayment() {
             //alert('Payment processed..')
