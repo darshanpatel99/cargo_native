@@ -105,7 +105,7 @@ export default class extends Component {
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
-            single={true}  
+          single={true}  
               
         />
       </View>

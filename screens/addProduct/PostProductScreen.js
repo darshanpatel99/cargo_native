@@ -50,6 +50,8 @@ export default class PostProductScreen extends Component {
     super(props);
     storageRef = firebase.storage().ref();
     this.state={
+      postAdClicked: false,
+
       showAlert: true,
       title : "",
       description : "",
@@ -132,6 +134,12 @@ export default class PostProductScreen extends Component {
 
   //post the product
   postTheProduct = async() =>{
+
+    let titleLength = this.state.title;
+    let priceLength = this.state.price;
+    let descriptionLength = this.state.description;
+
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0)  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -153,12 +161,20 @@ export default class PostProductScreen extends Component {
     //Getting the current time stamp
     var currentDate = new Date();
     data.TimeStamp = currentDate.getTime();
+    //if(this.checkFields == true)
     //Posting the product
     PostProduct(data);
     console.log("Product Posted---->" + data);
 
     //change the overlay visibility to visible
     this.setState({isOverlayVisible:true});
+  } else {
+    console.log('hello');
+    
+    this.setState({
+      postAdClicked: true
+    })
+  }
 
   }
 
@@ -293,12 +309,25 @@ export default class PostProductScreen extends Component {
     console.log("product screen ==> "+ JSON.stringify(childData));
   }
 
+  changeInputFieldFunction(text){
+
+    if(this.state.postAdClicked) {
+      if(text.length > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
 
   render() {
 
     let { image } = this.state;
     const { user } = this.state;
     const {showAlert} = this.state;
+
     
     if(this.state.User != null){
       return (
@@ -326,13 +355,13 @@ export default class PostProductScreen extends Component {
                 </CardItem>
               </Card>
 
-              <Item rounded style={{ marginBottom: 10 }}>
+              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? Colors.secondary : 'red' } }>
                 <Input placeholder='Title' 
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
                   value={this.state.title}/>
               </Item>
-              <Item rounded style={{ marginBottom: 10 }}>
+              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.price) ? Colors.secondary : 'red' }}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
@@ -354,7 +383,7 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={styles.iosDescriptionStyle}
+                    style={[styles.iosDescriptionStyle,{borderColor: this.changeInputFieldFunction(this.state.description) ? Colors.secondary : 'red'}]}
                   />
                 ) : (
                   <Textarea
@@ -364,7 +393,7 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={styles.androidDescriptionStyle}
+                    style={[styles.androidDescriptionStyle,{borderColor: this.changeInputFieldFunction(this.state.description) ? Colors.secondary : 'red'}]}
                   />
                 )}
               </Form>
