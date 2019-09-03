@@ -50,14 +50,13 @@ export default (HomeStack = createStackNavigator({
       header: null,
       
     },
-
   },
 
 }));
 
 HomeStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
-  let headerLeft;
+
   const prevScreen = navigation.getParam('PreviousScreen');
 
   if (navigation.state.routes.length > 1) {
@@ -68,11 +67,6 @@ HomeStack.navigationOptions = ({ navigation }) => {
       } 
        else {
         tabBarVisible = false;
-        // headerLeft: (
-        //   <Button
-        //     onPress={this.props.navigation.pop()}
-        //   />
-        // )
       }
     });
   }
