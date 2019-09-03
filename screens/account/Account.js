@@ -11,6 +11,7 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 let storageRef;
@@ -567,17 +568,14 @@ onAuthStateChanged = user => {
             />
             */}
             <View style={styles.viewStyle}>
-            <Button full large primary rounded > 
-              <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>Login</Text>
-            </Button>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
+                <MainButton title='Login'/>
+              </TouchableOpacity>
 
-            <Button full large primary rounded> 
-              <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>SignUp</Text>
-            </Button>
-            
-            <Button full large primary rounded> 
-              <Text onPress={() => this.props.navigation.navigate('AccountInfo')}>Account Info</Text>
-            </Button>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+                <MainButton title='SignUp'/>
+              </TouchableOpacity>
+
             </View>
            </View>
         );

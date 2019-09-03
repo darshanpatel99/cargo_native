@@ -10,10 +10,12 @@ import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
+import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 
 //importing packages related to the sign in
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default class SignUpScreen extends Component {
   FacebookApiKey= '2872116616149463';
@@ -363,15 +365,20 @@ facebookLoginAsync = async () => {
     console.log('This is signup screen ' + prevPage);
     return (
       <View style={styles.viewStyle}>
-        <Button primary rounded large style={styles.button}>
+
+        <TouchableOpacity onPress={this.facebookLoginAsync}>
+          <Button primary rounded large style={styles.button}>
             <Ionicons
               size={30}
               color="#fff"  
               style={styles.icon}
               name='logo-facebook'
             />
-            <Text style={styles.lightText} onPress={this.facebookLoginAsync}>Facebook {prevPage}</Text>
+            <Text style={styles.lightText} >Facebook {prevPage}</Text>
           </Button>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress ={this.googleLoginAsync}>
           <Button primary rounded large style={styles.button}>
             <Ionicons
               size={30}
@@ -379,8 +386,9 @@ facebookLoginAsync = async () => {
               style={styles.icon}
               name='logo-google'
             />
-            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google {prevPage}</Text>
+            <Text style={styles.lightText} >Google {prevPage}</Text>
           </Button>
+        </TouchableOpacity>
 
       </View>
     );
