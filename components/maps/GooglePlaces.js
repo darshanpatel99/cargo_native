@@ -21,58 +21,63 @@ const homePlace = {
   
 export default class GooglePlaces extends Component {
 
+    
     render(){
         return(
 
-                <View style={{ flex: 1 }}>
-                  <GooglePlacesAutocomplete
-                    placeholder="Search"
-                    minLength={2} // minimum length of text to search
-                    autoFocus={false}
-                    returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-                    listViewDisplayed="auto" // true/false/undefined
-                    fetchDetails={true}
-                    renderDescription={row => row.description} // custom description render
-                    onPress={(data, details = null) => {
-                      console.log(data);
-                      console.log(details);
-                    }}
-                    getDefaultValue={() => {
-                      return ''; // text input default value
-                    }}
-                    query={{
-                      // available options: https://developers.google.com/places/web-service/autocomplete
-                      key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                      language: 'en', // language of the results
-                      //types: '(cities)', // default: 'geocode'
-                    }}
-                    styles={{
-                      description: {
-                        fontWeight: 'bold',
-                      },
-                      predefinedPlacesDescription: {
-                        color: '#1faadb',
-                      },
-                    }}
-                    currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
-                    currentLocationLabel="Current location"
-                    nearbyPlacesAPI="GoogleReverseGeocoding" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-                    GoogleReverseGeocodingQuery={{
-                      // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                    }}
-                    // GooglePlacesSearchQuery={{
-                    //   // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                    //   rankby: 'distance',
-                    //   types: 'address',
-                    // }}
-                    filterReverseGeocodingByTypes={[
-                      'locality',
-                      'administrative_area_level_3',
-                    ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-                    predefinedPlaces={[homePlace, workPlace]}
-                    debounce={200}
-                  />
-                </View>
+            <View style={{flex: 1 }}>
+
+                <GooglePlacesAutocomplete
+                placeholder='Pickup Address'
+                minLength={2}
+                autoFocus={false}
+                returnKeyType={'default'}
+                fetchDetails={true}
+                renderDescription={row => row.description} // custom description render
+                onPress={(data, details = null) => {
+                    console.log(data);
+                    console.log('*************************')
+                    console.log(details);
+                    console.log(Object.values(details.geometry.location))
+                    let lat = Object.values(details.geometry.location)[0];
+                    let long = Object.values(details.geometry.location)[1];
+                    this.props.parentCallback(lat, long);
+                    //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
+                }}
+                GoogleReverseGeocodingQuery={{
+                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                }}
+
+                getDefaultValue={() => {
+                    return ''; // text input default value
+                }}
+                query={{
+                    // available options: https://developers.google.com/places/web-service/autocomplete
+                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
+                    language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                }}
+
+                styles={{
+                    textInputContainer: {
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderTopWidth: 0,
+                    borderBottomWidth:0
+                    },
+                    textInput: {
+                    marginLeft: 0,
+                    marginRight: 0,
+                    height: 38,
+                    color: '#5d5d5d',
+                    fontSize: 16
+                    },
+                    predefinedPlacesDescription: {
+                    color: '#1faadb'
+                    },
+                }}
+                currentLocation={false}
+                />
+            </View>
         )
         
     }
