@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Keyboard,  TouchableWithoutFeedback} from 'react-native';
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
 import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
+import Spinner from 'react-native-loading-spinner-overlay';
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 
 let information = {
@@ -47,13 +47,14 @@ export default class Stripe extends React.Component {
 
       showAlert = () => {
         this.setState({
+          loading:false,
           showAlert: true
         });
       };
      
       hideAlert = () => {
         const { navigate } = this.props.navigation;
-        
+
         this.setState({
           showAlert: false
         });
@@ -111,7 +112,7 @@ export default class Stripe extends React.Component {
         makeLambdaCal(token) {
           try{
 
-            this.state.loading =false;
+            this.state.loading =true;
 
           fetch('https://5nhq1a2ccj.execute-api.us-west-1.amazonaws.com/dev/processStripePayment', {
             method: 'POST',
@@ -129,11 +130,10 @@ export default class Stripe extends React.Component {
           .then((response) => response.json())
           .then((responseJson) => {
             console.log('response JSon ' + JSON.stringify(responseJson))
-            this.state.loading=true;
+            this.state.loading=false;
             this.state.responseJson = responseJson;
             this.showAlert();
-            //alert(JSON.stringify(responseJson))
-            
+            //alert(JSON.stringify(responseJson)) 
           });
 
         }
@@ -173,7 +173,6 @@ export default class Stripe extends React.Component {
           const EnabledButton = <Button primary onPress={this.onPayment}><Text style={{paddingLeft: 10, paddingRight: 10, color: '#fff'}}> Pay Now</Text></Button>
           const DisabledButton = <Button primary disabled onPress={this.onPayment} ><Text style={{paddingLeft: 10, paddingRight: 10}}>Pay Now</Text></Button>
           const {showAlert} = this.state;
-
           // let spinner;
           // if (isLoggedIn) {
           //   spinner = <LogoutButton onClick={this.handleLogoutClick} />;
@@ -184,6 +183,12 @@ export default class Stripe extends React.Component {
           return (
             <DismissKeyboard>
             <View style={styles.mainContainer}>
+              <Spinner
+                visible={this.state.loading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+              />
+
               <CreditCardInput onChange={this._onChange} />
               {/* <Button title="Stripe" onPress={this.onPayment}/> */}
 
@@ -217,6 +222,7 @@ export default class Stripe extends React.Component {
         
       }
     }
+  
       
 
 const styles= {
@@ -225,6 +231,9 @@ const styles= {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'stretch',
+  },
+    spinnerTextStyle: {
+    color: '#FFF'
   },
   button: {
     margin: 10,
