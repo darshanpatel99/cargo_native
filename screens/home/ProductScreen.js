@@ -18,6 +18,7 @@ import { SliderBox } from 'react-native-image-slider-box';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import ReportAd from '../../functions/ReportAd';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 
 let storageRef;
@@ -36,6 +37,8 @@ export class ProductScreen extends Component {
     //storageRef = firebase.storage().ref();
 
     this.state = {
+      showAlert: false,
+      User: null,
       pictures: [],
       cart: [],
       address: {},
@@ -92,6 +95,38 @@ export class ProductScreen extends Component {
 
   }
 
+  componentDidMount() {
+    // List to the authentication state
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
+  
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    this._unsubscribe();
+  }
+
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ User: user });
+  };
+ 
+
+  showAlert(){
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: false
+    });
+    navigate('Account');
+  };
+ 
+
   getData =()=>{
 //     var docRef = db.collection("cities").doc("SF");
 
@@ -108,9 +143,17 @@ export class ProductScreen extends Component {
   }
 
   NavigateToCheckout() {
-    const { navigate } = this.props.navigation;
-    //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Checkoutscreen', {TotalCartAmount:this.state.price})
+
+    if(this.state.User != null){
+      const { navigate } = this.props.navigation;
+      //this.props.navigation.dispatch(StackActions.popToTop());
+      navigate('Checkoutscreen', {TotalCartAmount:this.state.price})
+    }
+    else{
+      this.setState({
+        showAlert: true
+      });
+    }
   };
 
   NavigateToEdit(){
@@ -211,12 +254,11 @@ export class ProductScreen extends Component {
     updateProduct.update({
       Status:'sold',
     })
-
-
   }
 
   render() {
-    console.log('getting price as props ======> ' + this.state.id);
+    console.log('getting product id as props ======> ' + this.state.id);
+    const {showAlert} = this.state;
 
     return (
       
@@ -277,6 +319,26 @@ export class ProductScreen extends Component {
           {this.CheckIfProductAlreadyInCart()}
         </View>
 
+        <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="   Alert   "
+            message="Please login first!"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="Go to login!!"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+              this.hideAlert();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert();
+            }}
+        />
+
       </View>
       
     );
@@ -288,6 +350,17 @@ const styles = StyleSheet.create({
     flex: 10,
     //paddingTop: 20,
     backgroundColor: '#fff'
+  },
+  button: {
+    margin: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 5,
+    backgroundColor: "#AEDEF4",
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15
   },
   breaks: {
     width: Dimensions.get('window').width * 0.05
