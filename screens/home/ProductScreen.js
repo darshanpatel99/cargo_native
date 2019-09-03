@@ -217,20 +217,12 @@ export class ProductScreen extends Component {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          {/* <Button
-            title='Edit Your product'
-            onPress={this.NavigateToEdit}
-          />
-          <Button
-            title='Mark as sold'
-            onPress={this.sooldItem}
-          /> */}
 
-          <TouchableOpacity onPress={this.NavigateToCheckout}>
+          <TouchableOpacity onPress={this.NavigateToEdit}>
                 <MainButton title='Edit product' secondary="true" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={this.NavigateToCheckout}>
+          <TouchableOpacity onPress={this.sooldItem}>
                 <MainButton title='Mark sold' secondary="true" />
           </TouchableOpacity>
         </View>
@@ -239,7 +231,7 @@ export class ProductScreen extends Component {
     } else {
       return (
           <TouchableOpacity onPress={this.NavigateToCheckout}>
-                <MainButton title='Buy Now'/>
+            <MainButton title='Buy Now'/>
           </TouchableOpacity>
       );
     }
