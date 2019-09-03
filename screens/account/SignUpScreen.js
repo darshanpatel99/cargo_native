@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Dimensions } from "react-native";
+import { View, StyleSheet,Text,TextInput,Dimensions,Alert } from "react-native";
 
 //Import related to Fancy Buttons
 import { Button } from "native-base";
@@ -11,7 +11,6 @@ import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
-
 //importing packages related to the sign in
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
@@ -48,8 +47,8 @@ export default class SignUpScreen extends Component {
       street:'',
       UID:'',
       profilePic:'',
+      showAlert: false,
     }
-    
 
   }
 
@@ -68,7 +67,6 @@ export default class SignUpScreen extends Component {
     // This value can also be accessed via: firebase.auth().currentUser
     this.setState({ user });
   };
-
 
 //facebook Login Function
 async facebookLogin() {
@@ -109,9 +107,19 @@ async googleLogin(){
     const {type, accessToken} = await Google.logInAsync(config);
 
     if(type=='success'){
-      alert('You got looged in with google');
+      //alert('You got looged in with google');
+
+      Alert.alert(
+        'Alert',
+        'You got looged in with google',
+        [
+          {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+        ],
+        {cancelable: false},
+      );
       return accessToken;
     }
+
   }catch({message}){
     alert('login' + message);
   }
@@ -363,6 +371,8 @@ facebookLoginAsync = async () => {
     const { navigation } = this.props;
     const prevPage = navigation.getParam('prevPage');
     console.log('This is signup screen ' + prevPage);
+    const {showAlert} = this.state;
+
     return (
       <View style={styles.viewStyle}>
 
