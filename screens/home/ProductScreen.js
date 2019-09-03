@@ -20,6 +20,7 @@ import ReportAd from '../../functions/ReportAd';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 
 
 import AwesomeAlert from 'react-native-awesome-alerts';
