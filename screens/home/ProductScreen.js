@@ -290,24 +290,22 @@ export class ProductScreen extends Component {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <Button
-            title='Edit Your product'
-            onPress={this.NavigateToEdit}
-          />
-          <Button
-            title='Mark as sold'
-            onPress={this.sooldItem}
-          />
+
+          <TouchableOpacity onPress={this.NavigateToEdit}>
+                <MainButton title='Edit product' secondary="true" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={this.sooldItem}>
+                <MainButton title='Mark sold' secondary="true" />
+          </TouchableOpacity>
         </View>
           
       );
     } else {
       return (
-          <Button
-            //color='#fff'
-            title='Buy Now'
-            onPress={this.NavigateToCheckout}
-          />
+          <TouchableOpacity onPress={this.NavigateToCheckout}>
+            <MainButton title='Buy Now'/>
+          </TouchableOpacity>
       );
     }
   }
@@ -333,8 +331,8 @@ export class ProductScreen extends Component {
     const {showAlert} = this.state;
 
     return (
-      
-      <View style={styles.container}>
+    
+    <View style={styles.container}>
         <ScrollView>
 
         <View style={styles.pictures}>
