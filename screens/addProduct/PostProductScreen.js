@@ -35,8 +35,12 @@ import MyHeader from '../../components/headerComponents/Header';
 import Login from '../../components/navigation/NavigateLogin';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
+import GooglePlaces from '../../components/maps/GooglePlaces'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
+import InputScrollView from 'react-native-input-scroll-view';
+
+
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
@@ -64,6 +68,7 @@ export default class PostProductScreen extends Component {
       Category: 0,
       Avability:[],
       owner: "",
+      addressArray:[],
     }
 
     //checking the current user and setting uid
@@ -156,6 +161,7 @@ export default class PostProductScreen extends Component {
       Category: this.state.Category,
       Avability: this.state.Avability,
       Status:'active',
+      AddressArray: this.state.addressArray,
     }
 
     //Getting the current time stamp
@@ -298,6 +304,19 @@ export default class PostProductScreen extends Component {
     return images;
   }
 
+  googleAddressCallback = (latitude, longitude) => {
+    console.log('Latitude ' + latitude);
+    console.log('Longitude ' + longitude);
+    let addressArray = [latitude, longitude];
+    this.setState({
+      addressArray
+    })
+
+
+    //var latLongArray = dataFromChild.split(",");
+  }
+
+
   //this functions gets the category id from the child component
   callbackFunction = (childData) => {
     this.setState({Category: childData[0]})
@@ -339,7 +358,7 @@ export default class PostProductScreen extends Component {
           behavior='padding'
           keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
         >
-          <Container style={styles.mainConatiner}>
+          <InputScrollView>
             <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
               <Card>
                 <TouchableOpacity onPress={this._pickImage}>
@@ -372,7 +391,7 @@ export default class PostProductScreen extends Component {
 
               {/* Pick category for the product */}
               <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
-
+              
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
               <Form>
                 {Platform.OS === 'ios' ? (
@@ -399,7 +418,7 @@ export default class PostProductScreen extends Component {
               </Form>
 
               <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
-            
+              <GooglePlaces parentCallback = {this.googleAddressCallback}/>
             </Content>
             <View
               style={{
@@ -413,7 +432,7 @@ export default class PostProductScreen extends Component {
                 <Text>Post Ad</Text>
               </Button>
             </View>
-          </Container>
+          </InputScrollView>
           </KeyboardAvoidingView>
 
           <Overlay

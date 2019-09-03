@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
 import {
   Button,
   Header,
@@ -32,8 +32,6 @@ export default class Checkout extends Component {
     const { navigation } = this.props;
     const TotalCartAmount = parseInt(navigation.getParam('TotalCartAmount')) ;
 
-
-
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
@@ -45,9 +43,6 @@ export default class Checkout extends Component {
       isLoading: false,
       tempAddressStore:'',
     };
-
-
-
 
     let {City, Street, Country} ='';
     let defaultAddress='' ;
@@ -87,12 +82,32 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
   }
 
+  static navigationOptions = ({ navigation }) => {
+    const { params = {} } = navigation.state;
+
+    return {
+      headerRight: (
+        <TouchableHighlight
+        onPress={() => navigation.navigate('Account')}
+          style={{ marginRight: 10 }}
+        >
+          <Icon
+                style={{ fontSize: 45, marginRight: 5 }}
+                type='EvilIcons'
+                name='user'
+              />
+        </TouchableHighlight>
+      )
+    };
+  };
+
   NavigateToStripe() {
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('StripeScreen', {TotalCartAmount:this.state.totalAmount})
   };
 
+  
 
   render() {
     if (this.state.isLoading) {
@@ -104,7 +119,7 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
     }
     return (
       <View style={Styles.Container}>
-        <Header transparent>
+        {/* <Header transparent>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
               <Icon
@@ -122,10 +137,10 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
               />
             </Button>
           </Right>
-        </Header>
+        </Header> */}
 
         <Container>
-          <Text
+          {/* <Text
             style={{
               marginLeft: 15,
               marginTop: 15,
@@ -134,12 +149,12 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
             }}
           >
             Checkout
-          </Text>
+          </Text> */}
           <Text
             style={{
               marginLeft: 15,
               marginTop: 20,
-              fontSize: 20,
+              fontSize: 30,
               fontFamily: 'nunito-SemiBold'
             }}
           >

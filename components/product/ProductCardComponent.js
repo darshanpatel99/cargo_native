@@ -7,16 +7,21 @@ import SmallButtonComponent from '../theme/SmallButtonComponent';
 import Colors from '../../constants/Colors';
 
 
+
 class ProductCardComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:''};
+        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:'', pickupAddress: ''};
+        // getDistance.getPreciseDistance(
+        //     { latitude: 51.5103, longitude: 7.49347 },
+        //     { latitude: "51° 31' N", longitude: "7° 28' E" }
+        // );
     }
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}

@@ -12,7 +12,7 @@ export default class StripeScreen extends Component {
     const { navigation } = this.props;
     const TotalCartAmount = parseInt(navigation.getParam('TotalCartAmount')) ;
 
-    this.state= {
+    this.state={
       TotalAmount: TotalCartAmount
     }
   }
@@ -20,7 +20,7 @@ export default class StripeScreen extends Component {
   render() {
     return(
       <View style= {styles.TestContainer}> 
-        <Stripe charge = {this.state.TotalAmount}/>
+        <Stripe charge = {this.state.TotalAmount} navigation={this.props.navigation}/>
       </View>
     )
   }
