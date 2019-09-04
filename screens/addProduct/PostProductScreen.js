@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  View
+  View,
+  Dimensions 
 } from 'react-native';
 import {
   Form,
@@ -19,8 +20,7 @@ import {
   Card,
   Item,
   Textarea,
-  Button,
-  Thumbnail
+  Button
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
@@ -31,8 +31,6 @@ import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
 import DaysPickerForPostProductScreen from '../../components/category/DaysPickerForPostProductScreen';
 import firebase from '../../Firebase.js';
-import MyHeader from '../../components/headerComponents/Header';
-import Login from '../../components/navigation/NavigateLogin';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
 import GooglePlaces from '../../components/maps/GooglePlaces'
@@ -40,22 +38,18 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 
-
-
-
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
-
 //Success Image Url
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
-
+let width = Dimensions.get('window').width;
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
     storageRef = firebase.storage().ref();
     this.state={
       postAdClicked: false,
-
+      textInputValue: '',
       showAlert: true,
       title : "",
       description : "",
@@ -120,7 +114,7 @@ export default class PostProductScreen extends Component {
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
       console.log('ask permission');
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
@@ -185,13 +179,44 @@ export default class PostProductScreen extends Component {
   }
 
 
+  
+  
   /**
    * Function Description:
    */
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality:0.6,
+     // allowsEditing: true,
+      
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({
+        image: this.state.image.concat([result.uri])
+      });
+     await this.uploadImageToFirebase(result.uri, uuid.v1())
+        .then(() => {
+          console.log('Success' + uuid.v1());  
+        })
+        .catch(error => {
+          console.log('Success' + uuid.v1()); 
+          console.log(error);
+        });
+    }
+  };
+
+    /**
+   * Function Description:
+   */
+  _pickImageCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality:0.6,
+      //allowsEditing: true,
       
     });
 
@@ -360,13 +385,22 @@ export default class PostProductScreen extends Component {
         >
           <InputScrollView>
             <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
-              <Card>
-                <TouchableOpacity onPress={this._pickImage}>
-                  <CardItem style={styles.imageUploadStyle}>
-                    <Foundation name='camera' size={32} />
-                  </CardItem>
-                </TouchableOpacity>
 
+              <Card>
+                <View  style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between',}}>
+
+                  <TouchableOpacity onPress={this._pickImage}>
+                    <CardItem style={styles.imageUploadStyle}>
+                      <Ionicons name='ios-images' size={32} />
+                    </CardItem>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={this._pickImageCamera}>
+                    <CardItem style={styles.imageUploadStyle}>
+                      <Foundation name='camera' size={32} />
+                    </CardItem>
+                  </TouchableOpacity>
+                </View>
                 <CardItem>
                   <ScrollView style={styles.scrollStyle} horizontal={true}>
                     {this._renderImages()}
@@ -499,6 +533,7 @@ const styles = {
   },
   imageUploadStyle: {
     height: 100,
+    width: width/2 - 15,
     backgroundColor: '#D3D3D3',
     justifyContent: 'center'
   },
