@@ -46,7 +46,7 @@ export default class TestScreen extends React.Component {
   render() {
     const { user } = this.state;
     const message = !!user ? 'Logout' : 'Login';
-    if(this.state.User != null){
+    if(this.state.user != null){
         console.log('User is logged in, From chat screen');
         return (
 
@@ -57,6 +57,7 @@ export default class TestScreen extends React.Component {
         );
     }
     else{
+      console.log("User is not logged in");
         return (
         
             <View style={styles.viewStyle}>
