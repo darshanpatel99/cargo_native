@@ -1,11 +1,13 @@
 import React, {Component} from "react";
-import {FlatList, View, ScrollView, ActivityIndicator, Text } from "react-native";
+import {FlatList, View, ScrollView, ActivityIndicator, Text, Platform } from "react-native";
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent';
+import shallowCompare from 'react-addons-shallow-compare'; // ES6
 
-// //this is work around to tackle that timer warning.
-// //check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97
-// import {Platform, InteractionManager} from 'react-native';
+
+//this is work around to tackle that timer warning.
+//check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97
+//import {Platform, InteractionManager} from 'react-native';
 
 // const _setTimeout = global.setTimeout;
 // const _clearTimeout = global.clearTimeout;
@@ -71,7 +73,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           searchProducts: []
         };
         this.searchArray = [];
-        this.ref = firebase.firestore().collection('Products');
+        this.ref = firebase.firestore().collection('Products').where('Status', '==', 'active');
         this.unsubscribe = null;
       }
 
@@ -79,19 +81,22 @@ export default class ProductCardFlatListDynamicLoad extends Component {
       //We'll be pushing data to the products array as key value pairs
       //later we collect the data and render into the component whereever we want
       onCollectionUpdate = (querySnapshot) => {
+        console.log('on collection update')
         const products = [];
         querySnapshot.forEach((doc) => {
-          const { Description, Name, Price, Thumbnail, Pictures, Owner } = doc.data();
+          const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner } = doc.data();
             // console.log(typeof Pictures['0']);
           products.push({
             key: doc.id,
-            Owner,
             doc,
             Name,
             Description,
+            Owner,
             Price,
             Thumbnail,
-            Pictures
+            Pictures,
+            Category,
+            AddressArray,
           });
         });
         this.setState({
@@ -102,18 +107,23 @@ export default class ProductCardFlatListDynamicLoad extends Component {
        );
       }
 
+      componentWillUnmount() {
+        clearTimeout(this._timer);
+      }
+
 
       componentDidMount() {
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
       }
 
       static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.filtersAndSorts !== prevState.filtersAndSorts) {
-          //console.log('these are search pro ' + prevState.searchArray);
-              // SEARCH LOGIC SHOULD GO HERE
-              let filteredProducts =[]
+        let filteredProducts = [];
+        let searchProducts = prevState.products;
+
+              console.log("is it looping??")
+              //let filteredProducts =[]
               let text = nextProps.searchText.toLowerCase()
-              let searchProducts = prevState.searchArray;
+              //let searchProducts = prevState.searchArray;
               if(searchProducts != undefined) {
                 //const matches = prevState.searchArray.filter(s => s.includes('thi'));
                 //let indexOfSearchedElements = prevState.searchArray.findIndex(element => element.includes("Ca"))
@@ -126,19 +136,22 @@ export default class ProductCardFlatListDynamicLoad extends Component {
                       //console.log('This is item data  --> ' + itemData);
                       const textData = text.toUpperCase();
                       //console.log('This is TextData ************* '+ textData)
-                      if (itemData.indexOf(textData) > -1) {
-                        filteredProducts.push(item)
+                      //console.log(""+item)
+                      if (itemData.indexOf(textData) > -1 && nextProps.filters.length > 0) {
+                        console.log("item " + item.Name)
+                        if(item.Category == nextProps.filters[0])
+                          filteredProducts.push(item)
+                      } else if(itemData.indexOf(textData) > -1) {
+                        filteredProducts.push(item)                        
                       }
                       
                     }
                       
                   });
-
+                  console.log(newData)
+                  
           } // <- this is setState equivalent
           return ({ sort: nextProps.filtersAndSorts } && {searchText: nextProps.searchText} && {searchProducts: filteredProducts})
-
-      }
-        
       }
 
       render() {
@@ -158,7 +171,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           data={this.state.searchProducts}
           renderItem={({item}) =>
           <View >
-            <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} owner={item.Owner} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
+            <ProductCardComponent pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures}  />
           </View>
           }
         />

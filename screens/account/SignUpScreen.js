@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Dimensions } from "react-native";
+import { View, StyleSheet,Text,TextInput,Dimensions,Alert } from "react-native";
 
 //Import related to Fancy Buttons
 import { Button } from "native-base";
@@ -10,24 +10,24 @@ import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
-
+import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 //importing packages related to the sign in
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
-
-
-
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default class SignUpScreen extends Component {
   FacebookApiKey= '2872116616149463';
 
   constructor(props){
     super(props);
+    
 
     //creating the firebase reference for the users collection
     this.firebaseRef = firebase.firestore().collection('Users');
 
     this.state ={
+      prevPage:'',
       phoneNumber:'',
       remove:true,
       buttonOn:false,           
@@ -47,7 +47,9 @@ export default class SignUpScreen extends Component {
       street:'',
       UID:'',
       profilePic:'',
+      showAlert: false,
     }
+
   }
 
   componentDidMount() {
@@ -65,7 +67,6 @@ export default class SignUpScreen extends Component {
     // This value can also be accessed via: firebase.auth().currentUser
     this.setState({ user });
   };
-
 
 //facebook Login Function
 async facebookLogin() {
@@ -106,9 +107,19 @@ async googleLogin(){
     const {type, accessToken} = await Google.logInAsync(config);
 
     if(type=='success'){
-      alert('You got looged in with google');
+      //alert('You got looged in with google');
+
+      Alert.alert(
+        'Alert',
+        'You got looged in with google',
+        [
+          {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+        ],
+        {cancelable: false},
+      );
       return accessToken;
     }
+
   }catch({message}){
     alert('login' + message);
   }
@@ -357,17 +368,27 @@ facebookLoginAsync = async () => {
   }
 
   render() {
+    const { navigation } = this.props;
+    const prevPage = navigation.getParam('prevPage');
+    console.log('This is signup screen ' + prevPage);
+    const {showAlert} = this.state;
+
     return (
       <View style={styles.viewStyle}>
-        <Button primary rounded large style={styles.button}>
+
+        <TouchableOpacity onPress={this.facebookLoginAsync}>
+          <Button primary rounded large style={styles.button}>
             <Ionicons
               size={30}
-              color="#fff"
+              color="#fff"  
               style={styles.icon}
               name='logo-facebook'
             />
-            <Text style={styles.lightText} onPress={this.facebookLoginAsync}>Facebook SignUp</Text>
+            <Text style={styles.lightText} >Facebook {prevPage}</Text>
           </Button>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress ={this.googleLoginAsync}>
           <Button primary rounded large style={styles.button}>
             <Ionicons
               size={30}
@@ -375,8 +396,9 @@ facebookLoginAsync = async () => {
               style={styles.icon}
               name='logo-google'
             />
-            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google SignUp</Text>
+            <Text style={styles.lightText} >Google {prevPage}</Text>
           </Button>
+        </TouchableOpacity>
 
       </View>
     );

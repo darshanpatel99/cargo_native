@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  View
+  View,
+  Dimensions 
 } from 'react-native';
 import {
   Form,
@@ -19,8 +20,7 @@ import {
   Card,
   Item,
   Textarea,
-  Button,
-  Thumbnail
+  Button
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
@@ -29,33 +29,50 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import CategoryPickerForPostProduct from '../../components/category/CategoryPickerForPostProduct';
+import DaysPickerForPostProductScreen from '../../components/category/DaysPickerForPostProductScreen';
 import firebase from '../../Firebase.js';
-import MyHeader from '../../components/headerComponents/Header';
 import PostProduct from '../../functions/PostProduct';
 import { Overlay } from 'react-native-elements';
-
+import GooglePlaces from '../../components/maps/GooglePlaces'
+import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
-
+import InputScrollView from 'react-native-input-scroll-view';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
-
 //Success Image Url
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
-
+let width = Dimensions.get('window').width;
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
     storageRef = firebase.storage().ref();
     this.state={
+      postAdClicked: false,
+      showAlert: true,
+      showAlert2: false,
       title : "",
       description : "",
       price : "",
       thumbnail : " ",
       image: [],
       downloadURLs : [],
-      isOverlayVisible: false,
       User:null,
+      Category: 0,
+      Avability:[],
+      owner: "",
+      addressArray:[],
+    }
+
+    this.categoryRemover = React.createRef();
+    this.avabilityRemover = React.createRef();
+    this.addressRemover = React.createRef();
+
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+    if (user != null) {
+      this.state.owner = user.uid;
+      console.log(" State UID ==> from  " + this.state.Owner);
     }
   }
 
@@ -65,7 +82,8 @@ export default class PostProductScreen extends Component {
     console.log('component did mount');
   }
 
-  componentWillMount() {
+   componentWillMount() {
+
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
@@ -81,11 +99,50 @@ export default class PostProductScreen extends Component {
     this._unsubscribe();
   }
  
+  showAlert(){
+    this.setState({
+      showAlert: true,
+      
+    });
+  };
+
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: true
+    });
+    navigate('Account');
+  };
+
+  showAlert2 () {
+    this.setState({
+      showAlert2: true
+    });
+  };
+
+  hideAlert2(){
+    const { navigate } = this.props.navigation;
+    this.categoryRemover.current.changeState();
+    this.avabilityRemover.current.changeState();
+    this.addressRemover.current.changeAddressState();
+
+    this.setState({
+      showAlert2: false,
+      title : "",
+      description : "",
+      price : "",
+      thumbnail : " ",
+      image: [],
+      downloadURLs : [],
+      addressArray:[],
+    });
+    navigate('Home');
+  };
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
       console.log('ask permission');
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
@@ -98,14 +155,19 @@ export default class PostProductScreen extends Component {
     // This value can also be accessed via: firebase.auth().currentUser
     this.setState({ User: user });
     //navigate to the account screen if the user is not logged in
-    if(user==null){
-      this.props.navigation.navigate('Account');
-    }
+
   };
 
 
   //post the product
   postTheProduct = async() =>{
+
+    let titleLength = this.state.title;
+    let priceLength = this.state.price;
+    let descriptionLength = this.state.description;
+    let productCategory = this.state.Category
+
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0)  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -114,40 +176,78 @@ export default class PostProductScreen extends Component {
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
       Thumbnail : this.state.downloadURLs[0],
-      Owner : '',
+      Owner : this.state.owner,
       Flag : true,
       FavouriteUsers:[],
       TimeStamp: null,
-      UserClicks:[]
+      UserClicks:[],
+      Category: this.state.Category,
+      Avability: this.state.Avability,
+      Status:'active',
+      AddressArray: this.state.addressArray,
     }
 
     //Getting the current time stamp
     var currentDate = new Date();
     data.TimeStamp = currentDate.getTime();
+    //if(this.checkFields == true)
     //Posting the product
     PostProduct(data);
     console.log("Product Posted---->" + data);
 
     //change the overlay visibility to visible
-    this.setState({isOverlayVisible:true});
+    //this.setState({isOverlayVisible:true});
+    this.showAlert2();
 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-    if (user != null) {
-      this.state.Owner = user.uid;
-      //console.log(" State UID: " + this.state.userID);
-    }
+  } else {
+    console.log('hello');
+    
+    this.setState({
+      postAdClicked: true
+    })
+  }
 
   }
 
 
+  
+  
   /**
    * Function Description:
    */
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality:0.6,
+     // allowsEditing: true,
+      
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({
+        image: this.state.image.concat([result.uri])
+      });
+     await this.uploadImageToFirebase(result.uri, uuid.v1())
+        .then(() => {
+          console.log('Success' + uuid.v1());  
+        })
+        .catch(error => {
+          console.log('Success' + uuid.v1()); 
+          console.log(error);
+        });
+    }
+  };
+
+    /**
+   * Function Description:
+   */
+  _pickImageCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality:0.6,
+      //allowsEditing: true,
       
     });
 
@@ -202,23 +302,25 @@ export default class PostProductScreen extends Component {
         that.state.downloadURLs.push(downloadURL);
       });
     });
-
-
     return 'Success';
   };
  
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
-    this.uploadImageToFirebase(array);
+    //this.uploadImageToFirebase(array);
     array.splice(index, 1);
-    this.setState({ image: array });
+
+    var fireArray = [...this.state.downloadURLs];
+    fireArray.splice(index,1);
+    //console.log(array);
+    this.setState({ image: array, downloadURLs:fireArray });
   }
 
-  goToHome=()=>{
-    this.setState({isOverlayVisible:!this.state.isOverlayVisible});
-    this.props.navigation.navigate('Home');
-  }
+  // goToHome=()=>{
+  //   this.setState({isOverlayVisible:!this.state.isOverlayVisible});
+  //   this.props.navigation.navigate('Home');
+  // }
 
 
   _renderImages() {
@@ -256,110 +358,261 @@ export default class PostProductScreen extends Component {
     return images;
   }
 
+  googleAddressCallback = (latitude, longitude) => {
+    console.log('Latitude ' + latitude);
+    console.log('Longitude ' + longitude);
+    let addressArray = [latitude, longitude];
+    this.setState({
+      addressArray
+    })
+
+
+    //var latLongArray = dataFromChild.split(",");
+  }
+
+
+  //this functions gets the category id from the child component
+  callbackFunction = (childData) => {
+    this.setState({Category: childData[0]})
+    console.log("from post product screen ==> "+ typeof childData[0])
+  }
+
+  avabilitycallbackFunction = (childData) => {
+    this.setState({Avability: childData})
+    console.log("product screen ==> "+ JSON.stringify(childData));
+  }
+
+  changeInputFieldFunction(text){
+    
+
+    if(this.state.postAdClicked) {
+      if(text.length > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
+  forCategoryColor(text){
+    
+    
+    if(this.state.postAdClicked) {
+      console.log("it is here")
+      console.log(this.state.Category)
+      if(text > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
+  forPrice(text){
+    
+    
+    if(this.state.postAdClicked) {
+      if(text > 10 && text <1000){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
   render() {
+
     let { image } = this.state;
+    const { user } = this.state;
+    const {showAlert} = this.state;
+    const {showAlert2} = this.state;
 
-    return (
-
-      <View style={{flex:1}}>
-        <MyHeader/>
-      
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior='padding'
-        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
-      >
-        <Container style={styles.mainConatiner}>
-          <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
-            <Card>
-              <TouchableOpacity onPress={this._pickImage}>
-                <CardItem style={styles.imageUploadStyle}>
-                  <Foundation name='camera' size={32} />
-                </CardItem>
-              </TouchableOpacity>
-
-              <CardItem>
-                <ScrollView style={styles.scrollStyle} horizontal={true}>
-                  {this._renderImages()}
-                </ScrollView>
-              </CardItem>
-            </Card>
-
-            <Item rounded style={{ marginBottom: 10 }}>
-              <Input placeholder='Title' 
-                name="title" 
-                onChangeText={(text)=>this.setState({title:text})}
-                value={this.state.title}/>
-            </Item>
-            <Item rounded style={{ marginBottom: 10 }}>
-              <Foundation name='dollar' size={32} style={{ padding: 10 }} />
-              <Input keyboardType='numeric' 
-                placeholder='0.00'
-                name="price"
-                onChangeText={(text)=>this.setState({price:text})}
-                value={this.state.price} />
-            </Item>
-
-            {/* Pick category for the product */}
-            <CategoryPickerForPostProduct />
-
-            {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
-            <Form>
-              {Platform.OS === 'ios' ? (
-                <Textarea
-                  rowSpan={5}
-                  bordered
-                  placeholder='Description'
-                  name="description" 
-                  onChangeText={(text)=>this.setState({description:text})}
-                  value={this.state.description}
-                  style={styles.iosDescriptionStyle}
-                />
-              ) : (
-                <Textarea
-                  rowSpan={5}
-                  bordered
-                  placeholder='Description'
-                  name="description" 
-                  onChangeText={(text)=>this.setState({description:text})}
-                  value={this.state.description}
-                  style={styles.androidDescriptionStyle}
-                />
-              )}
-            </Form>
-          </Content>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              margin: 10
-            }}
-          >
-            <Button style={styles.postAdButton} onPress={this.postTheProduct}>
-              <Text>Post Ad</Text>
-            </Button>
-          </View>
-        </Container>
-        </KeyboardAvoidingView>
-
-        <Overlay
-          isVisible={this.state.isOverlayVisible}
-          windowBackgroundColor="rgba(255, 255, 255, .5)"
-          overlayBackgroundColor=" #f5f2d0"
-          
-          width="auto"
-          height="auto"
-          >
-          <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
-          <Button onPress={this.goToHome}>
-            <Text>Go to Home</Text>
-          </Button>
-        </Overlay>
+    
+    if(this.state.User != null){
+      return (
+        <View style={{flex:1}}>
         
-        </View>
+        <KeyboardAvoidingView
+
+          style={{ flex: 1 }}
+          behavior='padding'
+          keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+        >
+          <InputScrollView>
+            <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
+
+              <Card>
+                <View  style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between',}}>
+
+                  <TouchableOpacity onPress={this._pickImage}>
+                    <CardItem style={styles.imageUploadStyle}>
+                      <Ionicons name='ios-images' size={32} />
+                    </CardItem>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={this._pickImageCamera}>
+                    <CardItem style={styles.imageUploadStyle}>
+                      <Foundation name='camera' size={32} />
+                    </CardItem>
+                  </TouchableOpacity>
+                </View>
+                <CardItem>
+                  <ScrollView style={styles.scrollStyle} horizontal={true}>
+                    {this._renderImages()}
+                  </ScrollView>
+                </CardItem>
+              </Card>
+
+              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? 'black' : 'red' } }>
+                <Input placeholder='Title' 
+                  name="title" 
+                  onChangeText={(text)=>this.setState({title:text})}
+                  value={this.state.title}/>
+              </Item>
+              <Item rounded style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
+                <Foundation name='dollar' size={32} style={{ padding: 10 }} />
+                <Input keyboardType='numeric' 
+                  placeholder='0.00'
+                  name="price"
+                  onChangeText={(text)=>this.setState({price:text})}
+                  value={this.state.price} />
+              </Item>
+
+              {/* Pick category for the product */}
+              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
+              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
+              
+              </View>
+              
+              
+              
+              {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
+              <Form>
+                {Platform.OS === 'ios' ? (
+                  <Textarea
+                    rowSpan={5}
+                    bordered
+                    placeholder='Description'
+                    name="description" 
+                    onChangeText={(text)=>this.setState({description:text})}
+                    value={this.state.description}
+                    style={styles.iosDescriptionStyle}
+                  />
+                ) : (
+                  <Textarea
+                    rowSpan={5}
+                    bordered
+                    placeholder='Description'
+                    name="description" 
+                    onChangeText={(text)=>this.setState({description:text})}
+                    value={this.state.description}
+                    style={styles.androidDescriptionStyle}
+                  />
+                )}
+              </Form>
+
+              <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover}/>
+              <GooglePlaces parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
+            </Content>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: 10
+              }}
+            >
+              <Button style={styles.postAdButton} onPress={this.postTheProduct}>
+                <Text>Post Ad</Text>
+              </Button>
+            </View>
+          </InputScrollView>
+          </KeyboardAvoidingView>
+
+          {/* <Overlay
+            isVisible={this.state.isOverlayVisible}
+            windowBackgroundColor="rgba(255, 255, 255, .5)"
+            overlayBackgroundColor=" #f5f2d0"
+            
+            width="auto"
+            height="auto"
+            >
+            <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
+            <Button onPress={this.goToHome}>
+              <Text>Go to Home</Text>
+            </Button>
+
+          </Overlay> */}
+
+          <AwesomeAlert
+            show={showAlert2}
+            showProgress={false}
+            title="Alert"
+            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="Go to Home !!"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+              this.hideAlert2();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert2();
+            }}
+          />
+          
+          </View>
+        
+      );
+
+    }
+    else{
       
-    );
+      return (
+       
+        <View style={styles.container}>   
+{/* 
+        <TouchableOpacity onPress={() => {
+          this.showAlert();
+        }}>
+          <View style={styles.button}>
+            <Text style={styles.text}>Try me!</Text>
+          </View>
+        </TouchableOpacity> */}
+
+          <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="Alert"
+            message="Please login first!"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="Go to login!!"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+              this.hideAlert();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert();
+            }}
+          />
+
+
+        </View>
+      );
+    }
   }
 }
 
@@ -369,6 +622,7 @@ const styles = {
   },
   imageUploadStyle: {
     height: 100,
+    width: width/2 - 15,
     backgroundColor: '#D3D3D3',
     justifyContent: 'center'
   },
@@ -393,5 +647,40 @@ const styles = {
   },
   postAdButton: {
     backgroundColor: Colors.secondary
-  }
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  button: {
+    margin: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 5,
+    backgroundColor: "#AEDEF4",
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15
+  },
+  productCategoryStyle:{
+    borderRadius:50,
+    borderWidth:0.5,
+    justifyContent:'center',
+    //alignItems:'center'
+  },
+
+  errorStyle:{
+    borderColor:'red',
+    borderWidth: 2 ,
+    //borderColor: 'green'
+  },
+  correctStyle:{
+    borderColor:'black',
+    borderWidth:0.5,
+  },
+
+
 };

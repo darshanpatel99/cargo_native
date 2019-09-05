@@ -2,81 +2,50 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 
-const items = [
+const shift = [
   // this is the parent or 'item'
   {
-    name: 'Categories',
+    name: 'Weekdays',
     id: 0,
     // these are the children or 'sub items'
     children: [
       {
-        name: 'Clothing',
+        name: 'Morning  7am to 12pm',
         id: 1,
       },
       {
-        name: 'Furniture',
+        name: 'Afternoon 12pm to 5pm',
         id: 2,
       },
       {
-        name: 'Sporting Goods, Exercise',
+        name: 'Evening 5pm to 10pm',
         id: 3,
       },
+    ],
+
+  },
+  {
+    name: 'Weekends',
+    id: 1,
+    // these are the children or 'sub items'
+    children: [
       {
-        name: 'Home-Indoor',
+        name: 'Morning  7am to 12pm',
         id: 4,
       },
       {
-        name: 'Art, Collectables',
+        name: 'Afternoon 12pm to 5pm',
         id: 5,
       },
       {
-        name: 'Home Appliances',
+        name: 'Evening 5pm to 10pm',
         id: 6,
-      },
-      {
-        name: 'Baby Items',
-        id: 7,
-      },
-      {
-        name: 'Toys, Games',
-        id: 8,
-      },
-      {
-        name: 'Electronics',
-        id: 9,
-      },
-      {
-        name: 'Phones',
-        id: 10,
-      },
-      {
-        name: 'Computers',
-        id: 11,
-      },
-      {
-        name: 'Books',
-        id: 12,
-      },
-      {
-        name: 'Other',
-        id: 13,
       },
     ],
 
   },
 
-  {
-    name: 'SubCategories',
-    id: 1,
-    // these are the children or 'sub items'
-    children: [
-      {
-        name: 'Lala lalal',
-        id: 99
-      }
-    ]
 
-  }
 
 ];
 
@@ -87,6 +56,7 @@ export default class extends Component {
       selectedItems:[],
     };
   }
+
   onSelectedItemsChange = (selectedItems) => {
     this.setState({ selectedItems });
     console.log(typeof selectedItems);
@@ -103,15 +73,15 @@ export default class extends Component {
     return (
         <View >
         <SectionedMultiSelect
-          items={items}
+          items={shift}
           uniqueKey="id"
           subKey="children"
-          selectText="Select Category"
+          selectText="Avability"
           showDropDowns={true}
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
-          single={true}  
+        //single={true}  
               
         />
       </View>

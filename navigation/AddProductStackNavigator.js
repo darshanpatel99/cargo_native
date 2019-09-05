@@ -10,7 +10,8 @@ export default AddProductStack = createStackNavigator({
   AddProduct: {
     screen: PostProductScreen,
     navigationOptions: {
-      header: null,
+      // header: null,
+      title:'Post Ad'
     },
   },
 });

@@ -36,8 +36,6 @@ export default class AccountInfo extends Component {
      newPicture:[],
      currentFolio:'',     
    }
-   
-   
 
    this.ref.onSnapshot(doc => {
      this.setState({
@@ -89,8 +87,6 @@ export default class AccountInfo extends Component {
           console.log(error);
         });
   }
-
-
 
 
   uploadImageToFirebase = async (uri, imageName) => {
@@ -151,14 +147,18 @@ export default class AccountInfo extends Component {
   }
 // the function to set ecverything for the change mode
   goToEdit =() =>{
-    const info = this.state.data;
+    console.log('Hello')
+    let info = this.state.data;
+
     this.setState({
       editMode:true,
       newData:[info.FirstName,info.LastName,info.Street,info.City,info.Country,info.Email,info.PhoneNumber],
       newPicture:[info.ProfilePicture],
       currentFolio:info.ProfilePicture,
     });
+    console.log('End of Hello')
   }
+
 
   
 
@@ -307,6 +307,7 @@ render(){
                       </ImageBackground>
                     </View>               
                     <View style={styles.settingsButton}>
+
                       <Button icon transparent disabled>
                         <FontAwesome name='cog' size={35} color='grey'/>                    
                       </Button>
@@ -317,7 +318,7 @@ render(){
                    
                    <KeyboardAvoidingView style={styles.infoHolder} behavior="padding" enabled>
                     <View style={styles.nameHolder}>
-                    <View style={{flexDirection:'row',justifyContent:'evenly spaced'}}>
+                    <View style={{flexDirection:'row'}}>
                       {this.inputText(0)}
                       {this.inputText(1)}
                     </View>
@@ -326,7 +327,7 @@ render(){
                     <View style={styles.infoBody}>
                       <View style={styles.paragrapgh}>
                         <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                        <View style={{flexDirection:'row',justifyContent:'evenly spaced'}}>
+                        <View style={{flexDirection:'row'}}>
                           {this.inputText(2)}
                           {this.inputText(3)}                          
                         </View>
@@ -342,10 +343,7 @@ render(){
                     </View>
                   </KeyboardAvoidingView>
 
-                   
-                   
-                    
-      
+
                   <View style={[styles.buttons,styles.marginBottom]}>
                     <View style={styles.prodInfoButtons}>
                       <Button full large primary rounded onPress={this.saveChanges}>
@@ -450,10 +448,10 @@ pictureHolder:{
 
 settingsButton:{
   flexDirection:'row',
-  justifyContent:'flex-start',
+  justifyContent:'flex-end',
   width:Dimensions.get('window').width*0.078,      
   marginRight:Dimensions.get('window').width*0.05,
-  marginTop:Dimensions.get('window').height*0.02,       
+  marginTop:Dimensions.get('window').height*0.20,       
   shadowColor: 'black',
   shadowOpacity: 0.2,      
   shadowOffset: {

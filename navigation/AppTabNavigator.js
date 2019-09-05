@@ -20,7 +20,7 @@ const AppTabNavigator = createBottomTabNavigator(
     AddProduct:AddProductStack,
     //Cart:CartStack,
     Message:MessageStack,
-    //Test:TestStack,
+    Test:TestStack,
   }
 );
 

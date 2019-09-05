@@ -5,6 +5,8 @@ import TabBarIcon from '../components/navigation/TabBarIcon';
 import HomeScreen from '../screens/home/Home';
 import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
+import EditProductScreen from '../screens/home/EditProductScreen';
+import StripeScreen from '../screens/payments/StripeScreen'
 
 export default (HomeStack = createStackNavigator({
   Home: {
@@ -20,14 +22,21 @@ export default (HomeStack = createStackNavigator({
       title: 'Detail',
       
     },
- 
-
   },
+
+  StripeScreen: {
+    screen: StripeScreen,
+    navigationOptions: {
+      title: 'Payment',  
+    },
+  },
+
 
   Checkoutscreen: {
     screen: CheckoutScreen,
     navigationOptions: {
-      header: null,
+      title: 'Checkout',
+      //header: null,
     },
     headerStyle: {
       elevation: 0,
@@ -35,11 +44,19 @@ export default (HomeStack = createStackNavigator({
     }
   },
 
+  EditProduct: {
+    screen: EditProductScreen,
+    navigationOptions: {
+      header: null,
+      
+    },
+  },
+
 }));
 
 HomeStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
-  let headerLeft;
+
   const prevScreen = navigation.getParam('PreviousScreen');
 
   if (navigation.state.routes.length > 1) {
@@ -50,11 +67,6 @@ HomeStack.navigationOptions = ({ navigation }) => {
       } 
        else {
         tabBarVisible = false;
-        // headerLeft: (
-        //   <Button
-        //     onPress={this.props.navigation.pop()}
-        //   />
-        // )
       }
     });
   }

@@ -10,7 +10,7 @@
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -26,7 +26,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "example.expo.googlesignin",
+      "bundleIdentifier": "com.developer.cargo",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i"
@@ -36,9 +36,8 @@
     ,
     "android": {
 
-        "package": "com.MeetCarGo.CarGo",
-
-        "googleServicesFile": "./google-services.json"
+        "package": "com.developer.cargo",
+        "googleServicesFile": "google-services.json"
 
     }
   }

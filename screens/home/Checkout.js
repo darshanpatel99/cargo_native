@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
 import {
   Button,
   Header,
@@ -30,32 +30,38 @@ export default class Checkout extends Component {
     super(props);
 
     const { navigation } = this.props;
-    const TotalCartAmount = parseInt(navigation.getParam('TotalCartAmount')) ;
-
-
+    const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount')) ;
+    const DeliveryCharge = parseFloat(navigation.getParam('DeliveryCharge'));
+    const userId = navigation.getParam('userID');
+    const sellerAddress = navigation.getParam('SellerAddress');
+    const productTitle = navigation.getParam('Title');
 
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
       tipAmount: 0,
       subTotal: TotalCartAmount,
-      deliveryFee: 5,
+      deliveryFee: DeliveryCharge,
       totalAmount: 0,
       editDialogVisible: false,
       isLoading: false,
       tempAddressStore:'',
+      userId,
+      buyerName: '',
+      sellerAddress: sellerAddress,
+      productTitle: productTitle,
+      Email:'',
     };
 
-
-
-
-    let {City, Street, Country} ='';
+    let {City, Street, Country, Buyer} ='';
     let defaultAddress='' ;
+    let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
+    amount = amount.toFixed(2)
 
     let address = firebase
     .firestore()
     .collection('Users')
-    .doc('rh1cFdoEdRUROJP36Ulm').get()
+    .doc(this.state.userId).get()
 
     .then(doc => {
       if (!doc.exists) {
@@ -66,8 +72,13 @@ export default class Checkout extends Component {
         Country = doc.data().Country;
         City = doc.data().City;
         defaultAddress = Street + ', ' + Country + ', ' + City;
+        Buyer = doc.data().FirstName;
+        Email = doc.data().Email;
         this.setState({deliveryAddress: defaultAddress,
-totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
+        //totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal,
+        totalAmount: amount,
+        buyerName: Buyer,
+        Email
         })
   
       }
@@ -87,27 +98,32 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
   }
 
-  // onDocumentUpdate = documentSnapshot => {
-  //   const { Street, Country, City } = documentSnapshot.data();
+  static navigationOptions = ({ navigation }) => {
+    const { params = {} } = navigation.state;
 
-  //   let defaultAddress = Street + ', ' + Country + ', ' + City;
+    return {
+      headerRight: (
+        <TouchableHighlight
+        onPress={() => navigation.navigate('Account')}
+          style={{ marginRight: 10 }}
+        >
+          <Icon
+                style={{ fontSize: 45, marginRight: 5 }}
+                type='EvilIcons'
+                name='user'
+              />
+        </TouchableHighlight>
+      )
+    };
+  };
 
-  //   let tipAmount = '';
-  //   let subTotal = 100;
-  //   let deliveryFee = 5;
-  //   let totalAmount = subTotal + tipAmount + deliveryFee;
+  NavigateToStripe() {
+    const { navigate } = this.props.navigation;
+    //this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('StripeScreen', {TotalCartAmount:this.state.totalAmount})
+  };
 
-  //   console.log(JSON.stringify(defaultAddress));
-
-  //   this.setState({
-  //     defaultAddress,
-  //     tipAmount,
-  //     subTotal,
-  //     deliveryFee,
-  //     totalAmount,
-  //     isLoading: false
-  //   });
-  // };
+  
 
   render() {
     if (this.state.isLoading) {
@@ -119,7 +135,7 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
     }
     return (
       <View style={Styles.Container}>
-        <Header transparent>
+        {/* <Header transparent>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
               <Icon
@@ -137,10 +153,10 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
               />
             </Button>
           </Right>
-        </Header>
+        </Header> */}
 
         <Container>
-          <Text
+          {/* <Text
             style={{
               marginLeft: 15,
               marginTop: 15,
@@ -149,12 +165,12 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
             }}
           >
             Checkout
-          </Text>
+          </Text> */}
           <Text
             style={{
               marginLeft: 15,
               marginTop: 20,
-              fontSize: 20,
+              fontSize: 30,
               fontFamily: 'nunito-SemiBold'
             }}
           >
@@ -287,7 +303,7 @@ totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal
           </View>
 
           <View style={Styles.payButton}>
-            <Button large-green style= {{flex:1, justifyContent: 'center'}}>
+            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email  })}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
           </View>
