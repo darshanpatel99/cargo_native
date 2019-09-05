@@ -49,15 +49,14 @@ export default class PostProductScreen extends Component {
     storageRef = firebase.storage().ref();
     this.state={
       postAdClicked: false,
-      textInputValue: '',
       showAlert: true,
+      showAlert2: false,
       title : "",
       description : "",
       price : "",
       thumbnail : " ",
       image: [],
       downloadURLs : [],
-      isOverlayVisible: false,
       User:null,
       Category: 0,
       Avability:[],
@@ -65,13 +64,16 @@ export default class PostProductScreen extends Component {
       addressArray:[],
     }
 
+    this.categoryRemover = React.createRef();
+    this.avabilityRemover = React.createRef();
+    this.addressRemover = React.createRef();
+
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
     if (user != null) {
       this.state.owner = user.uid;
       console.log(" State UID ==> from  " + this.state.Owner);
     }
-    this.showAlert = this.showAlert.bind(this);
   }
 
   componentDidMount() {
@@ -99,7 +101,8 @@ export default class PostProductScreen extends Component {
  
   showAlert(){
     this.setState({
-      showAlert: true
+      showAlert: true,
+      
     });
   };
 
@@ -109,6 +112,31 @@ export default class PostProductScreen extends Component {
       showAlert: true
     });
     navigate('Account');
+  };
+
+  showAlert2 () {
+    this.setState({
+      showAlert2: true
+    });
+  };
+
+  hideAlert2(){
+    const { navigate } = this.props.navigation;
+    this.categoryRemover.current.changeState();
+    this.avabilityRemover.current.changeState();
+    this.addressRemover.current.changeAddressState();
+
+    this.setState({
+      showAlert2: false,
+      title : "",
+      description : "",
+      price : "",
+      thumbnail : " ",
+      image: [],
+      downloadURLs : [],
+      addressArray:[],
+    });
+    navigate('Home');
   };
 
   getPermissionAsync = async () => {
@@ -167,7 +195,9 @@ export default class PostProductScreen extends Component {
     console.log("Product Posted---->" + data);
 
     //change the overlay visibility to visible
-    this.setState({isOverlayVisible:true});
+    //this.setState({isOverlayVisible:true});
+    this.showAlert2();
+
   } else {
     console.log('hello');
     
@@ -271,8 +301,6 @@ export default class PostProductScreen extends Component {
         that.state.downloadURLs.push(downloadURL);
       });
     });
-
-
     return 'Success';
   };
  
@@ -288,10 +316,10 @@ export default class PostProductScreen extends Component {
     this.setState({ image: array, downloadURLs:fireArray });
   }
 
-  goToHome=()=>{
-    this.setState({isOverlayVisible:!this.state.isOverlayVisible});
-    this.props.navigation.navigate('Home');
-  }
+  // goToHome=()=>{
+  //   this.setState({isOverlayVisible:!this.state.isOverlayVisible});
+  //   this.props.navigation.navigate('Home');
+  // }
 
 
   _renderImages() {
@@ -371,6 +399,7 @@ export default class PostProductScreen extends Component {
     let { image } = this.state;
     const { user } = this.state;
     const {showAlert} = this.state;
+    const {showAlert2} = this.state;
 
     
     if(this.state.User != null){
@@ -424,7 +453,7 @@ export default class PostProductScreen extends Component {
               </Item>
 
               {/* Pick category for the product */}
-              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
+              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
               
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
               <Form>
@@ -451,8 +480,8 @@ export default class PostProductScreen extends Component {
                 )}
               </Form>
 
-              <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction}/>
-              <GooglePlaces parentCallback = {this.googleAddressCallback}/>
+              <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover}/>
+              <GooglePlaces parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
             </Content>
             <View
               style={{
@@ -469,7 +498,7 @@ export default class PostProductScreen extends Component {
           </InputScrollView>
           </KeyboardAvoidingView>
 
-          <Overlay
+          {/* <Overlay
             isVisible={this.state.isOverlayVisible}
             windowBackgroundColor="rgba(255, 255, 255, .5)"
             overlayBackgroundColor=" #f5f2d0"
@@ -481,7 +510,28 @@ export default class PostProductScreen extends Component {
             <Button onPress={this.goToHome}>
               <Text>Go to Home</Text>
             </Button>
-          </Overlay>
+
+          </Overlay> */}
+
+          <AwesomeAlert
+            show={showAlert2}
+            showProgress={false}
+            title="Alert"
+            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="Go to Home !!"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+              this.hideAlert2();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert2();
+            }}
+          />
           
           </View>
         
@@ -521,6 +571,8 @@ export default class PostProductScreen extends Component {
               this.hideAlert();
             }}
           />
+
+
         </View>
       );
     }
