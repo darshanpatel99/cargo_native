@@ -93,6 +93,12 @@ export default class extends Component {
     this.props.parentCallback(selectedItems);
   };
 
+  changeState = () => {
+    this.setState({
+      selectedItems: [],
+    });
+  };
+
   render() {
     return (
         <View >
