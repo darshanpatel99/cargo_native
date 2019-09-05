@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {FlatList, View, ScrollView, ActivityIndicator, Text } from "react-native";
+import {FlatList, View, ScrollView, ActivityIndicator, Text, Platform } from "react-native";
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent';
 import shallowCompare from 'react-addons-shallow-compare'; // ES6
@@ -105,6 +105,10 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           searchArray: products
         },
        );
+      }
+
+      componentWillUnmount() {
+        clearTimeout(this._timer);
       }
 
 
