@@ -143,8 +143,9 @@ export default class PostProductScreen extends Component {
     let titleLength = this.state.title;
     let priceLength = this.state.price;
     let descriptionLength = this.state.description;
+    let productCategory = this.state.Category
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0)  {
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0)  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -329,9 +330,40 @@ export default class PostProductScreen extends Component {
   }
 
   changeInputFieldFunction(text){
+    
 
     if(this.state.postAdClicked) {
       if(text.length > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
+  forCategoryColor(text){
+    
+    
+    if(this.state.postAdClicked) {
+      console.log("it is here")
+      console.log(this.state.Category)
+      if(text > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
+  forPrice(text){
+    
+    
+    if(this.state.postAdClicked) {
+      if(text > 10 && text <1000){
         return true
       } else{
         return false
@@ -374,13 +406,13 @@ export default class PostProductScreen extends Component {
                 </CardItem>
               </Card>
 
-              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? Colors.secondary : 'red' } }>
+              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? 'black' : 'red' } }>
                 <Input placeholder='Title' 
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
                   value={this.state.title}/>
               </Item>
-              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.price) ? Colors.secondary : 'red' }}>
+              <Item rounded style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
@@ -390,7 +422,10 @@ export default class PostProductScreen extends Component {
               </Item>
 
               {/* Pick category for the product */}
+              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
               <CategoryPickerForPostProduct parentCallback = {this.callbackFunction}/>
+              </View>
+              
               
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
               <Form>
@@ -402,7 +437,7 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={[styles.iosDescriptionStyle,{borderColor: this.changeInputFieldFunction(this.state.description) ? Colors.secondary : 'red'}]}
+                    style={styles.iosDescriptionStyle}
                   />
                 ) : (
                   <Textarea
@@ -412,7 +447,7 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={[styles.androidDescriptionStyle,{borderColor: this.changeInputFieldFunction(this.state.description) ? Colors.secondary : 'red'}]}
+                    style={styles.androidDescriptionStyle}
                   />
                 )}
               </Form>
@@ -541,4 +576,22 @@ const styles = {
     color: '#fff',
     fontSize: 15
   },
+  productCategoryStyle:{
+    borderRadius:50,
+    borderWidth:0.5,
+    justifyContent:'center',
+    //alignItems:'center'
+  },
+
+  errorStyle:{
+    borderColor:'red',
+    borderWidth: 2 ,
+    //borderColor: 'green'
+  },
+  correctStyle:{
+    borderColor:'black',
+    borderWidth:0.5,
+  },
+
+
 };

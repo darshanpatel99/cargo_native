@@ -368,7 +368,31 @@ onAuthStateChanged = user => {
           defaultValue='Street'                                                            
         />);   
       }
-      else {
+      else 
+        if(num==3){
+          return(<TextInput
+            style={[styles.inputInfo]}                
+              editable={true}
+              value={this.state.newData[num]}
+              onChangeText={ (value) => {this.changeValue(value,num)}}
+              keyboardType='default'
+              autoCorrect={false}
+              defaultValue='City'                                                            
+            />);          
+        }
+        else 
+        if(num==3){
+          return(<TextInput
+            style={[styles.inputInfo]}                
+              editable={true}
+              value={this.state.newData[num]}
+              onChangeText={ (value) => {this.changeValue(value,num)}}
+              keyboardType='default'
+              autoCorrect={false}
+              defaultValue='Country'                                                            
+            />);          
+        }
+        else{
         return(<TextInput
           style={[styles.inputInfo]}                
             editable={true}
