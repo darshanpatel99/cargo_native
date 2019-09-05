@@ -105,15 +105,6 @@ export class ProductScreen extends Component {
     }
 
 
-    // console.log('DIstance calc +++++++++++++++++')
-    // let latlong = pickupAddress;
-    // console.log('Latititititititi ----> ' + latlong)
-    // console.log(getDistance(
-    //   { latitude: latlong[0], longitude: latlong[1] },
-    //   { latitude: 50.675124, longitude: -120.337546 }, 
-    // ));
-    // console.log('DIstance calc +++++++++++++++++')
-
 
   }
 
@@ -155,8 +146,17 @@ export class ProductScreen extends Component {
         console.log('&&&&&&&&&&&&&&&&&')
         console.log(responseJson.rows[0].elements[0].distance.value);
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
-        let deliveryCharge = distanceInMeters * 0.0012;
-        deliveryCharge = deliveryCharge.toFixed(2);
+        let deliveryCharge;
+        if(distanceInMeters <= 5000) {
+          deliveryCharge = 3.99;
+        } else if(distanceInMeters >= 5000 && distanceInMeters <= 10000){
+          deliveryCharge = 6.99;
+        } else if (deliveryCharge >= 10000 && deliveryCharge <= 17000){
+          deliveryCharge = 9.99;
+        } else {
+          deliveryCharge = 14.99;
+        }
+        //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
           deliveryCharge: deliveryCharge
         })
@@ -220,7 +220,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {TotalCartAmount:this.state.price})
+      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress})
     }
     else{
       this.setState({

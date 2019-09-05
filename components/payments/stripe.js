@@ -6,15 +6,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import Spinner from 'react-native-loading-spinner-overlay';
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 
-let information = {
-  card: {
-    number: '4242424242424242',
-    exp_month: '04',
-    exp_year: '21',
-    cvc: '999',
-    name: 'Sachin Akula'
-  }
-}
+
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -71,7 +63,7 @@ export default class Stripe extends React.Component {
                 exp_month: this.state.exp_month,
                 exp_year: this.state.exp_year,
                 cvc: this.state.cvc,
-                name: 'Darsh Boi'
+                name: this.props.BuyerName,
               }
             }
             var card = await stripe.createToken(information);
@@ -124,7 +116,11 @@ export default class Stripe extends React.Component {
             },
             body: JSON.stringify({
               'stripeToken': token,
-              'charge': this.props.charge+'',
+              'charge': Math.round(this.props.charge*100),
+              'buyerName': this.props.BuyerName,
+              'title': this.props.Title,
+              'sellerAddress': this.props.SellerAddress,
+              'email': this.props.Email,
             }),
 
           })
@@ -133,6 +129,7 @@ export default class Stripe extends React.Component {
             console.log('response JSon ' + JSON.stringify(responseJson))
             this.state.loading=false;
             this.state.responseJson = responseJson;
+
             this.showAlert();
             //alert(JSON.stringify(responseJson)) 
           });
