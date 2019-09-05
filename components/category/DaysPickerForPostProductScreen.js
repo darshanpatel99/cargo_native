@@ -56,10 +56,17 @@ export default class extends Component {
       selectedItems:[],
     };
   }
+
   onSelectedItemsChange = (selectedItems) => {
     this.setState({ selectedItems });
     console.log(typeof selectedItems);
     this.props.parentCallback(selectedItems);
+  };
+
+  changeState = () => {
+    this.setState({
+      selectedItems: [],
+    });
   };
 
   render() {

@@ -3,6 +3,18 @@ import {View, Text, Button } from 'react-native';
 import Stripe from '../../components/payments/stripe'
 import firebase from '../../Firebase.js';
 //import { Button } from 'react-native-elements';
+// More info on all the options is below in the API Reference... just some common use cases shown here
+const options = {
+  title: 'Select Avatar',
+  customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+  storageOptions: {
+    skipBackup: true,
+    path: 'images',
+  },
+};
+
+
+
 
 export default class TestScreen extends Component {
 
