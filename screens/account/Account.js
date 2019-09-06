@@ -59,8 +59,8 @@ export default class AccountScreen extends React.Component {
 
     }
     
-
-    // this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    //firestore reference for the specific document associated with the user
+    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
 
 }
@@ -415,6 +415,8 @@ onAuthStateChanged = user => {
     })
   }
 
+
+  //Function that is called when the save button is clicked
   saveChanges =() =>{
     
     let pictureTemp='';
