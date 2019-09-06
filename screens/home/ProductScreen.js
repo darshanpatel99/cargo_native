@@ -284,10 +284,11 @@ export class ProductScreen extends Component {
     alert('Ad was reported, Thanks for your feedback!')
   }
 
+
   CheckIfProductAlreadyInCart() {
 
     
-    if (this.state.owner != '' && this.state.owner === this.state.userID ) {
+    if (this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
@@ -303,11 +304,22 @@ export class ProductScreen extends Component {
           
       );
     } else {
-      return (
-          <TouchableOpacity onPress={this.NavigateToCheckout}>
+        if (this.state.deliveryCharge != '' ) {
+        return (
+          
+            <TouchableOpacity onPress={this.NavigateToCheckout}>
+              <MainButton title='Buy Now'/>
+            </TouchableOpacity>
+          
+        );
+      }
+      else {
+        return (
+          <TouchableOpacity>
             <MainButton title='Buy Now'/>
-          </TouchableOpacity>
-      );
+          </TouchableOpacity> 
+        );
+      }
     }
   }
 
@@ -386,6 +398,7 @@ export class ProductScreen extends Component {
            <Text style={styles.reportAd}> Report Ad </Text>
            </TouchableOpacity>
          </View>
+
         <View style={styles.BottomPart}>
           {this.CheckIfProductAlreadyInCart()}
         </View>
