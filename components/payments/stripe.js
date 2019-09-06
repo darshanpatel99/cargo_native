@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Keyboard,  TouchableWithoutFeedback} from 'react-native';
+import { View, Text, Alert, Keyboard,  TouchableWithoutFeedback} from 'react-native';
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
 import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -103,9 +103,11 @@ export default class Stripe extends React.Component {
 
         //AWS lambda function call
         makeLambdaCal(token) {
-          try{
+          
 
+          try{
             this.state.loading =true;
+            console.log('Loading state before ' + this.state.loading);
 
           fetch('https://5nhq1a2ccj.execute-api.us-west-1.amazonaws.com/dev/processStripePayment', {
             method: 'POST',
@@ -127,11 +129,22 @@ export default class Stripe extends React.Component {
           .then((response) => response.json())
           .then((responseJson) => {
             console.log('response JSon ' + JSON.stringify(responseJson))
-            this.state.loading=false;
+            // this.state.loading = false; 
             this.state.responseJson = responseJson;
 
-            this.showAlert();
-            //alert(JSON.stringify(responseJson)) 
+            if(this.state.responseJson == 'Payment Successfull'){
+              this.setState({ loading: false });
+              console.log('Loading state ' + this.state.loading);
+              this.showAlert();
+            }else{
+              this.setState({ loading: false });
+              console.log('Loading state ' + this.state.loading);
+             // this.setState({ spinner: false });
+ 
+              setTimeout(() => {
+                Alert.alert('Oops!', this.state.responseJson);
+              }, 100);
+            }
           });
 
         }
@@ -231,7 +244,7 @@ const styles= {
     alignItems: 'stretch',
   },
     spinnerTextStyle: {
-    color: '#FFF'
+    color: '#0000FF'
   },
   button: {
     margin: 10,
