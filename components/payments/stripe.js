@@ -5,6 +5,7 @@ import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Spinner from 'react-native-loading-spinner-overlay';
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
+import Colors from "../../constants/Colors";
 
 
 const DismissKeyboard = ({ children }) => (
@@ -198,7 +199,7 @@ export default class Stripe extends React.Component {
           <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Hello!!"
+            title="Thank You!"
             message={this.state.responseJson}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -206,7 +207,7 @@ export default class Stripe extends React.Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="OK"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor= {Colors.primary}
             onCancelPressed={() => {
               this.hideAlert();
             }}

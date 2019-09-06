@@ -22,7 +22,6 @@ import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 
-
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 
@@ -75,6 +74,7 @@ export class ProductScreen extends Component {
     };
 
     this.NavigateToCheckout = this.NavigateToCheckout.bind(this);
+    this.NavigateToMessage = this.NavigateToMessage.bind(this);
     this.NavigateToEdit = this.NavigateToEdit.bind(this);
     this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(this);
     this.flagTheItem = this.flagTheItem.bind(this);
@@ -229,6 +229,12 @@ export class ProductScreen extends Component {
     }
   };
 
+  NavigateToMessage() {
+    const { navigate } = this.props.navigation;
+    //this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('Chat', {userID:this.state.userID})
+  };
+
   NavigateToEdit(){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
@@ -264,7 +270,7 @@ export class ProductScreen extends Component {
     return {
       headerRight: (
         <TouchableHighlight
-          onPress={params.handleCartItems}
+          onPress={ () => navigation.navigate('Chat')}
           style={{ marginRight: 10 }}
         >
           <AntDesign name='message1' size={30} color={Colors.primary} />
@@ -306,18 +312,30 @@ export class ProductScreen extends Component {
     } else {
         if (this.state.deliveryCharge != '' ) {
         return (
-          
+          <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
             <TouchableOpacity onPress={this.NavigateToCheckout}>
-              <MainButton title='Buy Now'/>
+              <MainButton title='Buy Now' bluesecondary="true"/>
             </TouchableOpacity>
-          
+
+            <TouchableOpacity onPress={this.NavigateToMessage}>
+              <MainButton title='Chat Now' bluesecondary="true"/>
+            </TouchableOpacity>
+
+          </View>
         );
       }
       else {
         return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
           <TouchableOpacity>
-            <MainButton title='Buy Now'/>
-          </TouchableOpacity> 
+            <MainButton title='Buy Now' bluesecondary="true"/>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <MainButton title='Chat Now' bluesecondary="true"/>
+          </TouchableOpacity>
+
+        </View>
         );
       }
     }
@@ -370,7 +388,7 @@ export class ProductScreen extends Component {
         </View>
 
         {/* <View style={styles.infotext}> */}
-          <View style={{flex: 1 }}>
+          <View style={styles.nameAndPrice}>
             <Text style={styles.productName} numberOfLines={2} ellipsizeMode="tail">{this.state.title}</Text>
             <Text style={styles.productPrice} numberOfLines={2} ellipsizeMode="tail">$ {this.state.price}</Text>
           </View>
@@ -378,10 +396,6 @@ export class ProductScreen extends Component {
           {/* <Text>Local number => {this.state.count} </Text>
          <Text>Total product in firebase => {this.state.cart.length}</Text> */}
           <View style={styles.LocViewAndPrice}>
-            <View style={styles.productLocView}>
-              <FontAwesome name='map-marker' size={20} color={Colors.primary} />
-              <Text style={styles.productLoc}>Sahali, Kamloops</Text>
-            </View>
             <View style={styles.priceDr}>
               <Text style={styles.price}>$ {this.state.deliveryCharge}</Text>
               <FontAwesome name='car' size={22} color={Colors.primary} />
@@ -414,7 +428,7 @@ export class ProductScreen extends Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="Go to login!!"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert();
             }}
@@ -461,22 +475,23 @@ const styles = StyleSheet.create({
     paddingRight: 5
   },
   productName: {
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 25,
+    fontWeight: 'bold',
     alignItems: 'flex-start',
-    marginTop: 10,
-    marginLeft: 10,
+    margin:10,
     flexWrap: 'wrap',
-    marginLeft: 10,
-    paddingLeft: 10
   },
   productPrice: {
-    fontSize: 20,
-    fontWeight: '500',
+    fontSize: 25,
+    fontWeight: 'bold',
     marginHorizontal:10,
-    marginTop: 10,
+    margin: 10,
     flexWrap: 'wrap'
-
+  },
+  nameAndPrice: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   productLocView: {
     flexDirection: 'row',
@@ -500,23 +515,20 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 18,
     fontWeight: '500',
-    paddingRight: 7
   },
   priceDr: {
     flex: 0.2,
     flexDirection: 'row',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
+    paddingLeft: 7,
   },
   LocViewAndPrice: {
     flexDirection: 'row',
     marginTop: 5
   },
   BottomPart: {
-    marginBottom: 20,
-    //flex: 1,
+    marginBottom: 25,
     alignItems: 'center',
-    //paddingBottom: 10,
-    //paddingTop: 10
   },
   purchaseButton: {
     alignItems: 'center',
