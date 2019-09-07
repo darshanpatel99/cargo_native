@@ -27,14 +27,28 @@ export default class GooglePlaces extends Component {
         this.state = {
             lat: 0,
             long: 0,
+            changingAddress:0,
+            checkInputEmpty: 'EMPTY'
         };
     }
 
-
+    checkIfInputNotEmpty(text) {
+        // console.log(text)
+        // if(this.props.postAdClicked  == true && text.length == 0) {
+        //     alert('Please input address')
+        // }
+        this.props.checkInputEmpty(text)
+    }
 
     changeAddressState = () => {
        // this.GooglePlacesRef.setAddressText("");
        this.googlePlacesAutocomplete._handleChangeText('')
+       let num =1 
+       num = num + this.changeAddressState;
+
+       this.setState({
+           changingAddress: num
+       })
     };
 
     
@@ -54,6 +68,9 @@ export default class GooglePlaces extends Component {
                 keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
+                textInputProps={{
+                    onChangeText: (text) => {this.checkIfInputNotEmpty(text)}
+                   }}
                 onPress={(data, details = null) => {
 
                     console.log(Object.values(details.geometry.location))
