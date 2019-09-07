@@ -19,7 +19,7 @@ constructor(props){
         isLoading: true,
         products: [],
         key :'',
-        sort: this.props.filtersAndSorts 
+        sort: this.props.filtersAndSorts, 
     };
     //console.log(id);
     //currentProducts = firebase.firestore().collection('Products').where('Status', '==' , 'active').where('UID' , '==' , id);
@@ -83,7 +83,7 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
+          <ProductCardComponent owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
         </View>
       }
       />

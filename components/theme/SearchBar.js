@@ -55,7 +55,9 @@ export default class SearchBarTheme extends Component {
             lightTheme        
             round  
             onChangeText={this.handleQueryChange}  
-            value={this.state.query}    
+            value={this.state.query}
+            size={20} 
+               
            // onChangeText={text => this.handleSearch(text)}   
             //query={this.state.query}                        
           /> 

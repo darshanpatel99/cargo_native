@@ -56,13 +56,11 @@ export default class AccountScreen extends React.Component {
         }); 
     });
   
-
-    }
     
+    //firestore reference for the specific document associated with the user
+    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-    // this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-
-
+  }
 }
 
 componentDidMount() {
@@ -83,23 +81,13 @@ onAuthStateChanged = user => {
   this.setState({ User: user });
 };  
 
-  //Function to logo out user
-  async logoutAsync(props) {
-    try {
-      await firebase.auth().signOut();
-      
-    
-    } catch ({ message }) {
-      alert(message);
-    }
-  }
-
+  //Function to logo out user21`22122
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
       props.navigation.navigate('Account');
     } catch ({ message }) {
-      alert(message);
+      alert('You are logged out!!');
     }
   }
 
@@ -368,7 +356,31 @@ onAuthStateChanged = user => {
           defaultValue='Street'                                                            
         />);   
       }
-      else {
+      else 
+        if(num==3){
+          return(<TextInput
+            style={[styles.inputInfo]}                
+              editable={true}
+              value={this.state.newData[num]}
+              onChangeText={ (value) => {this.changeValue(value,num)}}
+              keyboardType='default'
+              autoCorrect={false}
+              defaultValue='City'                                                            
+            />);          
+        }
+        else 
+        if(num==3){
+          return(<TextInput
+            style={[styles.inputInfo]}                
+              editable={true}
+              value={this.state.newData[num]}
+              onChangeText={ (value) => {this.changeValue(value,num)}}
+              keyboardType='default'
+              autoCorrect={false}
+              defaultValue='Country'                                                            
+            />);          
+        }
+        else{
         return(<TextInput
           style={[styles.inputInfo]}                
             editable={true}
@@ -391,6 +403,8 @@ onAuthStateChanged = user => {
     })
   }
 
+
+  //Function that is called when the save button is clicked
   saveChanges =() =>{
     
     let pictureTemp='';
