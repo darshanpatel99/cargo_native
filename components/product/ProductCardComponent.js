@@ -32,11 +32,13 @@ class ProductCardComponent extends React.Component {
                 <View style = {styles.contentContainer}>
                     <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.title} </Text>
                     <Text style = {styles.descriptionStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.description}</Text> 
-                    <SmallButtonComponent text ={this.props.price} buttonColor = {Colors.secondary}/>
+                    {/* <SmallButtonComponent text ={this.props.price} buttonColor = {Colors.secondary}/> */}
                 </View>
             {/* This is right icons container */}
                 <View style = {styles.rightSideIconsContainer}>
-                    <ProductVerticalBar />
+                    {/* <ProductVerticalBar /> */}
+
+                    <Text style={[styles.priceStyle,{color:Colors.secondary}]}>${this.props.price}</Text>
                 </View>
             </View>
             {/* <Text>{this.props.id}</Text> */}
@@ -54,8 +56,7 @@ const styles = {
         flexDirection: 'row',
         margin: 10,
         borderRadius: 5,
-        padding: 10,
-        justifyContent: 'space-between', 
+        //padding: 10,        justifyContent: 'space-between', 
         height: 125,
         // background: "#FDFCF5",
         backgroundColor:'#FDFCF5',
@@ -67,24 +68,32 @@ const styles = {
           width: 0
         },
 
+
         
     },
 
     thumbnailContainer: {
+        padding: 10,
     },
 
     contentContainer : {
-        flexDirection: 'column',
+        //flexDirection: 'column',
         flex: 2,
-        justifyContent: 'space-between',
-        marginLeft: 5
+        //justifyContent: 'space-between',
+        marginLeft: 5,
+        marginBottom:20,
+        padding: 10,
         
     },
 
     rightSideIconsContainer : {
         flex: 1,
-        justifyContent: 'space-between',
-        padding: 10
+        justifyContent: 'center',
+        //padding: 10,
+        // borderWidth:5,
+        // borderColor:'black',
+        alignItems:'center',
+        //backgroundColor:Colors.secondary
     },
 
     titleStyle: {
@@ -92,6 +101,11 @@ const styles = {
     },
     descriptionStyle :{
         flexWrap: 'wrap',
+    },
+    priceStyle:{
+        fontWeight:'900',
+        fontSize:20,
+        
     }
 }
 

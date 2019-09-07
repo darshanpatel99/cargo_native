@@ -37,6 +37,9 @@ import GooglePlaces from '../../components/maps/GooglePlaces'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
+import ImageResizer from 'react-native-image-resizer';
+
+import * as ImageManipulator from 'expo-image-manipulator';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -62,6 +65,7 @@ export default class PostProductScreen extends Component {
       Avability:[],
       owner: "",
       addressArray:[],
+      firstTimeOnly: true,
     }
 
     this.categoryRemover = React.createRef();
@@ -165,8 +169,9 @@ export default class PostProductScreen extends Component {
     let titleLength = this.state.title;
     let priceLength = this.state.price;
     let descriptionLength = this.state.description;
+    let productCategory = this.state.Category
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0)  {
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0)  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -174,7 +179,7 @@ export default class PostProductScreen extends Component {
       Name : this.state.title,
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.downloadURLs[0],
+      Thumbnail : this.state.Thumbnail,
       Owner : this.state.owner,
       Flag : true,
       FavouriteUsers:[],
@@ -184,6 +189,7 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       AddressArray: this.state.addressArray,
+   
     }
 
     //Getting the current time stamp
@@ -228,6 +234,20 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
+
+      console.log(this.state.firstTimeOnly);
+        console.log('I am first time');
+        await this.uploadThumbnailToFirebase(result.uri)
+          .then(()=>{
+            this.firstTimeOnly = false;
+            console.log('Thumbnail got uploaded');
+          })
+          .catch(error=>{
+            console.log("Hey there is an error:  " +error);
+          })
+    
+
+
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
           console.log('Success' + uuid.v1());  
@@ -242,6 +262,7 @@ export default class PostProductScreen extends Component {
     /**
    * Function Description:
    */
+    
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -249,13 +270,27 @@ export default class PostProductScreen extends Component {
       //allowsEditing: true,
       
     });
-
+    
     console.log(result);
 
     if (!result.cancelled) {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
+
+
+      console.log(this.state.firstTimeOny);
+       //Create Thumbnail only FirstTime
+         console.log('I am first time');
+        await this.uploadThumbnailToFirebase(result.uri)
+          .then(()=>{
+            this.firstTimeOnly = false;
+            console.log('Thumbnail got uploaded');
+          })
+          .catch(error=>{
+            console.log(error);
+          })
+
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
           console.log('Success' + uuid.v1());  
@@ -267,6 +302,65 @@ export default class PostProductScreen extends Component {
     }
   };
 
+
+
+  //Uploading the thumbnail to the Firebase Storage
+  uploadThumbnailToFirebase = async (uri)=>{
+    console.log('inside the upload thumbnial function');
+
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize:{width:200, height:200} }],
+      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+    )
+
+      console.log("Hey I  am the ManipResult:  "+ manipResult.uri);
+
+      
+      const response = await fetch(manipResult.uri);
+      const blob =  await response.blob();
+      console.log('Inside Thumnail upload Image to Firebase')
+      var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+      const that = this;
+      
+      // Register three observers:
+      // 1. 'state_changed' observer, called any time the state changes
+      // 2. Error observer, called on failure
+      // 3. Completion observer, called on successful completion
+      uploadTask.on('state_changed', function(snapshot){
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log('Upload is paused');
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log('Upload is running');
+            break;
+        }
+      }, function(error) {
+        // Handle unsuccessful uploads
+      }, function() {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+          console.log('Thumbnail File available at', downloadURL);
+          that.setState({Thumbnail:downloadURL}); // setting the Thumbnail URL
+        });
+      });
+    }
+  
+
+
+  
+
+
+
+
+ 
+  //Uploading an Image to the Firebase
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -304,6 +398,8 @@ export default class PostProductScreen extends Component {
     return 'Success';
   };
  
+
+  //Delete Image on Remove
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
@@ -382,9 +478,40 @@ export default class PostProductScreen extends Component {
   }
 
   changeInputFieldFunction(text){
+    
 
     if(this.state.postAdClicked) {
       if(text.length > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
+  forCategoryColor(text){
+    
+    
+    if(this.state.postAdClicked) {
+      console.log("it is here")
+      console.log(this.state.Category)
+      if(text > 0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true
+  }
+
+  forPrice(text){
+    
+    
+    if(this.state.postAdClicked) {
+      if(text > 10 && text <1000){
         return true
       } else{
         return false
@@ -437,13 +564,13 @@ export default class PostProductScreen extends Component {
                 </CardItem>
               </Card>
 
-              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? Colors.secondary : 'red' } }>
+              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? 'black' : 'red' } }>
                 <Input placeholder='Title' 
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
                   value={this.state.title}/>
               </Item>
-              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.price) ? Colors.secondary : 'red' }}>
+              <Item rounded style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
@@ -453,7 +580,12 @@ export default class PostProductScreen extends Component {
               </Item>
 
               {/* Pick category for the product */}
+              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
               <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
+              
+              </View>
+              
+              
               
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
               <Form>
@@ -465,7 +597,7 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={[styles.iosDescriptionStyle,{borderColor: this.changeInputFieldFunction(this.state.description) ? Colors.secondary : 'red'}]}
+                    style={styles.iosDescriptionStyle}
                   />
                 ) : (
                   <Textarea
@@ -475,7 +607,7 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={[styles.androidDescriptionStyle,{borderColor: this.changeInputFieldFunction(this.state.description) ? Colors.secondary : 'red'}]}
+                    style={styles.androidDescriptionStyle}
                   />
                 )}
               </Form>
@@ -628,4 +760,22 @@ const styles = {
     color: '#fff',
     fontSize: 15
   },
+  productCategoryStyle:{
+    borderRadius:50,
+    borderWidth:0.5,
+    justifyContent:'center',
+    //alignItems:'center'
+  },
+
+  errorStyle:{
+    borderColor:'red',
+    borderWidth: 2 ,
+    //borderColor: 'green'
+  },
+  correctStyle:{
+    borderColor:'black',
+    borderWidth:0.5,
+  },
+
+
 };

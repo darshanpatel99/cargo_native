@@ -257,6 +257,8 @@ export class ProductScreen extends Component {
         index: 0,
         actions: [
           NavigationActions.navigate({
+
+            
             routeName: 'EditProduct',
             params: { data: data },
           }),
