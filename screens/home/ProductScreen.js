@@ -361,6 +361,7 @@ export class ProductScreen extends Component {
 
   render() {
     console.log('getting product id as props ======> ' + this.state.id);
+    console.log('getting product id as props ======> ' + this.state.pictures);
     const {showAlert} = this.state;
 
     return (
@@ -375,6 +376,7 @@ export class ProductScreen extends Component {
             // onCurrentImagePressed={index =>
             //   console.warn(`image ${index} pressed`)
             // }
+            circleLoop= 'true'
             dotColor='#FFEE58'
             inactiveDotColor='#90A4AE'
             dotStyle={{
@@ -399,7 +401,7 @@ export class ProductScreen extends Component {
          <Text>Total product in firebase => {this.state.cart.length}</Text> */}
           <View style={styles.LocViewAndPrice}>
             <View style={styles.priceDr}>
-              <Text style={styles.price}>$ {this.state.deliveryCharge}</Text>
+              <Text style={styles.price}>$ {this.state.deliveryCharge}  </Text>
               <FontAwesome name='car' size={22} color={Colors.primary} />
             </View>
           </View>
@@ -410,9 +412,7 @@ export class ProductScreen extends Component {
 
         </ScrollView>
          <View >
-           <TouchableOpacity onPress={this.flagTheItem}>
-           <Text style={styles.reportAd}> Report Ad </Text>
-           </TouchableOpacity>
+           <Text style={styles.reportAd} onPress={this.flagTheItem}> Report Ad </Text>   
          </View>
 
         <View style={styles.BottomPart}>
@@ -438,7 +438,6 @@ export class ProductScreen extends Component {
               this.hideAlert();
             }}
         />
-
       </View>
       
     );
@@ -504,12 +503,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     paddingLeft: 7,
-    
   },
   productDesc: {
     fontSize: 15,
     fontWeight: '100',
-    paddingLeft: 7,
     marginTop:10,
     marginLeft: 10,
     marginRight: 10 
@@ -522,11 +519,11 @@ const styles = StyleSheet.create({
     flex: 0.2,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    paddingLeft: 7,
+    marginLeft: 10,
   },
   LocViewAndPrice: {
     flexDirection: 'row',
-    marginTop: 5
+    //marginTop: 5
   },
   BottomPart: {
     marginBottom: 25,
