@@ -6,9 +6,9 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   Image,
-  ScrollView,
   View,
-  Dimensions 
+  Dimensions,
+  ScrollView
 } from 'react-native';
 import {
   Form,
@@ -20,7 +20,8 @@ import {
   Card,
   Item,
   Textarea,
-  Button
+  Button,
+  
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
@@ -38,6 +39,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 import ImageResizer from 'react-native-image-resizer';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
 
 import * as ImageManipulator from 'expo-image-manipulator';
 
@@ -66,6 +69,7 @@ export default class PostProductScreen extends Component {
       owner: "",
       addressArray:[],
       firstTimeOnly: true,
+      googleAddressEmpty: 'EMPTY'
     }
 
     this.categoryRemover = React.createRef();
@@ -465,6 +469,18 @@ export default class PostProductScreen extends Component {
     //var latLongArray = dataFromChild.split(",");
   }
 
+  googleAddressEmpty = (checkString) => {
+    if (checkString.length == 0) {
+      this.setState({
+        googleAddressEmpty:'EMPTY'
+      })
+    } else {
+      this.setState({
+      googleAddressEmpty:checkString
+      })
+    }
+  }
+
 
   //this functions gets the category id from the child component
   callbackFunction = (childData) => {
@@ -613,7 +629,63 @@ export default class PostProductScreen extends Component {
               </Form>
 
               <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover}/>
-              <GooglePlaces parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
+              {/* <GooglePlaces postAdClicked = {this.state.postAdClicked} checkInputEmpty = {this.googleAddressEmpty} parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/> */}
+            
+              <GooglePlacesAutocomplete
+                ref={c => this.googlePlacesAutocomplete = c}
+                placeholder='Pickup Address'
+                minLength={2}
+                autoFocus={false}
+                returnKeyType={'default'}
+                fetchDetails={true}
+                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+                listViewDisplayed='false'    // true/false/undefined
+                renderDescription={row => row.description} // custom description render
+ 
+                onPress={(data, details = null) => {
+
+                    console.log(Object.values(details.geometry.location))
+                    this.state.lat = Object.values(details.geometry.location)[0];
+                    this.state.long = Object.values(details.geometry.location)[1];
+                    //this.props.parentCallback(this.state.lat, this.state.long);
+                    //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
+                }}
+                GoogleReverseGeocodingQuery={{
+                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                }}
+
+                getDefaultValue={() => {
+                    return ''; // text input default value
+                }}
+                query={{
+                    // available options: https://developers.google.com/places/web-service/autocomplete
+                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
+                    language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                }}
+
+                styles={{
+                    textInputContainer: {
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderTopWidth: 0,
+                    borderBottomWidth:0
+                    },
+                    textInput: {
+                    marginLeft: 0,
+                    marginRight: 0,
+                    height: 38,
+                    color: '#5d5d5d',
+                    fontSize: 16
+                    },
+                    predefinedPlacesDescription: {
+                    color: '#1faadb'
+                    },
+                }}
+                currentLocation={false}
+                />
+
+            
+            
             </Content>
             <View
               style={{
