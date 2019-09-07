@@ -34,7 +34,8 @@ export default class GooglePlaces extends Component {
 
     changeAddressState = () => {
        // this.GooglePlacesRef.setAddressText("");
-       this.googlePlacesAutocomplete._handleChangeText('')
+       this.googlePlacesAutocomplete._handleChangeText('');
+       console.log('Address is changing//////')
     };
 
     

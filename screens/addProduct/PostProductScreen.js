@@ -62,6 +62,9 @@ export default class PostProductScreen extends Component {
       Avability:[],
       owner: "",
       addressArray:[],
+      picAlert : false,
+      availableAlert:false,
+      showAddressAlert:false,
     }
 
     this.categoryRemover = React.createRef();
@@ -85,12 +88,12 @@ export default class PostProductScreen extends Component {
    componentWillMount() {
 
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
-    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
-    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
-    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
-      Platform.OS === 'ios'
-        ? headerAndStatusBarHeight - 600
-        : headerAndStatusBarHeight;
+    // const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    // console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+    // KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+    //   Platform.OS === 'ios'
+    //     ? headerAndStatusBarHeight - 600
+    //     : headerAndStatusBarHeight;
 
   }
 
@@ -158,16 +161,18 @@ export default class PostProductScreen extends Component {
 
   };
 
-
   //post the product
   postTheProduct = async() =>{
 
     let titleLength = this.state.title;
     let priceLength = this.state.price;
     let descriptionLength = this.state.description;
-    let productCategory = this.state.Category
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.addressArray;
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0)  {
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address.length>0)  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -185,6 +190,7 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       AddressArray: this.state.addressArray,
+      
     }
 
     //Getting the current time stamp
@@ -201,17 +207,33 @@ export default class PostProductScreen extends Component {
 
   } else {
     console.log('hello');
-    
+
+    if(picArray.length==0){
+      this.setState({
+        picAlert:true,
+      })      
+    }
+
+    if(timeArray.length==0 && picArray.length!=0){
+      this.setState({
+        availableAlert:true,
+      })
+    }
+
+    console.log(address)
+
+    if(address.length==0 && picArray.length!=0 && timeArray.length!=0){
+      this.setState({
+        showAddressAlert:true,
+      })
+    }
+
     this.setState({
-      postAdClicked: true
+      postAdClicked: true,
     })
   }
 
-  }
-
-
-  
-  
+  };  
   /**
    * Function Description:
    */
@@ -426,12 +448,43 @@ export default class PostProductScreen extends Component {
     return true
   }
 
+  forPictures =(pictures)=>{
+    if(this.state.postAdClicked) {
+      if(pictures.length >0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true    
+  }
+
+  hidePicAlert =() =>{
+    this.setState({
+      picAlert:false,
+    })    
+  }
+
+  availabilityAlertHide =() =>{
+       this.setState({
+         availableAlert:false,
+       })
+  }
+
+  addressAlert =() =>{
+    this.setState({
+      showAddressAlert:false,
+    })
+  }
+
   render() {
 
     let { image } = this.state;
     const { user } = this.state;
     const {showAlert} = this.state;
     const {showAlert2} = this.state;
+    const {noPictures} = this.state.picAlert;
 
     
     if(this.state.User != null){
@@ -447,7 +500,7 @@ export default class PostProductScreen extends Component {
           <InputScrollView>
             <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
 
-              <Card>
+              <Card style={this.forPictures(this.state.image) ? styles.correctStyle : styles.errorStyle}>
                 <View  style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between',}}>
 
                   <TouchableOpacity onPress={this._pickImage}>
@@ -469,19 +522,24 @@ export default class PostProductScreen extends Component {
                 </CardItem>
               </Card>
 
-              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? 'black' : 'red' } }>
+              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.title) ? styles.correctStyle : styles.errorStyle]}>
                 <Input placeholder='Title' 
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
-                  value={this.state.title}/>
+                  value={this.state.title}
+                  maxLength={10}
+                    />
               </Item>
-              <Item rounded style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
+              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
                   name="price"
                   onChangeText={(text)=>this.setState({price:text})}
-                  value={this.state.price} />
+                  value={this.state.price} 
+                  maxLength={3}
+                  />
+                  
               </Item>
 
               {/* Pick category for the product */}
@@ -502,7 +560,9 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={styles.iosDescriptionStyle}
+                    style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
+                    maxLength={500}
+                    
                   />
                 ) : (
                   <Textarea
@@ -512,20 +572,27 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={styles.androidDescriptionStyle}
+                    style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
+                    maxLength={500}
+                    
                   />
                 )}
               </Form>
+              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
+                <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
+              </View>
+              
+              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
+                <GooglePlaces parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>                
+              </View>
 
-              <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover}/>
-              <GooglePlaces parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
             </Content>
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                margin: 10
+                //margin: 10
               }}
             >
               <Button style={styles.postAdButton} onPress={this.postTheProduct}>
@@ -550,7 +617,9 @@ export default class PostProductScreen extends Component {
 
           </Overlay> */}
 
-          <AwesomeAlert
+          
+
+            <AwesomeAlert
             show={showAlert2}
             showProgress={false}
             title="Alert"
@@ -569,7 +638,56 @@ export default class PostProductScreen extends Component {
               this.hideAlert2();
             }}
           />
+
+            <AwesomeAlert
+            show={this.state.picAlert}
+            showProgress={false}
+            title="Alert"
+            message={'Upload images please!'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.hidePicAlert();
+            }}
+          />
           
+
+          <AwesomeAlert
+            show={this.state.availableAlert}
+            showProgress={false}
+            title="Alert"
+            message={'Choose availability'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.availabilityAlertHide();
+            }}
+          />
+
+            <AwesomeAlert
+            show={this.state.showAddressAlert}
+            showProgress={false}
+            title="Alert"
+            message={'Choose pick up address'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.addressAlert();
+            }}
+          />
+
           </View>
         
       );
@@ -628,10 +746,12 @@ const styles = {
   },
   contentWrapperStyle: {},
   iosDescriptionStyle: {
-    padding: 30
+    padding: 30,
+    
   },
   androidDescriptionStyle: {
-    padding: 20
+    padding: 20,
+    borderRadius:1,
   },
   imageContainer: {
     width: 120,
@@ -666,19 +786,20 @@ const styles = {
     fontSize: 15
   },
   productCategoryStyle:{
-    borderRadius:50,
+    //borderRadius:50,
     borderWidth:0.5,
     justifyContent:'center',
+    marginTop: 5,
     //alignItems:'center'
   },
 
   errorStyle:{
     borderColor:'red',
-    borderWidth: 2 ,
+    borderWidth: 0.5 ,
     //borderColor: 'green'
   },
   correctStyle:{
-    borderColor:'black',
+    borderColor: Colors.primary,
     borderWidth:0.5,
   },
 
