@@ -28,6 +28,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 let storageRef;
 export class ProductScreen extends Component {
   constructor(props) {
+
     super(props);
     const { navigation } = this.props;
 
@@ -40,9 +41,6 @@ export class ProductScreen extends Component {
     const pickupAddress = navigation.getParam('pickupAddress')
 
     //storageRef = firebase.storage().ref();
-
-
-
 
 
     this.state = {
@@ -82,8 +80,6 @@ export class ProductScreen extends Component {
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
-    
-
     if (user != null) {
       const that = this;
       this.state.userID = user.uid;
@@ -97,19 +93,41 @@ export class ProductScreen extends Component {
             // doc.data() will be undefined in this case
             console.log("No such document!");
         }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
-    
-    
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
     }
-
-
-
   }
 
 
   componentWillMount() {
+
+    const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+      console.log("Component will  ***********************************************************************")
+      //checking the current user and setting uid
+    
+    let user = firebase.auth().currentUser;
+    if (user != null) {
+      const that = this;
+      this.state.userID = user.uid;
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.get().then(function(doc) {
+        if (doc.exists) {
+            that.setState({
+              soldArray:doc.data().SoldProducts,
+            })
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
+    }
+    });
+
     if (Platform.OS === 'android' && !Constants.isDevice) {
       this.setState({
         errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
@@ -167,12 +185,13 @@ export class ProductScreen extends Component {
       });
   };
 
-
+  
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    
   }
-  
+
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
@@ -327,6 +346,7 @@ export class ProductScreen extends Component {
         );
       }
       else {
+
         return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
           <TouchableOpacity>
