@@ -10,23 +10,14 @@ import {
 } from 'react-native';
 import { Constants } from 'expo';
 
-    const homePlace = {
-        description: 'Home',
-        geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-    };
 
-    const workPlace = {
-        description: 'Work',
-        geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
-    };
-
-
-export default class GooglePlaces extends Component {
+export default class GooglePickupAddress extends Component {
     constructor() {
         super();
         this.state = {
             lat: 0,
             long: 0,
+            // previousGPSAddress: this.props.previousGPSAddress
         };
     }
 
@@ -46,7 +37,7 @@ export default class GooglePlaces extends Component {
 
                 <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
+                placeholder='Delivery Address'
                 minLength={2}
                 autoFocus={false}
                 returnKeyType={'default'}
@@ -55,10 +46,11 @@ export default class GooglePlaces extends Component {
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
                 onPress={(data, details = null) => {
-
-                    console.log(Object.values(details.geometry.location))
+          
+                    console.log(JSON.stringify( details ))
                     this.state.lat = Object.values(details.geometry.location)[0];
                     this.state.long = Object.values(details.geometry.location)[1];
+
                     this.props.parentCallback(this.state.lat, this.state.long);
                     //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
@@ -67,7 +59,7 @@ export default class GooglePlaces extends Component {
                 }}
 
                 getDefaultValue={() => {
-                    return ''; // text input default value
+                    return this.props.previousGPSAddress; // text input default value
                 }}
                 query={{
                     // available options: https://developers.google.com/places/web-service/autocomplete
