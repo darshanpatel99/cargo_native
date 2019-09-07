@@ -4,8 +4,8 @@ import Colors from '../../constants/Colors';
 
 export default function TabBarIcon(props) {
   const focused = props.focused
-    ? Colors.tabIconSelected
-    : Colors.tabIconDefault;
+    ? Colors.primary
+    : Colors.secondary;
   return (
     // <Ionicons
     //   name={props.name}
@@ -21,4 +21,3 @@ export default function TabBarIcon(props) {
     />
   );
 }
-

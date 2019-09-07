@@ -17,7 +17,6 @@ export default (MessageStack = createStackNavigator({
 
 MessageStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
-  let headerLeft;
   const prevScreen = navigation.getParam('PreviousScreen');
 
   if (navigation.state.routes.length > 1) {
@@ -27,14 +26,9 @@ MessageStack.navigationOptions = ({ navigation }) => {
         tabBarVisible = true;
       } 
        else {
-        tabBarVisible = false;
-        
+        tabBarVisible = false;     
       }
     });
   }
 
-  return {
-    tabBarVisible,
-    tabBarIcon: ({ focused }) => <TabBarIcon type='AntDesign' name='message1' />
-  };
 };

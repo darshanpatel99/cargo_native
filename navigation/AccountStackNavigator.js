@@ -124,8 +124,8 @@ AccountStack.navigationOptions = ({ navigation }) => {
     });
   }
 
-  return {
-    tabBarVisible,
-    tabBarIcon: ({ focused }) => <TabBarIcon type='MaterialCommunityIcons' name='account-circle-outline' />
-  };
+  // return {
+  //   tabBarVisible,
+  //   tabBarIcon: ({ focused }) => <TabBarIcon type='MaterialCommunityIcons' name='account-circle-outline' />
+  // };
 };

@@ -4,11 +4,11 @@ import {
   createAppContainer,
   createBottomTabNavigator
 } from 'react-navigation';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //Importing stacks for tab navigation bar.
 import HomeStack from './HomeStackNavigator';
 import AddProductStack from './AddProductStackNavigator';
-import CartStack from './CartStackNavigator';
 import TestStack from './TestStackNavigator';
 import AccountStack from './AccountStackNavigator';
 import MessageStack from './MessageStackNavigator';
@@ -18,15 +18,31 @@ const AppTabNavigator = createBottomTabNavigator(
     Home: HomeStack,
     Account: AccountStack,
     AddProduct:AddProductStack,
-    //Cart:CartStack,
     Message:MessageStack,
     Test:TestStack,
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
+        let IconComponent = Ionicons;
+        let iconName;
+        if (routeName === 'Home') {
+          iconName = `ios-home`;
+        } else if (routeName === 'Account') {
+          iconName = `ios-contact`;
+        }else if (routeName === 'AddProduct') {
+          iconName = `ios-camera`;
+        }else if (routeName === 'Message') {
+          iconName = `ios-text`;
+        }
+        return <IconComponent name={iconName} size={30} color={tintColor} />;
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: '#397CFF',
+      inactiveTintColor: '#FBA21C',
+    },
   }
 );
-
-
-AppTabNavigator.navigationOptions = {
-  header: null,
-}
- 
 export default createAppContainer(AppTabNavigator, AccountStack);
