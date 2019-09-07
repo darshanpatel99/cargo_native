@@ -361,7 +361,6 @@ export class ProductScreen extends Component {
 
   render() {
     console.log('getting product id as props ======> ' + this.state.id);
-    console.log('getting product id as props ======> ' + this.state.pictures);
     const {showAlert} = this.state;
 
     return (
