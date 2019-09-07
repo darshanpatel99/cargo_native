@@ -656,7 +656,7 @@ export default class PostProductScreen extends Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="Go to Home !!"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert2();
             }}
@@ -695,7 +695,7 @@ export default class PostProductScreen extends Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="Go to login!!"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert();
             }}
