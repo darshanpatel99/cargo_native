@@ -64,6 +64,7 @@ export class ProductScreen extends Component {
       buttonTitle: 'Add to Cart',
       soldArray:[],
       pickupAddress: pickupAddress,
+      currentGpsLocationStringFormat: ''
     };
     onLayout = e => {
       this.setState({
@@ -153,6 +154,9 @@ export class ProductScreen extends Component {
     let productLocationLatitude = this.state.pickupAddress[0];
     let productLocationLongitude = this.state.pickupAddress[1];
 
+    console.log('Product Screen Pickup Address -- ' + productLocationLatitude);
+    console.log('Product Screen Pickup Address -- ' + productLocationLongitude);
+
     
 
     fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
@@ -162,6 +166,9 @@ export class ProductScreen extends Component {
         console.log(productLocationLatitude);
         console.log(productLocationLongitude)
         console.log('&&&&&&&&&&&&&&&&&')
+        console.log(JSON.stringify(responseJson))
+        console.log(console.log(responseJson.origin_addresses[0]))
+        console.log('*******************')
         console.log(responseJson.rows[0].elements[0].distance.value);
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
@@ -176,7 +183,8 @@ export class ProductScreen extends Component {
         }
         //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
-          deliveryCharge: deliveryCharge
+          deliveryCharge: deliveryCharge,
+          currentGpsLocationStringFormat: responseJson.origin_addresses[0]
         })
 
       })
@@ -239,7 +247,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress})
+      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat})
     }
     else{
       this.setState({

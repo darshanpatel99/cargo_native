@@ -10,45 +10,22 @@ import {
 } from 'react-native';
 import { Constants } from 'expo';
 
-    const homePlace = {
-        description: 'Home',
-        geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-    };
 
-    const workPlace = {
-        description: 'Work',
-        geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
-    };
-
-
-export default class GooglePlaces extends Component {
+export default class GooglePickupAddress extends Component {
     constructor() {
         super();
         this.state = {
             lat: 0,
             long: 0,
-            changingAddress:0,
-            checkInputEmpty: 'EMPTY'
+            // previousGPSAddress: this.props.previousGPSAddress
         };
     }
 
-    checkIfInputNotEmpty(text) {
-        // console.log(text)
-        // if(this.props.postAdClicked  == true && text.length == 0) {
-        //     alert('Please input address')
-        // }
-        this.props.checkInputEmpty(text)
-    }
+
 
     changeAddressState = () => {
        // this.GooglePlacesRef.setAddressText("");
        this.googlePlacesAutocomplete._handleChangeText('')
-       let num =1 
-       num = num + this.changeAddressState;
-
-       this.setState({
-           changingAddress: num
-       })
     };
 
     
@@ -60,7 +37,7 @@ export default class GooglePlaces extends Component {
 
                 <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
+                placeholder='Delivery Address'
                 minLength={2}
                 autoFocus={false}
                 returnKeyType={'default'}
@@ -68,14 +45,12 @@ export default class GooglePlaces extends Component {
                 keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
-                textInputProps={{
-                    onChangeText: (text) => {this.checkIfInputNotEmpty(text)}
-                   }}
                 onPress={(data, details = null) => {
-
-                    console.log(Object.values(details.geometry.location))
+          
+                    console.log(JSON.stringify( details ))
                     this.state.lat = Object.values(details.geometry.location)[0];
                     this.state.long = Object.values(details.geometry.location)[1];
+
                     this.props.parentCallback(this.state.lat, this.state.long);
                     //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
@@ -84,7 +59,7 @@ export default class GooglePlaces extends Component {
                 }}
 
                 getDefaultValue={() => {
-                    return ''; // text input default value
+                    return this.props.previousGPSAddress; // text input default value
                 }}
                 query={{
                     // available options: https://developers.google.com/places/web-service/autocomplete
