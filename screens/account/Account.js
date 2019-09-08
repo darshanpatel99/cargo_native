@@ -369,7 +369,7 @@ onAuthStateChanged = user => {
             />);          
         }
         else 
-        if(num==3){
+        if(num==4){
           return(<TextInput
             style={[styles.inputInfo]}                
               editable={true}
@@ -377,7 +377,7 @@ onAuthStateChanged = user => {
               onChangeText={ (value) => {this.changeValue(value,num)}}
               keyboardType='default'
               autoCorrect={false}
-              defaultValue='Country'                                                            
+              placeholder='Country'                                                            
             />);          
         }
         else{
