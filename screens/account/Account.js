@@ -329,7 +329,7 @@ onAuthStateChanged = user => {
           keyboardType='default'
           autoCorrect={false}
           maxLength={20}
-          defaultValue ='Full name'                                                            
+          placeholder ='Full name'                                                            
         />
       )
     }
@@ -341,7 +341,7 @@ onAuthStateChanged = user => {
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='phone-pad'
           autoCorrect={false}
-          defaultValue= 'phone number'                                                            
+          placeholder= 'phone number'                                                            
         />);      
     }
     else 
@@ -353,7 +353,7 @@ onAuthStateChanged = user => {
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType=''
           autoCorrect={false}
-          defaultValue='Street'                                                            
+          placeholder='Street'                                                            
         />);   
       }
       else 
@@ -365,11 +365,11 @@ onAuthStateChanged = user => {
               onChangeText={ (value) => {this.changeValue(value,num)}}
               keyboardType='default'
               autoCorrect={false}
-              defaultValue='City'                                                            
+              placeholder='City'                                                            
             />);          
         }
         else 
-        if(num==3){
+        if(num==4){
           return(<TextInput
             style={[styles.inputInfo]}                
               editable={true}
@@ -377,7 +377,7 @@ onAuthStateChanged = user => {
               onChangeText={ (value) => {this.changeValue(value,num)}}
               keyboardType='default'
               autoCorrect={false}
-              defaultValue='Country'                                                            
+              placeholder='Country'                                                            
             />);          
         }
         else{
