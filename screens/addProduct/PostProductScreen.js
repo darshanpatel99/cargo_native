@@ -236,15 +236,17 @@ export default class PostProductScreen extends Component {
       });
 
       console.log(this.state.firstTimeOnly);
+      if(this.state.firstTimeOnly){
         console.log('I am first time');
         await this.uploadThumbnailToFirebase(result.uri)
           .then(()=>{
-            this.firstTimeOnly = false;
+            this.setState({firstTimeOnly:false});
             console.log('Thumbnail got uploaded');
           })
           .catch(error=>{
             console.log("Hey there is an error:  " +error);
           })
+        }
     
 
 
@@ -280,16 +282,19 @@ export default class PostProductScreen extends Component {
 
 
       console.log(this.state.firstTimeOny);
+
+      if(this.state.firstTimeOnly){
        //Create Thumbnail only FirstTime
          console.log('I am first time');
         await this.uploadThumbnailToFirebase(result.uri)
           .then(()=>{
-            this.firstTimeOnly = false;
+            this.setState({firstTimeOnly:false});
             console.log('Thumbnail got uploaded');
           })
           .catch(error=>{
             console.log(error);
           })
+        }
 
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
