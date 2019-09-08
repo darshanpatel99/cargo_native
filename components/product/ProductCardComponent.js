@@ -67,9 +67,6 @@ const styles = {
           height: 1,
           width: 0
         },
-
-
-        
     },
 
     thumbnailContainer: {

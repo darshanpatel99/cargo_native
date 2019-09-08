@@ -38,6 +38,12 @@ export default class AccountScreen extends React.Component {
      newPicture:[],
      currentFolio:'',
     }
+<<<<<<< HEAD
+=======
+
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+>>>>>>> upstream/master
 
     //getting the required parameters through navigation
   //   const { navigation } = this.props;
@@ -80,9 +86,46 @@ export default class AccountScreen extends React.Component {
 
     }
 
+<<<<<<< HEAD
+=======
+  }
+      
+
+>>>>>>> upstream/master
 }
 
 componentDidMount() {
+  const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+      //checking the current user and setting uid
+    
+   //let user = firebase.auth().currentUser;
+    console.log('Its working!!!!!!!!!!!')
+
+    let user = firebase.auth().currentUser;
+
+    if (user != null) {
+        
+      this.state.userID = user.uid;
+      console.log(" State UID: " + this.state.userID);
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.onSnapshot(doc => {
+        this.setState({
+        data: doc.data(),
+        name:doc.data().FirstName,
+        globalAddress:doc.data().City + ', ' + doc.data().Country,
+        }); 
+    });
+  
+    
+    //firestore reference for the specific document associated with the user
+    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+
+  }
+      
+    });
+
   this.getPermissionAsync();
   console.log('In component did mount of the Account Screen');
   // List to the authentication state
@@ -92,6 +135,7 @@ componentDidMount() {
 
 componentWillUnmount() {
   // Clean up: remove the listener
+
   console.log('COMPonenet mount----')
   this._unsubscribe();
 }
