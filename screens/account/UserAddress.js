@@ -2,36 +2,25 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, Dimensions, Button } from 'react-native';
 import Colors from "../../constants/Colors";
 import { SliderBox } from 'react-native-image-slider-box';
-import UserAddress from '../account/UserAddress'
 
-export default class Test extends React.Component {
+
+export default class UserAddress extends React.Component {
 
   constructor(props) {
     super(props);
-
-    const { navigation } = this.props;
-    const propsUId = navigation.getParam('uid');
-    this.props.navigation
-    console.log('This is address screen  ' + propsUId)
-
-
     this.state = { 
-       uid: 'test'
+        UID:''
     };
 
 
-    // this.setState({UID: propsUId});
-
   };
 
-  
-
-
   render() {
-
+   
       return (
         <View style={styles.container}>
-          <UserAddress />
+         <Text>Hello inside User Address page  {this.state.UID}</Text>
+         <Button title='Go to account' onPress={ () => this.props.navigation.navigate('Account')}/>
         </View>
       );
     }

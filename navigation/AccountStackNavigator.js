@@ -15,6 +15,7 @@ import { initAsync } from 'expo-google-sign-in';
 import ListingScreen from '../screens/account/ListingScreen';
 import BoughtScreen from '../screens/account/BoughtScreen';
 import SoldScreen from '../screens/account/SoldScreen';
+import UserAddressScreen from '../screens/account/UserAddress';
 
 
 // checkInitialPage = ()=>{
@@ -68,6 +69,15 @@ export default AccountStack = createStackNavigator({
     screen: SignUpScreen,
     navigationOptions: {
       //header: null,
+      
+    },
+  },
+
+  UserAddressScreen: {
+    screen: UserAddressScreen,
+    navigationOptions: {
+      //header: null,
+      title: 'address',
     },
   },
 
