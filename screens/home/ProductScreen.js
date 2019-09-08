@@ -7,13 +7,17 @@ import {
   Button,
   TouchableHighlight,
   Dimensions,
-  Platform
+  Platform,
+  Modal,
+  Image
 } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
+import ImageViewer from 'react-native-image-zoom-viewer';
+import ImageZoom from 'react-native-image-pan-zoom';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import ReportAd from '../../functions/ReportAd';
@@ -21,7 +25,6 @@ import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
-
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 
@@ -106,7 +109,6 @@ export class ProductScreen extends Component {
     const { navigation } = this.props;
     
     this.focusListener = navigation.addListener('didFocus', () => { 
-      console.log("Component will  ***********************************************************************")
       //checking the current user and setting uid
     
     let user = firebase.auth().currentUser;
@@ -397,12 +399,11 @@ export class ProductScreen extends Component {
         <ScrollView>
 
         <View style={styles.pictures}>
+        
           <SliderBox
             images={this.state.pictures}
             sliderBoxHeight={400}
-            // onCurrentImagePressed={index =>
-            //   console.warn(`image ${index} pressed`)
-            // }
+            onCurrentImagePressed={ () => this.props.navigation.navigate('ImageScreen' , {pictures: this.state.pictures})}
             circleLoop= 'true'
             dotColor='#FFEE58'
             inactiveDotColor='#90A4AE'
@@ -414,9 +415,13 @@ export class ProductScreen extends Component {
               padding: 0,
               margin: 0
             }}
-            parentWidth={this.state.width}
+            //parentWidth={this.state.width}
           />
-        </View>
+         
+
+      </View>
+        {/* <ImageViewer imageUrls={this.state.pictures}  /> */}
+    
 
         {/* <View style={styles.infotext}> */}
           <View style={styles.nameAndPrice}>
