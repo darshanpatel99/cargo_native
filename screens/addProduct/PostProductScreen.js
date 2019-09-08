@@ -43,12 +43,16 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 
 
 import * as ImageManipulator from 'expo-image-manipulator';
+import { tokensToFunction } from 'path-to-regexp';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
 //Success Image Url
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 let width = Dimensions.get('window').width;
+
+let checkGoogleAddress= '';
+
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -68,8 +72,14 @@ export default class PostProductScreen extends Component {
       Avability:[],
       owner: "",
       addressArray:[],
+      picAlert : false,
+      availableAlert:false,
+      showAddressAlert:false,
       firstTimeOnly: true,
-      googleAddressEmpty: 'EMPTY'
+      lat: 0,
+      long: 0,
+      googleAddressEmpty: '',
+      changingAddress:0,
     }
 
     this.categoryRemover = React.createRef();
@@ -93,12 +103,12 @@ export default class PostProductScreen extends Component {
    componentWillMount() {
 
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
-    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
-    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
-    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
-      Platform.OS === 'ios'
-        ? headerAndStatusBarHeight - 600
-        : headerAndStatusBarHeight;
+    // const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    // console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+    // KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+    //   Platform.OS === 'ios'
+    //     ? headerAndStatusBarHeight - 600
+    //     : headerAndStatusBarHeight;
 
   }
 
@@ -132,7 +142,8 @@ export default class PostProductScreen extends Component {
     const { navigate } = this.props.navigation;
     this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
-    this.addressRemover.current.changeAddressState();
+    this.googlePlacesAutocomplete._handleChangeText('')
+    //this.addressRemover.current.changeAddressState();
 
     this.setState({
       showAlert2: false,
@@ -143,6 +154,7 @@ export default class PostProductScreen extends Component {
       image: [],
       downloadURLs : [],
       addressArray:[],
+
     });
     navigate('Home');
   };
@@ -166,16 +178,18 @@ export default class PostProductScreen extends Component {
 
   };
 
-
   //post the product
   postTheProduct = async() =>{
 
     let titleLength = this.state.title;
     let priceLength = this.state.price;
     let descriptionLength = this.state.description;
-    let productCategory = this.state.Category
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.googleAddressEmpty;
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0)  {
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -210,17 +224,33 @@ export default class PostProductScreen extends Component {
 
   } else {
     console.log('hello');
-    
+
+    if(picArray.length==0){
+      this.setState({
+        picAlert:true,
+      })      
+    }
+
+    if(timeArray.length==0 && picArray.length!=0){
+      this.setState({
+        availableAlert:true,
+      })
+    }
+
+    console.log(address)
+
+    if(address == '' && picArray.length!=0 && timeArray.length!=0){
+      this.setState({
+        showAddressAlert:true,
+      })
+    }
+
     this.setState({
-      postAdClicked: true
+      postAdClicked: true,
     })
   }
 
-  }
-
-
-  
-  
+  };  
   /**
    * Function Description:
    */
@@ -359,7 +389,24 @@ export default class PostProductScreen extends Component {
 
 
   
+    checkIfInputNotEmpty(text) {
+      // console.log(text)
+      // if(this.props.postAdClicked  == true && text.length == 0) {
+      //     alert('Please input address')
+      // }
+      this.props.checkInputEmpty(text)
+  }
 
+  changeAddressState = () => {
+     // this.GooglePlacesRef.setAddressText("");
+     this.googlePlacesAutocomplete._handleChangeText('')
+     let num =1 
+     num = num + this.changeAddressState;
+
+     this.setState({
+         changingAddress: num
+     })
+  };
 
 
 
@@ -537,13 +584,52 @@ export default class PostProductScreen extends Component {
     return true
   }
 
+  forPictures =(pictures)=>{
+    if(this.state.postAdClicked) {
+      if(pictures.length >0){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    return true    
+  }
+
+  hidePicAlert =() =>{
+    this.setState({
+      picAlert:false,
+    })    
+  }
+
+  availabilityAlertHide =() =>{
+       this.setState({
+         availableAlert:false,
+       })
+  }
+
+  addressAlert =() =>{
+    this.setState({
+      showAddressAlert:false,
+    })
+  }
+
+  testFunction(text){
+    console.log('test fucntion');
+    checkGoogleAddress = 'lalalals'
+    console.log(checkGoogleAddress)
+    this.state.googleAddressEmpty = text;
+    //this.setState({googleAddressEmpty: 'test'})
+    
+  }
+
   render() {
 
     let { image } = this.state;
     const { user } = this.state;
     const {showAlert} = this.state;
     const {showAlert2} = this.state;
-
+    const {noPictures} = this.state.picAlert;
     
     if(this.state.User != null){
       return (
@@ -558,7 +644,7 @@ export default class PostProductScreen extends Component {
           <InputScrollView>
             <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
 
-              <Card>
+              <Card style={this.forPictures(this.state.image) ? styles.correctStyle : styles.errorStyle}>
                 <View  style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between',}}>
 
                   <TouchableOpacity onPress={this._pickImage}>
@@ -580,19 +666,24 @@ export default class PostProductScreen extends Component {
                 </CardItem>
               </Card>
 
-              <Item rounded style={{ marginBottom: 10, borderColor: this.changeInputFieldFunction(this.state.title) ? 'black' : 'red' } }>
+              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.title) ? styles.correctStyle : styles.errorStyle]}>
                 <Input placeholder='Title' 
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
-                  value={this.state.title}/>
+                  value={this.state.title}
+                  maxLength={10}
+                    />
               </Item>
-              <Item rounded style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
+              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
                   name="price"
                   onChangeText={(text)=>this.setState({price:text})}
-                  value={this.state.price} />
+                  value={this.state.price} 
+                  maxLength={3}
+                  />
+                  
               </Item>
 
               {/* Pick category for the product */}
@@ -613,7 +704,9 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={styles.iosDescriptionStyle}
+                    style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
+                    maxLength={500}
+                    
                   />
                 ) : (
                   <Textarea
@@ -623,14 +716,16 @@ export default class PostProductScreen extends Component {
                     name="description" 
                     onChangeText={(text)=>this.setState({description:text})}
                     value={this.state.description}
-                    style={styles.androidDescriptionStyle}
+                    style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
+                    maxLength={500}
+                    
                   />
                 )}
               </Form>
+              <View style={[styles.productCategoryStyle, this.forPictures(this.state.Avability) ? styles.correctStyle : styles.errorStyle]}>
+                <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
+              </View>
 
-              <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover}/>
-              {/* <GooglePlaces postAdClicked = {this.state.postAdClicked} checkInputEmpty = {this.googleAddressEmpty} parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/> */}
-            
               <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Pickup Address'
@@ -641,14 +736,19 @@ export default class PostProductScreen extends Component {
                 keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
- 
+                
+                textInputProps={{
+                  onChangeText: (text) => {this.testFunction(text)}
+                 }}
                 onPress={(data, details = null) => {
 
-                    console.log(Object.values(details.geometry.location))
-                    this.state.lat = Object.values(details.geometry.location)[0];
-                    this.state.long = Object.values(details.geometry.location)[1];
-                    //this.props.parentCallback(this.state.lat, this.state.long);
-                    //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
+                console.log(Object.values(details.geometry.location))
+                let lat = Object.values(details.geometry.location)[0];
+                let long = Object.values(details.geometry.location)[1];
+                this.setState({addressArray: [lat, long]})
+                this.setState({googleAddressEmpty: 'Added stuff'})
+                //this.props.parentCallback(this.state.lat, this.state.long);
+                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
                 GoogleReverseGeocodingQuery={{
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
@@ -692,7 +792,7 @@ export default class PostProductScreen extends Component {
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                margin: 10
+                //margin: 10
               }}
             >
               <Button style={styles.postAdButton} onPress={this.postTheProduct}>
@@ -717,7 +817,9 @@ export default class PostProductScreen extends Component {
 
           </Overlay> */}
 
-          <AwesomeAlert
+          
+
+            <AwesomeAlert
             show={showAlert2}
             showProgress={false}
             title="Alert"
@@ -736,7 +838,56 @@ export default class PostProductScreen extends Component {
               this.hideAlert2();
             }}
           />
+
+            <AwesomeAlert
+            show={this.state.picAlert}
+            showProgress={false}
+            title="Alert"
+            message={'Upload images please!'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.hidePicAlert();
+            }}
+          />
           
+
+          <AwesomeAlert
+            show={this.state.availableAlert}
+            showProgress={false}
+            title="Alert"
+            message={'Choose availability'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.availabilityAlertHide();
+            }}
+          />
+
+            <AwesomeAlert
+            show={this.state.showAddressAlert}
+            showProgress={false}
+            title="Alert"
+            message={'Choose pick up address'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.addressAlert();
+            }}
+          />
+
           </View>
         
       );
@@ -795,10 +946,12 @@ const styles = {
   },
   contentWrapperStyle: {},
   iosDescriptionStyle: {
-    padding: 30
+    padding: 30,
+    
   },
   androidDescriptionStyle: {
-    padding: 20
+    padding: 20,
+    borderRadius:1,
   },
   imageContainer: {
     width: 120,
@@ -833,19 +986,20 @@ const styles = {
     fontSize: 15
   },
   productCategoryStyle:{
-    borderRadius:50,
+    //borderRadius:50,
     borderWidth:0.5,
     justifyContent:'center',
+    marginTop: 5,
     //alignItems:'center'
   },
 
   errorStyle:{
     borderColor:'red',
-    borderWidth: 2 ,
+    borderWidth: 0.5 ,
     //borderColor: 'green'
   },
   correctStyle:{
-    borderColor:'black',
+    borderColor: Colors.primary,
     borderWidth:0.5,
   },
 
