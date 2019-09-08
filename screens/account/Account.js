@@ -127,10 +127,8 @@ componentDidMount() {
     });
 
   this.getPermissionAsync();
-  console.log('In component did mount of the Account Screen');
   // List to the authentication state
   this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-
 }
 
 componentWillUnmount() {
