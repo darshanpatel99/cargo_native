@@ -171,7 +171,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           data={this.state.searchProducts}
           renderItem={({item}) =>
           <View >
-            <ProductCardComponent pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures}  />
+            <ProductCardComponent pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} thumbnail= {item.Thumbnail}  />
           </View>
           }
         />
