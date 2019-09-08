@@ -38,60 +38,33 @@ export default class AccountScreen extends React.Component {
      newPicture:[],
      currentFolio:'',
     }
-<<<<<<< HEAD
-=======
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
->>>>>>> upstream/master
 
-    //getting the required parameters through navigation
-  //   const { navigation } = this.props;
-  //   const userid = navigation.getParam('userid');
-  //   console.log('I am in acckount scrren');
-  //   if(userid!=null){
-  //     //Got the userid as the parameter from the navigation
-  //     console.log('got the following userid through the navigation: '+ userid);
-  //     this.setState({userID:userid});
-  //     console.log(" State UID: " + userid);
-  //     this.ref = firebase.firestore().collection('Users').doc(userid);
-  //     this.ref.onSnapshot(doc => {
-  //       this.setState({
-  //       data: doc.data(),
-  //       name:doc.data().FirstName,
-  //       globalAddress:doc.data().City + ', ' + doc.data().Country,
-  //       }); 
-  //   });
-  // }
 
-  //checking the current user and setting uid
-      let user = firebase.auth().currentUser;
-
-      if (user != null) {
-          
-        this.setState({userID:user.uid});
-        console.log(" State UID: " + user.uid);
-        this.ref = firebase.firestore().collection('Users').doc(user.uid);
-        this.ref.onSnapshot(doc => {
-          this.setState({
-          data: doc.data(),
-          name:doc.data().FirstName,
-          globalAddress:doc.data().City + ', ' + doc.data().Country,
+    if (user != null) {
+        
+      this.state.userID = user.uid;
+      console.log(" State UID: " + this.state.userID);
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.onSnapshot(doc => {
+        this.setState({
+        data: doc.data(),
+        name:doc.data().FirstName,
+        globalAddress:doc.data().City + ', ' + doc.data().Country,
+        }); 
           }); 
-      });
     
+         
       
-      //firestore reference for the specific document associated with the user
-      //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+  
+    
+    //firestore reference for the specific document associated with the user
+    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-    }
-
-<<<<<<< HEAD
-=======
   }
-      
-
->>>>>>> upstream/master
+    
 }
 
 componentDidMount() {
@@ -500,26 +473,7 @@ onAuthStateChanged = user => {
   
 
   render() {
-    //get the important information
-    console.log('Everything in the render! the reason is when we try to get current user in constructor it is not called when we navigate');
-    const { navigation } = this.props;
-    const userid = navigation.getParam('userid');
-    console.log('I am in acckount scrren');
-    if(userid!=null){
-      //Got the userid as the parameter from the navigation
-      console.log('got the following userid through the navigation: '+ userid);
-      this.setState({userID:userid});
-      console.log(" State UID: " + userid);
-      this.ref = firebase.firestore().collection('Users').doc(userid);
-      this.ref.onSnapshot(doc => {
-        this.setState({
-        data: doc.data(),
-        name:doc.data().FirstName,
-        globalAddress:doc.data().City + ', ' + doc.data().Country,
-        }); 
-    });
-  }
-   
+    const {navigate} = this.props.navigation;
     if(this.state.User != null){
 
       if(this.state.editMode){
