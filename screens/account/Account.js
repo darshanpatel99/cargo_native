@@ -35,18 +35,16 @@ export default class AccountScreen extends React.Component {
     userID:'',
     editMode:false,
     newData:[],
-    newPicture:[],
-    currentFolio:'',
+     newPicture:[],
+     currentFolio:'',
     }
-      
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
     if (user != null) {
         
-      //this.state.userID = user.uid;
-      this.setState({userID: user.uid})
+      this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
       this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
       this.ref.onSnapshot(doc => {
@@ -62,9 +60,42 @@ export default class AccountScreen extends React.Component {
     //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
+      
+
 }
 
 componentDidMount() {
+  const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+      //checking the current user and setting uid
+    
+   //let user = firebase.auth().currentUser;
+    console.log('Its working!!!!!!!!!!!')
+
+    let user = firebase.auth().currentUser;
+
+    if (user != null) {
+        
+      this.state.userID = user.uid;
+      console.log(" State UID: " + this.state.userID);
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.onSnapshot(doc => {
+        this.setState({
+        data: doc.data(),
+        name:doc.data().FirstName,
+        globalAddress:doc.data().City + ', ' + doc.data().Country,
+        }); 
+    });
+  
+    
+    //firestore reference for the specific document associated with the user
+    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+
+  }
+      
+    });
+
   this.getPermissionAsync();
   // List to the authentication state
   this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -72,6 +103,7 @@ componentDidMount() {
 
 componentWillUnmount() {
   // Clean up: remove the listener
+
   console.log('COMPonenet mount----')
   this._unsubscribe();
 }
@@ -82,16 +114,7 @@ onAuthStateChanged = user => {
   this.setState({ User: user });
 };  
 
-  //Function to logo out user
-  async logoutAsync(props) {
-    try {
-      await firebase.auth().signOut();
-      
-    } catch ({ message }) {
-      alert(message);
-    }
-  }
-
+  //Function to logo out user21`22122
   async logoutAsync() {
     try {
       await firebase.auth().signOut();

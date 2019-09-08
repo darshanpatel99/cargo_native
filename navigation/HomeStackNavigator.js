@@ -7,6 +7,7 @@ import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
 import EditProductScreen from '../screens/home/EditProductScreen';
 import StripeScreen from '../screens/payments/StripeScreen'
+import ImageScreen from '../screens/home/ImageScreen'
 
 export default (HomeStack = createStackNavigator({
   Home: {
@@ -49,6 +50,13 @@ export default (HomeStack = createStackNavigator({
     navigationOptions: {
       header: null,
       
+    },
+  },
+
+  ImageScreen: {
+    screen: ImageScreen,
+    navigationOptions: {
+      title: 'Image',
     },
   },
 
