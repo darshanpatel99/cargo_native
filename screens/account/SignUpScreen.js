@@ -157,7 +157,8 @@ emailSignUp = async (email, password)=>{
               console.log('1--inside firebase snap')
               if(docSnapshot.exists){
                 console.log('2--inside firebase snap')
-                this.props.navigation.navigate('Account');
+                //through them to the account screen and pass the  user uid  so that we can only get details for the current user
+                this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
               else{
                 console.log('User is not sign up');
@@ -181,10 +182,10 @@ emailSignUp = async (email, password)=>{
 
 //sigUp with Email and password
 emailLogin = async (email, password) =>{
-  console.log('Going to create the user with email and password');
+  console.log('Going to sign in the user with email and password');
   try{
     await firebase.auth().signInWithEmailAndPassword(email, password).then((result)=>{
-      console.log('Done creating the credentials');
+      console.log('Done validating the credentials');
       
       var user = result.user;
       var uid = user.uid;
@@ -208,7 +209,7 @@ emailLogin = async (email, password) =>{
               console.log('1--inside firebase snap')
               if(docSnapshot.exists){
                 console.log('2--inside firebase snap')
-                this.props.navigation.navigate('Account');
+                this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
               else{
                 console.log('User is not sign up');
@@ -238,7 +239,7 @@ emailSignUpAsync=async()=>{
   console.log('In emailSignUpAsync method');
   console.log(this.state.email);
 
-  if(this.state.firstName.length==0 || this.state.lastName.length==0){
+  if(this.state.firstName.length==0 || this.state.lastName.length==0 ){
     alert('Please dont leave any field empty')
   }else{
         //only of the email is verified, than only call create the firebase user
@@ -293,7 +294,7 @@ googleLoginAsync = async () => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
                   console.log('2--inside firebase snap')
-                  this.props.navigation.navigate('Account');
+                  this.props.navigation.navigate('Account', {userid:this.state.UID});
                 }
                 else{
                   console.log('User is not sign up');

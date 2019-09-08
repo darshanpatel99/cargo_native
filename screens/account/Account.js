@@ -38,38 +38,56 @@ export default class AccountScreen extends React.Component {
      newPicture:[],
      currentFolio:'',
     }
-      
-    //checking if auth state changd or not
-    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
+    //getting the required parameters through navigation
+  //   const { navigation } = this.props;
+  //   const userid = navigation.getParam('userid');
+  //   console.log('I am in acckount scrren');
+  //   if(userid!=null){
+  //     //Got the userid as the parameter from the navigation
+  //     console.log('got the following userid through the navigation: '+ userid);
+  //     this.setState({userID:userid});
+  //     console.log(" State UID: " + userid);
+  //     this.ref = firebase.firestore().collection('Users').doc(userid);
+  //     this.ref.onSnapshot(doc => {
+  //       this.setState({
+  //       data: doc.data(),
+  //       name:doc.data().FirstName,
+  //       globalAddress:doc.data().City + ', ' + doc.data().Country,
+  //       }); 
+  //   });
+  // }
 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
+  //checking the current user and setting uid
+      let user = firebase.auth().currentUser;
 
-    if (user != null) {
-        
-      this.setState({userID:user.uid});
-      console.log(" State UID: " + user.uid);
-      this.ref = firebase.firestore().collection('Users').doc(user.uid);
-      this.ref.onSnapshot(doc => {
-        this.setState({
-        data: doc.data(),
-        name:doc.data().FirstName,
-        globalAddress:doc.data().City + ', ' + doc.data().Country,
-        }); 
-    });
-  
+      if (user != null) {
+          
+        this.setState({userID:user.uid});
+        console.log(" State UID: " + user.uid);
+        this.ref = firebase.firestore().collection('Users').doc(user.uid);
+        this.ref.onSnapshot(doc => {
+          this.setState({
+          data: doc.data(),
+          name:doc.data().FirstName,
+          globalAddress:doc.data().City + ', ' + doc.data().Country,
+          }); 
+      });
     
-    //firestore reference for the specific document associated with the user
-    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      
+      //firestore reference for the specific document associated with the user
+      //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-  }
+    }
+
 }
 
 componentDidMount() {
   this.getPermissionAsync();
+  console.log('In component did mount of the Account Screen');
   // List to the authentication state
   this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
 }
 
 componentWillUnmount() {
@@ -440,7 +458,26 @@ onAuthStateChanged = user => {
   
 
   render() {
-    const {navigate} = this.props.navigation;
+    //get the important information
+    console.log('Everything in the render! the reason is when we try to get current user in constructor it is not called when we navigate');
+    const { navigation } = this.props;
+    const userid = navigation.getParam('userid');
+    console.log('I am in acckount scrren');
+    if(userid!=null){
+      //Got the userid as the parameter from the navigation
+      console.log('got the following userid through the navigation: '+ userid);
+      this.setState({userID:userid});
+      console.log(" State UID: " + userid);
+      this.ref = firebase.firestore().collection('Users').doc(userid);
+      this.ref.onSnapshot(doc => {
+        this.setState({
+        data: doc.data(),
+        name:doc.data().FirstName,
+        globalAddress:doc.data().City + ', ' + doc.data().Country,
+        }); 
+    });
+  }
+   
     if(this.state.User != null){
 
       if(this.state.editMode){
