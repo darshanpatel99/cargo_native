@@ -1,27 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
-import {
-  Button,
-  Header,
-  Text,
-  Body,
-  Left,
-  List,
-  ListItem,
-  Right,
-  Item,
-  Input,
-  Container,
-  Icon,
-  Content
-} from 'native-base';
-import Dialog, {
-  DialogFooter,
-  DialogButton,
-  DialogContent,
-  DialogTitle,
-  SlideAnimation
-} from 'react-native-popup-dialog';
+import {  Button, Text, Item, Input, Container, Icon} from 'native-base';
 import firebase from '../../Firebase';
 import GooglePickupAddress from '../../components/maps/GooglePickupAddress'
 
