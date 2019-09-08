@@ -94,7 +94,18 @@ export default class MainButton extends Component {
             <Text style={styles.secondaryText}>{this.props.title}</Text>
           </Button>
         );
-      } else {
+      } 
+      
+      else if(this.props.bluesecondary){
+        // Secondary blue button
+        return (
+          <Button light rounded large style={styles.secondaryBlueButton}>
+            <Text style={styles.secondaryWhiteText}>{this.props.title}</Text>
+          </Button>
+        );
+      }
+
+      else {
         // Button
         return (
           <Button primary rounded large style={styles.button}>
@@ -129,6 +140,19 @@ const styles = StyleSheet.create({
     width: 175,
     margin: 5
   },
+  secondaryBlueButton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 175,
+    margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
+  },
   text: {
     color: "#fff",
     fontSize: 20,
@@ -137,6 +161,12 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+  secondaryWhiteText: {
+    color: "#fff",
     fontSize: 18,
     fontWeight: "500",
     letterSpacing: 1.2

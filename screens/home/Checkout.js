@@ -23,6 +23,8 @@ import Dialog, {
   SlideAnimation
 } from 'react-native-popup-dialog';
 import firebase from '../../Firebase';
+import GooglePickupAddress from '../../components/maps/GooglePickupAddress'
+
 
 export default class Checkout extends Component {
 
@@ -35,6 +37,7 @@ export default class Checkout extends Component {
     const userId = navigation.getParam('userID');
     const sellerAddress = navigation.getParam('SellerAddress');
     const productTitle = navigation.getParam('Title');
+    const GPSStringFormat = navigation.getParam('GPSLocation')
 
     this.state = {
       defaultAddress: '',
@@ -51,6 +54,7 @@ export default class Checkout extends Component {
       sellerAddress: sellerAddress,
       productTitle: productTitle,
       Email:'',
+      GPSStringFormat: GPSStringFormat
     };
 
     let {City, Street, Country, Buyer} ='';
@@ -94,6 +98,63 @@ export default class Checkout extends Component {
 
   }
 
+
+  googleAddressCallback = (latitude, longitude) => {
+
+    console.log('Product SellerAddress ' + this.state.sellerAddress )
+    let addressArray = [latitude, longitude];
+    console.log('This is address array' + addressArray)
+    this.setState({
+      addressArray
+    })
+    this._getLocationAsync();
+  }
+
+  _getLocationAsync (){
+
+
+    //this.setState({ location });
+    let currentDeviceLatitude = this.state.addressArray[0];
+    let currentDeviceLongitude = this.state.addressArray[1];
+
+    let productLocationLatitude = this.state.sellerAddress[0];
+    let productLocationLongitude = this.state.sellerAddress[1];
+
+
+    fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //return responseJson.movies;
+        console.log(productLocationLatitude);
+        console.log(productLocationLongitude)
+        console.log('&&&&&&&&&&&&&&&&&')
+        console.log(responseJson.rows[0].elements[0].distance.value);
+        const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
+        let deliveryCharge;
+        if(distanceInMeters <= 5000) {
+          deliveryCharge = 3.99;
+        } else if(distanceInMeters >= 5000 && distanceInMeters <= 10000){
+          deliveryCharge = 6.99;
+        } else if (deliveryCharge >= 10000 && deliveryCharge <= 17000){
+          deliveryCharge = 9.99;
+        } else {
+          deliveryCharge = 14.99;
+        }
+
+        console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
+        //deliveryCharge = deliveryCharge.toFixed(2);
+        this.setState({
+          deliveryFee: deliveryCharge
+        })
+
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+
+
   componentDidMount(props) {
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
   }
@@ -122,6 +183,8 @@ export default class Checkout extends Component {
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('StripeScreen', {TotalCartAmount:this.state.totalAmount})
   };
+
+
 
   
 
@@ -174,10 +237,10 @@ export default class Checkout extends Component {
               fontFamily: 'nunito-SemiBold'
             }}
           >
-            Delivery to
+            Update Delivery Address
           </Text>
 
-          <List
+          {/* <List
             style={{
               marginLeft: 15,
               marginTop: 10,
@@ -200,8 +263,9 @@ export default class Checkout extends Component {
                 </Text>
               </Right>
             </ListItem>
-          </List>
-          <View style={Styles.AddressFunctionButtonView}>
+          </List> */}
+
+          {/* <View style={Styles.AddressFunctionButtonView}>
             <Button
               title='Show Dialog'
               onPress={() => {
@@ -254,13 +318,17 @@ export default class Checkout extends Component {
             >
               <Text>Delete</Text>
             </Button>
-          </View>
+          </View> */}
+
+<GooglePickupAddress previousGPSAddress = {this.state.GPSStringFormat} parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
+
 
           <View style={Styles.AddressFunctionButtonView}>
+
             <Text
               style={{
                 marginLeft: 15,
-                marginTop: 20,
+                // marginTop: 20,
                 fontSize: 20,
                 fontFamily: 'nunito-SemiBold'
               }}

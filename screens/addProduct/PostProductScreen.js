@@ -6,9 +6,9 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   Image,
-  ScrollView,
   View,
-  Dimensions 
+  Dimensions,
+  ScrollView
 } from 'react-native';
 import {
   Form,
@@ -20,7 +20,8 @@ import {
   Card,
   Item,
   Textarea,
-  Button
+  Button,
+  
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation';
@@ -37,12 +38,21 @@ import GooglePlaces from '../../components/maps/GooglePlaces'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
+import ImageResizer from 'react-native-image-resizer';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
+
+import * as ImageManipulator from 'expo-image-manipulator';
+import { tokensToFunction } from 'path-to-regexp';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
 //Success Image Url
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 let width = Dimensions.get('window').width;
+
+let checkGoogleAddress= '';
+
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -65,6 +75,11 @@ export default class PostProductScreen extends Component {
       picAlert : false,
       availableAlert:false,
       showAddressAlert:false,
+      firstTimeOnly: true,
+      lat: 0,
+      long: 0,
+      googleAddressEmpty: '',
+      changingAddress:0,
     }
 
     this.categoryRemover = React.createRef();
@@ -127,7 +142,8 @@ export default class PostProductScreen extends Component {
     const { navigate } = this.props.navigation;
     this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
-    this.addressRemover.current.changeAddressState();
+    this.googlePlacesAutocomplete._handleChangeText('')
+    //this.addressRemover.current.changeAddressState();
 
     this.setState({
       showAlert2: false,
@@ -138,6 +154,7 @@ export default class PostProductScreen extends Component {
       image: [],
       downloadURLs : [],
       addressArray:[],
+
     });
     navigate('Home');
   };
@@ -170,9 +187,9 @@ export default class PostProductScreen extends Component {
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
-    let address = this.state.addressArray;
+    let address = this.state.googleAddressEmpty;
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address.length>0)  {
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -180,7 +197,7 @@ export default class PostProductScreen extends Component {
       Name : this.state.title,
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.downloadURLs[0],
+      Thumbnail : this.state.Thumbnail,
       Owner : this.state.owner,
       Flag : true,
       FavouriteUsers:[],
@@ -190,7 +207,7 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       AddressArray: this.state.addressArray,
-      
+   
     }
 
     //Getting the current time stamp
@@ -222,7 +239,7 @@ export default class PostProductScreen extends Component {
 
     console.log(address)
 
-    if(address.length==0 && picArray.length!=0 && timeArray.length!=0){
+    if(address == '' && picArray.length!=0 && timeArray.length!=0){
       this.setState({
         showAddressAlert:true,
       })
@@ -251,6 +268,20 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
+
+      console.log(this.state.firstTimeOnly);
+        console.log('I am first time');
+        await this.uploadThumbnailToFirebase(result.uri)
+          .then(()=>{
+            this.firstTimeOnly = false;
+            console.log('Thumbnail got uploaded');
+          })
+          .catch(error=>{
+            console.log("Hey there is an error:  " +error);
+          })
+    
+
+
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
           console.log('Success' + uuid.v1());  
@@ -265,6 +296,7 @@ export default class PostProductScreen extends Component {
     /**
    * Function Description:
    */
+    
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -272,13 +304,27 @@ export default class PostProductScreen extends Component {
       //allowsEditing: true,
       
     });
-
+    
     console.log(result);
 
     if (!result.cancelled) {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
+
+
+      console.log(this.state.firstTimeOny);
+       //Create Thumbnail only FirstTime
+         console.log('I am first time');
+        await this.uploadThumbnailToFirebase(result.uri)
+          .then(()=>{
+            this.firstTimeOnly = false;
+            console.log('Thumbnail got uploaded');
+          })
+          .catch(error=>{
+            console.log(error);
+          })
+
      await this.uploadImageToFirebase(result.uri, uuid.v1())
         .then(() => {
           console.log('Success' + uuid.v1());  
@@ -290,6 +336,82 @@ export default class PostProductScreen extends Component {
     }
   };
 
+
+
+  //Uploading the thumbnail to the Firebase Storage
+  uploadThumbnailToFirebase = async (uri)=>{
+    console.log('inside the upload thumbnial function');
+
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize:{width:200, height:200} }],
+      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+    )
+
+      console.log("Hey I  am the ManipResult:  "+ manipResult.uri);
+
+      
+      const response = await fetch(manipResult.uri);
+      const blob =  await response.blob();
+      console.log('Inside Thumnail upload Image to Firebase')
+      var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+      const that = this;
+      
+      // Register three observers:
+      // 1. 'state_changed' observer, called any time the state changes
+      // 2. Error observer, called on failure
+      // 3. Completion observer, called on successful completion
+      uploadTask.on('state_changed', function(snapshot){
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log('Upload is paused');
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log('Upload is running');
+            break;
+        }
+      }, function(error) {
+        // Handle unsuccessful uploads
+      }, function() {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+          console.log('Thumbnail File available at', downloadURL);
+          that.setState({Thumbnail:downloadURL}); // setting the Thumbnail URL
+        });
+      });
+    }
+  
+
+
+  
+    checkIfInputNotEmpty(text) {
+      // console.log(text)
+      // if(this.props.postAdClicked  == true && text.length == 0) {
+      //     alert('Please input address')
+      // }
+      this.props.checkInputEmpty(text)
+  }
+
+  changeAddressState = () => {
+     // this.GooglePlacesRef.setAddressText("");
+     this.googlePlacesAutocomplete._handleChangeText('')
+     let num =1 
+     num = num + this.changeAddressState;
+
+     this.setState({
+         changingAddress: num
+     })
+  };
+
+
+
+ 
+  //Uploading an Image to the Firebase
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -327,6 +449,8 @@ export default class PostProductScreen extends Component {
     return 'Success';
   };
  
+
+  //Delete Image on Remove
   deleteImageOnRemove(index) {
     var array = [...this.state.image]; // make a separate copy of the array
     console.log('This is array --> ' + index);
@@ -390,6 +514,18 @@ export default class PostProductScreen extends Component {
 
 
     //var latLongArray = dataFromChild.split(",");
+  }
+
+  googleAddressEmpty = (checkString) => {
+    if (checkString.length == 0) {
+      this.setState({
+        googleAddressEmpty:'EMPTY'
+      })
+    } else {
+      this.setState({
+      googleAddressEmpty:checkString
+      })
+    }
   }
 
 
@@ -478,6 +614,15 @@ export default class PostProductScreen extends Component {
     })
   }
 
+  testFunction(text){
+    console.log('test fucntion');
+    checkGoogleAddress = 'lalalals'
+    console.log(checkGoogleAddress)
+    this.state.googleAddressEmpty = text;
+    //this.setState({googleAddressEmpty: 'test'})
+    
+  }
+
   render() {
 
     let { image } = this.state;
@@ -485,7 +630,6 @@ export default class PostProductScreen extends Component {
     const {showAlert} = this.state;
     const {showAlert2} = this.state;
     const {noPictures} = this.state.picAlert;
-
     
     if(this.state.User != null){
       return (
@@ -578,14 +722,70 @@ export default class PostProductScreen extends Component {
                   />
                 )}
               </Form>
-              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
+              <View style={[styles.productCategoryStyle, this.forPictures(this.state.Avability) ? styles.correctStyle : styles.errorStyle]}>
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
-              
-              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
-                <GooglePlaces parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>                
-              </View>
 
+              <GooglePlacesAutocomplete
+                ref={c => this.googlePlacesAutocomplete = c}
+                placeholder='Pickup Address'
+                minLength={2}
+                autoFocus={false}
+                returnKeyType={'default'}
+                fetchDetails={true}
+                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+                listViewDisplayed='false'    // true/false/undefined
+                renderDescription={row => row.description} // custom description render
+                
+                textInputProps={{
+                  onChangeText: (text) => {this.testFunction(text)}
+                 }}
+                onPress={(data, details = null) => {
+
+                console.log(Object.values(details.geometry.location))
+                let lat = Object.values(details.geometry.location)[0];
+                let long = Object.values(details.geometry.location)[1];
+                this.setState({addressArray: [lat, long]})
+                this.setState({googleAddressEmpty: 'Added stuff'})
+                //this.props.parentCallback(this.state.lat, this.state.long);
+                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
+                }}
+                GoogleReverseGeocodingQuery={{
+                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                }}
+
+                getDefaultValue={() => {
+                    return ''; // text input default value
+                }}
+                query={{
+                    // available options: https://developers.google.com/places/web-service/autocomplete
+                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
+                    language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                }}
+
+                styles={{
+                    textInputContainer: {
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderTopWidth: 0,
+                    borderBottomWidth:0
+                    },
+                    textInput: {
+                    marginLeft: 0,
+                    marginRight: 0,
+                    height: 38,
+                    color: '#5d5d5d',
+                    fontSize: 16
+                    },
+                    predefinedPlacesDescription: {
+                    color: '#1faadb'
+                    },
+                }}
+                currentLocation={false}
+                />
+
+            
+            
             </Content>
             <View
               style={{
@@ -630,7 +830,7 @@ export default class PostProductScreen extends Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="Go to Home !!"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert2();
             }}
@@ -718,7 +918,7 @@ export default class PostProductScreen extends Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="Go to login!!"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert();
             }}
