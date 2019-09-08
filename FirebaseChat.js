@@ -11,7 +11,7 @@ const config = {
   appId: "1:572236256696:web:297a96ed7048a797"
 }
 
-class FirebaseSvc {
+class FirebaseChat {
   constructor() {
     if (!firebase.apps.length) {
       firebase.initializeApp(config);
@@ -164,5 +164,5 @@ class FirebaseSvc {
   }
 }
 
-const firebaseSvc = new FirebaseSvc();
-export default firebaseSvc;
+const firebaseChat = new FirebaseChat();
+export default firebaseChat;

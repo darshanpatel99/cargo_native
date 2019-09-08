@@ -35,8 +35,8 @@ export default class AccountScreen extends React.Component {
     userID:'',
     editMode:false,
     newData:[],
-     newPicture:[],
-     currentFolio:'',
+    newPicture:[],
+    currentFolio:'',
     }
       
 
@@ -45,7 +45,8 @@ export default class AccountScreen extends React.Component {
 
     if (user != null) {
         
-      this.state.userID = user.uid;
+      //this.state.userID = user.uid;
+      this.setState({userID: user.uid})
       console.log(" State UID: " + this.state.userID);
       this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
       this.ref.onSnapshot(doc => {
@@ -81,7 +82,6 @@ onAuthStateChanged = user => {
   this.setState({ User: user });
 };  
 
-<<<<<<< HEAD
   //Function to logo out user
   async logoutAsync(props) {
     try {
@@ -92,9 +92,6 @@ onAuthStateChanged = user => {
     }
   }
 
-=======
-  //Function to logo out user21`22122
->>>>>>> upstream/master
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
