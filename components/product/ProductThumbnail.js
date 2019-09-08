@@ -27,11 +27,14 @@ const styles = {
     containerStyle: {
         flex: 1,
         overflow:'hidden',
-        borderWidth:2,
+        width: 100,
+        height: 100,
         borderRadius: 10,
-        borderColor: "#fba21c",
-        width: 90,
-        height: 90,
+        shadowOpacity: 0.2,
+        shadowOffset: {
+        width: 0,
+        height: 2
+        },
     },
 
     imageItself: {
