@@ -132,7 +132,7 @@ export default class PostProductScreen extends Component {
     const { navigate } = this.props.navigation;
     this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
-    this.addressRemover.current.changeAddressState();
+    //this.addressRemover.current.changeAddressState();
 
     this.setState({
       showAlert2: false,
