@@ -95,6 +95,24 @@ export default class PostProductScreen extends Component {
   }
 
   componentDidMount() {
+
+    const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+
+   
+    if (user != null) {
+        
+      this.state.owner = user.uid;
+      console.log(" State UID ==> from  " + this.state.Owner);
+
+    }
+  });
+  
+
+
     this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
