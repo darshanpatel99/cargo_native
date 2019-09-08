@@ -294,12 +294,8 @@ googleLoginAsync = async () => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
                   console.log('2--inside firebase snap')
-<<<<<<< HEAD
-                  this.props.navigation.navigate('Account', {userid:this.state.UID});
-=======
 
                   this.props.navigation.navigate('Account', {userID: userUID,});
->>>>>>> upstream/master
                 }
                 else{
                   console.log('User is not sign up');
