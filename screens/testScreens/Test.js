@@ -1,50 +1,53 @@
-import React, {Component} from 'react';
-import {View, Text, Button } from 'react-native';
-import Stripe from '../../components/payments/stripe'
-import firebase from '../../Firebase.js';
-//import { Button } from 'react-native-elements';
-// More info on all the options is below in the API Reference... just some common use cases shown here
-const options = {
-  title: 'Select Avatar',
-  customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
-  storageOptions: {
-    skipBackup: true,
-    path: 'images',
-  },
-};
+import React from 'react';
+
+import { GiftedChat } from 'react-native-gifted-chat';
+// import firebase from '../Firebase';
+import firebaseChat from '../../FirebaseChat';
 
 
+class TestScreen extends React.Component {
 
-
-export default class TestScreen extends Component {
-
-  constructor(){
-    super();
+  constructor(props) {
+    super(props);
   }
+  static navigationOptions = ({ navigation }) => ({
+    title: (navigation.state.params || {}).name || 'Chat!',
+  });
 
-  async logoutAsync(props) {
-    try {
-      await firebase.auth().signOut();    
-    } catch ({ message }) {
-      alert(message);
-    }
+  state = {
+    messages: [],
+  };
+
+  get user() {
+    return {
+      // name: this.props.navigation.state.params.name,
+      // email: this.props.navigation.state.params.email,
+      // avatar: this.props.navigation.state.params.avatar,
+      id: firebaseChat.uid,
+      _id: firebaseChat.uid, // need for gifted-chat
+    };
   }
-
 
   render() {
-    return(
-      <View style= {styles.TestContainer}> 
-        <Button  title='Logout' onPress={this.logoutAsync}/>
-      </View>
-    )
+    return (
+      <GiftedChat
+        messages={this.state.messages}
+        onSend={firebaseChat.send}
+        user={this.user}
+      />
+    );
+  }
+
+  componentDidMount() {
+    firebaseChat.refOn(message =>
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, message),
+      }))
+    );
+  }
+  componentWillUnmount() {
+    firebaseChat.refOff();
   }
 }
 
-const styles = {
-  TestContainer: {
-    flex:1,
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center'
-  }
-}
+export default TestScreen;

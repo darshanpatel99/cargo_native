@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import firebase from '../../Firebase';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
+import Colors from "../../constants/Colors";
 export default class TestScreen extends React.Component {
 
   constructor(props) {
@@ -70,14 +70,6 @@ export default class TestScreen extends React.Component {
       return (
        
         <View style={styles.container}>   
-{/* 
-        <TouchableOpacity onPress={() => {
-          this.showAlert();
-        }}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Try me!</Text>
-          </View>
-        </TouchableOpacity> */}
 
           <AwesomeAlert
             show={showAlert}
@@ -90,7 +82,7 @@ export default class TestScreen extends React.Component {
             showConfirmButton={true}
             cancelText="No, cancel"
             confirmText="Go to login!!"
-            confirmButtonColor="#DD6B55"
+            confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert();
             }}

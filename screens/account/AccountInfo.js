@@ -29,7 +29,7 @@ export default class AccountInfo extends Component {
      name:'',
      globalAddress:'',
      secondNumber:null,
-     
+     defaultValues:['Full Name','Street','City','Country','Email'],     
 
      editMode:false,
      newData:[],
@@ -235,6 +235,17 @@ export default class AccountInfo extends Component {
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='email-address'
           autoCorrect={false}                                                            
+        />);      
+    }
+    else if(num == 2){
+      return(<TextInput
+        style={[styles.inputInfo]}                
+          editable={true}
+          value={this.state.newData[num]}
+          onChangeText={ (value) => {this.changeValue(value,num)}}
+          keyboardType='default'
+          autoCorrect={false}
+          defaultValue={this.state.defaultValues[num-1]}                                                            
         />);      
     }
     else {

@@ -56,13 +56,11 @@ export default class AccountScreen extends React.Component {
         }); 
     });
   
-
-    }
     
     //firestore reference for the specific document associated with the user
     //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-
+  }
 }
 
 componentDidMount() {
@@ -83,6 +81,7 @@ onAuthStateChanged = user => {
   this.setState({ User: user });
 };  
 
+<<<<<<< HEAD
   //Function to logo out user
   async logoutAsync(props) {
     try {
@@ -93,12 +92,15 @@ onAuthStateChanged = user => {
     }
   }
 
+=======
+  //Function to logo out user21`22122
+>>>>>>> upstream/master
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
       props.navigation.navigate('Account');
     } catch ({ message }) {
-      alert(message);
+      alert('You are logged out!!');
     }
   }
 
@@ -340,7 +342,7 @@ onAuthStateChanged = user => {
           keyboardType='default'
           autoCorrect={false}
           maxLength={20}
-          defaultValue ='Full name'                                                            
+          placeholder ='Full name'                                                            
         />
       )
     }
@@ -352,7 +354,7 @@ onAuthStateChanged = user => {
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='phone-pad'
           autoCorrect={false}
-          defaultValue= 'phone number'                                                            
+          placeholder= 'phone number'                                                            
         />);      
     }
     else 
@@ -364,7 +366,7 @@ onAuthStateChanged = user => {
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType=''
           autoCorrect={false}
-          defaultValue='Street'                                                            
+          placeholder='Street'                                                            
         />);   
       }
       else 
@@ -376,11 +378,11 @@ onAuthStateChanged = user => {
               onChangeText={ (value) => {this.changeValue(value,num)}}
               keyboardType='default'
               autoCorrect={false}
-              defaultValue='City'                                                            
+              placeholder='City'                                                            
             />);          
         }
         else 
-        if(num==3){
+        if(num==4){
           return(<TextInput
             style={[styles.inputInfo]}                
               editable={true}
@@ -388,7 +390,7 @@ onAuthStateChanged = user => {
               onChangeText={ (value) => {this.changeValue(value,num)}}
               keyboardType='default'
               autoCorrect={false}
-              defaultValue='Country'                                                            
+              placeholder='Country'                                                            
             />);          
         }
         else{

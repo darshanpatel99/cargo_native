@@ -28,9 +28,4 @@ AddProductStack.navigationOptions = ({ navigation }) => {
       }
     });
   }
-
-  return {
-    tabBarVisible,
-    tabBarIcon: ({ focused }) => <TabBarIcon type='AntDesign' name='camerao' />
-  };
 };
