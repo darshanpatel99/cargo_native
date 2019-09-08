@@ -1,16 +1,21 @@
 import React from 'react';
-import { GiftedChat } from 'react-native-gifted-chat'; // 0.3.0
 
-import firebaseSDK from '../../FirebaseChat';
+import { GiftedChat } from 'react-native-gifted-chat';
+// import firebase from '../Firebase';
+import firebaseChat from '../../FirebaseChat';
 
-export default class TestScreen extends React.Component {
-  // static navigationOptions = ({ navigation }) => ({
-  //   title: (navigation.state.params || {}).name || 'Chat!'
-  //   title: 'Chat!'
-  // });
+
+class TestScreen extends React.Component {
+
+  constructor(props) {
+    super(props);
+  }
+  static navigationOptions = ({ navigation }) => ({
+    title: (navigation.state.params || {}).name || 'Chat!',
+  });
 
   state = {
-    messages: []
+    messages: [],
   };
 
   get user() {
@@ -18,8 +23,8 @@ export default class TestScreen extends React.Component {
       // name: this.props.navigation.state.params.name,
       // email: this.props.navigation.state.params.email,
       // avatar: this.props.navigation.state.params.avatar,
-      id: firebaseSDK.uid,
-      _id: firebaseSDK.uid
+      id: firebaseChat.uid,
+      _id: firebaseChat.uid, // need for gifted-chat
     };
   }
 
@@ -27,20 +32,22 @@ export default class TestScreen extends React.Component {
     return (
       <GiftedChat
         messages={this.state.messages}
-        onSend={firebaseSDK.send}
+        onSend={firebaseChat.send}
         user={this.user}
       />
     );
   }
 
   componentDidMount() {
-    firebaseSDK.refOn(message =>
+    firebaseChat.refOn(message =>
       this.setState(previousState => ({
-        messages: GiftedChat.append(previousState.messages, message)
+        messages: GiftedChat.append(previousState.messages, message),
       }))
     );
   }
   componentWillUnmount() {
-    firebaseSDK.refOff();
+    firebaseChat.refOff();
   }
 }
+
+export default TestScreen;

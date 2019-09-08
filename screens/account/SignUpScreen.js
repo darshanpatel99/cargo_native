@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Dimensions,Alert } from "react-native";
-
+import { View, StyleSheet,Text,TextInput,Dimensions,Alert, KeyboardAvoidingView } from "react-native";
 //Import related to Fancy Buttons
-import { Button } from "native-base";
+import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/Colors.js";
 import { clear } from "sisteransi";
@@ -15,18 +14,19 @@ import MainButton from "../../components/theme/MainButton"; //components\theme\M
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import StyledTextInput from '../../components/theme/StyledTextInput'
 
+var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 export default class SignUpScreen extends Component {
   FacebookApiKey= '2872116616149463';
 
   constructor(props){
     super(props);
-    
-
     //creating the firebase reference for the users collection
     this.firebaseRef = firebase.firestore().collection('Users');
-
+    //Following is the state of this  component
     this.state ={
+      password:'',
       prevPage:'',
       phoneNumber:'',
       remove:true,
@@ -49,6 +49,8 @@ export default class SignUpScreen extends Component {
       profilePic:'',
       showAlert: false,
     }
+
+
 
   }
 
@@ -111,7 +113,7 @@ async googleLogin(){
 
       Alert.alert(
         'Alert',
-        'You got looged in with google',
+        'You got logged in with google',
         [
           {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
         ],
@@ -125,10 +127,140 @@ async googleLogin(){
   }
 }
 
-//Google Login Async function
+
+//Create a user with email and passord
+emailSignUp = async (email, password)=>{
+  console.log('Going to login user with given email and password');
+  try{
+    await firebase.auth().createUserWithEmailAndPassword(email,password).then((result)=>{
+      console.log('Done creating the credentials');
+      
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      this.setState({UID:uid, user:user});
+
+
+      if(tempUID!=null){
+        console.log("THIS is UUID =-=-=> " + tempUID)
+        this.setState({UID:tempUID});
+        try{
+          //verify user is signed up or not
+          var userUID = this.state.UID;
+          console.log('The uid that is going to be verified: ' + userUID);
+      
+            
+          this.firebaseRef.doc(userUID)
+            .get()
+            .then(docSnapshot => {
+              console.log('1--inside firebase snap')
+              if(docSnapshot.exists){
+                console.log('2--inside firebase snap')
+                this.props.navigation.navigate('Account');
+              }
+              else{
+                console.log('User is not sign up');
+                //add user to the database using the finishFunc
+                this.finishFunc();
+            
+              }
+            });
+          }
+          catch (e) {
+            alert('Following error occured during checking whether user exists or not:  ' + e)
+            console.warn(e);
+          } 
+    }
+    });
+  }catch (error){
+    alert(error.toString(error));
+    console.log(error.toString(error));
+  }
+}
+
+//sigUp with Email and password
+emailLogin = async (email, password) =>{
+  console.log('Going to create the user with email and password');
+  try{
+    await firebase.auth().signInWithEmailAndPassword(email, password).then((result)=>{
+      console.log('Done creating the credentials');
+      
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      this.setState({UID:uid, user:user});
+
+
+      if(tempUID!=null){
+        console.log("THIS is UUID =-=-=> " + tempUID)
+        this.setState({UID:tempUID});
+        try{
+          //verify user is signed up or not
+          var userUID = this.state.UID;
+          console.log('The uid that is going to be verified: ' + userUID);
+      
+            
+          this.firebaseRef.doc(userUID)
+            .get()
+            .then(docSnapshot => {
+              console.log('1--inside firebase snap')
+              if(docSnapshot.exists){
+                console.log('2--inside firebase snap')
+                this.props.navigation.navigate('Account');
+              }
+              else{
+                console.log('User is not sign up');
+                //if the user doesnot exist through them to the signup screen
+                this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'});
+                
+            
+              }
+            });
+          }
+          catch (e) {
+            alert('Following error occured during checking whether user exists or not:  ' + e)
+            console.warn(e);
+          } 
+    }
+    });
+  }catch (error){
+    alert(error.toString(error));
+    console.log(erro.toString(error));
+  }
+
+}
+
+//email signUp
+emailSignUpAsync=async()=>{
+
+  console.log('In emailSignUpAsync method');
+  console.log(this.state.email);
+
+  if(this.state.firstName.length==0 || this.state.lastName.length==0){
+    alert('Please dont leave any field empty')
+  }else{
+        //only of the email is verified, than only call create the firebase user
+        await this.emailSignUp(this.state.email, this.state.password);
+  }
+
+}
+
+//email Login Async
+emailLoginAsync = async () =>{
+  console.log('in emailLoginAsync');
+  console.log(this.state.email);
+
+  await this.emailLogin(this.state.email, this.state.password);
+}
+
+
+//Google Login Async functions
 googleLoginAsync = async () => {
   console.log('in loginAsync() method');
-  // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+
+  // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
   const accessToken = await this.googleLogin();
 
   if (!accessToken) return;
@@ -189,11 +321,7 @@ facebookLoginAsync = async () => {
   console.log('in facebookLoginAsync() method');
   // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
   const token = await this.facebookLogin();
-
-
-
   if (!token) return;
-
   try {
   //get the required user information related to the 
   const userInfo = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
@@ -266,7 +394,7 @@ facebookLoginAsync = async () => {
 
 
 
-
+///No longer using this method but please dont delete it is here for reference
   onSignIn = async () => {
     console.log('ON sing in -- 1')
     const {confirmationResult, code} = this.state;
@@ -374,9 +502,68 @@ facebookLoginAsync = async () => {
     console.log('This is signup screen ' + prevPage);
     const {showAlert} = this.state;
 
+
+    //if the prevPage is SignUp screen than ask for first name and last name 
+    if(prevPage=='SignUp'){
+
+    //Returning the UI elements on this page
     return (
+
       <View style={styles.viewStyle}>
 
+                <View style={styles.container}>
+                      <TextInput
+                          placeholder= 'First Name'
+                          underlineColorAndroid="transparent"
+                          autoCorrect={false}
+                          style={styles.TextInputStyle}
+                          onChangeText = { firstName=> this.setState({firstName:firstName})}
+                          />
+                  </View>
+
+                  <View style={styles.container}>
+                      <TextInput
+                          placeholder= 'Last Name'
+                          underlineColorAndroid="transparent"
+                          autoCorrect={false}
+                          style={styles.TextInputStyle}
+                          onChangeText = { lastName=> this.setState({lastName:lastName})}
+                          />
+                  </View>
+
+
+                <View style={styles.container}>
+                    <TextInput
+                        placeholder= 'Email'
+                        underlineColorAndroid="transparent"
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        style={styles.TextInputStyle}
+                        onChangeText = {email => this.setState({email:email})}
+                        />
+                </View>
+
+          <Item style={styles.container}>                
+                  <TextInput style={styles.TextInputStyle}
+                        secureTextEntry={true}
+                        placeholder= 'Password'
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        underlineColorAndroid="transparent"  
+                        onChangeText={password=> this.setState({password:password})} 
+                    />                        
+          </Item>
+
+
+        <TouchableOpacity onPress={this.emailSignUpAsync}>
+          <Button secondary rounded large style={styles.button}>
+              <Text style={styles.lightText} >{prevPage}</Text>
+          </Button>
+        </TouchableOpacity>
+
+        <Text>Or</Text>
+
+      {/* 
         <TouchableOpacity onPress={this.facebookLoginAsync}>
           <Button primary rounded large style={styles.button}>
             <Ionicons
@@ -387,7 +574,7 @@ facebookLoginAsync = async () => {
             />
             <Text style={styles.lightText} >Facebook {prevPage}</Text>
           </Button>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity onPress ={this.googleLoginAsync}>
           <Button primary rounded large style={styles.button}>
@@ -400,9 +587,72 @@ facebookLoginAsync = async () => {
             <Text style={styles.lightText} >Google {prevPage}</Text>
           </Button>
         </TouchableOpacity>
-
       </View>
     );
+      }
+      else{
+        return(
+        <View style={styles.viewStyle}>
+
+        <View style={styles.container}>
+            <TextInput
+                placeholder= 'Email'
+                underlineColorAndroid="transparent"
+                autoCapitalize='none'
+                autoCorrect={false}
+                style={styles.TextInputStyle}
+                onChangeText = {email => this.setState({email:email})}
+                />
+        </View>
+
+            <Item style={styles.container}>                
+                    <TextInput style={styles.TextInputStyle}
+                          secureTextEntry={true}
+                          placeholder= 'Password'
+                          autoCapitalize='none'
+                          autoCorrect={false}
+                          underlineColorAndroid="transparent"  
+                          onChangeText={password=> this.setState({password:password})} 
+                      />                        
+            </Item>
+
+
+          <TouchableOpacity onPress={this.emailLoginAsync}>
+            <Button secondary rounded large style={styles.button}>
+                <Text style={styles.lightText} >{prevPage}</Text>
+            </Button>
+          </TouchableOpacity>
+
+          <Text>Or</Text>
+
+          {/* 
+          <TouchableOpacity onPress={this.facebookLoginAsync}>
+            <Button primary rounded large style={styles.button}>
+              <Ionicons
+                size={30}
+                color="#fff"  
+                style={styles.icon}
+                name='logo-facebook'
+              />
+              <Text style={styles.lightText} >Facebook {prevPage}</Text>
+            </Button>
+          </TouchableOpacity> */}
+
+          <TouchableOpacity onPress ={this.googleLoginAsync}>
+            <Button primary rounded large style={styles.button}>
+              <Ionicons
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='logo-google'
+              />
+              <Text style={styles.lightText} >Google {prevPage}</Text>
+            </Button>
+          </TouchableOpacity>
+          </View>
+          );
+
+      }
   }
 }
 
@@ -457,6 +707,35 @@ const styles = StyleSheet.create({
   icon: {
     padding: 5,
     paddingRight: 10
-  }
+  },
+  iconstyle: {
+    paddingRight:10,
+},
+TextInputStyle: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center",
+    height: 50,
+    width: 300,
+    borderRadius: 20,
+    margin: 10,
+    backgroundColor: "#f8f8f8",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+},
+container: {
+    flex: 0, 
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 50,
+    width: 300,
+    margin:10,
+    backgroundColor: "#f8f8f8",
+}
 });
 
