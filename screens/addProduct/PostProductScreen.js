@@ -677,6 +677,7 @@ export default class PostProductScreen extends Component {
                   onChangeText={(text)=>this.setState({title:text})}
                   value={this.state.title}
                   maxLength={50}
+                  returnKeyType='done'
                     />
               </Item>
               <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
@@ -687,6 +688,7 @@ export default class PostProductScreen extends Component {
                   onChangeText={(text)=>this.setState({price:text})}
                   value={this.state.price} 
                   maxLength={3}
+                  returnKeyType='done'
                   />
                   
               </Item>
@@ -711,6 +713,7 @@ export default class PostProductScreen extends Component {
                     value={this.state.description}
                     style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
                     maxLength={500}
+                    //returnKeyType='return'
                     
                   />
                 ) : (
@@ -723,6 +726,7 @@ export default class PostProductScreen extends Component {
                     value={this.state.description}
                     style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
                     maxLength={500}
+                    //3returnKeyType='return'
                     
                   />
                 )}
