@@ -26,7 +26,7 @@ class ProductCardComponent extends React.Component {
                 
              {/* This is thumbnail container  */}
                 <View style = {styles.thumbnailContainer}>
-                    <ProductThumbnail url = {this.props.image}/>    
+                    <ProductThumbnail url = {this.props.thumbnail}/>    
                 </View>
             {/* This is main content container with title and desc */}
                 <View style = {styles.contentContainer}>
@@ -67,9 +67,6 @@ const styles = {
           height: 1,
           width: 0
         },
-
-
-        
     },
 
     thumbnailContainer: {
