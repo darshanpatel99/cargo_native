@@ -16,6 +16,7 @@ class TestScreen extends React.Component {
 
   state = {
     messages: [],
+    senderAndRecieverId: '0zVVJrL8Pdb3ogpAmqV7oprwaah1'+firebaseChat.uid
   };
 
   get user() {
@@ -23,7 +24,7 @@ class TestScreen extends React.Component {
       // name: this.props.navigation.state.params.name,
       // email: this.props.navigation.state.params.email,
       // avatar: this.props.navigation.state.params.avatar,
-      id: firebaseChat.uid,
+      id: firebaseChat.uid + 'IQt2h8bEZYpyEFGYEmW6',
       _id: firebaseChat.uid, // need for gifted-chat
     };
   }
@@ -36,6 +37,12 @@ class TestScreen extends React.Component {
         user={this.user}
       />
     );
+  }
+
+
+  //passing the uid and seller id to grab the message thread
+  componentWillMount() {
+    firebaseChat.passUIDToFirebaseRef(this.state.senderAndRecieverId);
   }
 
   componentDidMount() {

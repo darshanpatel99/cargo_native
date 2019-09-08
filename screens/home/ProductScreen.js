@@ -261,7 +261,7 @@ export class ProductScreen extends Component {
   NavigateToMessage() {
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Chat', {userID:this.state.userID})
+    navigate('Test', {userID:this.state.userID})
   };
 
   NavigateToEdit(){

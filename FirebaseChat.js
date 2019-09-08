@@ -11,6 +11,8 @@ const config = {
   appId: "1:572236256696:web:297a96ed7048a797"
 }
 
+let recieverAndSenderId = ''
+
 class FirebaseChat {
   constructor() {
     if (!firebase.apps.length) {
@@ -117,7 +119,7 @@ class FirebaseChat {
   }
 
   get ref() {
-    return firebase.database().ref('Messages');
+    return firebase.database().ref('Chat/'+recieverAndSenderId);
   }
 
   parse = snapshot => {
@@ -137,13 +139,18 @@ class FirebaseChat {
   };
 
   refOn = callback => {
-    this.ref
+      firebase.database().ref('Chat/'+recieverAndSenderId)
       .limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
-  }
+    }
 
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
+  }
+
+  passUIDToFirebaseRef(uid){
+    console.log('this is a test function to pass the uid in component will mount -> ' + uid);
+    recieverAndSenderId = uid
   }
   
   // send the message to the Backend

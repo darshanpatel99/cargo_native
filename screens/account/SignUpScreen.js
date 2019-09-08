@@ -480,7 +480,7 @@ facebookLoginAsync = async () => {
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
     // this.props.navigation.dispatch(resetAction);
-    this.props.navigation.navigate('Account');
+    this.props.navigation.navigate('AddressTest', {userId: 'this is test'});
 
     // this.setState({
     //     phone: '',
@@ -563,6 +563,14 @@ facebookLoginAsync = async () => {
 
         <Text>Or</Text>
 
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('AddressTest', {userId: 'this is test'})}>
+          <Button secondary rounded large style={styles.button}>
+              <Text style={styles.lightText} >{prevPage}</Text>
+          </Button>
+        </TouchableOpacity>
+
+        <Text>Or</Text>
+
       {/* 
         <TouchableOpacity onPress={this.facebookLoginAsync}>
           <Button primary rounded large style={styles.button}>
@@ -624,6 +632,8 @@ facebookLoginAsync = async () => {
           </TouchableOpacity>
 
           <Text>Or</Text>
+
+       
 
           {/* 
           <TouchableOpacity onPress={this.facebookLoginAsync}>
