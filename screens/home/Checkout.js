@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
 import {
   Button,
   Header,
@@ -24,6 +24,12 @@ import Dialog, {
 } from 'react-native-popup-dialog';
 import firebase from '../../Firebase';
 import GooglePickupAddress from '../../components/maps/GooglePickupAddress'
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
 
 
 export default class Checkout extends Component {
@@ -197,6 +203,7 @@ export default class Checkout extends Component {
       );
     }
     return (
+      <DismissKeyboard>
       <View style={Styles.Container}>
         {/* <Header transparent>
           <Left>
@@ -377,6 +384,7 @@ export default class Checkout extends Component {
           </View>
         </Container>
       </View>
+      </DismissKeyboard>
     );
   }
 }

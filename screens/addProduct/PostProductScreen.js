@@ -103,12 +103,12 @@ export default class PostProductScreen extends Component {
    componentWillMount() {
 
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
-    // const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
-    // console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
-    // KEYBOARD_VERTICAL_OFFSET_HEIGHT =
-    //   Platform.OS === 'ios'
-    //     ? headerAndStatusBarHeight - 600
-    //     : headerAndStatusBarHeight;
+    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+      Platform.OS === 'ios'
+        ? headerAndStatusBarHeight - 600
+        : headerAndStatusBarHeight;
 
   }
 
@@ -671,7 +671,7 @@ export default class PostProductScreen extends Component {
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
                   value={this.state.title}
-                  maxLength={10}
+                  maxLength={50}
                     />
               </Item>
               <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
