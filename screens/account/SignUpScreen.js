@@ -115,9 +115,10 @@ async googleLogin(){
         'Alert',
         'You got logged in with google',
         [
-          {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          {text: 'OK'},
         ],
-        {cancelable: false},
+        {cancelable: true},
       );
       return accessToken;
     }
@@ -473,6 +474,8 @@ facebookLoginAsync = async () => {
       ProfilePicture : this.state.profilePic,
       SoldProducts : [],
       Street : '',
+      Address:'',
+      UnitNumber:'',
       UID: this.state.UID.toString(),
     }
 
@@ -486,7 +489,7 @@ facebookLoginAsync = async () => {
     console.log('following data is added ' + data);
     // this.props.navigation.dispatch(resetAction);
     
-    this.props.navigation.navigate('UserAddressScreen', { UID: 'Test'});
+    this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
 
     // this.setState({
     //     phone: '',
@@ -569,13 +572,13 @@ facebookLoginAsync = async () => {
       
         <Text>Or</Text>
 
-        <TouchableOpacity onPress={this.navigateToAdress}>
+        {/* <TouchableOpacity onPress={this.navigateToAdress}>
           <Button secondary rounded large style={styles.button}>
               <Text style={styles.lightText} >{prevPage}</Text>
           </Button>
         </TouchableOpacity>
 
-        <Text>Or</Text>
+        <Text>Or</Text> */}
 
 
       {/* 

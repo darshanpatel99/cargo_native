@@ -574,7 +574,7 @@ onAuthStateChanged = user => {
                 <View style={styles.infoBody}>
                   <View style={styles.paragrapgh}>
                     <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                    <Text style={styles.info}>{this.state.data.Street}</Text>
+                    <Text style={styles.info}>{this.state.data.Address}</Text>
                     <Text style={styles.info}>{this.state.globalAddress}</Text>
                   </View>                    
                 </View>
