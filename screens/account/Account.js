@@ -42,6 +42,7 @@ export default class AccountScreen extends React.Component {
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
+
     if (user != null) {
         
       this.state.userID = user.uid;
@@ -53,15 +54,17 @@ export default class AccountScreen extends React.Component {
         name:doc.data().FirstName,
         globalAddress:doc.data().City + ', ' + doc.data().Country,
         }); 
-    });
+          }); 
+    
+         
+      
   
     
     //firestore reference for the specific document associated with the user
     //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
-      
-
+    
 }
 
 componentDidMount() {
