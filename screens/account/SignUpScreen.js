@@ -10,6 +10,7 @@ import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
+import { StackActions, NavigationActions } from 'react-navigation';
 //importing packages related to the sign in
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
@@ -551,6 +552,21 @@ facebookLoginAsync = async () => {
 
 } 
 
+
+
+deleteUserFromAuthDatabase() {
+  var user = firebase.auth().currentUser;
+
+  user.delete().then(function() {
+    // User deleted.
+    alert('User deleted')
+  }, function(error) {
+    // An error happened.
+    console.log(error)
+  });
+}
+
+
   navigateToAdress = () =>{
 
   const { navigate } = this.props.navigation;
@@ -587,10 +603,18 @@ facebookLoginAsync = async () => {
     AddUser(data);
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
-    // this.props.navigation.dispatch(resetAction);
-    
-    this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
 
+    const resetAction = StackActions.reset({
+      index: 0, // <-- currect active route from actions array
+      //params: {userId: this.state.UID},
+      actions: [
+        NavigationActions.navigate({ routeName: 'UserAddressScreen', params: { userId: this.state.UID }} ),
+      ],
+    });
+    
+    this.props.navigation.dispatch(resetAction);
+    // this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
+    // this.props.navigation.dispatch(resetAction);
     // this.setState({
     //     phone: '',
     //     phoneCompleted: false,
@@ -808,7 +832,8 @@ facebookLoginAsync = async () => {
             onCancelPressed={() => {
               this.setState({user:null});
               this.hideAlert();
-              this.props.navigation.navigate('Home')
+              this.deleteUserFromAuthDatabase()
+              this.props.navigation.navigate('Account')
 
             }}
             onConfirmPressed={() => {
@@ -822,6 +847,7 @@ facebookLoginAsync = async () => {
       }
     }
   }
+
 
 
 const styles = StyleSheet.create({
