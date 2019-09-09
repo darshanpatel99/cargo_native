@@ -254,9 +254,9 @@ emailLogin = async (email, password) =>{
               else{
                 console.log('User is not sign up');
                 //if the user doesnot exist through them to the signup screen
+
                 this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'});
-                
-            
+
               }
             });
           }
@@ -389,8 +389,7 @@ googleLoginAsync = async () => {
             //verify user is signed up or not
             var userUID = this.state.UID;
             console.log('The uid that is going to be verified: ' + userUID);
-        
-              
+
             this.firebaseRef.doc(userUID)
               .get()
               .then(docSnapshot => {
@@ -554,7 +553,12 @@ facebookLoginAsync = async () => {
 
 } 
 
- 
+  navigateToAdress = () =>{
+
+  const { navigate } = this.props.navigation;
+    //this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('AddressScreen', {userId: '0zVVJrL8Pdb3ogpAmqV7oprwaah1'})
+  }
 
   finishFunc =() =>{
 
@@ -584,7 +588,8 @@ facebookLoginAsync = async () => {
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
     // this.props.navigation.dispatch(resetAction);
-    this.props.navigation.navigate('Account');
+    
+    this.props.navigation.navigate('UserAddressScreen', { UID: 'Test'});
 
     // this.setState({
     //     phone: '',
@@ -665,8 +670,17 @@ facebookLoginAsync = async () => {
               <Text style={styles.lightText} >{prevPage}</Text>
           </Button>
         </TouchableOpacity>
+      
+        <Text>Or</Text>
+
+        <TouchableOpacity onPress={this.navigateToAdress}>
+          <Button secondary rounded large style={styles.button}>
+              <Text style={styles.lightText} >{prevPage}</Text>
+          </Button>
+        </TouchableOpacity>
 
         <Text>Or</Text>
+
 
       {/* 
         <TouchableOpacity onPress={this.facebookLoginAsync}>
@@ -694,11 +708,10 @@ facebookLoginAsync = async () => {
         </TouchableOpacity>
       </View>
     );
-      }
-      else{
-        return(
-        <View style={styles.viewStyle}>
+    }else{
+      return(
 
+        <View>
         <View style={styles.container}>
             <TextInput
                 placeholder= 'Email'
@@ -710,55 +723,70 @@ facebookLoginAsync = async () => {
                 />
         </View>
 
-            <Item style={styles.container}>                
-                    <TextInput style={styles.TextInputStyle}
-                          secureTextEntry={true}
-                          placeholder= 'Password'
-                          autoCapitalize='none'
-                          autoCorrect={false}
-                          underlineColorAndroid="transparent"  
-                          onChangeText={password=> this.setState({password:password})} 
-                      />                        
-            </Item>
-
-
-          <TouchableOpacity onPress={this.emailLoginAsync}>
-            <Button secondary rounded large style={styles.button}>
-                <Text style={styles.lightText} >{prevPage}</Text>
-            </Button>
-          </TouchableOpacity>
-
-          <Text>Or</Text>
-
-          {/* 
-          <TouchableOpacity onPress={this.facebookLoginAsync}>
-            <Button primary rounded large style={styles.button}>
-              <Ionicons
-                size={30}
-                color="#fff"  
-                style={styles.icon}
-                name='logo-facebook'
+      <View style={styles.container}>
+          <TextInput
+              placeholder= 'Email'
+              underlineColorAndroid="transparent"
+              autoCapitalize='none'
+              autoCorrect={false}
+              style={styles.TextInputStyle}
+              onChangeText = {email => this.setState({email:email})}
               />
-              <Text style={styles.lightText} >Facebook {prevPage}</Text>
-            </Button>
-          </TouchableOpacity> */}
+      </View>
 
-          <TouchableOpacity onPress ={this.googleLoginAsync}>
-            <Button primary rounded large style={styles.button}>
-              <Ionicons
-                size={30}
-                color="#fff"
-                style={styles.icon}
-                name='logo-google'
-              />
-              <Text style={styles.lightText} >Google {prevPage}</Text>
-            </Button>
-          </TouchableOpacity>
-          </View>
-          );
+      <Item style={styles.container}>                
+        <TextInput style={styles.TextInputStyle}
+          secureTextEntry={true}
+          placeholder= 'Password'
+          autoCapitalize='none'
+          autoCorrect={false}
+          underlineColorAndroid="transparent"  
+          onChangeText={password=> this.setState({password:password})} 
+        />                        
+      </Item>
+
+        
+      <TouchableOpacity onPress={this.emailLoginAsync}>
+        <Button secondary rounded large style={styles.button}>
+            <Text style={styles.lightText} >{prevPage}</Text>
+        </Button>
+      </TouchableOpacity>
+
+      <Text>Or</Text>
+
+
+        {/* 
+        <TouchableOpacity onPress={this.facebookLoginAsync}>
+          <Button primary rounded large style={styles.button}>
+            <Ionicons
+              size={30}
+              color="#fff"  
+              style={styles.icon}
+              name='logo-facebook'
+            />
+            <Text style={styles.lightText} >Facebook {prevPage}</Text>
+          </Button>
+        </TouchableOpacity> */}
+
+    <TouchableOpacity onPress ={this.googleLoginAsync}>
+      <Button primary rounded large style={styles.button}>
+        <Ionicons
+          size={30}
+          color="#fff"
+          style={styles.icon}
+          name='logo-google'
+        />
+        <Text style={styles.lightText} >Google {prevPage}</Text>
+      </Button>
+    </TouchableOpacity>
+ 
+    </View>
+    );
+      
+    }
 
       }
-    }
+    
     else{
       console.log('Showing the awesomeAlert');
         
@@ -882,4 +910,3 @@ alertContainer:{
   backgroundColor: '#fff',
 }
 });
-

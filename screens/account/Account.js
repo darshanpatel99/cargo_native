@@ -71,11 +71,7 @@ componentDidMount() {
   const { navigation } = this.props;
     
     this.focusListener = navigation.addListener('didFocus', () => { 
-      //checking the current user and setting uid
-    
-   //let user = firebase.auth().currentUser;
-    console.log('Its working!!!!!!!!!!!')
-
+    //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
     if (user != null) {
@@ -97,7 +93,7 @@ componentDidMount() {
 
   }
       
-    });
+  });
 
   this.getPermissionAsync();
   // List to the authentication state
