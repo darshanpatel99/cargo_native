@@ -53,13 +53,15 @@ export default class SignUpScreen extends Component {
       showOverlay: false,
     }
 
-
+    
 
   }
 
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
+    
   }
  
   componentWillUnmount() {
@@ -308,7 +310,7 @@ checkEmailVerifiedStatus=async ()=>{
             }
             else{
               console.log('User is not signed up');
-    //             //add user to the database using the finishFunc
+               //add user to the database using the finishFunc
               this.finishFunc();
               
             }
@@ -331,11 +333,6 @@ this.hideAlert();
     console.log(erro.toString(error));
   }
 }
-  
-  
-
-
-
 
 //email signUp
 emailSignUpAsync=async()=>{
@@ -811,6 +808,8 @@ facebookLoginAsync = async () => {
             onCancelPressed={() => {
               this.setState({user:null});
               this.hideAlert();
+              this.props.navigation.navigate('Home')
+
             }}
             onConfirmPressed={() => {
               this.checkEmailVerifiedStatus();
