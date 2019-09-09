@@ -34,31 +34,32 @@ export default class UserAddress extends React.Component {
 
     console.log("Inside fuction!");
 
-    var userCollectionReference = firebase.firestore().collection('Users').doc(this.state.UID);
-
     if(this.state.Address != ''){
 
-    const {navigation} = this.props;
-    navigation.navigate('Account');
+        const {navigation} = this.props;
+        navigation.navigate('Account');
 
-    //userCollectionReference.update(data);
+        //userCollectionReference.update(data);
+        var userCollectionReference = firebase.firestore().collection('Users').doc(this.state.UID);
 
-    return userCollectionReference.update({
-        Street: this.state.addressArray,
-        Address: this.state.Address,
-        UnitNumber: this.state.UnitNumber,
-    })
-    .then(function() {
-        console.log("Document successfully updated!");
-        
-    })
-    .catch(function(error) {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-    });
+        return userCollectionReference.update({
+            Street: this.state.addressArray,
+            Address: this.state.Address,
+            UnitNumber: this.state.UnitNumber,
+        })
+        .then(function() {
+            console.log("Document successfully updated!");
+            
+        })
+        .catch(function(error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
 
     }
+
     else{
+
         alert('Please enter your address!')
     }
 
@@ -77,7 +78,7 @@ export default class UserAddress extends React.Component {
       return (
         <View style={styles.container}>
 
-            <View style={styles.topTitle}>
+        <View style={styles.topTitle}>
             <Text style={{
               marginLeft: 15,
               fontSize: 30,
@@ -86,7 +87,7 @@ export default class UserAddress extends React.Component {
             Enter Your Address
           </Text>
 
-            </View>
+        </View>
             
 
         <View style={this.ifInputEmpty()? styles.addressContainer : styles.inputAddressContainer}>
