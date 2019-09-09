@@ -14,7 +14,9 @@ import MainButton from "../../components/theme/MainButton"; //components\theme\M
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
 import { TouchableOpacity } from "react-native-gesture-handler";
-import StyledTextInput from '../../components/theme/StyledTextInput'
+import StyledTextInput from '../../components/theme/StyledTextInput';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { tsConstructorType } from "@babel/types";
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 export default class SignUpScreen extends Component {
@@ -47,7 +49,8 @@ export default class SignUpScreen extends Component {
       street:'',
       UID:'',
       profilePic:'',
-      showAlert: false,
+      showAlert: true,
+      showOverlay: false,
     }
 
 
@@ -65,10 +68,32 @@ export default class SignUpScreen extends Component {
   }
  
   onAuthStateChanged = user => {
+    console.log('Auth state of the user has been changed');
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
     this.setState({ user });
   };
+
+  //hide the alert
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: true
+    });
+    navigate('Account');
+  };
+
+  //function to show the alert
+  showAlert(){
+    this.setState({
+      showAlert: true,
+      
+    });
+  };
+
+
+
+
 
 //facebook Login Function
 async facebookLogin() {
@@ -131,6 +156,8 @@ async googleLogin(){
 //Create a user with email and passord
 emailSignUp = async (email, password)=>{
   console.log('Going to login user with given email and password');
+  //saving email and password as the state
+  this.setState({email:email, password:password});
   try{
     await firebase.auth().createUserWithEmailAndPassword(email,password).then((result)=>{
       console.log('Done creating the credentials');
@@ -141,38 +168,51 @@ emailSignUp = async (email, password)=>{
       console.log('Your user get the following user uid: '+ uid);
       this.setState({UID:uid, user:user});
 
+      //testing to send the email verification email
+      
+      user.sendEmailVerification().then((result)=>{
+        console.log('email verification sent');
+        alert('email verification sent');
 
-      if(tempUID!=null){
-        console.log("THIS is UUID =-=-=> " + tempUID)
-        this.setState({UID:tempUID});
-        try{
-          //verify user is signed up or not
-          var userUID = this.state.UID;
-          console.log('The uid that is going to be verified: ' + userUID);
+        //set the overlay parameter to tru
+        this.setState({showOverlay:true});
+
+      });
+
+      //See if the email is verified or not
+
+
+    //   if(tempUID!=null){
+    //     console.log("THIS is UUID =-=-=> " + tempUID)
+    //     this.setState({UID:tempUID});
+    //     try{
+    //       //verify user is signed up or not
+    //       var userUID = this.state.UID;
+    //       console.log('The uid that is going to be verified: ' + userUID);
       
             
-          this.firebaseRef.doc(userUID)
-            .get()
-            .then(docSnapshot => {
-              console.log('1--inside firebase snap')
-              if(docSnapshot.exists){
-                console.log('2--inside firebase snap')
-                //through them to the account screen and pass the  user uid  so that we can only get details for the current user
-                this.props.navigation.navigate('Account', {userid:this.state.UID});
-              }
-              else{
-                console.log('User is not sign up');
-                //add user to the database using the finishFunc
-                this.finishFunc();
+    //       this.firebaseRef.doc(userUID)
+    //         .get()
+    //         .then(docSnapshot => {
+    //           console.log('1--inside firebase snap')
+    //           if(docSnapshot.exists){
+    //             console.log('2--inside firebase snap')
+    //             //through them to the account screen and pass the  user uid  so that we can only get details for the current user
+    //             this.props.navigation.navigate('Account', {userid:this.state.UID});
+    //           }
+    //           else{
+    //             console.log('User is not sign up');
+    //             //add user to the database using the finishFunc
+    //             this.finishFunc();
             
-              }
-            });
-          }
-          catch (e) {
-            alert('Following error occured during checking whether user exists or not:  ' + e)
-            console.warn(e);
-          } 
-    }
+    //           }
+    //         });
+    //       }
+    //       catch (e) {
+    //         alert('Following error occured during checking whether user exists or not:  ' + e)
+    //         console.warn(e);
+    //       } 
+    // }
     });
   }catch (error){
     alert(error.toString(error));
@@ -232,6 +272,69 @@ emailLogin = async (email, password) =>{
   }
 
 }
+
+//check whether the email is verified or not and sign in 
+checkEmailVerifiedStatus=async ()=>{
+
+  try{
+  //because the FirebaseUser Object is cached within the app session so its good idea to reload the user
+  firebase.auth().currentUser.reload();  
+  //setting the state of the new user  
+  this.setState({user:firebase.auth().currentUser});
+  var user = this.state.user;
+  //reloading the user
+  
+  var emailVerificationStatus = user.emailVerified;
+  console.log('User email verification status: '+ emailVerificationStatus);
+  if(emailVerificationStatus){
+
+    var tempUID = this.state.UID;
+    if(tempUID!=null){
+      console.log("THIS is UUID =-=-=> " + tempUID)
+      this.setState({UID:tempUID});
+      try{
+        //verify user is signed up or not
+        var userUID = this.state.UID;
+        console.log('The uid that is going to be verified: ' + userUID);
+             
+        this.firebaseRef.doc(userUID)
+          .get()
+          .then(docSnapshot => {
+            console.log('1--inside firebase snap')
+            if(docSnapshot.exists){
+              console.log('2--inside firebase snap')
+              this.props.navigation.navigate('Account', {userid:this.state.UID});
+            }
+            else{
+              console.log('User is not signed up');
+    //             //add user to the database using the finishFunc
+              this.finishFunc();
+              
+            }
+          });
+        }
+        catch (e) {
+          alert('Following error occured during checking whether user exists or not:  ' + e)
+          console.warn(e);
+        } 
+  }
+  //call the hide screen
+this.hideAlert();
+     
+}
+
+
+
+  }catch (error){
+    alert(error.toString(error));
+    console.log(erro.toString(error));
+  }
+}
+  
+  
+
+
+
 
 //email signUp
 emailSignUpAsync=async()=>{
@@ -502,8 +605,9 @@ facebookLoginAsync = async () => {
     const prevPage = navigation.getParam('prevPage');
     console.log('This is signup screen ' + prevPage);
     const {showAlert} = this.state;
+    
 
-
+    if(this.state.showOverlay==false){
     //if the prevPage is SignUp screen than ask for first name and last name 
     if(prevPage=='SignUp'){
 
@@ -540,7 +644,7 @@ facebookLoginAsync = async () => {
                         autoCapitalize='none'
                         autoCorrect={false}
                         style={styles.TextInputStyle}
-                        onChangeText = {email => this.setState({email:email})}
+                        onChangeText = {email => this.setState({email:email.trim()})}
                         />
                 </View>
 
@@ -602,7 +706,7 @@ facebookLoginAsync = async () => {
                 autoCapitalize='none'
                 autoCorrect={false}
                 style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email})}
+                onChangeText = {email => this.setState({email:email.trim()})}
                 />
         </View>
 
@@ -654,8 +758,41 @@ facebookLoginAsync = async () => {
           );
 
       }
+    }
+    else{
+      console.log('Showing the awesomeAlert');
+        
+      return (
+       
+        <View style={styles.alertContainer}>   
+          <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="Alert"
+            message="Please verify email first! After verification press SignIn Button"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="SignIn!!"
+            confirmButtonColor={Colors.primary}
+            onCancelPressed={() => {
+              this.setState({user:null});
+              this.hideAlert();
+            }}
+            onConfirmPressed={() => {
+              this.checkEmailVerifiedStatus();
+            }}
+          />
+
+
+        </View>
+      );
+      }
+    }
   }
-}
+
 
 const styles = StyleSheet.create({
   viewStyle: {
@@ -737,6 +874,12 @@ container: {
     width: 300,
     margin:10,
     backgroundColor: "#f8f8f8",
+},
+alertContainer:{
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#fff',
 }
 });
 
