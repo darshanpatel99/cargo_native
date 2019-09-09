@@ -53,13 +53,15 @@ export default class SignUpScreen extends Component {
       showOverlay: false,
     }
 
-
+    
 
   }
 
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
+    
   }
  
   componentWillUnmount() {
@@ -140,9 +142,10 @@ async googleLogin(){
         'Alert',
         'You got logged in with google',
         [
-          {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          {text: 'OK'},
         ],
-        {cancelable: false},
+        {cancelable: true},
       );
       return accessToken;
     }
@@ -307,7 +310,7 @@ checkEmailVerifiedStatus=async ()=>{
             }
             else{
               console.log('User is not signed up');
-    //             //add user to the database using the finishFunc
+               //add user to the database using the finishFunc
               this.finishFunc();
               
             }
@@ -330,11 +333,6 @@ this.hideAlert();
     console.log(erro.toString(error));
   }
 }
-  
-  
-
-
-
 
 //email signUp
 emailSignUpAsync=async()=>{
@@ -576,6 +574,8 @@ facebookLoginAsync = async () => {
       ProfilePicture : this.state.profilePic,
       SoldProducts : [],
       Street : '',
+      Address:'',
+      UnitNumber:'',
       UID: this.state.UID.toString(),
     }
 
@@ -589,7 +589,7 @@ facebookLoginAsync = async () => {
     console.log('following data is added ' + data);
     // this.props.navigation.dispatch(resetAction);
     
-    this.props.navigation.navigate('UserAddressScreen', { UID: 'Test'});
+    this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
 
     // this.setState({
     //     phone: '',
@@ -673,13 +673,13 @@ facebookLoginAsync = async () => {
       
         <Text>Or</Text>
 
-        <TouchableOpacity onPress={this.navigateToAdress}>
+        {/* <TouchableOpacity onPress={this.navigateToAdress}>
           <Button secondary rounded large style={styles.button}>
               <Text style={styles.lightText} >{prevPage}</Text>
           </Button>
         </TouchableOpacity>
 
-        <Text>Or</Text>
+        <Text>Or</Text> */}
 
 
       {/* 
@@ -808,6 +808,8 @@ facebookLoginAsync = async () => {
             onCancelPressed={() => {
               this.setState({user:null});
               this.hideAlert();
+              this.props.navigation.navigate('Home')
+
             }}
             onConfirmPressed={() => {
               this.checkEmailVerifiedStatus();

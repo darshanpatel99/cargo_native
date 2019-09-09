@@ -44,6 +44,8 @@ export default class AccountScreen extends React.Component {
 
 
     if (user != null) {
+
+      //firebase.auth().signInWithEmailAndPassword(email, password)
         
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
@@ -54,7 +56,7 @@ export default class AccountScreen extends React.Component {
         name:doc.data().FirstName,
         globalAddress:doc.data().City + ', ' + doc.data().Country,
         }); 
-          }); 
+      }); 
     
          
       
@@ -577,7 +579,7 @@ onAuthStateChanged = user => {
                 <View style={styles.infoBody}>
                   <View style={styles.paragrapgh}>
                     <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                    <Text style={styles.info}>{this.state.data.Street}</Text>
+                    <Text style={styles.info}>{this.state.data.Address}</Text>
                     <Text style={styles.info}>{this.state.globalAddress}</Text>
                   </View>                    
                 </View>

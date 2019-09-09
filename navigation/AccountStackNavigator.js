@@ -76,8 +76,7 @@ export default AccountStack = createStackNavigator({
   UserAddressScreen: {
     screen: UserAddressScreen,
     navigationOptions: {
-      //header: null,
-      title: 'address',
+      header: null,
     },
   },
 
