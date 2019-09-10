@@ -152,6 +152,31 @@ class FirebaseChat {
     console.log('this is a test function to pass the uid in component will mount -> ' + uid);
     recieverAndSenderId = uid
   }
+
+  getChatsRefOn = callback => {
+    firebase.database().ref('Chat')
+    .limitToLast(20)
+    
+    .on('value', snapshot => callback(this.parse(snapshot)));
+  }
+
+  getAllChats(userId) {
+    var that = this
+    var chatObjects= []
+    var urlRef = firebase.database().ref('Chat');
+    console.log('THIS IS USERID -- ' + userId)
+    urlRef.once("value", function(snapshot) {
+      snapshot.forEach(function(child) {
+        if((child.key.endsWith(userId) || (child.key.startsWith(userId)))) {
+          // console.log(child.key+": "+child.val());
+          // console.log(JSON.stringify( child.val()))
+          chatObjects.push(JSON.stringify( child.val()))
+        }
+      });
+      //console.log('THese are chatobjects -- ..>' +chatObjects)
+      return chatObjects
+    });
+  }
   
   // send the message to the Backend
   send = messages => {
