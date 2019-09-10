@@ -40,6 +40,7 @@ import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 import ImageResizer from 'react-native-image-resizer';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -83,6 +84,8 @@ export default class PostProductScreen extends Component {
       long: 0,
       googleAddressEmpty: '',
       changingAddress:0,
+      canUpload:true,
+      priceAlert:false,
     }
 
     this.categoryRemover = React.createRef();
@@ -98,6 +101,33 @@ export default class PostProductScreen extends Component {
   }
 
   componentDidMount() {
+
+    const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+
+    const newData = navigation.getParam('data');
+
+    this.setState({
+        title: newData.title,
+        price:newData.price,
+        image:newData.pictures,
+        downloadURLs:newData.pictures,
+        description:newData.description,
+    })
+
+    if (user != null) {
+        
+      this.state.owner = user.uid;
+      console.log(" State UID ==> from  " + this.state.Owner);
+
+    }
+  });
+  
+
+
     this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
@@ -112,13 +142,14 @@ export default class PostProductScreen extends Component {
       Platform.OS === 'ios'
         ? headerAndStatusBarHeight - 600
         : headerAndStatusBarHeight;
+     
 
   }
 
-  componentWillUnmount() {
-    // Clean up: remove the listener
-    this._unsubscribe();
-  }
+  // componentWillUnmount() {
+  //   // Clean up: remove the listener
+  //   this._unsubscribe();
+  // }
  
   showAlert(){
     this.setState({
@@ -136,30 +167,80 @@ export default class PostProductScreen extends Component {
   };
 
   showAlert2 () {
+    let titleLength = this.state.title;
+    let priceLength = parseInt( this.state.price);
+    let descriptionLength = this.state.description;
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.googleAddressEmpty;
+
+    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+  
+      this.setState({
+        showAlert2: true
+      });
+
+  } else {
+    console.log('hello');
+
+    if(picArray.length==0){
+      this.setState({
+        picAlert:true,
+      })      
+    }
+
+    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      this.setState({
+        priceAlert:true,
+      })      
+    }
+    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        availableAlert:true,
+      })
+    }
+
+    console.log(address)
+
+    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        showAddressAlert:true,
+      })
+    }
+
     this.setState({
-      showAlert2: true
-    });
+      postAdClicked: true,
+    })
+    
   };
+}
 
   hideAlert2(){
     const { navigate } = this.props.navigation;
-    this.categoryRemover.current.changeState();
-    this.avabilityRemover.current.changeState();
-    this.googlePlacesAutocomplete._handleChangeText('')
-    //this.addressRemover.current.changeAddressState();
+    // this.categoryRemover.current.changeState();
+    // this.avabilityRemover.current.changeState();
+    // this.googlePlacesAutocomplete._handleChangeText('');
+    // this.addressRemover.current.changeAddressState();
 
-    this.setState({
-      showAlert2: false,
-      title : "",
-      description : "",
-      price : "",
-      thumbnail : " ",
-      image: [],
-      downloadURLs : [],
-      addressArray:[],
+    // this.setState({
+    //   showAlert2: false,
+    //   title : "",
+    //   description : "",
+    //   price : "",
+    //   thumbnail : " ",
+    //   image: [],
+    //   downloadURLs : [],
+    //   addressArray:[],
 
-    });
-    navigate('Home');
+    // });
+    
+
+    this.saveChanges();
+      this.resetStack();
+  
+    
+    //navigate('Home');
   };
 
   getPermissionAsync = async () => {
@@ -185,14 +266,14 @@ export default class PostProductScreen extends Component {
   postTheProduct = async() =>{
 
     let titleLength = this.state.title;
-    let priceLength = this.state.price;
+    let priceLength = parseInt( this.state.price);
     let descriptionLength = this.state.description;
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    if(titleLength.length > 0 &&priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -228,13 +309,12 @@ export default class PostProductScreen extends Component {
   } else {
     console.log('hello');
 
-    if(picArray.length==0){
+    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
       this.setState({
-        picAlert:true,
+        priceAlert:true,
       })      
     }
-
-    if(timeArray.length==0 && picArray.length!=0){
+    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         availableAlert:true,
       })
@@ -242,7 +322,7 @@ export default class PostProductScreen extends Component {
 
     console.log(address)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0){
+    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         showAddressAlert:true,
       })
@@ -397,7 +477,7 @@ export default class PostProductScreen extends Component {
 
 
   
-    checkIfInputNotEmpty(text) {
+  checkIfInputNotEmpty(text) {
       // console.log(text)
       // if(this.props.postAdClicked  == true && text.length == 0) {
       //     alert('Please input address')
@@ -622,6 +702,12 @@ export default class PostProductScreen extends Component {
     })
   }
 
+  closePriceAlert =() =>{
+    this.setState({
+      priceAlert:false,
+    })
+  }
+
   testFunction(text){
     console.log('test fucntion');
     checkGoogleAddress = 'lalalals'
@@ -630,6 +716,69 @@ export default class PostProductScreen extends Component {
     //this.setState({googleAddressEmpty: 'test'})
     
   }
+
+  saveButton =() =>{
+    if(this.state.canUpload){
+     return(
+       <View
+           style={{
+             flexDirection: 'row',
+             justifyContent: 'center',
+             alignItems: 'center',
+             margin: 10
+           }}
+         >
+           <Button style={styles.postAdButton} onPress={()=>{this.showAlert2()}}>
+             <Text>Save changes</Text>
+           </Button>
+         </View>
+     );
+    }
+    else{
+     <View
+     style={{
+       flexDirection: 'row',
+       justifyContent: 'center',
+       alignItems: 'center',
+       margin: 10
+     }}
+   >
+     <Button disabled style={styles.postAdButton} onPress={this.saveChanges}>
+       <Text>Save changes</Text>
+     </Button>
+   </View>
+    }
+  }
+
+  saveChanges = async()=>{
+
+    console.log('this is a length of the downloadURLs array' + this.state.downloadURLs.length);
+    this.productRef.update({
+        Name:this.state.title,
+        Pictures:this.state.downloadURLs,
+        Price:this.state.price,
+        Thumbnail : this.state.Thumbnail, 
+        Description:this.state.description,
+        Category: this.state.Category,
+        Avability: this.state.Avability,
+        AddressArray:this.state.addressArray,    
+    });
+
+    //this.setState({isOverlayVisible:true});
+  }
+
+  resetStack = () => {
+    this.props
+      .navigation
+      .dispatch(StackActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({
+            routeName: 'Home',
+          }),
+        ],
+      }))
+   }
 
   render() {
 
@@ -683,14 +832,14 @@ export default class PostProductScreen extends Component {
                   returnKeyType='done'
                     />
               </Item>
-              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
+              <Item style={[{ marginBottom: 10},this.forPrice(parseInt(this.state.price)) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
                   name="price"
                   onChangeText={(text)=>this.setState({price:text})}
                   value={this.state.price} 
-                  maxLength={3}
+                  maxLength={4}
                   returnKeyType='done'
                   />
                   
@@ -807,9 +956,10 @@ export default class PostProductScreen extends Component {
                 //margin: 10
               }}
             >
-              <Button style={styles.postAdButton} onPress={this.postTheProduct}>
+              {/* <Button style={styles.postAdButton} onPress={this.postTheProduct}>
                 <Text>Post Ad</Text>
-              </Button>
+              </Button> */}
+              {this.saveButton()}
             </View>
           </InputScrollView>
           </KeyboardAvoidingView>
@@ -897,6 +1047,22 @@ export default class PostProductScreen extends Component {
             confirmButtonColor="#DD6B55"            
             onConfirmPressed={() => {
               this.addressAlert();
+            }}
+          />
+
+            <AwesomeAlert
+            show={this.state.priceAlert}
+            showProgress={false}
+            title="Alert"
+            message={'price should be from 10 to 1000 $'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.closePriceAlert();
             }}
           />
 

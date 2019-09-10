@@ -15,8 +15,6 @@ import {
   Icon,
   Content
 } from 'native-base';
-import { View, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
-import {  Button, Text, Item, Input, Container, Icon} from 'native-base';
 import firebase from '../../Firebase';
 import GooglePickupAddress from '../../components/maps/GooglePickupAddress'
 
