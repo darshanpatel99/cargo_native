@@ -663,9 +663,6 @@ const styles = StyleSheet.create({
   viewStyle: {
     flex: 1,
     flexDirection: 'column',
-//    height: '100%',
-    marginBottom:0,
-    marginLeft:40,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center'

@@ -320,7 +320,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.6,
+      compress: 0.5,
       //allowsEditing: true,
       
     });

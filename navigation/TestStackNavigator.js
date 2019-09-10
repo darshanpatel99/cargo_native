@@ -3,16 +3,9 @@ import {
   createStackNavigator
 } from 'react-navigation';
 import TestScreen from '../screens/testScreens/Test'; 
-import AddressScreen from '../screens/testScreens/AdressTest';
 import TabBarIcon from '../components/navigation/TabBarIcon';
 
 export default TestStack = createStackNavigator({
-  AddressScreen:{
-    screen: AddressScreen,
-      navigationOptions: {
-        header: null,
-      },
-  },
 
   Test:{
     screen: TestScreen,
