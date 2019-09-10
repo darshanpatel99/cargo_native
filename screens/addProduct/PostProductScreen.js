@@ -81,6 +81,7 @@ export default class PostProductScreen extends Component {
       googleAddressEmpty: '',
       changingAddress:0,
       priceAlert:false,
+      buyerID:'',
     }
 
     this.categoryRemover = React.createRef();
@@ -228,7 +229,7 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       AddressArray: this.state.addressArray,
-   
+      BuyerID:'',  
     }
 
     //Getting the current time stamp
