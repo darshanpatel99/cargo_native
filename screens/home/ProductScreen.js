@@ -249,7 +249,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat})
+      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat, productID: this.state.id})
     }
     else{
       this.setState({
@@ -331,11 +331,11 @@ export class ProductScreen extends Component {
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
 
           <TouchableOpacity onPress={this.NavigateToEdit}>
-                <MainButton title='Edit product' secondary="true" />
+            <MainButton title='Edit product' secondary="true" />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={this.sooldItem}>
-                <MainButton title='Mark sold' secondary="true" />
+            <MainButton title='Mark sold' secondary="true" />
           </TouchableOpacity>
         </View>
           

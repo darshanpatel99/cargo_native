@@ -17,6 +17,7 @@ export default class Checkout extends Component {
     const sellerAddress = navigation.getParam('SellerAddress');
     const productTitle = navigation.getParam('Title');
     const GPSStringFormat = navigation.getParam('GPSLocation')
+    const productID = navigation.getParam('productID')
 
     this.state = {
       defaultAddress: '',
@@ -33,7 +34,8 @@ export default class Checkout extends Component {
       sellerAddress: sellerAddress,
       productTitle: productTitle,
       Email:'',
-      GPSStringFormat: GPSStringFormat
+      GPSStringFormat: GPSStringFormat,
+      productID: productID,
     };
 
     let {City, Street, Country, Buyer} ='';
@@ -157,17 +159,12 @@ export default class Checkout extends Component {
     };
   };
 
-  NavigateToStripe() {
-    const { navigate } = this.props.navigation;
-    //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('StripeScreen', {TotalCartAmount:this.state.totalAmount})
-  };
-
-
-
-  
 
   render() {
+
+    console.log('Product ID ==> ' + this.state.productID)
+
+
     if (this.state.isLoading) {
       return (
         <View style={Styles.activity}>
@@ -350,7 +347,7 @@ export default class Checkout extends Component {
           </View>
 
           <View style={Styles.payButton}>
-            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email  })}>
+            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID})}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
           </View>

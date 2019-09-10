@@ -24,14 +24,11 @@ export default class Test extends React.Component {
 
   };
 
-  
-
-
   render() {
 
       return (
         <View style={styles.container}>
-          <UserAddress />
+          <Text>Hello !!!</Text>
         </View>
       );
     }

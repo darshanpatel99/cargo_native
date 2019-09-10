@@ -6,6 +6,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import Spinner from 'react-native-loading-spinner-overlay';
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 import Colors from "../../constants/Colors";
+import firebase from '../../Firebase.js';
 
 
 const DismissKeyboard = ({ children }) => (
@@ -18,6 +19,11 @@ export default class Stripe extends React.Component {
     
   constructor(props) {
     super(props);
+
+    const { navigation } = this.props;
+    const productID = navigation.getParam('productID');
+
+    
     this.state={
       showAlert: false,
       counter: 0,
@@ -31,10 +37,10 @@ export default class Stripe extends React.Component {
       paymentSuccess: false,
       loading: false,
       responseJson:'',
+      productID: productID,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
-    const { navigation } = this.props;
     this.showAlert = this.showAlert.bind(this);
   }
 
@@ -136,6 +142,10 @@ export default class Stripe extends React.Component {
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
           this.showAlert();
+          var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
+          return productStatusReference.update({
+            Status: 'bought',
+          })
         }else{
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
@@ -179,6 +189,8 @@ export default class Stripe extends React.Component {
       const EnabledButton = <Button primary onPress={this.onPayment}><Text style={{paddingLeft: 10, paddingRight: 10, color: '#fff'}}> Pay Now</Text></Button>
       const DisabledButton = <Button primary disabled onPress={this.onPayment} ><Text style={{paddingLeft: 10, paddingRight: 10}}>Pay Now</Text></Button>
       const {showAlert} = this.state;
+
+      console.log('Product ID ==> ' + this.state.productID)
 
       return (
         <DismissKeyboard>
