@@ -92,21 +92,20 @@ export default AccountStack = createStackNavigator({
   Listing:{
     screen:ListingScreen,
     navigationOptions: {
-      header: null,
-    },    
+      title: 'Listing',    },    
   },
 
   Bought:{
     screen:BoughtScreen,
     navigationOptions: {
-      header: null,
+      title: 'Bought',
     },    
   },
 
   Sold:{
     screen:SoldScreen,
     navigationOptions: {
-      header: null,
+      title: 'Sold',
     },    
   }
 },

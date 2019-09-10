@@ -29,7 +29,7 @@ constructor(props){
 
 componentDidMount(prevProps) {
 
-    this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
+    this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
 
 }
 
@@ -84,9 +84,9 @@ render(){
       />
 
       </ScrollView>
-      <View style={{flexDirection: 'row', justifyContent:'center'}}>
+      {/* <View style={{flexDirection: 'row', justifyContent:'center'}}>
           <MainButton title= 'Edit List'/>
-        </View>
+        </View> */}
       </View>
     );
 }

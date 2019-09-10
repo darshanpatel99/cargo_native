@@ -16,6 +16,7 @@ export default class StripeScreen extends Component {
     const SellerAddress = navigation.getParam('sellerAddress');
     const Email = navigation.getParam('Email');
     const productID = navigation.getParam('productID');
+    const userId = navigation.getParam('userId');
 
 
     this.state={
@@ -25,13 +26,14 @@ export default class StripeScreen extends Component {
       Title: Title,
       Email:Email,
       productID:productID,
+      userId:userId,
     }
   }
 
   render() {
     return(
       <View style= {styles.TestContainer}> 
-        <Stripe Email ={this.state.Email} Title= {this.state.Title} SellerAddress ={this.state.SellerAddress} charge = {this.state.TotalAmount} BuyerName= {this.state.BuyerName} navigation={this.props.navigation} productID={this.state.productID}/>
+        <Stripe Email ={this.state.Email} Title= {this.state.Title} SellerAddress ={this.state.SellerAddress} charge = {this.state.TotalAmount} BuyerName= {this.state.BuyerName} navigation={this.props.navigation} productID={this.state.productID} userId ={this.state.userId}/>
       </View>
     )
   }
