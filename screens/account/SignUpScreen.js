@@ -10,11 +10,14 @@ import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
+import { StackActions, NavigationActions } from 'react-navigation';
 //importing packages related to the sign in
 import * as Facebook from 'expo-facebook';
 import {Google} from 'expo';
 import { TouchableOpacity } from "react-native-gesture-handler";
-import StyledTextInput from '../../components/theme/StyledTextInput'
+import StyledTextInput from '../../components/theme/StyledTextInput';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { tsConstructorType } from "@babel/types";
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 export default class SignUpScreen extends Component {
@@ -47,16 +50,19 @@ export default class SignUpScreen extends Component {
       street:'',
       UID:'',
       profilePic:'',
-      showAlert: false,
+      showAlert: true,
+      showOverlay: false,
     }
 
-
+    
 
   }
 
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
+    
   }
  
   componentWillUnmount() {
@@ -65,10 +71,32 @@ export default class SignUpScreen extends Component {
   }
  
   onAuthStateChanged = user => {
+    console.log('Auth state of the user has been changed');
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
     this.setState({ user });
   };
+
+  //hide the alert
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: true
+    });
+    navigate('Account');
+  };
+
+  //function to show the alert
+  showAlert(){
+    this.setState({
+      showAlert: true,
+      
+    });
+  };
+
+
+
+
 
 //facebook Login Function
 async facebookLogin() {
@@ -115,9 +143,10 @@ async googleLogin(){
         'Alert',
         'You got logged in with google',
         [
-          {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          {text: 'OK'},
         ],
-        {cancelable: false},
+        {cancelable: true},
       );
       return accessToken;
     }
@@ -131,6 +160,8 @@ async googleLogin(){
 //Create a user with email and passord
 emailSignUp = async (email, password)=>{
   console.log('Going to login user with given email and password');
+  //saving email and password as the state
+  this.setState({email:email, password:password});
   try{
     await firebase.auth().createUserWithEmailAndPassword(email,password).then((result)=>{
       console.log('Done creating the credentials');
@@ -141,37 +172,51 @@ emailSignUp = async (email, password)=>{
       console.log('Your user get the following user uid: '+ uid);
       this.setState({UID:uid, user:user});
 
+      //testing to send the email verification email
+      
+      user.sendEmailVerification().then((result)=>{
+        console.log('email verification sent');
+        alert('email verification sent');
 
-      if(tempUID!=null){
-        console.log("THIS is UUID =-=-=> " + tempUID)
-        this.setState({UID:tempUID});
-        try{
-          //verify user is signed up or not
-          var userUID = this.state.UID;
-          console.log('The uid that is going to be verified: ' + userUID);
+        //set the overlay parameter to tru
+        this.setState({showOverlay:true});
+
+      });
+
+      //See if the email is verified or not
+
+
+    //   if(tempUID!=null){
+    //     console.log("THIS is UUID =-=-=> " + tempUID)
+    //     this.setState({UID:tempUID});
+    //     try{
+    //       //verify user is signed up or not
+    //       var userUID = this.state.UID;
+    //       console.log('The uid that is going to be verified: ' + userUID);
       
             
-          this.firebaseRef.doc(userUID)
-            .get()
-            .then(docSnapshot => {
-              console.log('1--inside firebase snap')
-              if(docSnapshot.exists){
-                console.log('2--inside firebase snap')
-                this.props.navigation.navigate('Account');
-              }
-              else{
-                console.log('User is not sign up');
-                //add user to the database using the finishFunc
-                this.finishFunc();
+    //       this.firebaseRef.doc(userUID)
+    //         .get()
+    //         .then(docSnapshot => {
+    //           console.log('1--inside firebase snap')
+    //           if(docSnapshot.exists){
+    //             console.log('2--inside firebase snap')
+    //             //through them to the account screen and pass the  user uid  so that we can only get details for the current user
+    //             this.props.navigation.navigate('Account', {userid:this.state.UID});
+    //           }
+    //           else{
+    //             console.log('User is not sign up');
+    //             //add user to the database using the finishFunc
+    //             this.finishFunc();
             
-              }
-            });
-          }
-          catch (e) {
-            alert('Following error occured during checking whether user exists or not:  ' + e)
-            console.warn(e);
-          } 
-    }
+    //           }
+    //         });
+    //       }
+    //       catch (e) {
+    //         alert('Following error occured during checking whether user exists or not:  ' + e)
+    //         console.warn(e);
+    //       } 
+    // }
     });
   }catch (error){
     alert(error.toString(error));
@@ -181,10 +226,10 @@ emailSignUp = async (email, password)=>{
 
 //sigUp with Email and password
 emailLogin = async (email, password) =>{
-  console.log('Going to create the user with email and password');
+  console.log('Going to sign in the user with email and password');
   try{
     await firebase.auth().signInWithEmailAndPassword(email, password).then((result)=>{
-      console.log('Done creating the credentials');
+      console.log('Done validating the credentials');
       
       var user = result.user;
       var uid = user.uid;
@@ -208,8 +253,7 @@ emailLogin = async (email, password) =>{
               console.log('1--inside firebase snap')
               if(docSnapshot.exists){
                 console.log('2--inside firebase snap')
-                console.log('Going to create the user with email and password  ====>>>>> 2--inside firebase snap')
-                this.props.navigation.navigate('Account');
+                this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
               else{
                 console.log('User is not sign up');
@@ -233,13 +277,71 @@ emailLogin = async (email, password) =>{
 
 }
 
+//check whether the email is verified or not and sign in 
+checkEmailVerifiedStatus=async ()=>{
+
+  try{
+  //because the FirebaseUser Object is cached within the app session so its good idea to reload the user
+  firebase.auth().currentUser.reload();  
+  //setting the state of the new user  
+  this.setState({user:firebase.auth().currentUser});
+  var user = this.state.user;
+  //reloading the user
+  
+  var emailVerificationStatus = user.emailVerified;
+  console.log('User email verification status: '+ emailVerificationStatus);
+  if(emailVerificationStatus){
+
+    var tempUID = this.state.UID;
+    if(tempUID!=null){
+      console.log("THIS is UUID =-=-=> " + tempUID)
+      this.setState({UID:tempUID});
+      try{
+        //verify user is signed up or not
+        var userUID = this.state.UID;
+        console.log('The uid that is going to be verified: ' + userUID);
+             
+        this.firebaseRef.doc(userUID)
+          .get()
+          .then(docSnapshot => {
+            console.log('1--inside firebase snap')
+            if(docSnapshot.exists){
+              console.log('2--inside firebase snap')
+              this.props.navigation.navigate('Account', {userid:this.state.UID});
+            }
+            else{
+              console.log('User is not signed up');
+               //add user to the database using the finishFunc
+              this.finishFunc();
+              
+            }
+          });
+        }
+        catch (e) {
+          alert('Following error occured during checking whether user exists or not:  ' + e)
+          console.warn(e);
+        } 
+  }
+  //call the hide screen
+this.hideAlert();
+     
+}
+
+
+
+  }catch (error){
+    alert(error.toString(error));
+    console.log(erro.toString(error));
+  }
+}
+
 //email signUp
 emailSignUpAsync=async()=>{
 
   console.log('In emailSignUpAsync method');
   console.log(this.state.email);
 
-  if(this.state.firstName.length==0 || this.state.lastName.length==0){
+  if(this.state.firstName.length==0 || this.state.lastName.length==0 ){
     alert('Please dont leave any field empty')
   }else{
         //only of the email is verified, than only call create the firebase user
@@ -450,6 +552,21 @@ facebookLoginAsync = async () => {
 
 } 
 
+
+
+deleteUserFromAuthDatabase() {
+  var user = firebase.auth().currentUser;
+
+  user.delete().then(function() {
+    // User deleted.
+    alert('User deleted')
+  }, function(error) {
+    // An error happened.
+    console.log(error)
+  });
+}
+
+
   navigateToAdress = () =>{
 
   const { navigate } = this.props.navigation;
@@ -473,6 +590,8 @@ facebookLoginAsync = async () => {
       ProfilePicture : this.state.profilePic,
       SoldProducts : [],
       Street : '',
+      Address:'',
+      UnitNumber:'',
       UID: this.state.UID.toString(),
     }
 
@@ -484,10 +603,18 @@ facebookLoginAsync = async () => {
     AddUser(data);
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
-    // this.props.navigation.dispatch(resetAction);
-    
-    this.props.navigation.navigate('UserAddressScreen', { UID: 'Test'});
 
+    const resetAction = StackActions.reset({
+      index: 0, // <-- currect active route from actions array
+      //params: {userId: this.state.UID},
+      actions: [
+        NavigationActions.navigate({ routeName: 'UserAddressScreen', params: { userId: this.state.UID }} ),
+      ],
+    });
+    
+    this.props.navigation.dispatch(resetAction);
+    // this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
+    // this.props.navigation.dispatch(resetAction);
     // this.setState({
     //     phone: '',
     //     phoneCompleted: false,
@@ -507,8 +634,9 @@ facebookLoginAsync = async () => {
     const prevPage = navigation.getParam('prevPage');
     console.log('This is signup screen ' + prevPage);
     const {showAlert} = this.state;
+    
 
-
+    if(this.state.showOverlay==false){
     //if the prevPage is SignUp screen than ask for first name and last name 
     if(prevPage=='SignUp'){
 
@@ -517,37 +645,37 @@ facebookLoginAsync = async () => {
 
       <View style={styles.viewStyle}>
 
-        <View style={styles.container}>
-              <TextInput
-                  placeholder= 'First Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { firstName=> this.setState({firstName:firstName})}
-                  />
-          </View>
+                <View style={styles.container}>
+                      <TextInput
+                          placeholder= 'First Name'
+                          underlineColorAndroid="transparent"
+                          autoCorrect={false}
+                          style={styles.TextInputStyle}
+                          onChangeText = { firstName=> this.setState({firstName:firstName})}
+                          />
+                  </View>
 
-          <View style={styles.container}>
-              <TextInput
-                  placeholder= 'Last Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { lastName=> this.setState({lastName:lastName})}
-                  />
-          </View>
+                  <View style={styles.container}>
+                      <TextInput
+                          placeholder= 'Last Name'
+                          underlineColorAndroid="transparent"
+                          autoCorrect={false}
+                          style={styles.TextInputStyle}
+                          onChangeText = { lastName=> this.setState({lastName:lastName})}
+                          />
+                  </View>
 
 
-        <View style={styles.container}>
-            <TextInput
-                placeholder= 'Email'
-                underlineColorAndroid="transparent"
-                autoCapitalize='none'
-                autoCorrect={false}
-                style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email})}
-                />
-        </View>
+                <View style={styles.container}>
+                    <TextInput
+                        placeholder= 'Email'
+                        underlineColorAndroid="transparent"
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        style={styles.TextInputStyle}
+                        onChangeText = {email => this.setState({email:email.trim()})}
+                        />
+                </View>
 
           <Item style={styles.container}>                
                   <TextInput style={styles.TextInputStyle}
@@ -569,13 +697,13 @@ facebookLoginAsync = async () => {
       
         <Text>Or</Text>
 
-        <TouchableOpacity onPress={this.navigateToAdress}>
+        {/* <TouchableOpacity onPress={this.navigateToAdress}>
           <Button secondary rounded large style={styles.button}>
               <Text style={styles.lightText} >{prevPage}</Text>
           </Button>
         </TouchableOpacity>
 
-        <Text>Or</Text>
+        <Text>Or</Text> */}
 
 
       {/* 
@@ -604,11 +732,20 @@ facebookLoginAsync = async () => {
         </TouchableOpacity>
       </View>
     );
-    }
-
-    else{
+    }else{
       return(
-      <View style={styles.viewStyle}>
+
+        <View>
+        <View style={styles.container}>
+            <TextInput
+                placeholder= 'Email'
+                underlineColorAndroid="transparent"
+                autoCapitalize='none'
+                autoCorrect={false}
+                style={styles.TextInputStyle}
+                onChangeText = {email => this.setState({email:email.trim()})}
+                />
+        </View>
 
       <View style={styles.container}>
           <TextInput
@@ -641,6 +778,7 @@ facebookLoginAsync = async () => {
 
       <Text>Or</Text>
 
+
         {/* 
         <TouchableOpacity onPress={this.facebookLoginAsync}>
           <Button primary rounded large style={styles.button}>
@@ -665,12 +803,52 @@ facebookLoginAsync = async () => {
         <Text style={styles.lightText} >Google {prevPage}</Text>
       </Button>
     </TouchableOpacity>
+ 
     </View>
     );
+      
+    }
 
+      }
+    
+    else{
+      console.log('Showing the awesomeAlert');
+        
+      return (
+       
+        <View style={styles.alertContainer}>   
+          <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="Alert"
+            message="Please verify email first! After verification press SignIn Button"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="SignIn!!"
+            confirmButtonColor={Colors.primary}
+            onCancelPressed={() => {
+              this.setState({user:null});
+              this.hideAlert();
+              this.deleteUserFromAuthDatabase()
+              this.props.navigation.navigate('Account')
+
+            }}
+            onConfirmPressed={() => {
+              this.checkEmailVerifiedStatus();
+            }}
+          />
+
+
+        </View>
+      );
+      }
+    }
   }
-}
-}
+
+
 
 const styles = StyleSheet.create({
   viewStyle: {
@@ -752,5 +930,11 @@ container: {
     width: 300,
     margin:10,
     backgroundColor: "#f8f8f8",
+},
+alertContainer:{
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#fff',
 }
 });
