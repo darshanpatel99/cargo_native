@@ -36,7 +36,10 @@ export default class AccountScreen extends React.Component {
     editMode:false,
     newData:[],
      newPicture:[],
+     picture:'',
      currentFolio:'',
+     Address:'',
+     UnitNumber:'',
     }
 
     //checking the current user and setting uid
@@ -50,11 +53,16 @@ export default class AccountScreen extends React.Component {
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
       this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-      this.ref.onSnapshot(doc => {
+      this.ref.get().then(doc => {
         this.setState({
         data: doc.data(),
         name:doc.data().FirstName,
-        globalAddress:doc.data().City + ', ' + doc.data().Country,
+        //globalAddress:doc.data().City + ', ' + doc.data().Country,
+        UnitNumber:doc.data().UnitNumber,
+        Address:doc.data().Address,
+        Email:doc.data().Email,
+        PhoneNumber:doc.data().PhoneNumber,
+        picture:doc.data().ProfilePicture,
         }); 
       }); 
     
@@ -72,30 +80,32 @@ export default class AccountScreen extends React.Component {
 componentDidMount() {
   const { navigation } = this.props;
     
-    this.focusListener = navigation.addListener('didFocus', () => { 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
+  //   this.focusListener = navigation.addListener('didFocus', () => { 
+  //   //checking the current user and setting uid
+  //   let user = firebase.auth().currentUser;
 
-    if (user != null) {
+  //   if (user != null) {
         
-      this.state.userID = user.uid;
-      console.log(" State UID: " + this.state.userID);
-      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-      this.ref.onSnapshot(doc => {
-        this.setState({
-        data: doc.data(),
-        name:doc.data().FirstName,
-        globalAddress:doc.data().City + ', ' + doc.data().Country,
-        }); 
-    });
+  //     this.state.userID = user.uid;
+  //     console.log(" State UID: " + this.state.userID);
+  //     doc= firebase.firestore().collection('Users').doc(this.state.userID);
+  //     this.ref.get().then(doc => {
+  //       this.setState({
+  //         data: doc.data(),
+  //         name:doc.FirstName,
+  //         globalAddress:doc.data().City + ', ' + doc.data().Country,
+  //         UnitNumber:doc.UnitNumber,
+  //         Address:doc.Address,
+  //         }); 
+  //       });
   
     
-    //firestore reference for the specific document associated with the user
-    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+  //   //firestore reference for the specific document associated with the user
+  //   this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-  }
+  // }
       
-  });
+  // });
 
   this.getPermissionAsync();
   // List to the authentication state
@@ -223,7 +233,7 @@ onAuthStateChanged = user => {
     let info = this.state.data;
     this.setState({
       editMode:true,
-      newData:[info.FirstName,info.LastName,info.Street,info.City,info.Country,info.Email,info.PhoneNumber],
+      //newData:[info.FirstName,info.LastName,info.Street,info.City,info.Country,info.Email,info.PhoneNumber],
       newPicture:[info.ProfilePicture],
       currentFolio:info.ProfilePicture,
     })
@@ -264,6 +274,10 @@ onAuthStateChanged = user => {
         
         that.changeCurrentFolio();
 
+        that.setState({
+          picture:downloadURL,
+        })
+
         that.setPicture();
       });
 
@@ -291,7 +305,8 @@ onAuthStateChanged = user => {
     }
 
     this.ref.update({
-      ProfilePicture:pictureTemp,
+      ProfilePicture:this.state.picture,
+
       });
     this.setState({
       newPicture:newArray,
@@ -358,8 +373,8 @@ onAuthStateChanged = user => {
         <TextInput
         style={[styles.inputName]}                
           editable={true}
-          value={this.state.newData[num]}
-          onChangeText={ (value) => {this.changeValue(value,num)}}
+          value={this.state.name}
+          onChangeText={(value) =>  {this.setState({name:value})}}
           keyboardType='default'
           autoCorrect={false}
           maxLength={20}
@@ -371,8 +386,8 @@ onAuthStateChanged = user => {
       return(<TextInput
         style={[styles.inputInfo]}                
           editable={true}
-          value={this.state.newData[num]}
-          onChangeText={ (value) => {this.changeValue(value,num)}}
+          value={this.state.PhoneNumber}
+          onChangeText={ (value) => {this.setState({PhoneNumber:value})}}
           keyboardType='phone-pad'
           autoCorrect={false}
           placeholder= 'phone number'                                                            
@@ -383,59 +398,59 @@ onAuthStateChanged = user => {
         return(<TextInput
         style={[styles.inputInfo]}                
           editable={true}
-          value={this.state.newData[num]}
-          onChangeText={ (value) => {this.changeValue(value,num)}}
-          keyboardType=''
+          value={this.state.UnitNumber}
+          onChangeText={ (value) => {this.setState({UnitNumber:value})}}
+          keyboardType='number-pad'
           autoCorrect={false}
-          placeholder='Street'                                                            
+          placeholder='Unit Number'                                                            
         />);   
       }
-      else 
-        if(num==3){
-          return(<TextInput
-            style={[styles.inputInfo]}                
-              editable={true}
-              value={this.state.newData[num]}
-              onChangeText={ (value) => {this.changeValue(value,num)}}
-              keyboardType='default'
-              autoCorrect={false}
-              placeholder='City'                                                            
-            />);          
-        }
+      // else 
+      //   if(num==3){
+      //     return(<TextInput
+      //       style={[styles.inputInfo]}                
+      //         editable={true}
+      //         value={this.state.Address}
+      //         onChangeText={ (value) => {this.setState({Address:value})}}
+      //         keyboardType='default'
+      //         autoCorrect={false}
+      //         placeholder='City'                                                            
+      //       />);          
+      //   }
         else 
         if(num==4){
           return(<TextInput
             style={[styles.inputInfo]}                
               editable={true}
-              value={this.state.newData[num]}
-              onChangeText={ (value) => {this.changeValue(value,num)}}
+              value={this.state.Address}
+              onChangeText={ (value) => {this.setState({Address:value})}}
               keyboardType='default'
               autoCorrect={false}
-              placeholder='Country'                                                            
+              placeholder='Address'                                                          
             />);          
         }
-        else{
-        return(<TextInput
-          style={[styles.inputInfo]}                
-            editable={true}
-            value={this.state.newData[num]}
-            onChangeText={ (value) => {this.changeValue(value,num)}}
-            keyboardType='decimal-pad'
-            autoCorrect={false}
-            defaultValue='Street #'                                                            
-          />); 
-      }
+      //   else{
+      //   return(<TextInput
+      //     style={[styles.inputInfo]}                
+      //       editable={true}
+      //       value={}
+      //       onChangeText={ (value) => {}}
+      //       keyboardType='decimal-pad'
+      //       autoCorrect={false}
+      //       defaultValue='Street #'                                                            
+      //     />); 
+      // }
                
         
   }
 
-  changeValue =(value,number) =>{
-    const copy = this.state.newData;
-    copy[number]=value
-    this.setState({
-      newData:copy,
-    })
-  }
+  // changeValue =(value,number) =>{
+  //   const copy = this.state.newData;
+  //   copy[number]=value
+  //   this.setState({
+  //     newData:copy,
+  //   })
+  // }
 
 
   //Function that is called when the save button is clicked
@@ -453,14 +468,13 @@ onAuthStateChanged = user => {
     }
 
     this.ref.update({
-      FirstName:this.state.newData[0],
+      FirstName:this.state.name,
       //LastName:this.state.newData[1],
-      Street:this.state.newData[2],
-      City:this.state.newData[3],
-      Country:this.state.newData[4],
-      Email:this.state.newData[5],
-      PhoneNumber:this.state.newData[6],	
-      ProfilePicture:pictureTemp,
+      Address:this.state.Address,
+      UnitNumber:this.state.UnitNumber,
+      //Email:this.state.Email,
+      PhoneNumber:this.state.PhoneNumber,	
+      ProfilePicture:this.state.picture,
       });
     this.setState({
       editMode:false,
@@ -483,9 +497,9 @@ onAuthStateChanged = user => {
 
               <View style={styles.pictureHolder}>                  
                 <View style={styles.imageView}>
-                <ImageBackground source={{uri:this.state.currentFolio}} ImageStyle={styles.ProfilePicture} style={styles.profileBackground}>
+                <ImageBackground source={{uri:this.state.currentFolio}} ImageStyle={[styles.ProfilePicture,{borderRadius:25}]} style={styles.profileBackground}>
                       <View style={{position:'absolute', alignSelf:'flex-end',bottom:0,justifyContent:'center',alignItems:'center'}}>
-                        <Button icon transparent onPress={this.chooseanImage}> 
+                        <Button icon  transparent  onPress={this.chooseanImage}> 
                           <FontAwesome name='camera' size={35} color={Colors.primary}/>                    
                         </Button>
                       </View>
@@ -514,8 +528,7 @@ onAuthStateChanged = user => {
                       <View style={styles.paragrapgh}>
                         <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
                         <View style={{flexDirection:'row'}}>
-                          {this.inputText(2)}
-                          {this.inputText(3)}                          
+                          {this.inputText(2)}                        
                         </View>
                           {this.inputText(4)}                                                
                       </View>                    
@@ -524,7 +537,7 @@ onAuthStateChanged = user => {
                       <View style={styles.paragrapgh}>
                         <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>                        
                         {this.inputText(6)}
-                        <Text style={styles.info}>{this.state.data.Email}</Text>
+                        <Text style={styles.info}>{this.state.Email}</Text>
                       </View>                    
                     </View>
                   </KeyboardAvoidingView>                
@@ -550,7 +563,7 @@ onAuthStateChanged = user => {
 
               <View style={styles.pictureHolder}>                  
                 <View style={styles.imageView}>
-                  <Image source={{uri:this.state.data.ProfilePicture}} style={styles.profilePicture}/>
+                  <Image source={{uri:this.state.picture}} style={styles.profilePicture}/>
                 </View>               
                 {/* <View style={styles.settingsButton}>
                   <Button icon transparent>
@@ -579,15 +592,15 @@ onAuthStateChanged = user => {
                 <View style={styles.infoBody}>
                   <View style={styles.paragrapgh}>
                     <Text style={[styles.title,styles.pickUpTitle]}>Pick Up Location</Text>
-                    <Text style={styles.info}>{this.state.data.Address}</Text>
-                    <Text style={styles.info}>{this.state.globalAddress}</Text>
+                    <Text style={styles.info}>Unit Number : {this.state.UnitNumber}</Text>
+                    <Text style={styles.info}>{this.state.Address}</Text>                    
                   </View>                    
                 </View>
                 <View style={styles.infoBody}>
                   <View style={styles.paragrapgh}>
                     <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
-                    <Text style={styles.info}>{this.state.data.PhoneNumber}</Text>
-                    <Text style={styles.info}>{this.state.data.Email}</Text>
+                    <Text style={styles.info}>{this.state.PhoneNumber}</Text>
+                    <Text style={styles.info}>{this.state.Email}</Text>
                   </View>                    
                 </View>
               </View>                
@@ -705,7 +718,8 @@ const styles = StyleSheet.create({
   },              
   },
   imageView:{      
-    alignSelf:'center',      
+    alignSelf:'center',
+    marginTop:20,      
     //marginRight:Dimensions.get('window').width*((0.5+0.16) - 0.448),           
   },
   
