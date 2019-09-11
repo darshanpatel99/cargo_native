@@ -99,10 +99,6 @@ class Chat extends React.Component {
     return (
       <View style ={styles.containerStyle}>
         {/* <ChatDynamicFlatList chats = {this.state.chats}/> */}
-        <Button
-          title="Press me"
-          onPress={this.getUserChatThread}
-        />
 
         <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
 
