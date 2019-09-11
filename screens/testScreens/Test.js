@@ -12,17 +12,18 @@ class TestScreen extends React.Component {
   constructor(props) {
     super(props);
     // let chatObjects = this.getAllChats(firebaseChat.uid);
-    
+    var {navigate} = this.props.navigation;
+
 
     this.state = {
       messages: [],
       chats:{},
+      filteredChats:{}
     };
-    this.getAllChats = this.getAllChats.bind(this)
-    this.getUserChatThread = this.getUserChatThread.bind(this)    
-    console.log(this.getAllChats(firebaseChat.uid))
+    // this.getAllChats = this.getAllChats.bind(this)
+    //this.getUserChatThread = this.getUserChatThread.bind(this)    
+    //console.log(this.getAllChats(firebaseChat.uid))
     
-
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -31,58 +32,67 @@ class TestScreen extends React.Component {
 
   componentWillMount() {
 
-
     //let chatObjects = firebaseChat.getAllChats(firebaseChat.uid);
     //this.setState({chats: chatObjects})
     
   }
 
 
-  getUserChatThread(){
-    const userId = firebaseChat.uid
-    const testObj = this.state.chats;
-    console.log('User ID --> '+userId)
-    console.log('Test object -- > ' +  Object.keys(testObj))
-    if(Object.keys(testObj).includes(userId)) {
-      console.log('It exista')
-    }
-  }
+  // getUserChatThread(){
+  //   const userId = firebaseChat.uid
+  //   const testObj = this.state.chats;
+  //   var newObj={};
+  //   console.log('User ID --> '+userId)
+  //   console.log('Test object -- > ' +  Object.keys(testObj))
+  //   for (var prop in testObj) {
+  //     if (prop.includes(userId)) {
+  //         // do stuff
+  //         newObj = {chat: 'this is test'}
+  //         console.log(prop)
+  //         this.setState({filteredChats: newObj})
+  //     }
+  // }
+    
+  // }
 
   componentWillUnmount() {
     firebaseChat.refOff();
   }
 
   componentDidMount(){
-      //console.log('TEST obj == > ' + JSON.stringify(this.state.chats))
+    this.setState({ loading: true });
+    firebase.database().ref('Chat').on('value', snapshot => {
+      this.setState({ loading: false });
+
+      this.setState({snapshot: snapshot.val()})
+
+    for (var prop in snapshot.val()) {
+      if (prop.includes('7')) {
+          // do stuff
+          newObj = {chat: 'this is test'}
+          console.log(prop)
+          this.setState({filteredChats: newObj})
+      }
+    }
+
+      this.setState({snapshot: snapshot.val()})
+    });
+      //this.getUserChatThread()
+
   }
 
-  getAllChats(userId) {
+  // getAllChats() {
 
-    var urlRef = firebase.database().ref('Chat');
-    let chatObjects=[];
+  //   var urlRef = firebase.database().ref('Chat');
+  //   let chatObjects=[];
+  //   urlRef.once("value").then((snapshot) =>  {
+  //     this.setState({chats: snapshot.val()})
+  //     return chatObjects
 
-
-    urlRef.once("value").then((snapshot) =>  {
-
-      //this.setState({chats : snapshot})
-      //  snapshot.forEach(function(child) {
-      //   if((child.key.endsWith(userId) || (child.key.startsWith(userId)))) {
-      //     // console.log(child.key+": "+child.val());
-      //     // console.log(JSON.stringify( child.val()))
-      //     chatObjects.push(JSON.stringify( child.val()))
-      //   }
-    
-      // });
-
-      this.setState({chats: snapshot.val()})
-
-      return chatObjects
-
-      
-    });
+  //   });
 
   
-  }
+  // }
 
   render() {
     return (
@@ -92,6 +102,8 @@ class TestScreen extends React.Component {
           title="Press me"
           onPress={this.getUserChatThread}
         />
+
+        <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
 
       </View>
     );

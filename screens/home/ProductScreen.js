@@ -42,6 +42,7 @@ export class ProductScreen extends Component {
     const id = navigation.getParam('itemId');
     const owner = navigation.getParam('owner');
     const pickupAddress = navigation.getParam('pickupAddress')
+    const sellerName = navigation.getParam('sellerName');
 
     //storageRef = firebase.storage().ref();
 
@@ -67,7 +68,8 @@ export class ProductScreen extends Component {
       buttonTitle: 'Add to Cart',
       soldArray:[],
       pickupAddress: pickupAddress,
-      currentGpsLocationStringFormat: ''
+      currentGpsLocationStringFormat: '',
+      sellerName
     };
     onLayout = e => {
       this.setState({
@@ -249,7 +251,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat})
+      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat, productID: this.state.id})
     }
     else{
       this.setState({
@@ -261,7 +263,7 @@ export class ProductScreen extends Component {
   NavigateToMessage() {
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('ChatScreen', {userID:this.state.userID, owner: this.state.owner})
+    navigate('ChatScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
   };
 
   NavigateToEdit(){
@@ -331,11 +333,11 @@ export class ProductScreen extends Component {
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
 
           <TouchableOpacity onPress={this.NavigateToEdit}>
-                <MainButton title='Edit product' secondary="true" />
+            <MainButton title='Edit product' secondary="true" />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={this.sooldItem}>
-                <MainButton title='Mark sold' secondary="true" />
+            <MainButton title='Mark sold' secondary="true" />
           </TouchableOpacity>
         </View>
           

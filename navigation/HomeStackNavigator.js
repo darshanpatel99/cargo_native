@@ -8,7 +8,6 @@ import { ProductScreen } from '../screens/home/ProductScreen';
 import EditProductScreen from '../screens/home/EditProductScreen';
 import StripeScreen from '../screens/payments/StripeScreen'
 import ImageScreen from '../screens/home/ImageScreen'
-import ChatScreen from '../screens/testScreens/Chat'
 
 export default (HomeStack = createStackNavigator({
   Home: {
@@ -33,13 +32,6 @@ export default (HomeStack = createStackNavigator({
     },
   },
 
-  ChatScreen: {
-    screen: ChatScreen,
-    navigationOptions: {
-      title: 'Chat',
-      //header: null,
-    },
-  },
 
   Checkoutscreen: {
     screen: CheckoutScreen,

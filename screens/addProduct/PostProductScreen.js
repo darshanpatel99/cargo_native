@@ -110,7 +110,7 @@ export default class PostProductScreen extends Component {
 
     }
   });
-  
+
 
 
     this.getPermissionAsync();
@@ -275,7 +275,7 @@ export default class PostProductScreen extends Component {
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.6,
+      quality:0.2,
      // allowsEditing: true,
       
     });
@@ -320,7 +320,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.6,
+      compress: 0.5,
       //allowsEditing: true,
       
     });
@@ -764,7 +764,8 @@ export default class PostProductScreen extends Component {
                   onChangeText: (text) => {this.testFunction(text)}
                  }}
                 onPress={(data, details = null) => {
-
+                
+                
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];

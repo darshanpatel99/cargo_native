@@ -118,6 +118,10 @@ class FirebaseChat {
     return (firebase.auth().currentUser || {}).uid;
   }
 
+  get userDisplayName() {
+    return (firebase.auth().currentUser.displayName)
+  }
+
   get ref() {
     return firebase.database().ref('Chat/'+recieverAndSenderId);
   }
