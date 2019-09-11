@@ -42,6 +42,7 @@ export class ProductScreen extends Component {
     const id = navigation.getParam('itemId');
     const owner = navigation.getParam('owner');
     const pickupAddress = navigation.getParam('pickupAddress')
+    const sellerName = navigation.getParam('sellerName');
 
     //storageRef = firebase.storage().ref();
 
@@ -67,7 +68,8 @@ export class ProductScreen extends Component {
       buttonTitle: 'Add to Cart',
       soldArray:[],
       pickupAddress: pickupAddress,
-      currentGpsLocationStringFormat: ''
+      currentGpsLocationStringFormat: '',
+      sellerName
     };
     onLayout = e => {
       this.setState({
@@ -261,7 +263,7 @@ export class ProductScreen extends Component {
   NavigateToMessage() {
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Chat', {userID:this.state.userID})
+    navigate('ChatScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
   };
 
   NavigateToEdit(){

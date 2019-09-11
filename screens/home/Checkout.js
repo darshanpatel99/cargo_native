@@ -26,10 +26,8 @@ const DismissKeyboard = ({ children }) => (
 
 
 export default class Checkout extends Component {
-
   constructor(props) {
     super(props);
-
     const { navigation } = this.props;
     const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount')) ;
     const DeliveryCharge = parseFloat(navigation.getParam('DeliveryCharge'));
@@ -38,14 +36,13 @@ export default class Checkout extends Component {
     const productTitle = navigation.getParam('Title');
     const GPSStringFormat = navigation.getParam('GPSLocation')
     const productID = navigation.getParam('productID')
-
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
       tipAmount: 0,
       subTotal: TotalCartAmount,
       deliveryFee: DeliveryCharge,
-      totalAmount: 0,
+      totalAmount:0,
       editDialogVisible: false,
       isLoading: false,
       tempAddressStore:'',
@@ -57,17 +54,14 @@ export default class Checkout extends Component {
       GPSStringFormat: GPSStringFormat,
       productID: productID,
     };
-
     let {City, Street, Country, Buyer} ='';
     let defaultAddress='' ;
     let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
     amount = amount.toFixed(2)
-
     let address = firebase
     .firestore()
     .collection('Users')
     .doc(this.state.userId).get()
-
     .then(doc => {
       if (!doc.exists) {
         console.log('No such document!');
@@ -80,8 +74,8 @@ export default class Checkout extends Component {
         Buyer = doc.data().FirstName;
         Email = doc.data().Email;
         this.setState({deliveryAddress: defaultAddress,
-        //totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal,
-        totalAmount: amount,
+        totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal,
+        // totalAmount: amount,
         buyerName: Buyer,
         Email
         })
@@ -89,19 +83,12 @@ export default class Checkout extends Component {
       }
     })
     .catch(err => {
-
       console.log('Error getting document', err);
     });
   
-
     //this.unsubscribe = null;
-
-
   }
-
-
   googleAddressCallback = (latitude, longitude) => {
-
     console.log('Product SellerAddress ' + this.state.sellerAddress )
     let addressArray = [latitude, longitude];
     console.log('This is address array' + addressArray)
@@ -110,18 +97,12 @@ export default class Checkout extends Component {
     })
     this._getLocationAsync();
   }
-
   _getLocationAsync (){
-
-
     //this.setState({ location });
     let currentDeviceLatitude = this.state.addressArray[0];
     let currentDeviceLongitude = this.state.addressArray[1];
-
     let productLocationLatitude = this.state.sellerAddress[0];
     let productLocationLongitude = this.state.sellerAddress[1];
-
-
     fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
       .then((response) => response.json())
       .then((responseJson) => {
@@ -141,28 +122,21 @@ export default class Checkout extends Component {
         } else {
           deliveryCharge = 14.99;
         }
-
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
           deliveryFee: deliveryCharge
         })
-
       })
       .catch((error) => {
         console.error(error);
       });
   };
-
-
-
   componentDidMount(props) {
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
   }
-
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
-
     return {
       headerRight: (
         <TouchableHighlight
@@ -178,13 +152,8 @@ export default class Checkout extends Component {
       )
     };
   };
-
-
   render() {
-
     console.log('Product ID ==> ' + this.state.productID)
-
-
     if (this.state.isLoading) {
       return (
         <View style={Styles.activity}>
@@ -214,7 +183,6 @@ export default class Checkout extends Component {
             </Button>
           </Right>
         </Header> */}
-
         <Container>
           {/* <Text
             style={{
@@ -236,7 +204,6 @@ export default class Checkout extends Component {
           >
             Update Delivery Address
           </Text>
-
           {/* <List
             style={{
               marginLeft: 15,
@@ -261,7 +228,6 @@ export default class Checkout extends Component {
               </Right>
             </ListItem>
           </List> */}
-
           {/* <View style={Styles.AddressFunctionButtonView}>
             <Button
               title='Show Dialog'
@@ -272,7 +238,6 @@ export default class Checkout extends Component {
             >
               <Text>Update Address</Text>
             </Button>
-
             <Dialog
               visible={this.state.editDialogVisible}
               dialogTitle={<DialogTitle title='Update Address' />}
@@ -304,7 +269,6 @@ export default class Checkout extends Component {
                 <Input placeholder='Enter address here' onChangeText={(value) => this.setState({tempAddressStore: value})}/>
               </DialogContent>
             </Dialog>
-
             <Button
               style={{
                 marginLeft: 15,
@@ -316,12 +280,8 @@ export default class Checkout extends Component {
               <Text>Delete</Text>
             </Button>
           </View> */}
-
 <GooglePickupAddress previousGPSAddress = {this.state.GPSStringFormat} parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
-
-
           <View style={Styles.AddressFunctionButtonView}>
-
             <Text
               style={{
                 marginLeft: 15,
@@ -348,7 +308,6 @@ export default class Checkout extends Component {
               <Icon type='Feather' name='percent' />
             </Item>
           </View>
-
           <Text
             style={{
               marginLeft: 15,
@@ -366,7 +325,6 @@ export default class Checkout extends Component {
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
             <Text>Total Amount: ${this.state.totalAmount}</Text>
           </View>
-
           <View style={Styles.payButton}>
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
@@ -378,7 +336,6 @@ export default class Checkout extends Component {
     );
   }
 }
-
 const Styles = StyleSheet.create({
   Container: {
     display: 'flex',
@@ -405,7 +362,6 @@ const Styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignContent: 'stretch'
   },
-
   subTotalText: {
     flex: 0,
     flexDirection: 'row',

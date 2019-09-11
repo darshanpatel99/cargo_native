@@ -11,7 +11,9 @@ const config = {
   appId: "1:572236256696:web:297a96ed7048a797"
 }
 
-class FirebaseSvc {
+let recieverAndSenderId = ''
+
+class FirebaseChat {
   constructor() {
     if (!firebase.apps.length) {
       firebase.initializeApp(config);
@@ -116,8 +118,12 @@ class FirebaseSvc {
     return (firebase.auth().currentUser || {}).uid;
   }
 
+  get userDisplayName() {
+    return (firebase.auth().currentUser.displayName)
+  }
+
   get ref() {
-    return firebase.database().ref('Messages');
+    return firebase.database().ref('Chat/'+recieverAndSenderId);
   }
 
   parse = snapshot => {
@@ -137,13 +143,43 @@ class FirebaseSvc {
   };
 
   refOn = callback => {
-    this.ref
+      firebase.database().ref('Chat/'+recieverAndSenderId)
       .limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
-  }
+    }
 
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
+  }
+
+  passUIDToFirebaseRef(uid){
+    console.log('this is a test function to pass the uid in component will mount -> ' + uid);
+    recieverAndSenderId = uid
+  }
+
+  getChatsRefOn = callback => {
+    firebase.database().ref('Chat')
+    .limitToLast(20)
+    
+    .on('value', snapshot => callback(this.parse(snapshot)));
+  }
+
+  getAllChats(userId) {
+    var that = this
+    var chatObjects= []
+    var urlRef = firebase.database().ref('Chat');
+    console.log('THIS IS USERID -- ' + userId)
+    urlRef.once("value", function(snapshot) {
+      snapshot.forEach(function(child) {
+        if((child.key.endsWith(userId) || (child.key.startsWith(userId)))) {
+          // console.log(child.key+": "+child.val());
+          // console.log(JSON.stringify( child.val()))
+          chatObjects.push(JSON.stringify( child.val()))
+        }
+      });
+      //console.log('THese are chatobjects -- ..>' +chatObjects)
+      return chatObjects
+    });
   }
   
   // send the message to the Backend
@@ -164,5 +200,5 @@ class FirebaseSvc {
   }
 }
 
-const firebaseSvc = new FirebaseSvc();
-export default firebaseSvc;
+const firebaseChat = new FirebaseChat();
+export default firebaseChat;
