@@ -1,124 +1,125 @@
-import React, { Component } from 'react';
-import { View, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import firebase from '../../Firebase';
-import AwesomeAlert from 'react-native-awesome-alerts';
-import Colors from "../../constants/Colors";
-export default class TestScreen extends React.Component {
+import React from 'react';
+
+import {Text, View, Button} from 'react-native';
+import firebaseChat from '../../FirebaseChat';
+import ChatDynamicFlatList from '../../handlers/ChatDynamicFlatList';
+import firebase from 'firebase';
+
+
+let testObj ={}
+class Chat extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { 
-      showAlert: true,
-      User: null 
+    // let chatObjects = this.getAllChats(firebaseChat.uid);
+    var {navigate} = this.props.navigation;
+
+
+    this.state = {
+      messages: [],
+      chats:{},
+      filteredChats:{},
+      userId: firebaseChat.uid
     };
-    this.showAlert = this.showAlert.bind(this);
-  };
-
-  showAlert(){
-    this.setState({
-      showAlert: true
-    });
-  };
-
-  hideAlert(){
-    const { navigate } = this.props.navigation;
-    this.setState({
-      showAlert: true
-    });
-    navigate('Account');
-  };
- 
-  componentDidMount() {
-    // List to the authentication state
-    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    // this.getAllChats = this.getAllChats.bind(this)
+    //this.getUserChatThread = this.getUserChatThread.bind(this)    
+    //console.log(this.getAllChats(firebaseChat.uid))
+    
   }
-  
+  static navigationOptions = ({ navigation }) => ({
+    title: (navigation.state.params || {}).name || 'Chat!',
+  });
+
+
+  componentWillMount() {
+
+    //let chatObjects = firebaseChat.getAllChats(firebaseChat.uid);
+    //this.setState({chats: chatObjects})
+    
+  }
+
+
+  // getUserChatThread(){
+  //   const userId = firebaseChat.uid
+  //   const testObj = this.state.chats;
+  //   var newObj={};
+  //   console.log('User ID --> '+userId)
+  //   console.log('Test object -- > ' +  Object.keys(testObj))
+  //   for (var prop in testObj) {
+  //     if (prop.includes(userId)) {
+  //         // do stuff
+  //         newObj = {chat: 'this is test'}
+  //         console.log(prop)
+  //         this.setState({filteredChats: newObj})
+  //     }
+  // }
+    
+  // }
+
   componentWillUnmount() {
-    // Clean up: remove the listener
-    this._unsubscribe();
+    firebaseChat.refOff();
   }
+
+  componentDidMount(){
+    this.setState({ loading: true });
+    firebase.database().ref('Chat').on('value', snapshot => {
+      this.setState({ loading: false });
+
+      this.setState({snapshot: snapshot.val()})
+
+    for (var prop in snapshot.val()) {
+      if (prop.includes(this.state.userId)) {
+          // do stuff
+          newObj = {chat: 'this is test'}
+          console.log(prop)
+          this.setState({filteredChats: newObj})
+      }
+    }
+
+      this.setState({snapshot: snapshot.val()})
+    });
+      //this.getUserChatThread()
+
+  }
+
+  // getAllChats() {
+
+  //   var urlRef = firebase.database().ref('Chat');
+  //   let chatObjects=[];
+  //   urlRef.once("value").then((snapshot) =>  {
+  //     this.setState({chats: snapshot.val()})
+  //     return chatObjects
+
+  //   });
+
   
-  onAuthStateChanged = user => {
-    // if the user logs in or out, this will be called and the state will update.
-    // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: user });
-  };
- 
-  loginAsync = async () => {
-    const { navigate } = this.props.navigation;
-    navigate('Account');
-  };
- 
+  // }
 
   render() {
-    
-    const { user } = this.state;
-    const {showAlert} = this.state;
-    
-    if(this.state.User != null){
-        console.log('User is logged in, From chat screen');
-        return (
+    return (
+      <View style ={styles.containerStyle}>
+        {/* <ChatDynamicFlatList chats = {this.state.chats}/> */}
+        <Button
+          title="Press me"
+          onPress={this.getUserChatThread}
+        />
 
-            <View style={styles.viewStyle}>
-                <Text>Hello user logged in</Text>
-            </View>
-        
-        );
-    }
-    else{
-      
-      return (
-       
-        <View style={styles.container}>   
+        <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
 
-          <AwesomeAlert
-            show={showAlert}
-            showProgress={false}
-            title="Alert"
-            message="Please login first!"
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}
-            cancelText="No, cancel"
-            confirmText="Go to login!!"
-            confirmButtonColor={Colors.primary}
-            onCancelPressed={() => {
-              this.hideAlert();
-            }}
-            onConfirmPressed={() => {
-              this.hideAlert();
-            }}
-          />
-        </View>
-      );
-    }
+      </View>
+    );
+  }
+
+
+
+}
+
+const styles = {
+  containerStyle: {
+    flex: 1,
+
+
   }
 }
-const styles = StyleSheet.create({
-  viewStyle: {
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-  button: {
-    margin: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 5,
-    backgroundColor: "#AEDEF4",
-  },
-  text: {
-    color: '#fff',
-    fontSize: 15
-  },
-})
+
+export default Chat;

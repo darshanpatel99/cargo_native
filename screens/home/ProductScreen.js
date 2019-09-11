@@ -43,6 +43,8 @@ export class ProductScreen extends Component {
     const pickupAddress = navigation.getParam('pickupAddress');
     const BuyerID = navigation.getParam('BuyerID');
     const Status = navigation.getParam('Status');
+    const sellerName = navigation.getParam('sellerName');
+
     //storageRef = firebase.storage().ref();
 
 
@@ -70,6 +72,7 @@ export class ProductScreen extends Component {
       currentGpsLocationStringFormat: '',
       BuyerID,
       Status,
+      sellerName
     };
     onLayout = e => {
       this.setState({
@@ -306,7 +309,7 @@ export class ProductScreen extends Component {
   NavigateToMessage() {
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('Chat', {userID:this.state.userID})
+    navigate('ChatScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
   };
 
   NavigateToEdit(){
@@ -438,78 +441,6 @@ export class ProductScreen extends Component {
         );
       }
     }
-
-    // if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
-
-    //   return (
-    //     <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-
-    //       <TouchableOpacity onPress={this.NavigateToEdit}>
-    //         <MainButton title='Edit product' secondary="true" />
-    //       </TouchableOpacity>
-
-    //       <TouchableOpacity onPress={this.sooldItem}>
-    //         <MainButton title='Mark sold' secondary="true" />
-    //       </TouchableOpacity>
-
-    //     </View>
-          
-    //   );
-    // }  
-
-    // else if(this.state.Status === 'sold' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ){
-    //   return (
-    //     <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-    //       <TouchableOpacity onPress={this.ReactivateOrder}>
-    //         <MainButton title='Reactivate Product' />
-    //       </TouchableOpacity>
-    //     </View>
-    //   );
-    // }
-
-    // else if(this.state.deliveryCharge != '' && this.state.Status === 'bought' && this.state.BuyerID == this.state.userID){
-    //   return (
-    //     <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-    //       <TouchableOpacity onPress={this.CancelOrder}>
-    //         <MainButton title='Cancel Order' />
-    //       </TouchableOpacity>
-    //     </View>
-    //   );
-    // }
-
-    // else {
-        
-    //   if (this.state.deliveryCharge != '' ) {
-    //     return (
-    //       <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-    //         <TouchableOpacity onPress={this.NavigateToCheckout}>
-    //           <MainButton title='Buy Now' bluesecondary="true"/>
-    //         </TouchableOpacity>
-
-    //         <TouchableOpacity onPress={this.NavigateToMessage}>
-    //           <MainButton title='Chat Now' bluesecondary="true"/>
-    //         </TouchableOpacity>
-
-    //       </View>
-    //     );
-    //   }
-    //   else {
-
-    //     return (
-    //     <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-    //       <TouchableOpacity>
-    //         <MainButton title='Buy Now' bluesecondary="true"/>
-    //       </TouchableOpacity>
-
-    //       <TouchableOpacity>
-    //         <MainButton title='Chat Now' bluesecondary="true"/>
-    //       </TouchableOpacity>
-
-    //     </View>
-    //     );
-    //   }
-
-    // }
   }
 
   sooldItem =() =>{
