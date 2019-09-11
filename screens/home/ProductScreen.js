@@ -9,15 +9,14 @@ import {
   Dimensions,
   Platform,
   Modal,
-  Image
+  Image,
+  Alert
 } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import ImageZoom from 'react-native-image-pan-zoom';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import ReportAd from '../../functions/ReportAd';
@@ -41,7 +40,9 @@ export class ProductScreen extends Component {
     const pictures = navigation.getParam('pictures');
     const id = navigation.getParam('itemId');
     const owner = navigation.getParam('owner');
-    const pickupAddress = navigation.getParam('pickupAddress')
+    const pickupAddress = navigation.getParam('pickupAddress');
+    const BuyerID = navigation.getParam('BuyerID');
+    const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
 
     //storageRef = firebase.storage().ref();
@@ -69,6 +70,8 @@ export class ProductScreen extends Component {
       soldArray:[],
       pickupAddress: pickupAddress,
       currentGpsLocationStringFormat: '',
+      BuyerID,
+      Status,
       sellerName
     };
     onLayout = e => {
@@ -82,6 +85,8 @@ export class ProductScreen extends Component {
     this.NavigateToEdit = this.NavigateToEdit.bind(this);
     this.CheckIfProductAlreadyInCart = this.CheckIfProductAlreadyInCart.bind(this);
     this.flagTheItem = this.flagTheItem.bind(this);
+    this.CancelOrder = this.CancelOrder.bind(this);
+    this.ReactivateOrder = this.ReactivateOrder.bind(this);
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -154,26 +159,14 @@ export class ProductScreen extends Component {
     this.setState({ location });
     let currentDeviceLatitude = this.state.location.coords.latitude;
     let currentDeviceLongitude = this.state.location.coords.longitude;
-
     let productLocationLatitude = this.state.pickupAddress[0];
     let productLocationLongitude = this.state.pickupAddress[1];
-
-    console.log('Product Screen Pickup Address -- ' + productLocationLatitude);
-    console.log('Product Screen Pickup Address -- ' + productLocationLongitude);
-
-    
 
     fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
       .then((response) => response.json())
       .then((responseJson) => {
         //return responseJson.movies;
-        console.log(productLocationLatitude);
-        console.log(productLocationLongitude)
-        console.log('&&&&&&&&&&&&&&&&&')
-        console.log(JSON.stringify(responseJson))
-        console.log(console.log(responseJson.origin_addresses[0]))
-        console.log('*******************')
-        console.log(responseJson.rows[0].elements[0].distance.value);
+       
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
         if(distanceInMeters <= 5000) {
@@ -247,7 +240,6 @@ export class ProductScreen extends Component {
   }
 
   NavigateToCheckout() {
-
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
@@ -258,6 +250,60 @@ export class ProductScreen extends Component {
         showAlert: true
       });
     }
+  };
+
+  CancelOrder() {
+    var productStatusReference = firebase.firestore().collection('Products').doc(this.state.id);
+    const {navigation} = this.props;
+    //navigation.navigate('Account');
+
+    return productStatusReference.update({
+        Status:'active'
+    })
+    .then(function() {
+        console.log("Document successfully updated!");
+        //alert('Your order has cancelled!');
+
+        Alert.alert(  
+          'Alert !',  
+          'Your order has cancelled!',  
+          [ 
+            {text: 'OK', onPress: () => navigation.navigate('Home')},  
+          ]  
+      );  
+    })
+    .catch(function(error) {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+    });
+
+  };
+
+  ReactivateOrder() {
+    var productStatusReference = firebase.firestore().collection('Products').doc(this.state.id);
+    const {navigation} = this.props;
+    //navigation.navigate('Account');
+
+    return productStatusReference.update({
+        Status:'active'
+    })
+    .then(function() {
+        console.log("Document successfully updated!");
+        //alert('Your order has cancelled!');
+
+        Alert.alert(  
+          'Alert !',  
+          'Your product is active!',  
+          [ 
+            {text: 'OK', onPress: () => navigation.navigate('Home')},  
+          ]  
+      );  
+    })
+    .catch(function(error) {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+    });
+
   };
 
   NavigateToMessage() {
@@ -323,11 +369,10 @@ export class ProductScreen extends Component {
     alert('Ad was reported, Thanks for your feedback!')
   }
 
+  CheckIfProductAlreadyInCart() { 
+    console.log(this.state.Status)
 
-  CheckIfProductAlreadyInCart() {
-
-    
-    if (this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
+    if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
@@ -342,7 +387,30 @@ export class ProductScreen extends Component {
         </View>
           
       );
-    } else {
+    }
+
+    else if(this.state.Status === 'sold' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ){
+      return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          <TouchableOpacity onPress={this.ReactivateOrder}>
+            <MainButton title='Reactivate Product' />
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    else if(this.state.deliveryCharge != '' && this.state.Status === 'bought' && this.state.BuyerID === this.state.userID){
+      return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          <TouchableOpacity onPress={this.CancelOrder}>
+            <MainButton title='Cancel Order' />
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    
+    else {
         if (this.state.deliveryCharge != '' ) {
         return (
           <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
@@ -376,19 +444,25 @@ export class ProductScreen extends Component {
   }
 
   sooldItem =() =>{
-    console.log(this.state.soldArray);
     var tempArray = [...this.state.soldArray];
     tempArray.push(this.state.id)
 
     this.ref.update({
-      SoldProducts:tempArray,
-      
+      SoldProducts:tempArray,  
     })  
     var updateProduct = firebase.firestore().collection('Products').doc(this.state.id);
 
     updateProduct.update({
       Status:'sold',
     })
+
+    Alert.alert(  
+      'Alert !',  
+      'Thank you for updating !',
+      [ 
+        {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},  
+      ]
+    ); 
   }
 
   render() {
