@@ -22,7 +22,7 @@ export default class Stripe extends React.Component {
 
     const { navigation } = this.props;
     const productID = navigation.getParam('productID');
-
+    const userId = navigation.getParam('userId');
     
     this.state={
       showAlert: false,
@@ -38,6 +38,7 @@ export default class Stripe extends React.Component {
       loading: false,
       responseJson:'',
       productID: productID,
+      userId:userId,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
@@ -145,6 +146,7 @@ export default class Stripe extends React.Component {
           var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
           return productStatusReference.update({
             Status: 'bought',
+            BuyerID: this.state.userId,
           })
         }else{
           this.setState({ loading: false });

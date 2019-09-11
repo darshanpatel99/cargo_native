@@ -1,8 +1,30 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
-import {  Button, Text, Item, Input, Container, Icon} from 'native-base';
+import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
+import {
+  Button,
+  Header,
+  Text,
+  Body,
+  Left,
+  List,
+  ListItem,
+  Right,
+  Item,
+  Input,
+  Container,
+  Icon,
+  Content
+} from 'native-base';
 import firebase from '../../Firebase';
 import GooglePickupAddress from '../../components/maps/GooglePickupAddress'
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
+
+
 export default class Checkout extends Component {
   constructor(props) {
     super(props);
@@ -140,6 +162,7 @@ export default class Checkout extends Component {
       );
     }
     return (
+      <DismissKeyboard>
       <View style={Styles.Container}>
         {/* <Header transparent>
           <Left>
@@ -303,12 +326,13 @@ export default class Checkout extends Component {
             <Text>Total Amount: ${this.state.totalAmount}</Text>
           </View>
           <View style={Styles.payButton}>
-            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID})}>
+            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
           </View>
         </Container>
       </View>
+      </DismissKeyboard>
     );
   }
 }

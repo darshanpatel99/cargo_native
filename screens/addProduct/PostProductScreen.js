@@ -80,6 +80,8 @@ export default class PostProductScreen extends Component {
       long: 0,
       googleAddressEmpty: '',
       changingAddress:0,
+      priceAlert:false,
+      buyerID:'',
     }
 
     this.categoryRemover = React.createRef();
@@ -121,12 +123,12 @@ export default class PostProductScreen extends Component {
    componentWillMount() {
 
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
-    // const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
-    // console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
-    // KEYBOARD_VERTICAL_OFFSET_HEIGHT =
-    //   Platform.OS === 'ios'
-    //     ? headerAndStatusBarHeight - 600
-    //     : headerAndStatusBarHeight;
+    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+      Platform.OS === 'ios'
+        ? headerAndStatusBarHeight - 600
+        : headerAndStatusBarHeight;
 
   }
 
@@ -200,14 +202,16 @@ export default class PostProductScreen extends Component {
   postTheProduct = async() =>{
 
     let titleLength = this.state.title;
-    let priceLength = this.state.price;
+    let priceLength = parseInt( this.state.price);
     let descriptionLength = this.state.description;
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    console.log('length of the price' + priceLength.length);
+
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
@@ -225,7 +229,7 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       AddressArray: this.state.addressArray,
-   
+      BuyerID:'',  
     }
 
     //Getting the current time stamp
@@ -241,7 +245,7 @@ export default class PostProductScreen extends Component {
     this.showAlert2();
 
   } else {
-    console.log('hello');
+    console.log('hello' + typeof(priceLength));
 
     if(picArray.length==0){
       this.setState({
@@ -249,7 +253,12 @@ export default class PostProductScreen extends Component {
       })      
     }
 
-    if(timeArray.length==0 && picArray.length!=0){
+    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      this.setState({
+        priceAlert:true,
+      })      
+    }
+    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         availableAlert:true,
       })
@@ -257,7 +266,7 @@ export default class PostProductScreen extends Component {
 
     console.log(address)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0){
+    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         showAddressAlert:true,
       })
@@ -597,7 +606,7 @@ export default class PostProductScreen extends Component {
     
     
     if(this.state.postAdClicked) {
-      if(text > 10 && text <1000){
+      if(text >= 10 && text <=1000){
         return true
       } else{
         return false
@@ -634,6 +643,12 @@ export default class PostProductScreen extends Component {
   addressAlert =() =>{
     this.setState({
       showAddressAlert:false,
+    })
+  }
+
+  closePriceAlert =() =>{
+    this.setState({
+      priceAlert:false,
     })
   }
 
@@ -694,17 +709,19 @@ export default class PostProductScreen extends Component {
                   name="title" 
                   onChangeText={(text)=>this.setState({title:text})}
                   value={this.state.title}
-                  maxLength={10}
+                  maxLength={50}
+                  returnKeyType='done'
                     />
               </Item>
-              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
+              <Item style={[{ marginBottom: 10},this.forPrice(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
                   name="price"
                   onChangeText={(text)=>this.setState({price:text})}
                   value={this.state.price} 
-                  maxLength={3}
+                  maxLength={4}
+                  returnKeyType='done'
                   />
                   
               </Item>
@@ -729,6 +746,7 @@ export default class PostProductScreen extends Component {
                     value={this.state.description}
                     style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
                     maxLength={500}
+                    //returnKeyType='return'
                     
                   />
                 ) : (
@@ -741,6 +759,7 @@ export default class PostProductScreen extends Component {
                     value={this.state.description}
                     style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
                     maxLength={500}
+                    //3returnKeyType='return'
                     
                   />
                 )}
@@ -909,6 +928,22 @@ export default class PostProductScreen extends Component {
             confirmButtonColor="#DD6B55"            
             onConfirmPressed={() => {
               this.addressAlert();
+            }}
+          />
+
+            <AwesomeAlert
+            show={this.state.priceAlert}
+            showProgress={false}
+            title="Alert"
+            message={'price should be from 10 to 1000 $'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.closePriceAlert();
             }}
           />
 

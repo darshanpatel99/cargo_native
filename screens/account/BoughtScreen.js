@@ -21,7 +21,8 @@ constructor(props){
         key :'',
         sort: this.props.filtersAndSorts 
     };
-    this.ref = firebase.firestore().collection('Users').doc(id+'');
+    //this.ref = firebase.firestore().collection('Users').doc(id+'');
+    this.ref = firebase.firestore().collection('Products').where('Status', '==', 'bought').where('BuyerID','==',id);
     //this.productsCollectionRef = firebase.firestore().collection('Products');
     this.unsubscribe = null;
     //this.loadCartItems = this.loadCartItems.bind(this);        
@@ -29,43 +30,50 @@ constructor(props){
 
 componentDidMount(prevProps) {
 
-    this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
+    this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
+
+  //   this.ref.get().then(function(doc) {
+  //     if (doc.exists) {
+  //         that.setState({
+  //           soldArray:doc.data().SoldProducts,
+  //         })
+  //     } else {
+  //         // doc.data() will be undefined in this case
+  //         console.log("No such document!");
+  //     }
+  //   }).catch(function(error) {
+  //       console.log("Error getting document:", error);
+  //   });
+  // }
+  // });
 
 }
 
 
 
-onDocumentUpdate = (documentSnapshot) => {
-    let cartProducts;
-    let products= [];
-    cartProducts= documentSnapshot.data().BoughtProducts;            
-        firebase.firestore().collection('Products').get()
-              .then(querySnapshot => {
-                querySnapshot.docs.forEach(doc => {
-                    if(cartProducts.includes(doc.id)) {
-                        console.log('Name is --> ' + doc.data().Name)
-                        const { Description, Name, Price, Thumbnail, Pictures } = doc.data();                        
-                        products.push({
-                            key: doc.id,
-                            doc,
-                            Name,
-                            Description,
-                            Price,
-                            Thumbnail,
-                            Pictures
-                        }
-                        );
-                    }
-              });
-              
-            this.setState({
-                products,
-                isLoading: false,
-              })
-
-
-             });
-
+onDocumentUpdate = (querySnapshot) => {
+  console.log('on collection update')
+  const products = [];
+  querySnapshot.forEach((doc) => {
+    const { Description, Name, Price, Thumbnail, Pictures, Category, Owner} = doc.data();
+      // console.log(typeof Pictures['0']);
+    products.push({
+      key: doc.id,
+      doc,
+      Name,
+      Description,
+      Owner,
+      Price,
+      Thumbnail,
+      Pictures,
+      Category,
+    });
+  });
+  this.setState({
+    products,
+    isLoading: false,
+  },
+ );
       }
 
 
@@ -86,15 +94,15 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
+           <ProductCardComponent owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price} image = {item.Thumbnail} pictures = {item.Pictures}  />
         </View>
       }
       />
 
       </ScrollView>
-      <View style={{flexDirection: 'row', justifyContent:'center'}}>
+      {/* <View style={{flexDirection: 'row', justifyContent:'center'}}>
           <MainButton title= 'Edit List'/>
-        </View>
+        </View> */}
       </View>
     );
 }
