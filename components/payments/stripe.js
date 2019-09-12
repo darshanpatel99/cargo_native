@@ -7,6 +7,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 import Colors from "../../constants/Colors";
 import firebase from '../../Firebase.js';
+import firebaseChat from '../../FirebaseChat';
 
 
 const DismissKeyboard = ({ children }) => (
@@ -23,6 +24,9 @@ export default class Stripe extends React.Component {
     const { navigation } = this.props;
     const productID = navigation.getParam('productID');
     const userId = navigation.getParam('userId');
+    const deliveryFee = navigation.getParam('deliveryFee');
+    const GPSStringFormat = navigation.getParam('GPSStringFormat');
+    const charge = navigation.getParam('charge');
     
     this.state={
       showAlert: false,
@@ -39,6 +43,9 @@ export default class Stripe extends React.Component {
       responseJson:'',
       productID: productID,
       userId:userId,
+      BuyerAddress: GPSStringFormat,
+      DeliveryFee: deliveryFee,
+      TotalFee:charge,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
@@ -144,10 +151,16 @@ export default class Stripe extends React.Component {
           console.log('Loading state ' + this.state.loading);
           this.showAlert();
           var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
+
           return productStatusReference.update({
             Status: 'bought',
             BuyerID: this.state.userId,
+            BuyerName: firebaseChat.userDisplayName,
+            BuyerAddress: this.state.BuyerAddress,
+            DeliveryFee: this.state.DeliveryFee,
+            TotalFee:  Math.round(this.props.charge),
           })
+
         }else{
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);

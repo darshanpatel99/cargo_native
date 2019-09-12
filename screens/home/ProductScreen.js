@@ -51,7 +51,7 @@ export class ProductScreen extends Component {
     this.state = {
       location: null,
       errorMessage: null,
-      deliveryCharge:'',
+      deliveryCharge: 3.99,
       showAlert: false,
       User: null,
       pictures: [],
@@ -113,6 +113,8 @@ export class ProductScreen extends Component {
 
   componentWillMount() {
 
+    this.CheckIfProductAlreadyInCart();
+
     const { navigation } = this.props;
     
     this.focusListener = navigation.addListener('didFocus', () => { 
@@ -142,9 +144,12 @@ export class ProductScreen extends Component {
       this.setState({
         errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
       });
-    } else {
-      this._getLocationAsync();
-    }
+    } 
+    // else {
+    //   this._getLocationAsync();
+    // }
+
+
   }
 
   _getLocationAsync = async () => {
@@ -194,7 +199,7 @@ export class ProductScreen extends Component {
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-    
+    this._getLocationAsync();
   }
 
   componentWillUnmount() {
@@ -285,7 +290,7 @@ export class ProductScreen extends Component {
     //navigation.navigate('Account');
 
     return productStatusReference.update({
-        Status:'active'
+        Status:'pending'
     })
     .then(function() {
         console.log("Document successfully updated!");
@@ -293,7 +298,7 @@ export class ProductScreen extends Component {
 
         Alert.alert(  
           'Alert !',  
-          'Your product is active!',  
+          'Your product is cancelled!',  
           [ 
             {text: 'OK', onPress: () => navigation.navigate('Home')},  
           ]  
@@ -307,9 +312,16 @@ export class ProductScreen extends Component {
   };
 
   NavigateToMessage() {
+    if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('ChatScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+    }
+    else{
+      this.setState({
+        showAlert: true
+      });
+    }
   };
 
   NavigateToEdit(){
@@ -324,7 +336,11 @@ export class ProductScreen extends Component {
       description:this.state.description,
       id:this.state.id,
     }
-    this.resetStack(data);
+
+    //this.props.navigation.dispatch(StackActions.popToTop());
+    navigate('EditProduct',{data: data})
+
+    //this.resetStack(data);
   };
 
   resetStack = (data) => {
@@ -334,8 +350,6 @@ export class ProductScreen extends Component {
         index: 0,
         actions: [
           NavigationActions.navigate({
-
-            
             routeName: 'EditProduct',
             params: { data: data },
           }),
