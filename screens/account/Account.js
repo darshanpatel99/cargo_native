@@ -66,12 +66,8 @@ export default class AccountScreen extends React.Component {
         }); 
       }); 
     
-         
-      
-  
-    
     //firestore reference for the specific document associated with the user
-    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
     
@@ -80,32 +76,40 @@ export default class AccountScreen extends React.Component {
 componentDidMount() {
   const { navigation } = this.props;
     
-  //   this.focusListener = navigation.addListener('didFocus', () => { 
-  //   //checking the current user and setting uid
-  //   let user = firebase.auth().currentUser;
+    this.focusListener = navigation.addListener('didFocus', () => { 
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
 
-  //   if (user != null) {
+    if (user != null) {
+
+      //firebase.auth().signInWithEmailAndPassword(email, password)
         
-  //     this.state.userID = user.uid;
-  //     console.log(" State UID: " + this.state.userID);
-  //     doc= firebase.firestore().collection('Users').doc(this.state.userID);
-  //     this.ref.get().then(doc => {
-  //       this.setState({
-  //         data: doc.data(),
-  //         name:doc.FirstName,
-  //         globalAddress:doc.data().City + ', ' + doc.data().Country,
-  //         UnitNumber:doc.UnitNumber,
-  //         Address:doc.Address,
-  //         }); 
-  //       });
+      this.state.userID = user.uid;
+      console.log(" State UID: " + this.state.userID);
+      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+      this.ref.get().then(doc => {
+        this.setState({
+        data: doc.data(),
+        name:doc.data().FirstName,
+        //globalAddress:doc.data().City + ', ' + doc.data().Country,
+        UnitNumber:doc.data().UnitNumber,
+        Address:doc.data().Address,
+        Email:doc.data().Email,
+        PhoneNumber:doc.data().PhoneNumber,
+        picture:doc.data().ProfilePicture,
+        }); 
+      }); 
+    
+         
+      
   
     
-  //   //firestore reference for the specific document associated with the user
-  //   this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    //firestore reference for the specific document associated with the user
+    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
-  // }
+  }
       
-  // });
+  });
 
   this.getPermissionAsync();
   // List to the authentication state

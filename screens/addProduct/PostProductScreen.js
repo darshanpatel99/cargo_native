@@ -235,6 +235,10 @@ export default class PostProductScreen extends Component {
       AddressArray: this.state.addressArray,
       BuyerID:'',
       SellerName: this.state.sellerName,
+      BuyerName:'',
+      BuyerAddress:'',
+      DeliveryFee:'',
+      TotalFee:'',
     }
 
     //Getting the current time stamp
@@ -788,8 +792,6 @@ export default class PostProductScreen extends Component {
                   onChangeText: (text) => {this.testFunction(text)}
                  }}
                 onPress={(data, details = null) => {
-                
-                
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];

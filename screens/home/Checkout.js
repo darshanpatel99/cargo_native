@@ -2,21 +2,16 @@ import React, { Component } from 'react';
 import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
 import {
   Button,
-  Header,
   Text,
-  Body,
-  Left,
-  List,
-  ListItem,
-  Right,
   Item,
   Input,
   Container,
   Icon,
-  Content
 } from 'native-base';
+import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
-import GooglePickupAddress from '../../components/maps/GooglePickupAddress'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -53,10 +48,13 @@ export default class Checkout extends Component {
       Email:'',
       GPSStringFormat: GPSStringFormat,
       productID: productID,
+      showAlert: false,
     };
     let {City, Street, Country, Buyer} ='';
     let defaultAddress='' ;
     let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
+
+    this.NavigateToPay = this.NavigateToPay.bind(this);    
     amount = amount.toFixed(2)
     let address = firebase
     .firestore()
@@ -132,9 +130,50 @@ export default class Checkout extends Component {
         console.error(error);
       });
   };
+  
+  componentWillMount(){
+    const { navigation } = this.props;
+    let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
+    amount = amount.toFixed(2)
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+      this.setState({
+        totalAmount: amount,
+      })
+    }); 
+
+  }
+
+
   componentDidMount(props) {
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
   }
+
+  showAlert(){
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: false
+    });
+  };
+
+  NavigateToPay(){
+    const { navigate } = this.props.navigation;
+    if(this.state.GPSStringFormat != ''){
+      console.log('Inside if =>>>>>>>>>')
+      navigate('StripeScreen', {deliveryFee:this.state.deliveryFee,  GPSStringFormat:this.state.GPSStringFormat, Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})
+    }
+    else{
+      console.log('Inside else =>>>>>>>>>')
+      this.showAlert();
+    }
+  }
+
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     return {
@@ -153,6 +192,7 @@ export default class Checkout extends Component {
     };
   };
   render() {
+    const {showAlert} = this.state;
     console.log('Product ID ==> ' + this.state.productID)
     if (this.state.isLoading) {
       return (
@@ -164,36 +204,9 @@ export default class Checkout extends Component {
     return (
       <DismissKeyboard>
       <View style={Styles.Container}>
-        {/* <Header transparent>
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon
-                style={{ fontSize: 40, marginLeft: 10 }}
-                name='arrow-back'
-              />
-            </Button>
-          </Left>
-          <Right>
-            <Button transparent onPress={() => this.props.navigation.push('Account')}>
-              <Icon
-                style={{ fontSize: 45, marginRight: 5 }}
-                type='EvilIcons'
-                name='user'
-              />
-            </Button>
-          </Right>
-        </Header> */}
+
         <Container>
-          {/* <Text
-            style={{
-              marginLeft: 15,
-              marginTop: 15,
-              fontSize: 35,
-              fontFamily: 'nunito-Bold'
-            }}
-          >
-            Checkout
-          </Text> */}
+
           <Text
             style={{
               marginLeft: 15,
@@ -204,83 +217,68 @@ export default class Checkout extends Component {
           >
             Update Delivery Address
           </Text>
-          {/* <List
-            style={{
-              marginLeft: 15,
-              marginTop: 10,
-              marginRight: 15,
-              fontSize: 20,
-              fontFamily: 'nunito-SemiBold'
-            }}
-          >
-            <ListItem avatar>
-              <Left>
-                <Icon style={{ color: 'red' }} name='map-pin' type='Feather' />
-              </Left>
-              <Body>
-                <Text>Home 1</Text>
-                <Text note>{this.state.deliveryAddress}</Text>
-              </Body>
-              <Right>
-                <Text style={{ color: 'green' }} note>
-                  Selected
-                </Text>
-              </Right>
-            </ListItem>
-          </List> */}
-          {/* <View style={Styles.AddressFunctionButtonView}>
-            <Button
-              title='Show Dialog'
-              onPress={() => {
-                this.setState({ editDialogVisible: true });
-              }}
-              style={{ marginLeft: 15, marginTop: 10, marginRight: 5 }}
-            >
-              <Text>Update Address</Text>
-            </Button>
-            <Dialog
-              visible={this.state.editDialogVisible}
-              dialogTitle={<DialogTitle title='Update Address' />}
-              onTouchOutside={() => {
-                this.setState({ editDialogVisible: false });
-              }}
-              rounded
-              actionsBordered
-              dialogAnimation={new SlideAnimation({ slideFrom: 'bottom' })}
-              onHardwareBackPress={() => {
-                console.log('onHardwareBackPress');
-                this.setState({ editDialogVisible: false });
-                return true;
-              }}
-              dialogStyle={{width: 290}}
-              footer={
-                <DialogFooter>
-                  <DialogButton
-                    text='Dismiss'
-                    onPress={() => {
-                      this.setState({ editDialogVisible: false });
-                    }}
-                  />
-                  <DialogButton text='OK' onPress={() => this.setState({deliveryAddress: this.state.tempAddressStore, editDialogVisible: false})} />
-                </DialogFooter>
-              }
-            >
-              <DialogContent style={{height:100}}>
-                <Input placeholder='Enter address here' onChangeText={(value) => this.setState({tempAddressStore: value})}/>
-              </DialogContent>
-            </Dialog>
-            <Button
-              style={{
-                marginLeft: 15,
-                marginRight: 15,
-                marginTop: 10,
-                marginRight: 5
-              }}
-            >
-              <Text>Delete</Text>
-            </Button>
-          </View> */}
-<GooglePickupAddress previousGPSAddress = {this.state.GPSStringFormat} parentCallback = {this.googleAddressCallback} ref={this.addressRemover}/>
+    
+    <GooglePlacesAutocomplete
+                ref={c => this.googlePlacesAutocomplete = c}
+                placeholder='Pickup Address'
+                minLength={2}
+                autoFocus={false}
+                returnKeyType={'default'}
+                fetchDetails={true}
+                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+                listViewDisplayed='false'    // true/false/undefined
+                renderDescription={row => row.description} // custom description render
+                
+                // textInputProps={{
+                //   onChangeText: (text) => {this.testFunction(text)}
+                //  }}
+                onPress={(data, details = null) => {
+                
+                
+                console.log(Object.values(details.geometry.location))
+                let lat = Object.values(details.geometry.location)[0];
+                let long = Object.values(details.geometry.location)[1];
+                this.setState({addressArray: [lat, long]})
+                this.setState({GPSStringFormat: (Object.values(details.geometry.location))})
+                //this.props.parentCallback(this.state.lat, this.state.long);
+                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
+                }}
+                GoogleReverseGeocodingQuery={{
+                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                }}
+
+                getDefaultValue={() => {
+                    return this.state.GPSStringFormat; // text input default value
+                }}
+
+                query={{
+                    // available options: https://developers.google.com/places/web-service/autocomplete
+                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
+                    language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                }}
+
+                styles={{
+                    textInputContainer: {
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderTopWidth: 0,
+                    borderBottomWidth:0
+                    },
+                    textInput: {
+                    marginLeft: 0,
+                    marginRight: 0,
+                    height: 38,
+                    color: '#5d5d5d',
+                    fontSize: 16
+                    },
+                    predefinedPlacesDescription: {
+                    color: '#1faadb'
+                    },
+                }}
+                currentLocation={false}vi
+                />
+
+
           <View style={Styles.AddressFunctionButtonView}>
             <Text
               style={{
@@ -297,7 +295,7 @@ export default class Checkout extends Component {
                 keyboardType='numeric'
                 value={this.state.tipAmount}
                 onChangeText={value => { if(value){
-                  this.setState({ tipAmount: parseInt(value), totalAmount: parseInt(value)+this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: parseFloat(value), totalAmount: parseFloat(value)+this.state.deliveryFee + this.state.subTotal });
                   console.log(this.state.tipAmount);
                 }else{
                   this.setState({ tipAmount: 0, totalAmount: 0+this.state.deliveryFee + this.state.subTotal });
@@ -326,11 +324,31 @@ export default class Checkout extends Component {
             <Text>Total Amount: ${this.state.totalAmount}</Text>
           </View>
           <View style={Styles.payButton}>
-            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})}>
+            <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
           </View>
         </Container>
+
+        <AwesomeAlert
+            show={showAlert}
+            showProgress={false}
+            title="   Alert   "
+            message="Please update your address!"
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="No, cancel"
+            confirmText="  OK  "
+            confirmButtonColor={Colors.primary}
+            onCancelPressed={() => {
+              this.hideAlert();
+            }}
+            onConfirmPressed={() => {
+              this.hideAlert();
+            }}
+        />
       </View>
       </DismissKeyboard>
     );

@@ -60,7 +60,7 @@ export default class PostProductScreen extends Component {
     storageRef = firebase.storage().ref();
     const{navigation} = this.props;
     const reference = navigation.getParam('data');
-    this.productRef = firebase.firestore().collection('Products').doc(reference.id + ''),
+    this.productRef = firebase.firestore().collection('Products').doc(reference.id),
     this.state={
       postAdClicked: false,
       showAlert: true,
@@ -175,11 +175,12 @@ export default class PostProductScreen extends Component {
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
 
-    if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
       this.setState({
         showAlert2: true
       });
+      
 
   } else {
     console.log('hello');
@@ -223,8 +224,8 @@ export default class PostProductScreen extends Component {
     // this.googlePlacesAutocomplete._handleChangeText('');
     // this.addressRemover.current.changeAddressState();
 
-    // this.setState({
-    //   showAlert2: false,
+     this.setState({
+       showAlert2: false,
     //   title : "",
     //   description : "",
     //   price : "",
@@ -233,11 +234,11 @@ export default class PostProductScreen extends Component {
     //   downloadURLs : [],
     //   addressArray:[],
 
-    // });
+     });
     
 
     this.saveChanges();
-      this.resetStack();
+    this.resetStack();
   
     
     //navigate('Home');
@@ -750,14 +751,15 @@ export default class PostProductScreen extends Component {
     }
   }
 
-  saveChanges = async()=>{
+  saveChanges(){
 
     console.log('this is a length of the downloadURLs array' + this.state.downloadURLs.length);
+    console.log('this is a length ' + this.state.price);
     this.productRef.update({
         Name:this.state.title,
         Pictures:this.state.downloadURLs,
         Price:this.state.price,
-        Thumbnail : this.state.Thumbnail, 
+        //Thumbnail : this.state.Thumbnail, 
         Description:this.state.description,
         Category: this.state.Category,
         Avability: this.state.Avability,
@@ -765,6 +767,8 @@ export default class PostProductScreen extends Component {
     });
 
     //this.setState({isOverlayVisible:true});
+    //this.resetStack();
+
   }
 
   resetStack = () => {
