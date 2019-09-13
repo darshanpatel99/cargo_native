@@ -323,7 +323,7 @@ export default class Checkout extends Component {
             <Text>Subtotal: ${this.state.subTotal}</Text>
             <Text>Tip: ${this.state.tipAmount}</Text>
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
-            <Text>Total Amount: ${this.state.totalAmount}</Text>
+            <Text>Total Amount: ${this.state.deliveryFee}+{this.state.subTotal} </Text>
           </View>
           <View style={Styles.payButton}>
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={ () => this.props.navigation.navigate('StripeScreen', {Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})}>

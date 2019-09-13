@@ -112,7 +112,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
 
       componentWillUnmount() {
         clearTimeout(this._timer);
-        this.ref.off();
+        //this.ref.off();
       }
 
 
