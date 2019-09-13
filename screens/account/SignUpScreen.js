@@ -152,7 +152,7 @@ async googleLogin(){
     }
 
   }catch({message}){
-    alert('login' + message);
+    alert('login: ' + message);
   }
 }
 

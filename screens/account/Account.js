@@ -246,7 +246,7 @@ onAuthStateChanged = user => {
   uploadImageToFirebase = async (uri, imageName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    console.log('INside upload Image to Firebase')
+    console.log('Inside upload Image to Firebase')
     var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
     const that = this;
     

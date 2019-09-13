@@ -290,6 +290,7 @@ export default class AccountInfo extends Component {
   async logoutAsync(props) {
     try {
       await firebase.auth().signOut();
+      //After Signout navigate back to the Account Screen
       props.navigation.navigate('Account');
     
     } catch ({ message }) {
