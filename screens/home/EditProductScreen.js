@@ -166,7 +166,7 @@ export default class PostProductScreen extends Component {
     navigate('Account');
   };
 
-  showAlert2 () {
+  showAlert2 =()=> {
     let titleLength = this.state.title;
     let priceLength = parseInt( this.state.price);
     let descriptionLength = this.state.description;
