@@ -82,6 +82,7 @@ export default class PostProductScreen extends Component {
       changingAddress:0,
       priceAlert:false,
       buyerID:'',
+      sellerName:''
     }
 
     this.categoryRemover = React.createRef();
@@ -92,8 +93,11 @@ export default class PostProductScreen extends Component {
     let user = firebase.auth().currentUser;
     if (user != null) {
       this.state.owner = user.uid;
+      this.state.sellerName = user.displayName;
       console.log(" State UID ==> from  " + this.state.Owner);
     }
+
+
   }
 
   componentDidMount() {
@@ -229,7 +233,12 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       AddressArray: this.state.addressArray,
-      BuyerID:'',  
+      BuyerID:'',
+      SellerName: this.state.sellerName,
+      BuyerName:'',
+      BuyerAddress:'',
+      DeliveryFee:'',
+      TotalFee:'',
     }
 
     //Getting the current time stamp
@@ -783,8 +792,6 @@ export default class PostProductScreen extends Component {
                   onChangeText: (text) => {this.testFunction(text)}
                  }}
                 onPress={(data, details = null) => {
-                
-                
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];

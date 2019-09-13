@@ -3,6 +3,8 @@ import { Button, } from 'react-native';
 import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
 import TabBarIcon from '../components/navigation/TabBarIcon';
 import ChatScreen from '../screens/message/chat';
+import ChatDynamicFlatList from '../handlers/ChatDynamicFlatList'
+import ChatMessagesScreen from '../screens/testScreens/ChatMessagesScreen'
 
 export default (MessageStack = createStackNavigator({
   Chat: {
@@ -12,6 +14,15 @@ export default (MessageStack = createStackNavigator({
       //header: null
     }
   },
+
+  ChatMessagesScreen: {
+    screen: ChatMessagesScreen,
+    navigationOptions: {
+      title: 'Chat',
+      //header: null,
+    },
+  },
+  
   
 }));
 

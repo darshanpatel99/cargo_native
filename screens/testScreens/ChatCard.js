@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import {View, Text, Button, TouchableOpacity} from 'react-native';
 import { withNavigation } from 'react-navigation';
-import ProductThumbnail from './ProductThumbnail';
+import ProductThumbnail from '../../components/product/ProductThumbnail';
+
 import Colors from '../../constants/Colors';
 
 
 
-class ProductCardComponent extends React.Component {
+class ChatCard extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:'', pickupAddress: '', BuyerID:'', Status:''};
+        this.state = {createdAt: ''};
         // getDistance.getPreciseDistance(
         //     { latitude: 51.5103, longitude: 7.49347 },
         //     { latitude: "51° 31' N", longitude: "7° 28' E" }
@@ -19,7 +20,7 @@ class ProductCardComponent extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
@@ -28,7 +29,7 @@ class ProductCardComponent extends React.Component {
                 </View>
             {/* This is main content container with title and desc */}
                 <View style = {styles.contentContainer}>
-                    <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.title} </Text>
+                    <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.createdAt} </Text>
                     <Text style = {styles.descriptionStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.description}</Text> 
                     {/* <SmallButtonComponent text ={this.props.price} buttonColor = {Colors.secondary}/> */}
                 </View>
@@ -105,4 +106,4 @@ const styles = {
 }
 
 
-export default withNavigation (ProductCardComponent);
+export default withNavigation (ChatCard);
