@@ -131,6 +131,8 @@ async googleLogin(){
         expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
         iosClientId:'572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
         androidClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
+        iosStandaloneAppClientId: '572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
+        androidStandaloneAppClientId: '572236256696-2remak9vu02jhrnf7ke1okihsuj4ulvg.apps.googleusercontent.com',
         scopes:['profile', 'email']
     };
 
