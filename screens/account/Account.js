@@ -486,7 +486,16 @@ onAuthStateChanged = user => {
     })
   }
 
-  
+    showDefaultPhoneNum =()=>{
+      if(this.state.PhoneNumber ==''){
+        return 'no phone number'
+          
+        
+      }
+      else{
+        return this.state.PhoneNumber
+      }
+    }
 
   render() {
     const {navigate} = this.props.navigation;
@@ -581,14 +590,28 @@ onAuthStateChanged = user => {
               </View>
                               
               <View style={styles.infoHolder}>
-                <View style={styles.settingsButton}>
+                <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-between'}]}>
                   {/* <Button icon transparent>
                     <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
                   </Button> */}
 
-                    <Button transparent onPress={this.goToEditMode}> 
+                    {/* <Button transparent > 
                       <Text style={[styles.buttonText,{color:'black'}]}>Edit</Text>
-                    </Button>
+                    </Button> */}
+
+                    <TouchableOpacity onPress={this.goToEditMode}>
+                      <MainButton title='Edit' secondary="true" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.logoutAsync}>
+                      <MainButton title='LogOut' secondary="true" />
+                    </TouchableOpacity>
+
+                    {/* <Button transparent> 
+                      <Text style={[styles.buttonText,{color:'black'}]} >LogOut</Text>
+                    </Button> */}
+
+                    
                 </View>
                 <View style={styles.nameHolder}>
                   <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
@@ -603,8 +626,10 @@ onAuthStateChanged = user => {
                 <View style={styles.infoBody}>
                   <View style={styles.paragrapgh}>
                     <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
-                    <Text style={styles.info}>{this.state.PhoneNumber}</Text>
-                    <Text style={styles.info}>{this.state.Email}</Text>
+                    <Text style={styles.info}>{this.showDefaultPhoneNum()}</Text>                   
+                    <Text style={styles.info}>{this.state.Email}
+                    {this.showDefaultPhoneNum()}
+                    </Text>
                   </View>                    
                 </View>
               </View>                
@@ -623,11 +648,6 @@ onAuthStateChanged = user => {
                 <View style={styles.prodInfoButtons}>
                   <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userID})}>
                     <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
-                  </Button>
-                </View>
-                <View style={styles.prodInfoButtons}>
-                <Button full large primary rounded> 
-                  <Text style={[styles.buttonText,{color:'white'}]} onPress={this.logoutAsync}>Log Out</Text>
                   </Button>
                 </View>
               </View>
@@ -708,9 +728,9 @@ const styles = StyleSheet.create({
   },
   
   settingsButton:{
-    flexDirection:'column',
-    justifyContent:'flex-start',
-    alignSelf:'flex-end',
+    //flexDirection:'column',
+    //justifyContent:'flex-start',
+    //alignSelf:'flex-end',
     //width:Dimensions.get('window').width*0.078,      
     marginRight:Dimensions.get('window').width*0.05,
     //marginTop:Dimensions.get('window').height*0.02,       
