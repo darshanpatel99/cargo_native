@@ -166,7 +166,7 @@ export default class PostProductScreen extends Component {
     navigate('Account');
   };
 
-  showAlert2 () {
+  showAlert2 =()=> {
     let titleLength = this.state.title;
     let priceLength = parseInt( this.state.price);
     let descriptionLength = this.state.description;
@@ -174,6 +174,8 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
+
+    
 
     if(titleLength.length > 0 && priceLength.length > 0 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
