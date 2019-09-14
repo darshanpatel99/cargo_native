@@ -45,8 +45,6 @@ export class ProductScreen extends Component {
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
 
-    //storageRef = firebase.storage().ref();
-
 
     this.state = {
       location: null,
@@ -315,8 +313,8 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('ChatScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
-    }
+      navigate('ChatMessagesScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+  }
     else{
       this.setState({
         showAlert: true

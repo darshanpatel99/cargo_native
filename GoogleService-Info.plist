@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>572236256696-m327o3i0d6qvb73qu366hqmhvb47v38f.apps.googleusercontent.com</string>
+	<string>572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.572236256696-m327o3i0d6qvb73qu366hqmhvb47v38f</string>
+	<string>com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCyzo9qI-kAjUzqK8h7hDdBcUHfKXNZD1I</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.MeetCarGo.CarGo</string>
+	<string>com.developer.cargo</string>
 	<key>PROJECT_ID</key>
 	<string>cargo-488e8</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:572236256696:ios:0623418e02926c85</string>
+	<string>1:572236256696:ios:0f39b4ad0037ba79876b4d</string>
 	<key>DATABASE_URL</key>
 	<string>https://cargo-488e8.firebaseio.com</string>
 </dict>
