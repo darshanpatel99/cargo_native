@@ -590,7 +590,7 @@ onAuthStateChanged = user => {
               </View>
                               
               <View style={styles.infoHolder}>
-                <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-between'}]}>
+                <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-around'}]}>
                   {/* <Button icon transparent>
                     <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
                   </Button> */}
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
     //justifyContent:'flex-start',
     //alignSelf:'flex-end',
     //width:Dimensions.get('window').width*0.078,      
-    marginRight:Dimensions.get('window').width*0.05,
+    //marginRight:Dimensions.get('window').width*0.05,
     //marginTop:Dimensions.get('window').height*0.02,       
     shadowColor: 'black',
     shadowOpacity: 0.2,      

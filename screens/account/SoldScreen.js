@@ -6,6 +6,8 @@ import ProductCardComponent from '../../components/product/ProductCardComponent'
 import MainButton from '../../components/theme/MainButton'
 import { withNavigation } from 'react-navigation';
 
+
+const products = [];
 export default class SoldScreen extends Component{
 constructor(props){
     super(props);
@@ -21,25 +23,35 @@ constructor(props){
         key :'',
         sort: this.props.filtersAndSorts 
     };
-    this.ref =  firebase.firestore().collection('Products').where('Status', '==', 'sold').where('Owner' , '==' , id);
+    this.query1 =  firebase.firestore().collection('Products').where('Status', '==', 'sold').where('Owner' , '==' , id)
+    this.query2 = firebase.firestore().collection('Products').where('Owner' , '==' , id).where('BoughtStatus' , '==' , 'true')
+    // this.ref = query1 || query2;
     //this.productsCollectionRef = firebase.firestore().collection('Products');
-    this.unsubscribe = null;
-    //this.loadCartItems = this.loadCartItems.bind(this);        
+    //this.unsubscribe = null;
+    //this.loadCartItems = this.loadCartItems.bind(this); 
+    
+    this.query1.get().then(this.onDocumentUpdate);
+    this.query2.get().then(this.onDocumentUpdate);
 }
 
 componentDidMount(prevProps) {
 
-    this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
+  //this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
 
+}
+
+componentWillUnmount(){
+  this.query1();
+  this.query2();
 }
 
 
 
 onDocumentUpdate = (querySnapshot) => {
   console.log('on collection update')
-  const products = [];
+  
   querySnapshot.forEach((doc) => {
-    const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status} = doc.data();
+    const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, BoughtStatus } = doc.data();
       // console.log(typeof Pictures['0']);
     products.push({
       key: doc.id,
@@ -53,7 +65,8 @@ onDocumentUpdate = (querySnapshot) => {
       Category,
       AddressArray,
       BuyerID,
-      Status
+      Status,
+      BoughtStatus,
     });
   });
   this.setState({
@@ -61,7 +74,7 @@ onDocumentUpdate = (querySnapshot) => {
     isLoading: false,
   },
  );
-      }
+}
 
 
 render(){
@@ -81,7 +94,7 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
+          <ProductCardComponent  BoughtStatus={item.BoughtStatus}  Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
         </View>
       }
       />

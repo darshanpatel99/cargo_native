@@ -41,5 +41,7 @@ MessageStack.navigationOptions = ({ navigation }) => {
       }
     });
   }
-
+  return {
+    tabBarVisible,
+  };
 };

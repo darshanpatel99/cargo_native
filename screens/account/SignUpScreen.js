@@ -742,17 +742,7 @@ deleteUserFromAuthDatabase() {
     }else{
       return(
 
-        <View>
-        <View style={styles.container}>
-            <TextInput
-                placeholder= 'Email'
-                underlineColorAndroid="transparent"
-                autoCapitalize='none'
-                autoCorrect={false}
-                style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email.trim()})}
-                />
-        </View>
+        <View style={styles.viewStyle}>
 
       <View style={styles.container}>
           <TextInput

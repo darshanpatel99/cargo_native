@@ -28,4 +28,7 @@ AddProductStack.navigationOptions = ({ navigation }) => {
       }
     });
   }
+  return {
+    tabBarVisible,
+  };
 };
