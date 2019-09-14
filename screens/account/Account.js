@@ -577,41 +577,18 @@ onAuthStateChanged = user => {
               <View style={styles.pictureHolder}>                  
                 <View style={styles.imageView}>
                   <Image source={{uri:this.state.picture}} style={styles.profilePicture}/>
-                </View>               
-                {/* <View style={styles.settingsButton}>
-                  <Button icon transparent>
-                    <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
-                  </Button>
-
-                  <Button transparent> 
-                    <Text style={[styles.buttonText,{color:'white'}]}>Edit</Text>
-                  </Button>
-                </View>             */}
+                </View>
               </View>
                               
               <View style={styles.infoHolder}>
                 <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-around'}]}>
-                  {/* <Button icon transparent>
-                    <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
-                  </Button> */}
-
-                    {/* <Button transparent > 
-                      <Text style={[styles.buttonText,{color:'black'}]}>Edit</Text>
-                    </Button> */}
-
                     <TouchableOpacity onPress={this.goToEditMode}>
                       <MainButton title='Edit' secondary="true" />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.logoutAsync}>
                       <MainButton title='LogOut' secondary="true" />
-                    </TouchableOpacity>
-
-                    {/* <Button transparent> 
-                      <Text style={[styles.buttonText,{color:'black'}]} >LogOut</Text>
-                    </Button> */}
-
-                    
+                    </TouchableOpacity>                  
                 </View>
                 <View style={styles.nameHolder}>
                   <Text style={[styles.title,styles.name]}>{this.state.name}</Text>

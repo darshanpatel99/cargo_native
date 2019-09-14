@@ -3,8 +3,6 @@ import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} f
 import {Button} from 'native-base'
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
-import MainButton from '../../components/theme/MainButton'
-import { withNavigation } from 'react-navigation';
 
 export default class BoughtScreen extends Component{
 constructor(props){
@@ -22,62 +20,52 @@ constructor(props){
         sort: this.props.filtersAndSorts 
     };
     //this.ref = firebase.firestore().collection('Users').doc(id+'');
-    this.ref = firebase.firestore().collection('Products').where('Status', '==', 'bought').where('BuyerID','==',id);
+    this.ref = firebase.firestore();
+    this.collectionRef = this.ref.collection('Products').where('Status', '==', 'bought').where('BuyerID','==',id);
     //this.productsCollectionRef = firebase.firestore().collection('Products');
     this.unsubscribe = null;
     //this.loadCartItems = this.loadCartItems.bind(this);        
+  }
+
+  onDocumentUpdate = (querySnapshot) => {
+    console.log('on collection update')
+    const products = [];
+    querySnapshot.forEach((doc) => {
+      const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status} = doc.data();
+        // console.log(typeof Pictures['0']);
+      products.push({
+        key: doc.id,
+        doc,
+        Name,
+        Description,
+        Owner,
+        Price,
+        Thumbnail,
+        Pictures,
+        Category,
+        AddressArray,
+        BuyerID,
+        Status
+      });
+    });
+    this.setState({
+      products,
+      isLoading: false,
+    },
+  );
+  }
+
+
+
+componentWillUnmount() {
+ 
+  this.unsubscribe();   
 }
 
 componentDidMount(prevProps) {
-
-    this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
-
-  //   this.ref.get().then(function(doc) {
-  //     if (doc.exists) {
-  //         that.setState({
-  //           soldArray:doc.data().SoldProducts,
-  //         })
-  //     } else {
-  //         // doc.data() will be undefined in this case
-  //         console.log("No such document!");
-  //     }
-  //   }).catch(function(error) {
-  //       console.log("Error getting document:", error);
-  //   });
-  // }
-  // });
-
+  this.unsubscribe = this.collectionRef.onSnapshot(this.onDocumentUpdate);
 }
 
-
-
-onDocumentUpdate = (querySnapshot) => {
-  console.log('on collection update')
-  const products = [];
-  querySnapshot.forEach((doc) => {
-    const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status} = doc.data();
-      // console.log(typeof Pictures['0']);
-    products.push({
-      key: doc.id,
-      doc,
-      Name,
-      Description,
-      Owner,
-      Price,
-      Thumbnail,
-      Pictures,
-      Category,
-      AddressArray,
-      BuyerID,
-      Status
-    });
-  });
-  this.setState({
-    products,
-    isLoading: false,
-  },
- );
-      }
 
 
 render(){
