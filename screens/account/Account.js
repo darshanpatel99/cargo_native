@@ -486,7 +486,16 @@ onAuthStateChanged = user => {
     })
   }
 
-  
+    showDefaultPhoneNum =()=>{
+      if(this.state.PhoneNumber ==''){
+        return 'no phone number'
+          
+        
+      }
+      else{
+        return this.state.PhoneNumber
+      }
+    }
 
   render() {
     const {navigate} = this.props.navigation;
@@ -581,14 +590,28 @@ onAuthStateChanged = user => {
               </View>
                               
               <View style={styles.infoHolder}>
-                <View style={styles.settingsButton}>
+                <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-around'}]}>
                   {/* <Button icon transparent>
                     <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
                   </Button> */}
 
-                    <Button transparent onPress={this.goToEditMode}> 
+                    {/* <Button transparent > 
                       <Text style={[styles.buttonText,{color:'black'}]}>Edit</Text>
-                    </Button>
+                    </Button> */}
+
+                    <TouchableOpacity onPress={this.goToEditMode}>
+                      <MainButton title='Edit' secondary="true" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.logoutAsync}>
+                      <MainButton title='LogOut' secondary="true" />
+                    </TouchableOpacity>
+
+                    {/* <Button transparent> 
+                      <Text style={[styles.buttonText,{color:'black'}]} >LogOut</Text>
+                    </Button> */}
+
+                    
                 </View>
                 <View style={styles.nameHolder}>
                   <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
@@ -603,8 +626,10 @@ onAuthStateChanged = user => {
                 <View style={styles.infoBody}>
                   <View style={styles.paragrapgh}>
                     <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
-                    <Text style={styles.info}>{this.state.PhoneNumber}</Text>
-                    <Text style={styles.info}>{this.state.Email}</Text>
+                    <Text style={styles.info}>{this.showDefaultPhoneNum()}</Text>                   
+                    <Text style={styles.info}>{this.state.Email}
+                    {this.showDefaultPhoneNum()}
+                    </Text>
                   </View>                    
                 </View>
               </View>                
@@ -625,11 +650,6 @@ onAuthStateChanged = user => {
                     <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
                   </Button>
                 </View>
-                <View style={styles.prodInfoButtons}>
-                <Button full large primary rounded> 
-                  <Text style={[styles.buttonText,{color:'white'}]} onPress={this.logoutAsync}>Log Out</Text>
-                  </Button>
-                </View>
               </View>
 
           </View>
@@ -641,37 +661,26 @@ onAuthStateChanged = user => {
     else{
       console.log('User not logged in');
         return (
-          <View style={{ height: '100%' }}>
-            <Header />
-            {/* <Button
-              title='Go to Change Password Screen'
-              onPress={() => this.props.navigation.navigate('ChangePassword')}
-            />
-            <Button
-              title='Go to Change Login Screen'
-              onPress={() => this.props.navigation.navigate('Login')}
-            />
-            <Button
-              title='Go to Change Sign Up Screen'
-              onPress={() => this.props.navigation.navigate('SignUp')}
-            />
-
-            <Button
-              title='Go to account info'
-              onPress={() => this.props.navigation.navigate('AccountInfo')}
-            />
-            */}
             <View style={styles.viewStyle}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
+              <View style={styles.logoStyle}>
+                <Image
+                style={{width: 300, height: 300, borderRadius:20}}
+                source={require('../../assets/images/icon.png')}
+              />
+              </View>
+
+             <View style={styles.buttonsWithLogo}>
+               <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
                 <MainButton title='Login'/>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
                 <MainButton title='SignUp'/>
               </TouchableOpacity>
-
+            </View> 
+              
             </View>
-           </View>
+           
         );
       }
   }
@@ -708,11 +717,11 @@ const styles = StyleSheet.create({
   },
   
   settingsButton:{
-    flexDirection:'column',
-    justifyContent:'flex-start',
-    alignSelf:'flex-end',
+    //flexDirection:'column',
+    //justifyContent:'flex-start',
+    //alignSelf:'flex-end',
     //width:Dimensions.get('window').width*0.078,      
-    marginRight:Dimensions.get('window').width*0.05,
+    //marginRight:Dimensions.get('window').width*0.05,
     //marginTop:Dimensions.get('window').height*0.02,       
     shadowColor: 'black',
     shadowOpacity: 0.2,      
@@ -838,5 +847,16 @@ const styles = StyleSheet.create({
 {
   width:Dimensions.get('window').width *0.32,
   height:Dimensions.get('window').width*0.32,
+},
+logoStyle:{
+  flex:0.7,
+  
+  justifyContent:'center',
+
+},
+buttonsWithLogo:{
+  flex:0.3,
+  
+  justifyContent:'center',
 },
 })
