@@ -239,6 +239,8 @@ export default class PostProductScreen extends Component {
       BuyerAddress:'',
       DeliveryFee:'',
       TotalFee:'',
+      BoughtStatus:'false',
+
     }
 
     //Getting the current time stamp

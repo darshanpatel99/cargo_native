@@ -129,8 +129,8 @@ async googleLogin(){
   try{
     const config ={ 
         expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
-        iosClientId:'572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
-        androidClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
+        iosClientId:'572236256696-rebjkd10nh1rbveidpq4d338nrgga709.apps.googleusercontent.com',
+        androidClientId:'572236256696-vmjaebnsmv5hg99f2os0bj5oc2ii2f30.apps.googleusercontent.com',
         scopes:['profile', 'email']
     };
 

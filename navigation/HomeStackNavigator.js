@@ -79,8 +79,8 @@ HomeStack.navigationOptions = ({ navigation }) => {
     });
   }
 
-  // return {
-  //   tabBarVisible,
+   return {
+     tabBarVisible,
   //   //tabBarIcon: ({ focused }) => <TabBarIcon type='AntDesign' name='home' />
-  // };
+   };
 };

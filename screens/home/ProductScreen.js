@@ -44,6 +44,7 @@ export class ProductScreen extends Component {
     const BuyerID = navigation.getParam('BuyerID');
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
+    const BoughtStatus = navigation.getParam('BoughtStatus');
 
     //storageRef = firebase.storage().ref();
 
@@ -72,7 +73,8 @@ export class ProductScreen extends Component {
       currentGpsLocationStringFormat: '',
       BuyerID,
       Status,
-      sellerName
+      sellerName,
+      BoughtStatus
     };
     onLayout = e => {
       this.setState({
@@ -384,7 +386,7 @@ export class ProductScreen extends Component {
   }
 
   CheckIfProductAlreadyInCart() { 
-    console.log(this.state.Status)
+    console.log(this.state.BoughtStatus)
 
     if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
 
@@ -409,6 +411,14 @@ export class ProductScreen extends Component {
           <TouchableOpacity onPress={this.ReactivateOrder}>
             <MainButton title='Reactivate Product' />
           </TouchableOpacity>
+        </View>
+      );
+    }
+
+    else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
+      return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          <MainButton title='Product Sold' />
         </View>
       );
     }

@@ -19,7 +19,7 @@ class ProductCardComponent extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
