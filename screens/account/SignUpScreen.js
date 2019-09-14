@@ -12,12 +12,14 @@ import AddUser from '../../functions/AddUser';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import { StackActions, NavigationActions } from 'react-navigation';
 //importing packages related to the sign in
-import * as Facebook from 'expo-facebook';
-import {Google} from 'expo';
+// import * as Facebook from 'expo-facebook';
+// import {Google} from 'expo';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import StyledTextInput from '../../components/theme/StyledTextInput';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { tsConstructorType } from "@babel/types";
+import * as Google from 'expo-google-app-auth'
+import * as AppAuth from 'expo-app-auth';
+
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 export default class SignUpScreen extends Component {
@@ -129,12 +131,15 @@ async googleLogin(){
   try{
     const config ={ 
         expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
-        iosClientId:'572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
-        androidClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
+        iosClientId:'572236256696-rebjkd10nh1rbveidpq4d338nrgga709.apps.googleusercontent.com',
+        androidClientId:'572236256696-vmjaebnsmv5hg99f2os0bj5oc2ii2f30.apps.googleusercontent.com',
         iosStandaloneAppClientId: '572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
-        androidStandaloneAppClientId: '572236256696-2remak9vu02jhrnf7ke1okihsuj4ulvg.apps.googleusercontent.com',
-        scopes:['profile', 'email']
+        androidStandaloneAppClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
+        scopes:['profile', 'email'],
+        redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google` // this is the LINE
+
     };
+
 
     const {type, accessToken} = await Google.logInAsync(config);
 
@@ -737,8 +742,8 @@ deleteUserFromAuthDatabase() {
     }else{
       return(
 
-        <View  style={styles.viewStyle}>
-        {/* <View style={styles.container}>
+        <View>
+        <View style={styles.container}>
             <TextInput
                 placeholder= 'Email'
                 underlineColorAndroid="transparent"
@@ -747,7 +752,7 @@ deleteUserFromAuthDatabase() {
                 style={styles.TextInputStyle}
                 onChangeText = {email => this.setState({email:email.trim()})}
                 />
-        </View> */}
+        </View>
 
       <View style={styles.container}>
           <TextInput
@@ -779,6 +784,20 @@ deleteUserFromAuthDatabase() {
       </TouchableOpacity>
 
       <Text>Or</Text>
+
+
+        {/* 
+        <TouchableOpacity onPress={this.facebookLoginAsync}>
+          <Button primary rounded large style={styles.button}>
+            <Ionicons
+              size={30}
+              color="#fff"  
+              style={styles.icon}
+              name='logo-facebook'
+            />
+            <Text style={styles.lightText} >Facebook {prevPage}</Text>
+          </Button>
+        </TouchableOpacity> */}
 
     <TouchableOpacity onPress ={this.googleLoginAsync}>
       <Button primary rounded large style={styles.button}>

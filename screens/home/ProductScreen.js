@@ -45,8 +45,6 @@ export class ProductScreen extends Component {
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
 
-    //storageRef = firebase.storage().ref();
-
 
     this.state = {
       location: null,

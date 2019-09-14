@@ -44,7 +44,7 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         sellerName: firebaseChat.userDisplayName,
-        owner: owner
+        // owner: owner
       };
     }
   }

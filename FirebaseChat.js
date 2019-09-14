@@ -191,7 +191,7 @@ class FirebaseChat {
         text,
         user,
         createdAt: this.timestamp,
-        owner
+    
       };
       this.ref.push(message);
     }
