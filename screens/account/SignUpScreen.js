@@ -735,8 +735,8 @@ deleteUserFromAuthDatabase() {
     }else{
       return(
 
-        <View>
-        <View style={styles.container}>
+        <View  style={styles.viewStyle}>
+        {/* <View style={styles.container}>
             <TextInput
                 placeholder= 'Email'
                 underlineColorAndroid="transparent"
@@ -745,7 +745,7 @@ deleteUserFromAuthDatabase() {
                 style={styles.TextInputStyle}
                 onChangeText = {email => this.setState({email:email.trim()})}
                 />
-        </View>
+        </View> */}
 
       <View style={styles.container}>
           <TextInput
@@ -777,20 +777,6 @@ deleteUserFromAuthDatabase() {
       </TouchableOpacity>
 
       <Text>Or</Text>
-
-
-        {/* 
-        <TouchableOpacity onPress={this.facebookLoginAsync}>
-          <Button primary rounded large style={styles.button}>
-            <Ionicons
-              size={30}
-              color="#fff"  
-              style={styles.icon}
-              name='logo-facebook'
-            />
-            <Text style={styles.lightText} >Facebook {prevPage}</Text>
-          </Button>
-        </TouchableOpacity> */}
 
     <TouchableOpacity onPress ={this.googleLoginAsync}>
       <Button primary rounded large style={styles.button}>
