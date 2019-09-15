@@ -255,22 +255,24 @@ export default class Checkout extends Component {
                 }}
 
                 styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
+                  textInputContainer: {
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth:0
+                  },
+                  textInput: {
+                  height: 38,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                  borderWidth: 1,
+                  borderColor:'blue',
+                  marginLeft: 0,
+                  marginRight: 0,
+                  },
+                  predefinedPlacesDescription: {
+                  color: '#1faadb'
+                  },
+              }}
                 currentLocation={false}vi
                 />
 
