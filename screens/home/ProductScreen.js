@@ -193,13 +193,14 @@ export class ProductScreen extends Component {
       .catch((error) => {
         console.error(error);
       });
-  };
+  
+    };
 
   
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-    this._getLocationAsync();
+    //this._getLocationAsync();
   }
 
   componentWillUnmount() {
@@ -529,12 +530,12 @@ export class ProductScreen extends Component {
 
           {/* <Text>Local number => {this.state.count} </Text>
          <Text>Total product in firebase => {this.state.cart.length}</Text> */}
-          <View style={styles.LocViewAndPrice}>
+          {/* <View style={styles.LocViewAndPrice}>
             <View style={styles.priceDr}>
               <Text style={styles.price}>$ {this.state.deliveryCharge}  </Text>
               <FontAwesome name='car' size={22} color={Colors.primary} />
             </View>
-          </View>
+          </View> */}
 
         
           <Text style={styles.productDesc}>{this.state.description}</Text>

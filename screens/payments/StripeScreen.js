@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text } from 'react-native';
+import {View, Text,  Keyboard,  TouchableWithoutFeedback } from 'react-native';
 import Stripe from '../../components/payments/stripe'
 
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
 
 export default class StripeScreen extends Component {
 
@@ -36,9 +41,11 @@ export default class StripeScreen extends Component {
 
   render() {
     return(
+      <DismissKeyboard>
       <View style= {styles.TestContainer}> 
         <Stripe deliveryFee={this.state.deliveryFee} GPSStringFormat={this.state.GPSStringFormat} Email ={this.state.Email} Title= {this.state.Title} SellerAddress ={this.state.SellerAddress} charge = {this.state.TotalAmount} BuyerName= {this.state.BuyerName} navigation={this.props.navigation} productID={this.state.productID} userId ={this.state.userId}/>
       </View>
+      </DismissKeyboard>
     )
   }
 

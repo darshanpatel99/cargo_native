@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
-import {
-  Button,
-  Text,
-  Item,
-  Input,
-  Container,
-  Icon,
-} from 'native-base';
+import {Button,Text,Item,Input,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -77,7 +70,6 @@ export default class Checkout extends Component {
         buyerName: Buyer,
         Email
         })
-  
       }
     })
     .catch(err => {
@@ -85,6 +77,7 @@ export default class Checkout extends Component {
     });
   
     //this.unsubscribe = null;
+
   }
   googleAddressCallback = (latitude, longitude) => {
     console.log('Product SellerAddress ' + this.state.sellerAddress )
@@ -95,6 +88,7 @@ export default class Checkout extends Component {
     })
     this._getLocationAsync();
   }
+
   _getLocationAsync (){
     //this.setState({ location });
     let currentDeviceLatitude = this.state.addressArray[0];
@@ -109,6 +103,7 @@ export default class Checkout extends Component {
         console.log(productLocationLongitude)
         console.log('&&&&&&&&&&&&&&&&&')
         console.log(responseJson.rows[0].elements[0].distance.value);
+
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
         if(distanceInMeters <= 5000) {
@@ -327,6 +322,7 @@ export default class Checkout extends Component {
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
+            
           </View>
         </Container>
 
