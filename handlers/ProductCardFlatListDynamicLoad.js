@@ -1,9 +1,7 @@
 import React, {Component} from "react";
-import {FlatList, View, ScrollView, ActivityIndicator, Text, Platform, InteractionManager } from "react-native";
+import {FlatList, View, ScrollView, ActivityIndicator, Platform, InteractionManager } from "react-native";
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent';
-import shallowCompare from 'react-addons-shallow-compare'; // ES6
-
 
 // this is work around to tackle that timer warning.
 // check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97

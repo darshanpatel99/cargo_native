@@ -2,22 +2,9 @@ import { AppLoading, registerRootComponent } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, AppRegistry } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import AppTabNavigator from './navigation/AppTabNavigator';
-import { setCustomText, setCustomView } from 'react-native-global-props';
 
-// const CustomText ={
-//   style: {
-//     fontSize: 16,
-//     fontFamily: 'nunito-Regular',
-//     color: 'black',
-//     // marginTop:5,
-//     // marginBottom:5,
-//     // marginLeft:5,
-//     // marginRight:5
-//   }
-
-// };
 
 const customViewProps = {
   style: {

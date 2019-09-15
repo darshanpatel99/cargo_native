@@ -33,17 +33,11 @@ import CategoryPickerForPostProduct from '../../components/category/CategoryPick
 import DaysPickerForPostProductScreen from '../../components/category/DaysPickerForPostProductScreen';
 import firebase from '../../Firebase.js';
 import PostProduct from '../../functions/PostProduct';
-import { Overlay } from 'react-native-elements';
-import GooglePlaces from '../../components/maps/GooglePlaces'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
-import ImageResizer from 'react-native-image-resizer';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
-
 import * as ImageManipulator from 'expo-image-manipulator';
-import { tokensToFunction } from 'path-to-regexp';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -138,6 +132,7 @@ export default class PostProductScreen extends Component {
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
+    this.focusListener.remove();
   }
  
   showAlert(){

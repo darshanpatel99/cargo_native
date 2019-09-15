@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Text, Dimensions, Button, TextInput, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Text, Dimensions, Button, TextInput } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import firebase from '../../Firebase.js';
-import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
-
 
 export default class UserAddress extends React.Component {
   constructor(props) {

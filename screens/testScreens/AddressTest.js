@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Text, Dimensions, Button } from 'react-native';
-import Colors from "../../constants/Colors";
-import { SliderBox } from 'react-native-image-slider-box';
+import React from 'react';
+import { View, StyleSheet, Text, Button } from 'react-native';
+
 export default class UserAddress extends React.Component {
   constructor(props) {
     super(props);

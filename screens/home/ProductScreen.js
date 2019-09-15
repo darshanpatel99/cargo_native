@@ -4,16 +4,13 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TouchableHighlight,
   Dimensions,
   Platform,
-  Modal,
-  Image,
   Alert
 } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
-import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
@@ -206,6 +203,7 @@ export class ProductScreen extends Component {
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
+    this.focusListener.remove();
   }
 
   onAuthStateChanged = user => {

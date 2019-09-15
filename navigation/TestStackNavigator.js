@@ -1,10 +1,7 @@
-import React from 'react';
 import {
   createStackNavigator
 } from 'react-navigation';
 import TestScreen from '../screens/testScreens/Test'; 
-import TabBarIcon from '../components/navigation/TabBarIcon';
-import AddressTest from '../screens/testScreens/AddressTest'
 
 export default TestStack = createStackNavigator({
 

@@ -1,11 +1,7 @@
 import React, {Component} from 'react';
-import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
-import {Button} from 'native-base'
+import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
-import MainButton from '../../components/theme/MainButton'
-import { withNavigation } from 'react-navigation';
-
 
 const products = [];
 export default class SoldScreen extends Component{

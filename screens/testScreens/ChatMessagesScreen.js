@@ -1,10 +1,6 @@
 import React from 'react';
-
 import { GiftedChat } from 'react-native-gifted-chat';
-// import firebase from '../Firebase';
 import firebaseChat from '../../FirebaseChat';
-import firebase from '../../Firebase'
-
 
 export default class ChatScreen extends React.Component {
 

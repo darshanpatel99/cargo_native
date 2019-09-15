@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, Button, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import { withNavigation } from 'react-navigation';
 import ProductThumbnail from './ProductThumbnail';
 import Colors from '../../constants/Colors';

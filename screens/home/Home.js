@@ -1,13 +1,10 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { StackActions, NavigationActions } from 'react-navigation';
+import { View, StyleSheet } from 'react-native';
 import ProductCardFlatListDynamicLoad from '../../handlers/ProductCardFlatListDynamicLoad';
 import SearchFilterFunction from '../../handlers/ProductCardFlatListDynamicLoad';
-import ProductListComponents from '../../components/product/ProductListComponents';
 import Header from '../../components/headerComponents/Header';
 import { SearchBar } from 'react-native-elements';
 import RefineCategoryHomeScreen from '../../components/category/RefineCategoryHomeScreen'
-
 export default class HomeScreen extends React.Component {
 
 

@@ -1,6 +1,5 @@
 import React from 'react';
-
-import {Text, View, Button} from 'react-native';
+import {View} from 'react-native';
 import firebaseChat from '../../FirebaseChat';
 import ChatDynamicFlatList from '../../handlers/ChatDynamicFlatList';
 import firebase from 'firebase';
@@ -21,10 +20,7 @@ class Chat extends React.Component {
       filteredChats:{},
       userId: firebaseChat.uid
     };
-    // this.getAllChats = this.getAllChats.bind(this)
-    //this.getUserChatThread = this.getUserChatThread.bind(this)    
-    //console.log(this.getAllChats(firebaseChat.uid))
-    
+  
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -37,24 +33,6 @@ class Chat extends React.Component {
     //this.setState({chats: chatObjects})
     
   }
-
-
-  // getUserChatThread(){
-  //   const userId = firebaseChat.uid
-  //   const testObj = this.state.chats;
-  //   var newObj={};
-  //   console.log('User ID --> '+userId)
-  //   console.log('Test object -- > ' +  Object.keys(testObj))
-  //   for (var prop in testObj) {
-  //     if (prop.includes(userId)) {
-  //         // do stuff
-  //         newObj = {chat: 'this is test'}
-  //         console.log(prop)
-  //         this.setState({filteredChats: newObj})
-  //     }
-  // }
-    
-  // }
 
   componentWillUnmount() {
     firebaseChat.refOff();
@@ -78,30 +56,13 @@ class Chat extends React.Component {
 
       this.setState({snapshot: snapshot.val()})
     });
-      //this.getUserChatThread()
-
+    
   }
-
-  // getAllChats() {
-
-  //   var urlRef = firebase.database().ref('Chat');
-  //   let chatObjects=[];
-  //   urlRef.once("value").then((snapshot) =>  {
-  //     this.setState({chats: snapshot.val()})
-  //     return chatObjects
-
-  //   });
-
-  
-  // }
 
   render() {
     return (
       <View style ={styles.containerStyle}>
-        {/* <ChatDynamicFlatList chats = {this.state.chats}/> */}
-
         <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
-
       </View>
     );
   }

@@ -1,19 +1,13 @@
-import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image, StyleSheet } from 'react-native';
+import React from 'react';
+import { View,Text} from 'react-native';
 
 import firebase from '../../Firebase';
 import * as Facebook from 'expo-facebook';
 //import * as Google from 'expo-google-app-auth';
-import {GoogleSignIn} from 'expo';
 import {Google} from 'expo';
-
-
 
 export default class TestScreen extends React.Component {
   state = { user: null };
-
- 
- 
   FacebookApiKey= '2872116616149463';
   componentDidMount() {
     // List to the authentication state

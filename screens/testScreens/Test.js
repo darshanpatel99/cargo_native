@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Image, View, TouchableOpacity, Linking, Platform } from 'react-native';
+import { Image, View, TouchableOpacity, Linking, Platform } from 'react-native';
 import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 
 export default class TestScreen extends React.Component {
@@ -13,16 +13,8 @@ export default class TestScreen extends React.Component {
   dialCall(){
  
     let phoneNumber = '';
-
     phoneNumber = `${Platform.OS === 'ios' ? 'telprompt:' : 'tel:'}${12508193073}`;
 
-    // if (Platform.OS === 'android') {
-    //   phoneNumber = 'tel:${12508193073}';
-    // }
-    // else {
-    //   phoneNumber = 'telprompt:{12508193073}';
-    // }
- 
     Linking.openURL(phoneNumber);
   };
 
@@ -44,7 +36,7 @@ export default class TestScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={this.dialCall} activeOpacity={0.7}>
-          <MainButton title='Call Us'/>
+          <MainButton title='Call Us' onPress={this.dialCall}/>
         </TouchableOpacity>
         </View> 
 

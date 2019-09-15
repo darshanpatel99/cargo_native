@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
-import {Button,Text,Item,Input,Container,Icon,} from 'native-base';
+import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput } from 'react-native';
+import {Button,Text,Item,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Header } from 'react-navigation';
+import Constants from 'expo-constants';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -27,7 +29,7 @@ export default class Checkout extends Component {
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
-      tipAmount: 0,
+      tipAmount:0,
       subTotal: TotalCartAmount,
       deliveryFee: DeliveryCharge,
       totalAmount:0,
@@ -49,8 +51,10 @@ export default class Checkout extends Component {
 
     this.NavigateToPay = this.NavigateToPay.bind(this);    
     amount = amount.toFixed(2)
-    let address = firebase
-    .firestore()
+
+    this.ref = firebase.firestore();
+
+    this.collectionRef = this.ref
     .collection('Users')
     .doc(this.state.userId).get()
     .then(doc => {
@@ -76,7 +80,7 @@ export default class Checkout extends Component {
       console.log('Error getting document', err);
     });
   
-    //this.unsubscribe = null;
+    this.unsubscribe = null;
 
   }
   googleAddressCallback = (latitude, longitude) => {
@@ -131,6 +135,13 @@ export default class Checkout extends Component {
     const { navigation } = this.props;
     let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
     amount = amount.toFixed(2)
+    // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
+    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+      Platform.OS === 'ios'
+        ? headerAndStatusBarHeight - 700
+        : headerAndStatusBarHeight;
     
     this.focusListener = navigation.addListener('didFocus', () => { 
       this.setState({
@@ -140,9 +151,17 @@ export default class Checkout extends Component {
 
   }
 
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    //this._unsubscribe();
+    this.focusListener.remove();
+  }
+ 
+
 
   componentDidMount(props) {
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
+    this.unsubscribe = this.collectionRef;
   }
 
   showAlert(){
@@ -201,6 +220,13 @@ export default class Checkout extends Component {
       <DismissKeyboard>
       <View style={Styles.Container}>
 
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior='padding'
+        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+
+        >
+
         <Container>
 
           <Text
@@ -228,6 +254,7 @@ export default class Checkout extends Component {
                 // textInputProps={{
                 //   onChangeText: (text) => {this.testFunction(text)}
                 //  }}
+
                 onPress={(data, details = null) => {
                 
                 
@@ -289,20 +316,23 @@ export default class Checkout extends Component {
             >
               Tip %:
             </Text>
-            <Item style={{ marginRight: 15 }}>
-              <Input
+            <Item style={{marginLeft:10 }}>
+              <TextInput
+               fontSize = '20'
                 keyboardType='numeric'
+                maxLength={3}
                 value={this.state.tipAmount}
+                returnKeyType='done'
                 onChangeText={value => { if(value){
                   this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+this.state.deliveryFee + this.state.subTotal).toFixed(2) });
                   console.log(this.state.tipAmount);
                 }else{
-                  this.setState({ tipAmount: 0, totalAmount: 0+this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: 0, totalAmount: 0 + this.state.deliveryFee + this.state.subTotal });
                 }
                 }}
                 placeholder='Enter Tip amound in CAD'
               />
-              <Icon type='Feather' name='percent' />
+              {/* <Icon type='Feather' name='percent' /> */}
             </Item>
           </View>
           <Text
@@ -349,6 +379,8 @@ export default class Checkout extends Component {
               this.hideAlert();
             }}
         />
+
+      </KeyboardAvoidingView>
       </View>
       </DismissKeyboard>
     );
@@ -368,8 +400,8 @@ const Styles = StyleSheet.create({
     flex: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    alignContent: 'stretch',
+    // justifyContent: 'space-between',
+    // alignContent: 'stretch',
     marginRight: 15
   },
   DeliveryButtons: {

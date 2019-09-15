@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image, ScrollView } from 'react-native';
+import React from 'react';
+import {Button,TextInput,ScrollView } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import {Linking} from 'expo';
 import firebase from '../../Firebase';
@@ -109,6 +109,7 @@ render() {
               onChangeText={this.onPhoneChange}
               keyboardType="phone-pad"
               placeholder="Your phone"
+              returnKeyType='done'
           />
           <Button
               onPress={this.onPhoneComplete}
@@ -125,6 +126,7 @@ render() {
                     onChangeText={this.onPhoneChange}
                     keyboardType="phone-pad"
                     placeholder="Your phone"
+                    returnKeyType='done'
                 />
                 <Button
                     onPress={this.onPhoneComplete}
@@ -140,6 +142,7 @@ render() {
                     onChangeText={this.onCodeChange}
                     keyboardType="numeric"
                     placeholder="Code from SMS"
+                    returnKeyType='done'
                 />
                 <Button
                     onPress={this.onSignIn}

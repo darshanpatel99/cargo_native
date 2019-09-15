@@ -1,18 +1,13 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView,TouchableWithoutFeedback} from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
+import { View,Image,Text,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView} from 'react-native';
+import {  FontAwesome } from '@expo/vector-icons';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
-import { Item,Button,Badge} from "native-base";
-import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js';
-import { Overlay } from 'react-native-elements';
+import { Button} from "native-base";
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
-
-
 
 let storageRef;
 export default class AccountInfo extends Component {
@@ -223,6 +218,7 @@ export default class AccountInfo extends Component {
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='default'
+          returnKeyType='done'
           autoCorrect={false}                                                            
         />
       )
@@ -234,6 +230,7 @@ export default class AccountInfo extends Component {
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='email-address'
+          returnKeyType='done'
           autoCorrect={false}                                                            
         />);      
     }
@@ -244,6 +241,7 @@ export default class AccountInfo extends Component {
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='default'
+          returnKeyType='done'
           autoCorrect={false}
           defaultValue={this.state.defaultValues[num-1]}                                                            
         />);      
@@ -255,6 +253,7 @@ export default class AccountInfo extends Component {
           value={this.state.newData[num]}
           onChangeText={ (value) => {this.changeValue(value,num)}}
           keyboardType='name-phone-pad'
+          returnKeyType='done'
           autoCorrect={false}                                                            
         />);            
     }    
