@@ -182,6 +182,24 @@ class FirebaseChat {
     });
   }
   
+  //get user details using uid
+  getUserDetailsFromUid (uid){
+    var docRef = firebase.firestore().collection("Users").where("UID","==","q8ZaZh3xiaU4ElCJ0W9LSC9uvCm1");
+
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            console.log("Document data:", doc.data());
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+    
+  }
+
+
   // send the message to the Backend
   send = messages => {
     for (let i = 0; i < messages.length; i++) {
