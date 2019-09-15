@@ -488,7 +488,7 @@ export class ProductScreen extends Component {
             images={this.state.pictures}
             sliderBoxHeight={400}
             onCurrentImagePressed={ () => this.props.navigation.navigate('ImageScreen' , {pictures: this.state.pictures})}
-            circleLoop= 'true'
+            
             dotColor='#FFEE58'
             inactiveDotColor='#90A4AE'
             dotStyle={{

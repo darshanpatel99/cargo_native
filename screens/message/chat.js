@@ -39,20 +39,6 @@ class Chat extends React.Component {
   }
 
 
-  // getUserChatThread(){
-  //   const userId = firebaseChat.uid
-  //   const testObj = this.state.chats;
-  //   var newObj={};
-  //   console.log('User ID --> '+userId)
-  //   console.log('Test object -- > ' +  Object.keys(testObj))
-  //   for (var prop in testObj) {
-  //     if (prop.includes(userId)) {
-  //         // do stuff
-  //         newObj = {chat: 'this is test'}
-  //         console.log(prop)
-  //         this.setState({filteredChats: newObj})
-  //     }
-  // }
     
   // }
 

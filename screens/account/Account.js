@@ -67,7 +67,7 @@ export default class AccountScreen extends React.Component {
       }); 
     
     //firestore reference for the specific document associated with the user
-    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
     
@@ -133,9 +133,12 @@ onAuthStateChanged = user => {
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
-      props.navigation.navigate('Account');
+      //props.navigation.navigate('Home');
+      // const { navigate } = this.props.navigation;
+      // navigate('ChatScreen')
     } catch ({ message }) {
       alert('You are logged out!!');
+
     }
   }
 
