@@ -133,9 +133,12 @@ onAuthStateChanged = user => {
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
-      props.navigation.navigate('Account');
+      //props.navigation.navigate('Home');
+      // const { navigate } = this.props.navigation;
+      // navigate('ChatScreen')
     } catch ({ message }) {
       alert('You are logged out!!');
+
     }
   }
 

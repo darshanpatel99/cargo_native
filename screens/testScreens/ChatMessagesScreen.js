@@ -66,26 +66,6 @@ export default class ChatScreen extends React.Component {
   });
 
 
-  // firebaseGetSellerName(){
-  //   var docRef = firebase.firestore().collection("Users").doc(this.state.owner);
-  //   const sellerName= ''
-  //   let that = this // here your variable declaration
-  //   docRef.get().then(function(doc) {
-  //       if (doc.exists) {
-  //           console.log("Document data:", doc.data());
-  //           sellerName= doc.data().FirstName
-  //       } else {
-  //           // doc.data() will be undefined in this case
-  //           console.log("No such document!");
-  //       }
-  //       that.setState({sellerName:'test'})
-  //   }).catch(function(error) {
-  //       console.log("Error getting document:", error);
-  //   });
-  //   that.setState({sellerName: 'sortedHighscores'}); // gives error
-
-
-  // }
 
   get user() {
     return {
@@ -102,11 +82,16 @@ export default class ChatScreen extends React.Component {
 
   render() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={firebaseChat.send}
-        user={this.user}
-      />
+      <View style ={{flex: 1}}>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={firebaseChat.send}
+          user={this.user}
+        />
+        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/>
+
+      </View>
+
     );
   }
 
