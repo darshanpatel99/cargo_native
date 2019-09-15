@@ -54,6 +54,7 @@ const styles = {
         height: 125,
         // background: "#FDFCF5",
         backgroundColor:'#FDFCF5',
+        elevation:8,
         shadowColor: 'grey',
         shadowOpacity: 0.3,
         shadowRadius: 5,
