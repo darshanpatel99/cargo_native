@@ -12,7 +12,7 @@ import * as Sentry from 'sentry-expo';
 //Sentry.config('https://18325944fed842348b66ce82bf59467d@sentry.io/1727748').install();
 Sentry.init({
   dsn: 'https://18325944fed842348b66ce82bf59467d@sentry.io/1727748',
-  enableInExpoDevelopment: true,
+  enableInExpoDevelopment: false,
   debug: true
 });
 
