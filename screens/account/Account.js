@@ -394,7 +394,8 @@ onAuthStateChanged = user => {
           onChangeText={ (value) => {this.setState({PhoneNumber:value})}}
           keyboardType='phone-pad'
           autoCorrect={false}
-          placeholder= 'phone number'                                                            
+          placeholder= 'phone number'
+          maxLength ={10}                                                            
         />);      
     }
     else 
@@ -406,7 +407,8 @@ onAuthStateChanged = user => {
           onChangeText={ (value) => {this.setState({UnitNumber:value})}}
           keyboardType='number-pad'
           autoCorrect={false}
-          placeholder='Unit Number'                                                            
+          placeholder='Unit Number'
+          maxLength={8}                                                            
         />);   
       }
       // else 
