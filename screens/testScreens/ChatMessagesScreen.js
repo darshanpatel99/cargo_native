@@ -38,7 +38,18 @@ export default class ChatScreen extends React.Component {
 
     } else {
       const completeChatThread = navigation.getParam('completeChatThread')
-      chatDocumentReferenceId = completeChatThread
+      console.log(JSON.stringify(completeChatThread.reciverId))
+      var reciverId = completeChatThread.reciverId;
+      //senderId = firebaseChat.uid;
+      console.log('THIS IS RECIVER ID ' + reciverId)
+      if(reciverId < firebaseChat.uid) {
+        chatDocumentReferenceId = reciverId+firebaseChat.uid
+      } else {
+        chatDocumentReferenceId = firebaseChat.uid+reciverId
+      }
+      
+      //chatDocumentReferenceId = 
+      alert(chatDocumentReferenceId)
       //alert(chatDocumentReferenceId)
       this.state = {
         messages: [],
