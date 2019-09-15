@@ -25,6 +25,7 @@ class ChatDyanmicFlatList extends React.Component {
         firebaseChat.refOff();
     }
     
+    
 
     componentDidMount(){
         this.setState({ loading: true });
@@ -37,7 +38,10 @@ class ChatDyanmicFlatList extends React.Component {
             if (prop.includes(firebaseChat.uid)) {
                 // do stuff
                 newObj = {chat: prop}
-                console.log(prop)
+                var str = prop;
+                var res = str.split(firebaseChat.uid);
+                newObj = {chat: res}
+                console.log('Other side user --> ' +firebaseChat.getUserDetailsFromUid(res))
                 chatCardsArray.push(newObj)
             }
         }

@@ -159,6 +159,8 @@ export default class Stripe extends React.Component {
             BuyerAddress: this.state.BuyerAddress,
             DeliveryFee: this.state.DeliveryFee,
             TotalFee:  Math.round(this.props.charge),
+            BoughtStatus: 'true',
+
           })
 
         }else{

@@ -44,8 +44,7 @@ export class ProductScreen extends Component {
     const BuyerID = navigation.getParam('BuyerID');
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
-
-    //storageRef = firebase.storage().ref();
+    const BoughtStatus = navigation.getParam('BoughtStatus');
 
 
     this.state = {
@@ -72,7 +71,8 @@ export class ProductScreen extends Component {
       currentGpsLocationStringFormat: '',
       BuyerID,
       Status,
-      sellerName
+      sellerName,
+      BoughtStatus
     };
     onLayout = e => {
       this.setState({
@@ -229,21 +229,6 @@ export class ProductScreen extends Component {
   };
  
 
-  getData =()=>{
-//     var docRef = db.collection("cities").doc("SF");
-
-// docRef.get().then(function(doc) {
-//     if (doc.exists) {
-//         console.log("Document data:", doc.data());
-//     } else {
-//         // doc.data() will be undefined in this case
-//         console.log("No such document!");
-//     }
-// }).catch(function(error) {
-//     console.log("Error getting document:", error);
-// });
-  }
-
   NavigateToCheckout() {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
@@ -315,8 +300,8 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-    navigate('ChatScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
-    }
+      navigate('ChatMessagesScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+  }
     else{
       this.setState({
         showAlert: true
@@ -384,7 +369,7 @@ export class ProductScreen extends Component {
   }
 
   CheckIfProductAlreadyInCart() { 
-    console.log(this.state.Status)
+    console.log(this.state.BoughtStatus)
 
     if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
 
@@ -409,6 +394,14 @@ export class ProductScreen extends Component {
           <TouchableOpacity onPress={this.ReactivateOrder}>
             <MainButton title='Reactivate Product' />
           </TouchableOpacity>
+        </View>
+      );
+    }
+
+    else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
+      return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          <MainButton title='Product Sold' />
         </View>
       );
     }
