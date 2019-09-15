@@ -605,7 +605,6 @@ onAuthStateChanged = user => {
                     <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
                     <Text style={styles.info}>{this.showDefaultPhoneNum()}</Text>                   
                     <Text style={styles.info}>{this.state.Email}
-                    {this.showDefaultPhoneNum()}
                     </Text>
                   </View>                    
                 </View>

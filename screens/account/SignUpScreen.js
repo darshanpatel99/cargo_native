@@ -402,8 +402,18 @@ googleLoginAsync = async () => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
                   console.log('2--inside firebase snap')
+                  
+                  const resetAction = StackActions.reset({
+                    index: 0, // <-- currect active route from actions array
+                    //params: {userId: this.state.UID},
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Account', params: { userId: userUID}} ),
+                    ],
+                  });
+                  
+                  this.props.navigation.dispatch(resetAction);
 
-                  this.props.navigation.navigate('Account', {userID: userUID,});
+                  //this.props.navigation.navigate('Account', {userID: userUID,});
                 }
                 else{
                   console.log('User is not sign up');

@@ -11,12 +11,11 @@ export default TestStack = createStackNavigator({
   Test:{
     screen: TestScreen,
       navigationOptions: {
-        title: 'Chats'
+        title: 'Help'
       },
-
   },
 
-
+  
 });
 
 TestStack.navigationOptions = ({ navigation }) => {
@@ -34,6 +33,6 @@ TestStack.navigationOptions = ({ navigation }) => {
 
   return {
     tabBarVisible,
-    tabBarIcon: ({ focused }) => <TabBarIcon type='Entypo' name='bug' />
+    //tabBarIcon: ({ focused }) => <TabBarIcon type='Entypo' name='bug' />
   };
 };

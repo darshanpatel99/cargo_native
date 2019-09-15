@@ -4,8 +4,6 @@ import { withNavigation } from 'react-navigation';
 import ProductThumbnail from './ProductThumbnail';
 import Colors from '../../constants/Colors';
 
-
-
 class ProductCardComponent extends React.Component {
 
     constructor(props) {
