@@ -23,28 +23,17 @@ constructor(props){
         key :'',
         sort: this.props.filtersAndSorts 
     };
-    this.query1 =  firebase.firestore().collection('Products').where('Status', '==', 'sold').where('Owner' , '==' , id)
-    this.query2 = firebase.firestore().collection('Products').where('Owner' , '==' , id).where('BoughtStatus' , '==' , 'true')
+    this.firebaseRef = firebase.firestore();
+    this.query1 =  this.firebaseRef.collection('Products').where('Status', '==', 'sold').where('Owner' , '==' , id)
+    this.query2 = this.firebaseRef.collection('Products').where('Owner' , '==' , id).where('BoughtStatus' , '==' , 'true')
     // this.ref = query1 || query2;
     //this.productsCollectionRef = firebase.firestore().collection('Products');
-    //this.unsubscribe = null;
+    this.unsubscribe = null;
     //this.loadCartItems = this.loadCartItems.bind(this); 
     
-    this.query1.get().then(this.onDocumentUpdate);
-    this.query2.get().then(this.onDocumentUpdate);
+    // this.query1.get().then(this.onDocumentUpdate);
+    // this.query2.get().then(this.onDocumentUpdate);
 }
-
-componentDidMount(prevProps) {
-
-  //this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
-
-}
-
-componentWillUnmount(){
-  this.query1();
-  this.query2();
-}
-
 
 
 onDocumentUpdate = (querySnapshot) => {
@@ -76,6 +65,16 @@ onDocumentUpdate = (querySnapshot) => {
  );
 }
 
+componentDidMount(prevProps) {
+  this.unsubscribe = this.query1.onSnapshot(this.onDocumentUpdate);
+  this.unsubscribe = this.query2.onSnapshot(this.onDocumentUpdate);
+}
+
+
+componentWillUnmount(){
+  this.unsubscribe();
+}
+
 
 render(){
 
@@ -100,9 +99,6 @@ render(){
       />
 
       </ScrollView>
-      {/* <View style={{flexDirection: 'row', justifyContent:'center'}}>
-          <MainButton title= 'Edit List'/>
-        </View> */}
       </View>
     );
 }
