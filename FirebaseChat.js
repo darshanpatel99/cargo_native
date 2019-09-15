@@ -182,22 +182,7 @@ class FirebaseChat {
     });
   }
   
-  //get user details using uid
-  getUserDetailsFromUid (uid){
-    
-    var firstName=''
-    var docRef = firebase.firestore().collection("Users").where("UID","==", uid);
 
-    docRef.get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-        //console.log('THIS IS DOC DATA -> ' + doc.data().FirstName)
-        firstName=  doc.data().FirstName;
-      });
-      console.log(firstName)
-      return firstName
-    });
-    
-  }
 
 
   // send the message to the Backend
