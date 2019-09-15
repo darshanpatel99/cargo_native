@@ -131,9 +131,8 @@ export default class PostProductScreen extends Component {
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
     KEYBOARD_VERTICAL_OFFSET_HEIGHT =
       Platform.OS === 'ios'
-        ? headerAndStatusBarHeight - 600
+        ? headerAndStatusBarHeight - 700
         : headerAndStatusBarHeight;
-
   }
 
   componentWillUnmount() {
