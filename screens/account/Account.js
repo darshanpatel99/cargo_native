@@ -67,7 +67,7 @@ export default class AccountScreen extends React.Component {
       }); 
     
     //firestore reference for the specific document associated with the user
-    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
     
