@@ -52,9 +52,6 @@ if (Platform.OS === 'android') {
     };
 }
 
-
-
-
 //This component will be used to get the products from firebase and render to flatlist
 //This component uses FlatList
 
@@ -69,7 +66,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           key :'',
           sort: this.props.filtersAndSorts,
           searchText: '',
-          searchProducts: []
+          searchProducts: [],
         };
         this.searchArray = [];
         this.ref = firebase.firestore();
@@ -112,9 +109,8 @@ export default class ProductCardFlatListDynamicLoad extends Component {
 
       componentWillUnmount() {
         clearTimeout(this._timer);
-        //this.ref.off();
+        this.unsubscribe();   
       }
-
 
       componentDidMount() {
         this.unsubscribe = this.collectionRef.onSnapshot(this.onCollectionUpdate);

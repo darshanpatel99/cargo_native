@@ -21,24 +21,10 @@ constructor(props){
         key :'',
         sort: this.props.filtersAndSorts, 
     };
-    //console.log(id);
-    //currentProducts = firebase.firestore().collection('Products').where('Status', '==' , 'active').where('UID' , '==' , id);
-    this.ref = firebase.firestore().collection('Products').where('Status', '==', 'active').where('Owner' , '==' , id);
-    //console.log(this.ref);
-    //currentProducts.where('UID' , '==' , id);
-    //this.ref = firebase.firestore().collection('Users').doc(id+'');
-    //this.productsCollectionRef = firebase.firestore().collection('Products');
+    this.ref = firebase.firestore();
+    this.collectionRef = firebase.firestore().collection('Products').where('Status', '==', 'active').where('Owner' , '==' , id);
     this.unsubscribe = null;
-    //this.loadCartItems = this.loadCartItems.bind(this);        
 }
-
-componentDidMount(prevProps) {
-
-    this.unsubscribe = this.ref.get().then(this.onDocumentUpdate);
-
-}
-
-
 
 onDocumentUpdate = (querySnapshot) => {
   console.log('on collection update')
@@ -66,7 +52,15 @@ onDocumentUpdate = (querySnapshot) => {
     isLoading: false,
   },
  );
-      }
+}
+
+componentDidMount(prevProps) {
+  this.unsubscribe = this.collectionRef.onSnapshot(this.onDocumentUpdate);
+}
+
+componentWillUnmount() {
+  this.unsubscribe();   
+}
 
 
 render(){

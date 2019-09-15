@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
-import {
-  Button,
-  Text,
-  Item,
-  Input,
-  Container,
-  Icon,
-} from 'native-base';
+import {Button,Text,Item,Input,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -77,7 +70,6 @@ export default class Checkout extends Component {
         buyerName: Buyer,
         Email
         })
-  
       }
     })
     .catch(err => {
@@ -85,6 +77,7 @@ export default class Checkout extends Component {
     });
   
     //this.unsubscribe = null;
+
   }
   googleAddressCallback = (latitude, longitude) => {
     console.log('Product SellerAddress ' + this.state.sellerAddress )
@@ -110,6 +103,7 @@ export default class Checkout extends Component {
         console.log(productLocationLongitude)
         console.log('&&&&&&&&&&&&&&&&&')
         console.log(responseJson.rows[0].elements[0].distance.value);
+
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
         if(distanceInMeters <= 5000) {
@@ -124,7 +118,8 @@ export default class Checkout extends Component {
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
-          deliveryFee: deliveryCharge
+          deliveryFee: deliveryCharge,
+          totalAmount: (deliveryCharge+this.state.subTotal).toFixed(2)
         })
       })
       .catch((error) => {
@@ -261,22 +256,24 @@ export default class Checkout extends Component {
                 }}
 
                 styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
+                  textInputContainer: {
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth:0
+                  },
+                  textInput: {
+                  height: 38,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                  borderWidth: 1,
+                  borderColor:'blue',
+                  marginLeft: 0,
+                  marginRight: 0,
+                  },
+                  predefinedPlacesDescription: {
+                  color: '#1faadb'
+                  },
+              }}
                 currentLocation={false}vi
                 />
 
@@ -297,7 +294,7 @@ export default class Checkout extends Component {
                 keyboardType='numeric'
                 value={this.state.tipAmount}
                 onChangeText={value => { if(value){
-                  this.setState({ tipAmount: parseFloat(value), totalAmount: parseFloat(value)+this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+this.state.deliveryFee + this.state.subTotal).toFixed(2) });
                   console.log(this.state.tipAmount);
                 }else{
                   this.setState({ tipAmount: 0, totalAmount: 0+this.state.deliveryFee + this.state.subTotal });
@@ -323,12 +320,13 @@ export default class Checkout extends Component {
             <Text>Subtotal: ${this.state.subTotal}</Text>
             <Text>Tip: ${this.state.tipAmount}</Text>
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
-            <Text>Total Amount: ${this.state.deliveryFee}+{this.state.subTotal} </Text>
+            <Text>Total Amount: ${this.state.totalAmount} </Text>
           </View>
           <View style={Styles.payButton}>
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
+
           </View>
         </Container>
 
