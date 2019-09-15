@@ -1,9 +1,9 @@
 import React from 'react';
 import {Text, View, FlatList, ScrollView, TouchableOpacity} from 'react-native';
 import firebase from 'firebase'
-import ChatCard from '../screens/testScreens/ChatCard'
 import { withNavigation } from 'react-navigation';
 import firebaseChat from '../FirebaseChat'
+import ChatCard from '../components/product/ChatCard'
 
 
 
@@ -16,6 +16,7 @@ class ChatDyanmicFlatList extends React.Component {
             chatCardsArray: [],
             chats:{},
             filteredChats:{},
+            firstNames:[]
           };
 
     }
@@ -25,7 +26,33 @@ class ChatDyanmicFlatList extends React.Component {
         firebaseChat.refOff();
     }
     
+      //get user details using uid
+    getUserDetailsFromUid (){
+        
+        //var docRef = firebase.firestore().collection("Users").where("UID","==", this.state.chatCardsArray[i].chat[0]);
+        const db = firebase.firestore();
+        var turmarkers =[];
+
+        var i=0;
+        for (i =0; i<this.state.chatCardsArray.length; i++) {
+           // console.log(this.getUserDetailsFromUid(chatCardsArray[i].chat[0]))
+          
     
+        db.collection("Users").where("UID","==", this.state.chatCardsArray[i].chat[0]).get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => { 
+                var userName={'chat' : doc.data().FirstName}       
+                turmarkers.push(userName)
+    
+             });
+    
+            this.setState({
+                firstNames:turmarkers
+            });
+        });   
+        
+    }
+        
+    }
 
     componentDidMount(){
         this.setState({ loading: true });
@@ -41,7 +68,6 @@ class ChatDyanmicFlatList extends React.Component {
                 var str = prop;
                 var res = str.split(firebaseChat.uid);
                 newObj = {chat: res}
-                console.log('Other side user --> ' +firebaseChat.getUserDetailsFromUid(res))
                 chatCardsArray.push(newObj)
             }
         }
@@ -49,7 +75,15 @@ class ChatDyanmicFlatList extends React.Component {
     this.setState({chatCardsArray: chatCardsArray})
 
         this.setState({snapshot: snapshot.val()})
+        this.getUserDetailsFromUid()
+        // console.log('After this')
+        // var i=0;
+        // for (i =0; i<chatCardsArray.length; i++) {
+        //     console.log(chatCardsArray[i].chat[0]);
+        //    // console.log(this.getUserDetailsFromUid(chatCardsArray[i].chat[0]))
+        //   }
     });    
+
 }
 
 goToChatScreen = (item) => {
@@ -64,11 +98,13 @@ goToChatScreen = (item) => {
             <ScrollView style={styles.scrollContainer}>
 
             <FlatList
-              data={this.state.chatCardsArray}
+              data={this.state.firstNames}
               renderItem={({item}) =>
               <View >
                 <TouchableOpacity onPress={() => this.goToChatScreen(item)}>
-                    <Text> { item.chat }</Text>
+                <View >
+                    <ChatCard   title = {item.chat}   />
+                </View>
                 </TouchableOpacity>
               </View>
               }

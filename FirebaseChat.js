@@ -184,17 +184,17 @@ class FirebaseChat {
   
   //get user details using uid
   getUserDetailsFromUid (uid){
-    var docRef = firebase.firestore().collection("Users").where("UID","==","q8ZaZh3xiaU4ElCJ0W9LSC9uvCm1");
+    
+    var firstName=''
+    var docRef = firebase.firestore().collection("Users").where("UID","==", uid);
 
-    docRef.get().then(function(doc) {
-        if (doc.exists) {
-            console.log("Document data:", doc.data());
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
+    docRef.get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        //console.log('THIS IS DOC DATA -> ' + doc.data().FirstName)
+        firstName=  doc.data().FirstName;
+      });
+      console.log(firstName)
+      return firstName
     });
     
   }
