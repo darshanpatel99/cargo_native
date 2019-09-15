@@ -88,14 +88,14 @@ export default class Checkout extends Component {
     })
     this._getLocationAsync();
   }
-
-  _getLocationAsync (){
+  _getLocationAsync (lat, long){
     //this.setState({ location });
-    let currentDeviceLatitude = this.state.addressArray[0];
-    let currentDeviceLongitude = this.state.addressArray[1];
+    console.log('Inside get location async-----')
+    let deliveryLat = lat;
+    let deliveryLong = long;
     let productLocationLatitude = this.state.sellerAddress[0];
     let productLocationLongitude = this.state.sellerAddress[1];
-    fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
+    fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+deliveryLat+','+deliveryLong+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
       .then((response) => response.json())
       .then((responseJson) => {
         //return responseJson.movies;
@@ -234,7 +234,8 @@ export default class Checkout extends Component {
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
-                this.setState({GPSStringFormat: (Object.values(details.geometry.location))})
+                this.setState({GPSStringFormat: (Object.values(details.geometry.location))});
+                this._getLocationAsync(lat, long)
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
@@ -322,7 +323,7 @@ export default class Checkout extends Component {
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
-            
+
           </View>
         </Container>
 

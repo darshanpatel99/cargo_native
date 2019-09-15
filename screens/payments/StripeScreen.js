@@ -48,7 +48,6 @@ export default class StripeScreen extends Component {
       </DismissKeyboard>
     )
   }
-
 }
 
 const styles = {
