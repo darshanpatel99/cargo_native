@@ -118,7 +118,8 @@ export default class Checkout extends Component {
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
-          deliveryFee: deliveryCharge
+          deliveryFee: deliveryCharge,
+          totalAmount: (deliveryCharge+this.state.subTotal).toFixed(2)
         })
       })
       .catch((error) => {
@@ -293,7 +294,7 @@ export default class Checkout extends Component {
                 keyboardType='numeric'
                 value={this.state.tipAmount}
                 onChangeText={value => { if(value){
-                  this.setState({ tipAmount: parseFloat(value), totalAmount: parseFloat(value)+this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+this.state.deliveryFee + this.state.subTotal).toFixed(2) });
                   console.log(this.state.tipAmount);
                 }else{
                   this.setState({ tipAmount: 0, totalAmount: 0+this.state.deliveryFee + this.state.subTotal });
@@ -319,7 +320,7 @@ export default class Checkout extends Component {
             <Text>Subtotal: ${this.state.subTotal}</Text>
             <Text>Tip: ${this.state.tipAmount}</Text>
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
-            <Text>Total Amount: ${this.state.deliveryFee}+{this.state.subTotal} </Text>
+            <Text>Total Amount: ${this.state.totalAmount} </Text>
           </View>
           <View style={Styles.payButton}>
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
