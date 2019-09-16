@@ -402,13 +402,11 @@ googleLoginAsync = async () => {
               .then(docSnapshot => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
-<<<<<<< HEAD
                   console.log('2--inside firebase snap');
                   
                   this.updateNotificationToken(userUID);
                   console.log('Notification token has been updated');
-=======
-                  console.log('2--inside firebase snap')
+                  console.log('2--inside firebase snap');
                   
                   const resetAction = StackActions.reset({
                     index: 0, // <-- currect active route from actions array
@@ -419,7 +417,6 @@ googleLoginAsync = async () => {
                   });
                   
                   this.props.navigation.dispatch(resetAction);
->>>>>>> master
 
                   //this.props.navigation.navigate('Account', {userID: userUID,});
                 }
