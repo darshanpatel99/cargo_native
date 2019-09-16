@@ -5,7 +5,6 @@ import SearchFilterFunction from '../../handlers/ProductCardFlatListDynamicLoad'
 import Header from '../../components/headerComponents/Header';
 import { SearchBar } from 'react-native-elements';
 import RefineCategoryHomeScreen from '../../components/category/RefineCategoryHomeScreen'
-<<<<<<< HEAD
 import { Platform } from '@unimodules/core';
 import { Notifications } from 'expo';
 import firebase from '../../Firebase';
