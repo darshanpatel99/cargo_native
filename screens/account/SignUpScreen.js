@@ -23,6 +23,7 @@ export default class SignUpScreen extends Component {
     super(props);
     //creating the firebase reference for the users collection
     this.firebaseRef = firebase.firestore().collection('Users');
+
     //Following is the state of this  component
     this.state ={
       password:'',
@@ -258,7 +259,7 @@ emailLogin = async (email, password) =>{
                 console.log('2--inside firebase snap')
 
                 //get the token and update the value
-                this.updateNotificationToken(userUID);
+                this.getNotificationToken(userUID);
 
                 this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
@@ -603,6 +604,7 @@ deleteUserFromAuthDatabase() {
    //Getting the push token for the device
    getNotificationToken = async (userUID) =>{
     try{
+        
         console.log('Getting the Notification Token');
         const { status: existingStatus } = await Permissions.getAsync(
           Permissions.NOTIFICATIONS
@@ -627,12 +629,12 @@ deleteUserFromAuthDatabase() {
         
       console.log('going to get the notification token');
       
-       await Notifications.getExpoPushTokenAsync().then((token)=>{
+       await Notifications.getDevicePushTokenAsync().then((token)=>{
           console.log('Go the following device notification token: '+ token);
           console.log('Type of token: '+ typeof(token));
-          //this.setState({deviceNotificationToken:token});
+          //this.setState({deviceNotification.Token:token});
           this.firebaseRef.doc(userUID).update({NotificationToken:token});
-        
+          
         });
 
 
