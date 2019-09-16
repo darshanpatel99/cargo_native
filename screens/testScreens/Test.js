@@ -9,12 +9,9 @@ export default class TestScreen extends React.Component {
     this.dialCall = this.dialCall.bind(this);
   }
 
-
-  dialCall(){
- 
+  dialCall(){ 
     let phoneNumber = '';
     phoneNumber = `${Platform.OS === 'ios' ? 'telprompt:' : 'tel:'}${12508193073}`;
-
     Linking.openURL(phoneNumber);
   };
 
