@@ -14,7 +14,7 @@ export default (MessageStack = createStackNavigator({
   ChatMessagesScreen: {
     screen: ChatMessagesScreen,
     navigationOptions: {
-      title: 'Chat',
+      //title: 'Chat',
       //header: null,
     },
   },

@@ -69,7 +69,8 @@ export class ProductScreen extends Component {
       BuyerID,
       Status,
       sellerName,
-      BoughtStatus
+      BoughtStatus,
+      completeChatThread: {'chat' : sellerName}
     };
     onLayout = e => {
       this.setState({
@@ -299,7 +300,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatMessagesScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+      navigate('ChatMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
   }
     else{
       this.setState({
@@ -486,7 +487,7 @@ export class ProductScreen extends Component {
             images={this.state.pictures}
             sliderBoxHeight={400}
             onCurrentImagePressed={ () => this.props.navigation.navigate('ImageScreen' , {pictures: this.state.pictures})}
-            circleLoop= 'true'
+            
             dotColor='#FFEE58'
             inactiveDotColor='#90A4AE'
             dotStyle={{

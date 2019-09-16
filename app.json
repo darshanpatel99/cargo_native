@@ -2,7 +2,7 @@
   "expo": {
     "name": "CarGo",
     "slug": "cargo-native",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "33.0.0",
     "scheme": "cargo",
     "platforms": [
@@ -32,13 +32,23 @@
           "reservedClientId": "com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i"
         }
       }
-    }
-    ,
+    },
     "android": {
-
-        "package": "com.developer.cargo",
-        "googleServicesFile": "google-services.json"
-
-    }
+      "package": "com.developer.cargo",
+      "googleServicesFile": "google-services.json"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "cargo-id",
+            "project": "cargo-id",
+            "authToken": "1c44619f5c614a918cc94854128f04c5b47ea419d3c244e1afefd9ab2b8bc3b9"
+          }
+        }
+      ]
+    },
+    "description": ""
   }
 }

@@ -52,6 +52,7 @@
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^3.11.0",
     "react-stripe-elements": "^4.0.0",
+    "sentry-expo": "^2.0.0",
     "stripe-client": "^1.1.5"
   },
   "devDependencies": {

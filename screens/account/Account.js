@@ -63,7 +63,7 @@ export default class AccountScreen extends React.Component {
       }); 
     
     //firestore reference for the specific document associated with the user
-    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
     
@@ -130,9 +130,12 @@ onAuthStateChanged = user => {
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
-      props.navigation.navigate('Account');
+      //props.navigation.navigate('Home');
+      // const { navigate } = this.props.navigation;
+      // navigate('ChatScreen')
     } catch ({ message }) {
       alert('You are logged out!!');
+
     }
   }
 
@@ -393,7 +396,8 @@ onAuthStateChanged = user => {
           keyboardType='phone-pad'
           returnKeyType='done'
           autoCorrect={false}
-          placeholder= 'phone number'                                                            
+          placeholder= 'phone number'
+          maxLength ={10}                                                            
         />);      
     }
     else 
@@ -406,7 +410,8 @@ onAuthStateChanged = user => {
           keyboardType='number-pad'
           returnKeyType='done'
           autoCorrect={false}
-          placeholder='Unit Number'                                                            
+          placeholder='Unit Number'
+          maxLength={8}                                                            
         />);   
       }
       // else 
@@ -580,17 +585,23 @@ onAuthStateChanged = user => {
                   <Image source={{uri:this.state.picture}} style={styles.profilePicture}/>
                 </View>
               </View>
-                              
-              <View style={styles.infoHolder}>
-                <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-around'}]}>
-                    <TouchableOpacity onPress={this.goToEditMode}>
+
+              <View style={[styles.settingsButton,{justifyContent:'center'}]}>
+                  <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
+                  <TouchableOpacity onPress={this.goToEditMode}>
                       <MainButton title='Edit' secondary="true" />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.logoutAsync}>
                       <MainButton title='LogOut' secondary="true" />
-                    </TouchableOpacity>                  
-                </View>
+                    </TouchableOpacity>
+                  </View>
+                  </View>
+                              
+              <View style={styles.infoHolder}>
+                
+                                     
+                
                 <View style={styles.nameHolder}>
                   <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
                 </View>
@@ -672,7 +683,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   screen:{
-    flex:10,
+    flex:12,
   },
   
   headbuttons:{
@@ -680,7 +691,7 @@ const styles = StyleSheet.create({
   },
   
   pictureHolder:{          
-    flex: 2.8,
+    flex: 3,
     marginTop:Dimensions.get('window').height * 0.00,
     backgroundColor:Colors.secondary,
     flexDirection:'row',
@@ -694,18 +705,21 @@ const styles = StyleSheet.create({
   },
   
   settingsButton:{
+    flex:1,
     //flexDirection:'column',
     //justifyContent:'flex-start',
     //alignSelf:'flex-end',
     //width:Dimensions.get('window').width*0.078,      
     //marginRight:Dimensions.get('window').width*0.05,
-    //marginTop:Dimensions.get('window').height*0.02,       
+    //marginTop:Dimensions.get('window').height*0.02,
+     elevation:8,      
     shadowColor: 'black',
     shadowOpacity: 0.2,      
     shadowOffset: {
     width: 0,
     height: 2
-  },              
+  },
+             
   },
   imageView:{      
     alignSelf:'center',
@@ -720,9 +734,10 @@ const styles = StyleSheet.create({
   },
   
   infoHolder:{
-    flex:7.2,
+    flex:6,
     marginLeft:Dimensions.get('window').width*0.05,
     justifyContent:'space-evenly',
+   // marginVertical:Dimensions.get('window').height*0.01,
   },
   
   nameHolder:{
@@ -744,6 +759,7 @@ const styles = StyleSheet.create({
     borderRadius:10,
     marginRight:Dimensions.get('window').width*0.05,
     backgroundColor:'white',
+    elevation:8,
     shadowColor: 'black',
     shadowOpacity: 0.2,      
     shadowOffset: {
@@ -761,7 +777,7 @@ const styles = StyleSheet.create({
   },
   
   info:{
-    marginTop:Dimensions.get('window').height*0.03,
+    marginTop:Dimensions.get('window').height*0.01,
     fontWeight:'500',
     color:'grey',
     fontSize:18,
@@ -787,7 +803,7 @@ const styles = StyleSheet.create({
     marginHorizontal:Dimensions.get('window').width*0.01,
   },
   marginBottom:{
-    marginVertical:Dimensions.get('window').height*0.01,
+   // marginVertical:Dimensions.get('window').height*0.01,
   },
 
   inputText:{

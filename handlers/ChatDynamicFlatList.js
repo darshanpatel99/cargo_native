@@ -31,11 +31,11 @@ class ChatDyanmicFlatList extends React.Component {
         var i=0;
         for (i =0; i<this.state.chatCardsArray.length; i++) {
            // console.log(this.getUserDetailsFromUid(chatCardsArray[i].chat[0]))
-          
     
-        db.collection("Users").where("UID","==", this.state.chatCardsArray[i].chat[0]).get().then((querySnapshot) => {
+        db.collection("Users").where("UID","==", this.state.chatCardsArray[i].chat).get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => { 
-                var userName={'chat' : doc.data().FirstName}       
+                var userName={'chat' : doc.data().FirstName, "reciverId": doc.data().UID}
+                //var recieverId = {'recieverId' : this.state.chatCardsArray[i].chat}
                 turmarkers.push(userName)
     
              });
@@ -59,15 +59,23 @@ class ChatDyanmicFlatList extends React.Component {
         for (var prop in snapshot.val()) {
             if (prop.includes(firebaseChat.uid)) {
                 // do stuff
+                //alert(prop)
                 newObj = {chat: prop}
                 var str = prop;
                 var res = str.split(firebaseChat.uid);
-                newObj = {chat: res}
+                if(res[0] == ""){
+                    //alert(res[1]);
+                    newObj = {chat: res[1]}
+                } else {
+                    //alert(res[0])
+                    newObj = {chat: res[0]}
+                }
+                //newObj = {chat: res}
                 chatCardsArray.push(newObj)
             }
         }
 
-    this.setState({chatCardsArray: chatCardsArray})
+        this.setState({chatCardsArray: chatCardsArray})
 
         this.setState({snapshot: snapshot.val()})
         this.getUserDetailsFromUid()
@@ -83,8 +91,9 @@ class ChatDyanmicFlatList extends React.Component {
 
 goToChatScreen = (item) => {
    //alert(item.chat)
-   console.log(item.chat)
-   this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen: 'ChatDynamicFlatList', completeChatThread: item.chat})
+//    console.log('THIS IS ITEM ***********')
+//    console.log(item)
+   this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen: 'ChatDynamicFlatList', completeChatThread: item})
 
 }
 
@@ -98,7 +107,7 @@ goToChatScreen = (item) => {
               <View >
                 <TouchableOpacity onPress={() => this.goToChatScreen(item)}>
                 <View >
-                    <ChatCard   title = {item.chat}   />
+                    <ChatCard   title = {item.chat}  />
                 </View>
                 </TouchableOpacity>
               </View>
