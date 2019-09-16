@@ -1,18 +1,14 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { StyleSheet,View,Image,Text,TouchableOpacity,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
-import { Item,Button,Badge} from "native-base";
-import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js';
-import Header from './../../components/headerComponents/Header';
+import { Button} from "native-base";
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-
 
 let storageRef;
 
@@ -67,7 +63,7 @@ export default class AccountScreen extends React.Component {
       }); 
     
     //firestore reference for the specific document associated with the user
-    this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
+    //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
     
@@ -121,6 +117,7 @@ componentWillUnmount() {
 
   console.log('COMPonenet mount----')
   this._unsubscribe();
+  this.focusListener.remove();
 }
 
 onAuthStateChanged = user => {
@@ -133,9 +130,12 @@ onAuthStateChanged = user => {
   async logoutAsync() {
     try {
       await firebase.auth().signOut();
-      props.navigation.navigate('Account');
+      //props.navigation.navigate('Home');
+      // const { navigate } = this.props.navigation;
+      // navigate('ChatScreen')
     } catch ({ message }) {
       alert('You are logged out!!');
+
     }
   }
 
@@ -380,6 +380,7 @@ onAuthStateChanged = user => {
           value={this.state.name}
           onChangeText={(value) =>  {this.setState({name:value})}}
           keyboardType='default'
+          returnKeyType='done'
           autoCorrect={false}
           maxLength={20}
           placeholder ='Full name'                                                            
@@ -393,8 +394,10 @@ onAuthStateChanged = user => {
           value={this.state.PhoneNumber}
           onChangeText={ (value) => {this.setState({PhoneNumber:value})}}
           keyboardType='phone-pad'
+          returnKeyType='done'
           autoCorrect={false}
-          placeholder= 'phone number'                                                            
+          placeholder= 'phone number'
+          maxLength ={10}                                                            
         />);      
     }
     else 
@@ -405,8 +408,10 @@ onAuthStateChanged = user => {
           value={this.state.UnitNumber}
           onChangeText={ (value) => {this.setState({UnitNumber:value})}}
           keyboardType='number-pad'
+          returnKeyType='done'
           autoCorrect={false}
-          placeholder='Unit Number'                                                            
+          placeholder='Unit Number'
+          maxLength={8}                                                            
         />);   
       }
       // else 
@@ -429,6 +434,7 @@ onAuthStateChanged = user => {
               value={this.state.Address}
               onChangeText={ (value) => {this.setState({Address:value})}}
               keyboardType='default'
+              returnKeyType='done'
               autoCorrect={false}
               placeholder='Address'                                                          
             />);          
@@ -577,42 +583,25 @@ onAuthStateChanged = user => {
               <View style={styles.pictureHolder}>                  
                 <View style={styles.imageView}>
                   <Image source={{uri:this.state.picture}} style={styles.profilePicture}/>
-                </View>               
-                {/* <View style={styles.settingsButton}>
-                  <Button icon transparent>
-                    <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
-                  </Button>
-
-                  <Button transparent> 
-                    <Text style={[styles.buttonText,{color:'white'}]}>Edit</Text>
-                  </Button>
-                </View>             */}
+                </View>
               </View>
-                              
-              <View style={styles.infoHolder}>
-                <View style={[styles.settingsButton,{flexDirection:'row',justifyContent:'space-between'}]}>
-                  {/* <Button icon transparent>
-                    <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
-                  </Button> */}
 
-                    {/* <Button transparent > 
-                      <Text style={[styles.buttonText,{color:'black'}]}>Edit</Text>
-                    </Button> */}
-
-                    <TouchableOpacity onPress={this.goToEditMode}>
+              <View style={[styles.settingsButton,{justifyContent:'center'}]}>
+                  <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
+                  <TouchableOpacity onPress={this.goToEditMode}>
                       <MainButton title='Edit' secondary="true" />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.logoutAsync}>
                       <MainButton title='LogOut' secondary="true" />
                     </TouchableOpacity>
-
-                    {/* <Button transparent> 
-                      <Text style={[styles.buttonText,{color:'black'}]} >LogOut</Text>
-                    </Button> */}
-
-                    
-                </View>
+                  </View>
+                  </View>
+                              
+              <View style={styles.infoHolder}>
+                
+                                     
+                
                 <View style={styles.nameHolder}>
                   <Text style={[styles.title,styles.name]}>{this.state.name}</Text>
                 </View>
@@ -628,7 +617,6 @@ onAuthStateChanged = user => {
                     <Text style={[styles.title,styles.pickUpTitle]}>Contact Information</Text>
                     <Text style={styles.info}>{this.showDefaultPhoneNum()}</Text>                   
                     <Text style={styles.info}>{this.state.Email}
-                    {this.showDefaultPhoneNum()}
                     </Text>
                   </View>                    
                 </View>
@@ -695,7 +683,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   screen:{
-    flex:10,
+    flex:12,
   },
   
   headbuttons:{
@@ -703,7 +691,7 @@ const styles = StyleSheet.create({
   },
   
   pictureHolder:{          
-    flex: 2.8,
+    flex: 3,
     marginTop:Dimensions.get('window').height * 0.00,
     backgroundColor:Colors.secondary,
     flexDirection:'row',
@@ -717,18 +705,21 @@ const styles = StyleSheet.create({
   },
   
   settingsButton:{
+    flex:1,
     //flexDirection:'column',
     //justifyContent:'flex-start',
     //alignSelf:'flex-end',
     //width:Dimensions.get('window').width*0.078,      
-    marginRight:Dimensions.get('window').width*0.05,
-    //marginTop:Dimensions.get('window').height*0.02,       
+    //marginRight:Dimensions.get('window').width*0.05,
+    //marginTop:Dimensions.get('window').height*0.02,
+     elevation:8,      
     shadowColor: 'black',
     shadowOpacity: 0.2,      
     shadowOffset: {
     width: 0,
     height: 2
-  },              
+  },
+             
   },
   imageView:{      
     alignSelf:'center',
@@ -743,9 +734,10 @@ const styles = StyleSheet.create({
   },
   
   infoHolder:{
-    flex:7.2,
+    flex:6,
     marginLeft:Dimensions.get('window').width*0.05,
     justifyContent:'space-evenly',
+   // marginVertical:Dimensions.get('window').height*0.01,
   },
   
   nameHolder:{
@@ -767,6 +759,7 @@ const styles = StyleSheet.create({
     borderRadius:10,
     marginRight:Dimensions.get('window').width*0.05,
     backgroundColor:'white',
+    elevation:8,
     shadowColor: 'black',
     shadowOpacity: 0.2,      
     shadowOffset: {
@@ -784,7 +777,7 @@ const styles = StyleSheet.create({
   },
   
   info:{
-    marginTop:Dimensions.get('window').height*0.03,
+    marginTop:Dimensions.get('window').height*0.01,
     fontWeight:'500',
     color:'grey',
     fontSize:18,
@@ -810,7 +803,7 @@ const styles = StyleSheet.create({
     marginHorizontal:Dimensions.get('window').width*0.01,
   },
   marginBottom:{
-    marginVertical:Dimensions.get('window').height*0.01,
+   // marginVertical:Dimensions.get('window').height*0.01,
   },
 
   inputText:{

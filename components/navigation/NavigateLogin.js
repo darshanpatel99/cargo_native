@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, Button } from 'react-native';
-import Colors from '../../constants/Colors';
-
 
 export default class PostProductScreen extends Component {
     constructor(props) {

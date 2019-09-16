@@ -1,11 +1,7 @@
 import React from 'react';
-
+import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
-// import firebase from '../Firebase';
 import firebaseChat from '../../FirebaseChat';
-import firebase from '../../Firebase'
-
-
 export default class ChatScreen extends React.Component {
 
   constructor(props) {
@@ -38,7 +34,19 @@ export default class ChatScreen extends React.Component {
 
     } else {
       const completeChatThread = navigation.getParam('completeChatThread')
-      chatDocumentReferenceId = completeChatThread
+      console.log(JSON.stringify(completeChatThread.reciverId))
+      var reciverId = completeChatThread.reciverId;
+      // var chattingWith = completeChatThread.chat; 
+      // this.setState({chattingWith})
+      //senderId = firebaseChat.uid;
+      console.log('THIS IS RECIVER ID ' + reciverId)
+      if(reciverId < firebaseChat.uid) {
+        chatDocumentReferenceId = reciverId+firebaseChat.uid
+      } else {
+        chatDocumentReferenceId = firebaseChat.uid+reciverId
+      }
+      
+      //chatDocumentReferenceId = 
       //alert(chatDocumentReferenceId)
       this.state = {
         messages: [],
@@ -51,30 +59,11 @@ export default class ChatScreen extends React.Component {
 
 
   static navigationOptions = ({ navigation }) => ({
-    title: (navigation.state.params || {}).name || 'Chat!',
+
+    title: navigation.state.params.completeChatThread.chat || 'Chat',
   });
 
 
-  // firebaseGetSellerName(){
-  //   var docRef = firebase.firestore().collection("Users").doc(this.state.owner);
-  //   const sellerName= ''
-  //   let that = this // here your variable declaration
-  //   docRef.get().then(function(doc) {
-  //       if (doc.exists) {
-  //           console.log("Document data:", doc.data());
-  //           sellerName= doc.data().FirstName
-  //       } else {
-  //           // doc.data() will be undefined in this case
-  //           console.log("No such document!");
-  //       }
-  //       that.setState({sellerName:'test'})
-  //   }).catch(function(error) {
-  //       console.log("Error getting document:", error);
-  //   });
-  //   that.setState({sellerName: 'sortedHighscores'}); // gives error
-
-
-  // }
 
   get user() {
     return {
@@ -91,11 +80,18 @@ export default class ChatScreen extends React.Component {
 
   render() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={firebaseChat.send}
-        user={this.user}
-      />
+      <View style ={{flex: 1}}>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={firebaseChat.send}
+          user={this.user}
+        />
+        {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
+
+        
+
+      </View>
+
     );
   }
 

@@ -4,16 +4,13 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TouchableHighlight,
   Dimensions,
   Platform,
-  Modal,
-  Image,
   Alert
 } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
-import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
@@ -44,6 +41,7 @@ export class ProductScreen extends Component {
     const BuyerID = navigation.getParam('BuyerID');
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
+    const BoughtStatus = navigation.getParam('BoughtStatus');
 
 
     this.state = {
@@ -70,7 +68,9 @@ export class ProductScreen extends Component {
       currentGpsLocationStringFormat: '',
       BuyerID,
       Status,
-      sellerName
+      sellerName,
+      BoughtStatus,
+      completeChatThread: {'chat' : sellerName}
     };
     onLayout = e => {
       this.setState({
@@ -191,18 +191,20 @@ export class ProductScreen extends Component {
       .catch((error) => {
         console.error(error);
       });
-  };
+  
+    };
 
   
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-    this._getLocationAsync();
+    //this._getLocationAsync();
   }
 
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
+    this.focusListener.remove();
   }
 
   onAuthStateChanged = user => {
@@ -226,21 +228,6 @@ export class ProductScreen extends Component {
     navigate('Account');
   };
  
-
-  getData =()=>{
-//     var docRef = db.collection("cities").doc("SF");
-
-// docRef.get().then(function(doc) {
-//     if (doc.exists) {
-//         console.log("Document data:", doc.data());
-//     } else {
-//         // doc.data() will be undefined in this case
-//         console.log("No such document!");
-//     }
-// }).catch(function(error) {
-//     console.log("Error getting document:", error);
-// });
-  }
 
   NavigateToCheckout() {
     if(this.state.User != null){
@@ -313,7 +300,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatMessagesScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+      navigate('ChatMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
   }
     else{
       this.setState({
@@ -382,7 +369,7 @@ export class ProductScreen extends Component {
   }
 
   CheckIfProductAlreadyInCart() { 
-    console.log(this.state.Status)
+    console.log(this.state.BoughtStatus)
 
     if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
 
@@ -407,6 +394,14 @@ export class ProductScreen extends Component {
           <TouchableOpacity onPress={this.ReactivateOrder}>
             <MainButton title='Reactivate Product' />
           </TouchableOpacity>
+        </View>
+      );
+    }
+
+    else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
+      return (
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          <MainButton title='Product Sold' />
         </View>
       );
     }
@@ -492,7 +487,7 @@ export class ProductScreen extends Component {
             images={this.state.pictures}
             sliderBoxHeight={400}
             onCurrentImagePressed={ () => this.props.navigation.navigate('ImageScreen' , {pictures: this.state.pictures})}
-            circleLoop= 'true'
+            
             dotColor='#FFEE58'
             inactiveDotColor='#90A4AE'
             dotStyle={{
@@ -519,12 +514,12 @@ export class ProductScreen extends Component {
 
           {/* <Text>Local number => {this.state.count} </Text>
          <Text>Total product in firebase => {this.state.cart.length}</Text> */}
-          <View style={styles.LocViewAndPrice}>
+          {/* <View style={styles.LocViewAndPrice}>
             <View style={styles.priceDr}>
               <Text style={styles.price}>$ {this.state.deliveryCharge}  </Text>
               <FontAwesome name='car' size={22} color={Colors.primary} />
             </View>
-          </View>
+          </View> */}
 
         
           <Text style={styles.productDesc}>{this.state.description}</Text>

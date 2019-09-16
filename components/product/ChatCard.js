@@ -1,26 +1,16 @@
 import React, {Component} from 'react';
-import {View, Text, Button, TouchableOpacity} from 'react-native';
-import { withNavigation } from 'react-navigation';
-import ProductThumbnail from '../../components/product/ProductThumbnail';
-
-import Colors from '../../constants/Colors';
-
-
+import {View, Text,} from 'react-native';
+import ProductThumbnail from './ProductThumbnail';
 
 class ChatCard extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {createdAt: ''};
-        // getDistance.getPreciseDistance(
-        //     { latitude: 51.5103, longitude: 7.49347 },
-        //     { latitude: "51° 31' N", longitude: "7° 28' E" }
-        // );
+        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:'', pickupAddress: '', BuyerID:'', Status:''};
     }
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
@@ -29,19 +19,12 @@ class ChatCard extends React.Component {
                 </View>
             {/* This is main content container with title and desc */}
                 <View style = {styles.contentContainer}>
-                    <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.createdAt} </Text>
+                    <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.title} </Text>
                     <Text style = {styles.descriptionStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.description}</Text> 
                     {/* <SmallButtonComponent text ={this.props.price} buttonColor = {Colors.secondary}/> */}
                 </View>
-            {/* This is right icons container */}
-                <View style = {styles.rightSideIconsContainer}>
-                    {/* <ProductVerticalBar /> */}
 
-                    <Text style={[styles.priceStyle,{color:Colors.secondary}]}>${this.props.price}</Text>
-                </View>
             </View>
-            {/* <Text>{this.props.id}</Text> */}
-            </TouchableOpacity>
         )
     }
 
@@ -106,4 +89,4 @@ const styles = {
 }
 
 
-export default withNavigation (ChatCard);
+export default ChatCard;

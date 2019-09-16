@@ -1,59 +1,54 @@
 import React, {Component} from "react";
-import {FlatList, View, ScrollView, ActivityIndicator, Text, Platform, InteractionManager } from "react-native";
+import {FlatList, View, ScrollView, ActivityIndicator, Platform, InteractionManager } from "react-native";
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent';
-import shallowCompare from 'react-addons-shallow-compare'; // ES6
-
 
 // this is work around to tackle that timer warning.
 // check this link for more info https://github.com/firebase/firebase-js-sdk/issues/97
 
-const _setTimeout = global.setTimeout;
-const _clearTimeout = global.clearTimeout;
-const MAX_TIMER_DURATION_MS = 60 * 1000;
-if (Platform.OS === 'android') {
-// Work around issue `Setting a timer for long time`
-// see: https://github.com/firebase/firebase-js-sdk/issues/97
-    const timerFix = {};
-    const runTask = (id, fn, ttl, args) => {
-        const waitingTime = ttl - Date.now();
-        if (waitingTime <= 1) {
-            InteractionManager.runAfterInteractions(() => {
-                if (!timerFix[id]) {
-                    return;
-                }
-                delete timerFix[id];
-                fn(...args);
-            });
-            return;
-        }
+// const _setTimeout = global.setTimeout;
+// const _clearTimeout = global.clearTimeout;
+// const MAX_TIMER_DURATION_MS = 60 * 1000;
+// if (Platform.OS === 'android') {
+// // Work around issue `Setting a timer for long time`
+// // see: https://github.com/firebase/firebase-js-sdk/issues/97
+//     const timerFix = {};
+//     const runTask = (id, fn, ttl, args) => {
+//         const waitingTime = ttl - Date.now();
+//         if (waitingTime <= 1) {
+//             InteractionManager.runAfterInteractions(() => {
+//                 if (!timerFix[id]) {
+//                     return;
+//                 }
+//                 delete timerFix[id];
+//                 fn(...args);
+//             });
+//             return;
+//         }
 
-        const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
-        timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
-    };
+//         const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
+//         timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
+//     };
 
-    global.setTimeout = (fn, time, ...args) => {
-        if (MAX_TIMER_DURATION_MS < time) {
-            const ttl = Date.now() + time;
-            const id = '_lt_' + Object.keys(timerFix).length;
-            runTask(id, fn, ttl, args);
-            return id;
-        }
-        return _setTimeout(fn, time, ...args);
-    };
+//     global.setTimeout = (fn, time, ...args) => {
+//         if (MAX_TIMER_DURATION_MS < time) {
+//             const ttl = Date.now() + time;
+//             const id = '_lt_' + Object.keys(timerFix).length;
+//             runTask(id, fn, ttl, args);
+//             return id;
+//         }
+//         return _setTimeout(fn, time, ...args);
+//     };
 
-    global.clearTimeout = id => {
-        if (typeof id === 'string' && id.startWith('_lt_')) {
-            _clearTimeout(timerFix[id]);
-            delete timerFix[id];
-            return;
-        }
-        _clearTimeout(id);
-    };
-}
-
-
-
+//     global.clearTimeout = id => {
+//         if (typeof id === 'string' && id.startWith('_lt_')) {
+//             _clearTimeout(timerFix[id]);
+//             delete timerFix[id];
+//             return;
+//         }
+//         _clearTimeout(id);
+//     };
+// }
 
 //This component will be used to get the products from firebase and render to flatlist
 //This component uses FlatList
@@ -69,7 +64,7 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           key :'',
           sort: this.props.filtersAndSorts,
           searchText: '',
-          searchProducts: []
+          searchProducts: [],
         };
         this.searchArray = [];
         this.ref = firebase.firestore();
@@ -111,10 +106,9 @@ export default class ProductCardFlatListDynamicLoad extends Component {
       }
 
       componentWillUnmount() {
-        clearTimeout(this._timer);
-        //this.ref.off();
+        //clearTimeout(this._timer);
+        this.unsubscribe();   
       }
-
 
       componentDidMount() {
         this.unsubscribe = this.collectionRef.onSnapshot(this.onCollectionUpdate);

@@ -3,17 +3,8 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
-  Dimensions,
-  Platform,
-  ProgressViewIOS,
-  ProgressBarAndroid,
-  ImageBackground,
-  TouchableOpacity,
-  ScrollView
 } from "react-native";
-import {Card} from 'native-base';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { Ionicons} from '@expo/vector-icons';
 
 
 

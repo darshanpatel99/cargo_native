@@ -6,8 +6,8 @@ import Colors from '../../constants/Colors';
 import { ScrollView } from 'react-native-gesture-handler';
 
 
-let filters = {price : 30, city: 'kamloops', sort: 'trending', category: 'Electronics'}
-let buttonCurrentState= {price: false, city: true, sort: false, category: false}
+//let filters = {price : 30, city: 'kamloops', sort: 'trending', category: 'Electronics'}
+//let buttonCurrentState= {price: false, city: true, sort: false, category: false}
 
 export default class ProductFilterBar extends Component {
 

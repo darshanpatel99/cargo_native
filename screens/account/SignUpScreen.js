@@ -1,21 +1,13 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Dimensions,Alert, KeyboardAvoidingView } from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/Colors.js";
-import { clear } from "sisteransi";
-import * as WebBrowser from 'expo-web-browser';
-import {Linking} from 'expo';
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
-import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import { StackActions, NavigationActions } from 'react-navigation';
-//importing packages related to the sign in
-// import * as Facebook from 'expo-facebook';
-// import {Google} from 'expo';
 import { TouchableOpacity } from "react-native-gesture-handler";
-import StyledTextInput from '../../components/theme/StyledTextInput';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
@@ -402,8 +394,18 @@ googleLoginAsync = async () => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
                   console.log('2--inside firebase snap')
+                  
+                  const resetAction = StackActions.reset({
+                    index: 0, // <-- currect active route from actions array
+                    //params: {userId: this.state.UID},
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Account', params: { userId: userUID}} ),
+                    ],
+                  });
+                  
+                  this.props.navigation.dispatch(resetAction);
 
-                  this.props.navigation.navigate('Account', {userID: userUID,});
+                  //this.props.navigation.navigate('Account', {userID: userUID,});
                 }
                 else{
                   console.log('User is not sign up');
@@ -742,17 +744,7 @@ deleteUserFromAuthDatabase() {
     }else{
       return(
 
-        <View>
-        <View style={styles.container}>
-            <TextInput
-                placeholder= 'Email'
-                underlineColorAndroid="transparent"
-                autoCapitalize='none'
-                autoCorrect={false}
-                style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email.trim()})}
-                />
-        </View>
+        <View style={styles.viewStyle}>
 
       <View style={styles.container}>
           <TextInput

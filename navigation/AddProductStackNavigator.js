@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   createStackNavigator
 } from 'react-navigation';
-import TabBarIcon from '../components/navigation/TabBarIcon';
 import PostProductScreen from '../screens/addProduct/PostProductScreen';
 
 export default AddProductStack = createStackNavigator({
@@ -28,4 +26,7 @@ AddProductStack.navigationOptions = ({ navigation }) => {
       }
     });
   }
+  return {
+    tabBarVisible,
+  };
 };
