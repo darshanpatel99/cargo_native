@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text,  Keyboard,  TouchableWithoutFeedback } from 'react-native';
+import {View, Keyboard,  TouchableWithoutFeedback } from 'react-native';
 import Stripe from '../../components/payments/stripe'
 
 const DismissKeyboard = ({ children }) => (
@@ -10,10 +10,8 @@ const DismissKeyboard = ({ children }) => (
 
 export default class StripeScreen extends Component {
 
-
   constructor(props){
     super(props);
-
     const { navigation } = this.props;
     const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount')) ;
     const BuyerName = navigation.getParam('BuyerName');
@@ -24,8 +22,6 @@ export default class StripeScreen extends Component {
     const userId = navigation.getParam('userId');
     const GPSStringFormat = navigation.getParam('GPSStringFormat');
     const deliveryFee = navigation.getParam('deliveryFee');
-
-
     this.state={
       TotalAmount: TotalCartAmount,
       BuyerName: BuyerName,

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
+import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import {Button} from 'react-native';
 import firebase from '../Firebase.js';
 import ProductCardComponent from '../components/product/ProductCardComponent'

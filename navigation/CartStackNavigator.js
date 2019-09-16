@@ -3,41 +3,12 @@ import { createStackNavigator } from 'react-navigation';
 import CartScreen from '../screens/cart/Cart';
 //import CheckoutScreen from '../screens/home/Checkout';
 import TabBarIcon from '../components/navigation/TabBarIcon';
-import { Button, Icon, Text } from 'native-base';
 
 export default (CartStack = createStackNavigator({
   Cart: {
     screen: CartScreen
-    // navigationOptions: {
-    //   header: null
-    // }
   },
-  // Checkoutscreen: {
-  //   screen: CheckoutScreen,
-  //   navigationOptions: {
-  //     header: null,
-  //     // headerRight: (
-  //     //   <Button iconLeft transparent style={{ marginEnd: 10 }}>
-  //     //     <Icon style={{ fontSize: 30 }} type='EvilIcons' name='user' />
-  //     //   </Button>
-  //     // ),
-  //     // headerTitle: (
-  //     //   <Text>Checkout</Text>
-  //     // )
-  //   },
-  //   // headerStyle: {
-  //   //   // elevation: 0,
-  //   //   // shadowColor: 'transparent',
-  //   //   // shadowOffset: { height: 0, width: 0 },
-  //   //   // shadowOpacity: 0,
-  //   //   // borderBottomWidth: 0,
-  //   //   backgroundColor: 'red' 
-  //   // }
-  //   headerStyle: {
-  //     elevation: 0,
-  //     shadowOpacity: 0
-  //   }
-  // }
+
 }));
 
 CartStack.navigationOptions = ({ navigation }) => {
@@ -56,12 +27,6 @@ CartStack.navigationOptions = ({ navigation }) => {
 
   return {
     tabBarVisible,
-    // headerStyle: {
-    //   elevation: 0,
-    //   shadowColor: 'transparent',
-    //   shadowOffset: { height: 0, width: 0 },
-    //   shadowOpacity: 0
-    // },
     tabBarIcon: ({ focused }) => (
       <TabBarIcon type='AntDesign' name='shoppingcart' />
     )

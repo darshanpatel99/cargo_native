@@ -2,9 +2,8 @@ import { AppLoading, registerRootComponent } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, AppRegistry } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import AppTabNavigator from './navigation/AppTabNavigator';
-import { setCustomText, setCustomView } from 'react-native-global-props';
 import * as Sentry from 'sentry-expo';
 
 

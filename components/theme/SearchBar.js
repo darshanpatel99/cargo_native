@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import { View, Text, TextInput } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, } from "react-native";
 import { SearchBar } from 'react-native-elements';
-import { Font } from "expo";
 
 export default class SearchBarTheme extends Component {
   constructor(props) {
@@ -13,24 +11,6 @@ export default class SearchBarTheme extends Component {
       fullData:[],
     }
   }
-
-  // searchFilterFunction = text => {
-  //   this.setState({
-  //     value: text,
-  //   });
-
-  //   console.log(text);
-
-  //   const newData = this.text.filter(item => {
-  //     const itemData = `${item.name.title.toUpperCase()} ${item.name.first.toUpperCase()} ${item.name.last.toUpperCase()}`;
-  //     const textData = text.toUpperCase();
-
-  //     return itemData.indexOf(textData) > -1;
-  //   });
-  //   this.setState({
-  //     data: newData,
-  //   });
-  // };
 
   handleQueryChange = query =>{
     console.log("Text => " +  query)
@@ -43,12 +23,6 @@ export default class SearchBarTheme extends Component {
     return (
 
       <View style={styles.containerStyle}>
-        {/* <TextInput
-          style={styles.textInputStyle}
-          onChangeText={text => this.setState({ text })}
-          value={this.state.text}
-          placeholder={this.props.searchReplacableText}
-        /> */}
 
           <SearchBar        
             placeholder="Type Here..."        
@@ -56,19 +30,8 @@ export default class SearchBarTheme extends Component {
             round  
             onChangeText={this.handleQueryChange}  
             value={this.state.query}
-            size={20} 
-               
-           // onChangeText={text => this.handleSearch(text)}   
-            //query={this.state.query}                        
+            size={20}                       
           /> 
-
-        {/* <Ionicons
-          name="md-search"
-          size={32}
-          color="#4383FF"
-          style={styles.searchIconStyle}
-        /> */}
-
       </View>
     );
   }

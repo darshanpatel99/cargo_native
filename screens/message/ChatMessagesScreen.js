@@ -1,11 +1,7 @@
 import React from 'react';
 import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
-// import firebase from '../Firebase';
 import firebaseChat from '../../FirebaseChat';
-
-
-
 export default class ChatScreen extends React.Component {
 
   constructor(props) {
@@ -63,7 +59,7 @@ export default class ChatScreen extends React.Component {
 
 
   static navigationOptions = ({ navigation }) => ({
-    
+
     title: navigation.state.params.completeChatThread.chat || 'Chat',
   });
 

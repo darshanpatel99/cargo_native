@@ -1,7 +1,4 @@
-import React from 'react';
-import { Button, } from 'react-native';
-import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
-import TabBarIcon from '../components/navigation/TabBarIcon';
+import { createStackNavigator,} from 'react-navigation';
 import HomeScreen from '../screens/home/Home';
 import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';

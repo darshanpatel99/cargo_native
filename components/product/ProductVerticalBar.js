@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import {FontAwesome } from '@expo/vector-icons';
 
 export default class ProductVerticalBar extends Component {
 

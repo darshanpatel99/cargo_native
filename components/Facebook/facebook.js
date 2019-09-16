@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Button, Text, TextInput, Image, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text,  StyleSheet } from 'react-native';
 
 import firebase from '../../Firebase';
 import * as Facebook from 'expo-facebook';

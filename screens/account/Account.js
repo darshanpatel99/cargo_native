@@ -1,18 +1,14 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet,View,Image,Text,TouchableHighlight,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { StyleSheet,View,Image,Text,TouchableOpacity,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
-import { Item,Button,Badge} from "native-base";
-import SmallButtonComponent from '../../components/theme/SmallButtonComponent.js';
-import Header from './../../components/headerComponents/Header';
+import { Button} from "native-base";
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-
 
 let storageRef;
 
@@ -121,6 +117,7 @@ componentWillUnmount() {
 
   console.log('COMPonenet mount----')
   this._unsubscribe();
+  this.focusListener.remove();
 }
 
 onAuthStateChanged = user => {
@@ -383,6 +380,7 @@ onAuthStateChanged = user => {
           value={this.state.name}
           onChangeText={(value) =>  {this.setState({name:value})}}
           keyboardType='default'
+          returnKeyType='done'
           autoCorrect={false}
           maxLength={20}
           placeholder ='Full name'                                                            
@@ -396,6 +394,7 @@ onAuthStateChanged = user => {
           value={this.state.PhoneNumber}
           onChangeText={ (value) => {this.setState({PhoneNumber:value})}}
           keyboardType='phone-pad'
+          returnKeyType='done'
           autoCorrect={false}
           placeholder= 'phone number'
           maxLength ={10}                                                            
@@ -409,6 +408,7 @@ onAuthStateChanged = user => {
           value={this.state.UnitNumber}
           onChangeText={ (value) => {this.setState({UnitNumber:value})}}
           keyboardType='number-pad'
+          returnKeyType='done'
           autoCorrect={false}
           placeholder='Unit Number'
           maxLength={8}                                                            
@@ -434,6 +434,7 @@ onAuthStateChanged = user => {
               value={this.state.Address}
               onChangeText={ (value) => {this.setState({Address:value})}}
               keyboardType='default'
+              returnKeyType='done'
               autoCorrect={false}
               placeholder='Address'                                                          
             />);          

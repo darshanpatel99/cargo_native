@@ -4,16 +4,13 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TouchableHighlight,
   Dimensions,
   Platform,
-  Modal,
-  Image,
   Alert
 } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
-import { FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
@@ -72,7 +69,8 @@ export class ProductScreen extends Component {
       BuyerID,
       Status,
       sellerName,
-      BoughtStatus
+      BoughtStatus,
+      completeChatThread: {'chat' : sellerName}
     };
     onLayout = e => {
       this.setState({
@@ -206,6 +204,7 @@ export class ProductScreen extends Component {
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
+    this.focusListener.remove();
   }
 
   onAuthStateChanged = user => {
@@ -301,7 +300,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatMessagesScreen', {sellerName: this.state.sellerName, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+      navigate('ChatMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
   }
     else{
       this.setState({

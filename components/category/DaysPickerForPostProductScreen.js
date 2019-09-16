@@ -26,7 +26,7 @@ const shift = [
   },
   {
     name: 'Weekends',
-    id: 1,
+    id: 7,
     // these are the children or 'sub items'
     children: [
       {

@@ -1,22 +1,18 @@
-import React from 'react';
 import {
   createStackNavigator
 } from 'react-navigation';
 import TestScreen from '../screens/testScreens/Test'; 
-import TabBarIcon from '../components/navigation/TabBarIcon';
-import AddressTest from '../screens/testScreens/AddressTest'
 
 export default TestStack = createStackNavigator({
 
   Test:{
     screen: TestScreen,
       navigationOptions: {
-        title: 'Chats'
+        title: 'Help'
       },
-
   },
 
-
+  
 });
 
 TestStack.navigationOptions = ({ navigation }) => {
@@ -34,6 +30,6 @@ TestStack.navigationOptions = ({ navigation }) => {
 
   return {
     tabBarVisible,
-    tabBarIcon: ({ focused }) => <TabBarIcon type='Entypo' name='bug' />
+    //tabBarIcon: ({ focused }) => <TabBarIcon type='Entypo' name='bug' />
   };
 };

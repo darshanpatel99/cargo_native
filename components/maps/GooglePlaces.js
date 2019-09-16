@@ -1,26 +1,8 @@
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import React, { Component } from 'react';
 import {
-  Platform,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-  Image,
-  ScrollView,
   View
 } from 'react-native';
-import { Constants } from 'expo';
-
-    const homePlace = {
-        description: 'Home',
-        geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-    };
-
-    const workPlace = {
-        description: 'Work',
-        geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
-    };
-
-
 export default class GooglePlaces extends Component {
     constructor() {
         super();
@@ -33,10 +15,6 @@ export default class GooglePlaces extends Component {
     }
 
     checkIfInputNotEmpty(text) {
-        // console.log(text)
-        // if(this.props.postAdClicked  == true && text.length == 0) {
-        //     alert('Please input address')
-        // }
         this.props.checkInputEmpty(text)
     }
 

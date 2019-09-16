@@ -1,24 +1,19 @@
 import React from 'react';
-import {Text, View, FlatList, ScrollView, TouchableOpacity} from 'react-native';
+import { View, FlatList, ScrollView, TouchableOpacity} from 'react-native';
 import firebase from 'firebase'
-import { withNavigation } from 'react-navigation';
 import firebaseChat from '../FirebaseChat'
 import ChatCard from '../components/product/ChatCard'
-
-
 
 class ChatDyanmicFlatList extends React.Component {
 
     constructor(props){
-        super(props);
-
-        this.state = {
-            chatCardsArray: [],
-            chats:{},
-            filteredChats:{},
-            firstNames:[]
-          };
-
+    super(props);
+    this.state = {
+        chatCardsArray: [],
+        chats:{},
+        filteredChats:{},
+        firstNames:[]
+        };
     }
 
  

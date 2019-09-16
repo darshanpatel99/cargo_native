@@ -1,17 +1,13 @@
-import React from 'react';
 import {
   createStackNavigator
 } from 'react-navigation';
 //importing components
-import TabBarIcon from '../components/navigation/TabBarIcon';
 //importing screens
 import AccountScreen from '../screens/account/Account'; 
 import ChangePasswordScreen from '../screens/account/ChangePassword';
 import LoginScreen from '../screens/account/LoginScreen';
 import SignUpScreen from '../screens/account/SignUpScreen';
 import AccountInfoScreen from '../screens/account/AccountInfo';
-import firebase from '../Firebase';
-import { initAsync } from 'expo-google-sign-in';
 import ListingScreen from '../screens/account/ListingScreen';
 import BoughtScreen from '../screens/account/BoughtScreen';
 import SoldScreen from '../screens/account/SoldScreen';

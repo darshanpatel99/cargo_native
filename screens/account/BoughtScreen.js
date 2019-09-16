@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
-import {Button} from 'native-base'
+import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
 
@@ -19,12 +18,9 @@ constructor(props){
         key :'',
         sort: this.props.filtersAndSorts 
     };
-    //this.ref = firebase.firestore().collection('Users').doc(id+'');
     this.ref = firebase.firestore();
     this.collectionRef = this.ref.collection('Products').where('Status', '==', 'bought').where('BuyerID','==',id);
-    //this.productsCollectionRef = firebase.firestore().collection('Products');
     this.unsubscribe = null;
-    //this.loadCartItems = this.loadCartItems.bind(this);        
   }
 
   onDocumentUpdate = (querySnapshot) => {
@@ -78,22 +74,17 @@ render(){
         )
       }
       return (
-<View style ={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
-
-      <FlatList
-        data={this.state.products}
-        renderItem={({item}) =>
-        <View >
-           <ProductCardComponent Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures}   />
-        </View>
-      }
-      />
-
-      </ScrollView>
-      {/* <View style={{flexDirection: 'row', justifyContent:'center'}}>
-          <MainButton title= 'Edit List'/>
-        </View> */}
+      <View style ={styles.container}>
+        <ScrollView style={styles.scrollContainer}>
+        <FlatList
+          data={this.state.products}
+          renderItem={({item}) =>
+          <View >
+            <ProductCardComponent Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures}   />
+          </View>
+        }
+        />
+        </ScrollView>
       </View>
     );
 }
