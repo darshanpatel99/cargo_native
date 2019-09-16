@@ -11,6 +11,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
+import {Notifications} from 'expo';
+import * as Permissions from 'expo-permissions';
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
@@ -256,8 +258,7 @@ emailLogin = async (email, password) =>{
                 console.log('2--inside firebase snap')
 
                 //get the token and update the value
-                const token = this.getNotificationToken();
-                this.firebaseRef.doc(userUID).update({NotificationToken:token});
+                this.updateNotificationToken(userUID);
 
                 this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
@@ -395,6 +396,7 @@ googleLoginAsync = async () => {
           try{
             //verify user is signed up or not
             var userUID = this.state.UID;
+            
             console.log('The uid that is going to be verified: ' + userUID);
 
             this.firebaseRef.doc(userUID)
@@ -404,7 +406,8 @@ googleLoginAsync = async () => {
                 if(docSnapshot.exists){
                   console.log('2--inside firebase snap');
                   
-                  this.updateNotificationToken(userUID);
+                  
+                  this.getNotificationToken(userUID);
                   console.log('Notification token has been updated');
                   console.log('2--inside firebase snap');
                   
@@ -590,53 +593,69 @@ deleteUserFromAuthDatabase() {
 
 
   navigateToAdress = () =>{
-
   const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('AddressScreen', {userId: '0zVVJrL8Pdb3ogpAmqV7oprwaah1'})
   }
 
-  updateNotificationToken = async(userUID) =>{    //updating the device notification token
-    const token = this.getNotificationToken();
-    await this.firebaseRef.doc(userUID).update({NotificationToken:token});
-  }
 
 
    //Getting the push token for the device
-   getNotificationToken = async () =>{
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
-    let finalStatus = existingStatus;
-  
-    // only ask if permissions have not already been determined, because
-    // iOS won't necessarily prompt the user a second time.
-    if (existingStatus !== 'granted') {
-      // Android remote notification permissions are granted during the app
-      // install, so this will only ask on iOS
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      finalStatus = status;
-    }
-  
-    // Stop here if the user did not grant permissions
-    if (finalStatus !== 'granted') {
-      return;
-    }
-    // Get the token that uniquely identifies this device
-    let token = await Notifications.getExpoPushTokenAsync();
+   getNotificationToken = async (userUID) =>{
+    try{
+        console.log('Getting the Notification Token');
+        const { status: existingStatus } = await Permissions.getAsync(
+          Permissions.NOTIFICATIONS
+        );
+        let finalStatus = existingStatus;
+      
+        // only ask if permissions have not already been determined, because
+        // iOS won't necessarily prompt the user a second time.
+        if (existingStatus !== 'granted') {
+          // Android remote notification permissions are granted during the app
+          // install, so this will only ask on iOS
+          console.log('Notification permission is not granted');
+          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+          finalStatus = status;
+        }
+      
+        // Stop here if the user did not grant permissions
+        if (finalStatus !== 'granted') {
+          return;
+        }
+      // Get the token that uniquely identifies this device
+        
+      console.log('going to get the notification token');
+      
+       await Notifications.getExpoPushTokenAsync().then((token)=>{
+          console.log('Go the following device notification token: '+ token);
+          console.log('Type of token: '+ typeof(token));
+          //this.setState({deviceNotificationToken:token});
+          this.firebaseRef.doc(userUID).update({NotificationToken:token});
+        
+        });
 
-    //return the token
-    return token;
+
+      
+    }
+    catch(error){
+      alert(error);
+    }
+  }
+
+  //set the notification token state
+  setDeviceNotificationToken = async (token) =>{
+
+    //setting the device notification token
+    this.setState({deviceNotificationToken:token});
   }
 
   finishFunc =() =>{
 
     console.log('In the finishFunc function');
-    //Get the notification token
-    const token = this.getNotificationToken();
+    
 
-    //setting the state variable of deviceNotificationToken
-    this.setState({deviceNotificationToken:token});
+
 
     //Sample dat object for each user
     var data={
@@ -664,6 +683,8 @@ deleteUserFromAuthDatabase() {
     // })
     //adding the suer with the all the information we have to firebase
     AddUser(data);
+    //Get the notification token
+    this.getNotificationToken();
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
 
