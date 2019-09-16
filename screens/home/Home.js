@@ -11,8 +11,6 @@ import { Notifications } from 'expo';
 import firebase from '../../Firebase';
 
 
-=======
->>>>>>> master
 export default class HomeScreen extends React.Component {
 
 
