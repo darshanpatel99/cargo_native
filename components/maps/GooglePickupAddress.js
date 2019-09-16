@@ -1,15 +1,8 @@
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import React, { Component } from 'react';
 import {
-  Platform,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-  Image,
-  ScrollView,
   View
-} from 'react-native';
-import { Constants } from 'expo';
-
+} from 'react-native'
 
 export default class GooglePickupAddress extends Component {
     constructor() {

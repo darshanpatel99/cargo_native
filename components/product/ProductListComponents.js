@@ -1,18 +1,8 @@
 import React, {Component}from 'react';
-import { useState} from 'react';
 import {KeyboardAvoidingView} from 'react-native';
-
-
 import {
-    AppRegistry,
-    StyleSheet,
-    TouchableHighlight,
-    Text,
     View,
   } from 'react-native'
-import SearchBar from '../theme/SearchBar';
-//import ProductFilterBar from './ProductFilterBar';
-//import ProductListComponents from '../product/ProductListComponents';
 
 let sorts =  {all: true,  trending: false, new:false, high:false, Low:false};
 

@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
-import Colors from '../../constants/Colors';
-
-
 
 export default class PriceComponent extends Component {
 
@@ -18,9 +15,6 @@ export default class PriceComponent extends Component {
             </View>
         );
     }
-
-
-
 }
 
 

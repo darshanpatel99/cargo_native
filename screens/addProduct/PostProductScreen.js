@@ -33,17 +33,11 @@ import CategoryPickerForPostProduct from '../../components/category/CategoryPick
 import DaysPickerForPostProductScreen from '../../components/category/DaysPickerForPostProductScreen';
 import firebase from '../../Firebase.js';
 import PostProduct from '../../functions/PostProduct';
-import { Overlay } from 'react-native-elements';
-import GooglePlaces from '../../components/maps/GooglePlaces'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
-import ImageResizer from 'react-native-image-resizer';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
-
 import * as ImageManipulator from 'expo-image-manipulator';
-import { tokensToFunction } from 'path-to-regexp';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -131,14 +125,14 @@ export default class PostProductScreen extends Component {
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
     KEYBOARD_VERTICAL_OFFSET_HEIGHT =
       Platform.OS === 'ios'
-        ? headerAndStatusBarHeight - 600
+        ? headerAndStatusBarHeight - 700
         : headerAndStatusBarHeight;
-
   }
 
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
+    this.focusListener.remove();
   }
  
   showAlert(){
@@ -239,6 +233,8 @@ export default class PostProductScreen extends Component {
       BuyerAddress:'',
       DeliveryFee:'',
       TotalFee:'',
+      BoughtStatus:'false',
+
     }
 
     //Getting the current time stamp
@@ -800,9 +796,21 @@ export default class PostProductScreen extends Component {
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
+
+                currentLocation={false}
+                
                 GoogleReverseGeocodingQuery={{
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                 }}
+
+                GooglePlacesSearchQuery={{
+                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                  rankby: 'distance',
+                  input :'address',
+                  circle: '5000@50.676609,-120.339020',
+                }}
+
+               
 
                 getDefaultValue={() => {
                     return ''; // text input default value
@@ -811,7 +819,7 @@ export default class PostProductScreen extends Component {
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
+                    types: 'address', // default: 'geocode'
                 }}
 
                 styles={{
@@ -821,17 +829,18 @@ export default class PostProductScreen extends Component {
                     borderBottomWidth:0
                     },
                     textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
                     height: 38,
                     color: '#5d5d5d',
-                    fontSize: 16
+                    fontSize: 16,
+                    borderWidth: 1,
+                    borderColor:'blue',
+                    marginLeft: 0,
+                    marginRight: 0,
                     },
                     predefinedPlacesDescription: {
                     color: '#1faadb'
                     },
                 }}
-                currentLocation={false}
                 />
 
             
@@ -851,24 +860,6 @@ export default class PostProductScreen extends Component {
             </View>
           </InputScrollView>
           </KeyboardAvoidingView>
-
-          {/* <Overlay
-            isVisible={this.state.isOverlayVisible}
-            windowBackgroundColor="rgba(255, 255, 255, .5)"
-            overlayBackgroundColor=" #f5f2d0"
-            
-            width="auto"
-            height="auto"
-            >
-            <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
-            <Button onPress={this.goToHome}>
-              <Text>Go to Home</Text>
-            </Button>
-
-          </Overlay> */}
-
-          
-
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}

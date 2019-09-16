@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard } from 'react-native';
-import {
-  Button,
-  Text,
-  Item,
-  Input,
-  Container,
-  Icon,
-} from 'native-base';
+import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput } from 'react-native';
+import {Button,Text,Item,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Header } from 'react-navigation';
+import Constants from 'expo-constants';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -34,7 +29,7 @@ export default class Checkout extends Component {
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
-      tipAmount: 0,
+      tipAmount:0,
       subTotal: TotalCartAmount,
       deliveryFee: DeliveryCharge,
       totalAmount:0,
@@ -56,8 +51,10 @@ export default class Checkout extends Component {
 
     this.NavigateToPay = this.NavigateToPay.bind(this);    
     amount = amount.toFixed(2)
-    let address = firebase
-    .firestore()
+
+    this.ref = firebase.firestore();
+
+    this.collectionRef = this.ref
     .collection('Users')
     .doc(this.state.userId).get()
     .then(doc => {
@@ -77,14 +74,14 @@ export default class Checkout extends Component {
         buyerName: Buyer,
         Email
         })
-  
       }
     })
     .catch(err => {
       console.log('Error getting document', err);
     });
   
-    //this.unsubscribe = null;
+    this.unsubscribe = null;
+
   }
   googleAddressCallback = (latitude, longitude) => {
     console.log('Product SellerAddress ' + this.state.sellerAddress )
@@ -95,13 +92,14 @@ export default class Checkout extends Component {
     })
     this._getLocationAsync();
   }
-  _getLocationAsync (){
+  _getLocationAsync (lat, long){
     //this.setState({ location });
-    let currentDeviceLatitude = this.state.addressArray[0];
-    let currentDeviceLongitude = this.state.addressArray[1];
+    console.log('Inside get location async-----')
+    let deliveryLat = lat;
+    let deliveryLong = long;
     let productLocationLatitude = this.state.sellerAddress[0];
     let productLocationLongitude = this.state.sellerAddress[1];
-    fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+currentDeviceLatitude+','+currentDeviceLongitude+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
+    fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+deliveryLat+','+deliveryLong+'&destinations='+productLocationLatitude+'%2C'+productLocationLongitude+'&key=AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE')
       .then((response) => response.json())
       .then((responseJson) => {
         //return responseJson.movies;
@@ -109,6 +107,7 @@ export default class Checkout extends Component {
         console.log(productLocationLongitude)
         console.log('&&&&&&&&&&&&&&&&&')
         console.log(responseJson.rows[0].elements[0].distance.value);
+
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
         if(distanceInMeters <= 5000) {
@@ -123,7 +122,8 @@ export default class Checkout extends Component {
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
-          deliveryFee: deliveryCharge
+          deliveryFee: deliveryCharge,
+          totalAmount: (deliveryCharge+this.state.subTotal).toFixed(2)
         })
       })
       .catch((error) => {
@@ -135,6 +135,13 @@ export default class Checkout extends Component {
     const { navigation } = this.props;
     let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
     amount = amount.toFixed(2)
+    // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
+    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+      Platform.OS === 'ios'
+        ? headerAndStatusBarHeight - 700
+        : headerAndStatusBarHeight;
     
     this.focusListener = navigation.addListener('didFocus', () => { 
       this.setState({
@@ -144,9 +151,17 @@ export default class Checkout extends Component {
 
   }
 
+  componentWillUnmount() {
+    // Clean up: remove the listener
+    //this._unsubscribe();
+    this.focusListener.remove();
+  }
+ 
+
 
   componentDidMount(props) {
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
+    this.unsubscribe = this.collectionRef;
   }
 
   showAlert(){
@@ -205,6 +220,13 @@ export default class Checkout extends Component {
       <DismissKeyboard>
       <View style={Styles.Container}>
 
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior='padding'
+        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+
+        >
+
         <Container>
 
           <Text
@@ -232,6 +254,7 @@ export default class Checkout extends Component {
                 // textInputProps={{
                 //   onChangeText: (text) => {this.testFunction(text)}
                 //  }}
+
                 onPress={(data, details = null) => {
                 
                 
@@ -239,7 +262,8 @@ export default class Checkout extends Component {
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
-                this.setState({GPSStringFormat: (Object.values(details.geometry.location))})
+                this.setState({GPSStringFormat: (Object.values(details.geometry.location))});
+                this._getLocationAsync(lat, long)
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
@@ -259,22 +283,24 @@ export default class Checkout extends Component {
                 }}
 
                 styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
+                  textInputContainer: {
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth:0
+                  },
+                  textInput: {
+                  height: 38,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                  borderWidth: 1,
+                  borderColor:'blue',
+                  marginLeft: 0,
+                  marginRight: 0,
+                  },
+                  predefinedPlacesDescription: {
+                  color: '#1faadb'
+                  },
+              }}
                 currentLocation={false}vi
                 />
 
@@ -290,20 +316,23 @@ export default class Checkout extends Component {
             >
               Tip %:
             </Text>
-            <Item style={{ marginRight: 15 }}>
-              <Input
+            <Item style={{marginLeft:10 }}>
+              <TextInput
+               fontSize = '20'
                 keyboardType='numeric'
+                maxLength={3}
                 value={this.state.tipAmount}
+                returnKeyType='done'
                 onChangeText={value => { if(value){
-                  this.setState({ tipAmount: parseFloat(value), totalAmount: parseFloat(value)+this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+this.state.deliveryFee + this.state.subTotal).toFixed(2) });
                   console.log(this.state.tipAmount);
                 }else{
-                  this.setState({ tipAmount: 0, totalAmount: 0+this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: 0, totalAmount: 0 + this.state.deliveryFee + this.state.subTotal });
                 }
                 }}
                 placeholder='Enter Tip amound in CAD'
               />
-              <Icon type='Feather' name='percent' />
+              {/* <Icon type='Feather' name='percent' /> */}
             </Item>
           </View>
           <Text
@@ -321,12 +350,13 @@ export default class Checkout extends Component {
             <Text>Subtotal: ${this.state.subTotal}</Text>
             <Text>Tip: ${this.state.tipAmount}</Text>
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
-            <Text>Total Amount: ${this.state.deliveryFee}+{this.state.subTotal} </Text>
+            <Text>Total Amount: ${this.state.totalAmount} </Text>
           </View>
           <View style={Styles.payButton}>
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
               <Text style={{justifyContent: 'center'}}>Pay</Text>
             </Button>
+
           </View>
         </Container>
 
@@ -349,6 +379,8 @@ export default class Checkout extends Component {
               this.hideAlert();
             }}
         />
+
+      </KeyboardAvoidingView>
       </View>
       </DismissKeyboard>
     );
@@ -368,8 +400,8 @@ const Styles = StyleSheet.create({
     flex: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    alignContent: 'stretch',
+    // justifyContent: 'space-between',
+    // alignContent: 'stretch',
     marginRight: 15
   },
   DeliveryButtons: {

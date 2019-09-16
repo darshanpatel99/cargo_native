@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   createAppContainer,
   createBottomTabNavigator
@@ -19,7 +18,7 @@ const AppTabNavigator = createBottomTabNavigator(
     Account: AccountStack,
     AddProduct:AddProductStack,
     Message:MessageStack,
-    Test:TestStack,
+    Help:TestStack,
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -35,10 +34,13 @@ const AppTabNavigator = createBottomTabNavigator(
           iconName = `ios-camera`;
         }else if (routeName === 'Message') {
           iconName = `ios-text`;
+        }else if (routeName === 'Help') {
+          iconName = `ios-help-circle`;
         }
         return <IconComponent name={iconName} size={30} color={tintColor} />;
       },
     }),
+    
     tabBarOptions: {
       activeTintColor: '#397CFF',
       inactiveTintColor: '#FBA21C',

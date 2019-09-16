@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
-import Colors from "../../constants/Colors";
 import { SliderBox } from 'react-native-image-slider-box';
-
 
 export default class ImageScreen extends React.Component {
 
@@ -11,8 +9,6 @@ export default class ImageScreen extends React.Component {
     this.state = { 
     };
   };
-
- 
 
   render() {
     const { navigation } = this.props;

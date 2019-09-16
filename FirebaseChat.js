@@ -182,6 +182,9 @@ class FirebaseChat {
     });
   }
   
+
+
+
   // send the message to the Backend
   send = messages => {
     for (let i = 0; i < messages.length; i++) {
