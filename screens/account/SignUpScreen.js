@@ -54,6 +54,7 @@ export default class SignUpScreen extends Component {
       profilePic:'',
       showAlert: true,
       showOverlay: false,
+      deviceNotificationToken: '',
     }
 
     
@@ -129,6 +130,7 @@ async facebookLogin() {
 async googleLogin(){
 
   try{
+    //Configuration File
     const config ={ 
         expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
         iosClientId:'572236256696-rebjkd10nh1rbveidpq4d338nrgga709.apps.googleusercontent.com',
@@ -260,6 +262,11 @@ emailLogin = async (email, password) =>{
               console.log('1--inside firebase snap')
               if(docSnapshot.exists){
                 console.log('2--inside firebase snap')
+
+                //get the token and update the value
+                const token = this.getNotificationToken();
+                this.firebaseRef.doc(userUID).update({NotificationToken:token});
+
                 this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
               else{
@@ -376,6 +383,8 @@ googleLoginAsync = async () => {
   if (!accessToken) return;
   // Use the facebook token to authenticate our user in firebase.
   const credential = firebase.auth.GoogleAuthProvider.credential(null,accessToken);
+
+  console.log('Got the credentials from Google SignIn');
   try {
     // login with credential
     await firebase.auth().signInWithCredential(credential).then((result)=>{
@@ -401,7 +410,10 @@ googleLoginAsync = async () => {
               .then(docSnapshot => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
-                  console.log('2--inside firebase snap')
+                  console.log('2--inside firebase snap');
+                  
+                  this.updateNotificationToken(userUID);
+                  console.log('Notification token has been updated');
 
                   this.props.navigation.navigate('Account', {userID: userUID,});
                 }
@@ -581,7 +593,47 @@ deleteUserFromAuthDatabase() {
     navigate('AddressScreen', {userId: '0zVVJrL8Pdb3ogpAmqV7oprwaah1'})
   }
 
+  updateNotificationToken = async(userUID) =>{    //updating the device notification token
+    const token = this.getNotificationToken();
+    await this.firebaseRef.doc(userUID).update({NotificationToken:token});
+  }
+
+
+   //Getting the push token for the device
+   getNotificationToken = async () =>{
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+  
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+  
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync();
+
+    //return the token
+    return token;
+  }
+
   finishFunc =() =>{
+
+    console.log('In the finishFunc function');
+    //Get the notification token
+    const token = this.getNotificationToken();
+
+    //setting the state variable of deviceNotificationToken
+    this.setState({deviceNotificationToken:token});
 
     //Sample dat object for each user
     var data={
@@ -600,6 +652,7 @@ deleteUserFromAuthDatabase() {
       Address:'',
       UnitNumber:'',
       UID: this.state.UID.toString(),
+      NotificationToken: this.state.deviceNotificationToken
     }
 
     // const resetAction = StackActions.reset({
