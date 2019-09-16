@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, KeyboardAvoidingView} from 'react-native';
+import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 // import firebase from '../Firebase';
 import firebaseChat from '../../FirebaseChat';
@@ -40,6 +40,8 @@ export default class ChatScreen extends React.Component {
       const completeChatThread = navigation.getParam('completeChatThread')
       console.log(JSON.stringify(completeChatThread.reciverId))
       var reciverId = completeChatThread.reciverId;
+      // var chattingWith = completeChatThread.chat; 
+      // this.setState({chattingWith})
       //senderId = firebaseChat.uid;
       console.log('THIS IS RECIVER ID ' + reciverId)
       if(reciverId < firebaseChat.uid) {
@@ -49,7 +51,6 @@ export default class ChatScreen extends React.Component {
       }
       
       //chatDocumentReferenceId = 
-      alert(chatDocumentReferenceId)
       //alert(chatDocumentReferenceId)
       this.state = {
         messages: [],
@@ -62,7 +63,8 @@ export default class ChatScreen extends React.Component {
 
 
   static navigationOptions = ({ navigation }) => ({
-    title: (navigation.state.params || {}).name || 'Chat!',
+    
+    title: navigation.state.params.completeChatThread.chat || 'Chat',
   });
 
 
@@ -88,7 +90,9 @@ export default class ChatScreen extends React.Component {
           onSend={firebaseChat.send}
           user={this.user}
         />
-        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/>
+        {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
+
+        
 
       </View>
 
