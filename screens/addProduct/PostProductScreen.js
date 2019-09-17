@@ -334,7 +334,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      compress: 0.5,
+      quality:0.2
       //allowsEditing: true,
       
     });
@@ -450,7 +450,15 @@ export default class PostProductScreen extends Component {
  
   //Uploading an Image to the Firebase
   uploadImageToFirebase = async (uri, imageName) => {
-    const response = await fetch(uri);
+
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [],
+      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+    )
+
+
+    const response = await fetch(manipResult.uri);
     const blob = await response.blob();
     console.log('INside upload Image to Firebase')
     var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
