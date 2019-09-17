@@ -684,9 +684,12 @@ deleteUserFromAuthDatabase() {
     //   //action:[NavigationActions.navigate({routeName: 'AccountInfo'})]
     // })
     //adding the suer with the all the information we have to firebase
-    AddUser(data);
-    //Get the notification token
-    this.getNotificationToken();
+    AddUser(data).then(()=>{
+        //Get the notification token
+        this.getNotificationToken();
+
+    });
+    
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
 
