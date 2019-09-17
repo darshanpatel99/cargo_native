@@ -47,22 +47,22 @@ export default class HomeScreen extends React.Component {
   }
 
 
-  //Function to handle the notification
-  handleNotification = (notification) => {
-    this.setState({notification:notification});
-  }
+  // //Function to handle the notification
+  // handleNotification = (notification) => {
+  //   this.setState({notification:notification});
+  // }
 
-  //function to create the notification
-  createNotificationAsync = () =>{
-    Notifications.presentLocalNotificationAsync({
-      title: 'CarGo',
-      body:'Coming to Kamloops Soon',
-      android:{
-        channelId: 'messages',
-        color: '#FF0000',
-      },
-    });
-  }
+  // //function to create the notification
+  // createNotificationAsync = () =>{
+  //   Notifications.presentLocalNotificationAsync({
+  //     title: 'CarGo',
+  //     body:'Coming to Kamloops Soon',
+  //     android:{
+  //       channelId: 'messages',
+  //       color: '#FF0000',
+  //     },
+  //   });
+  // }
 
  
   handleValues = (values) => {

@@ -9,6 +9,7 @@ import {
   Platform,
   Alert
 } from 'react-native';
+import { Button } from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
@@ -20,7 +21,6 @@ import ReportAd from '../../functions/ReportAd';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
-import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 
@@ -376,13 +376,13 @@ export class ProductScreen extends Component {
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
 
-          <TouchableOpacity onPress={this.NavigateToEdit}>
-            <MainButton title='Edit product' secondary="true" />
-          </TouchableOpacity>
+          <Button light rounded large style={styles.secondaryButton} onPress={this.NavigateToEdit}>
+            <Text style={styles.secondaryText}>Edit product</Text>
+          </Button>
 
-          <TouchableOpacity onPress={this.sooldItem}>
-            <MainButton title='Mark sold' secondary="true" />
-          </TouchableOpacity>
+          <Button light rounded large style={styles.secondaryButton} onPress={this.sooldItem}>
+            <Text style={styles.secondaryText}>Mark sold</Text>
+          </Button>
         </View>
           
       );
@@ -391,9 +391,9 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'sold' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <TouchableOpacity onPress={this.ReactivateOrder}>
-            <MainButton title='Reactivate Product' />
-          </TouchableOpacity>
+          <Button primary rounded large style={styles.button} onPress={this.ReactivateOrder}>
+            <Text style={styles.lightText}>Reactivate Product</Text>
+          </Button>
         </View>
       );
     }
@@ -401,7 +401,9 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <MainButton title='Product Sold' />
+          <Button primary rounded large style={styles.button} >
+            <Text style={styles.lightText}>Product Sold</Text>
+          </Button>
         </View>
       );
     }
@@ -409,9 +411,9 @@ export class ProductScreen extends Component {
     else if(this.state.deliveryCharge != '' && this.state.Status === 'bought' && this.state.BuyerID === this.state.userID){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <TouchableOpacity onPress={this.CancelOrder}>
-            <MainButton title='Cancel Order' />
-          </TouchableOpacity>
+          <Button primary rounded large style={styles.button} onPress={this.CancelOrder}>
+            <Text style={styles.lightText}>Cancel Order</Text>
+          </Button>
         </View>
       );
     }
@@ -421,13 +423,14 @@ export class ProductScreen extends Component {
         if (this.state.deliveryCharge != '' ) {
         return (
           <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-            <TouchableOpacity onPress={this.NavigateToCheckout}>
-              <MainButton title='Buy Now' bluesecondary="true"/>
-            </TouchableOpacity>
+            <Button light rounded large style={styles.secondaryBlueButton} onPress={this.NavigateToCheckout} >
+              <Text style={styles.secondaryWhiteText}>Buy Now</Text>
+            </Button>
+            
 
-            <TouchableOpacity onPress={this.NavigateToMessage}>
-              <MainButton title='Chat Now' bluesecondary="true"/>
-            </TouchableOpacity>
+            <Button light rounded large style={styles.secondaryBlueButton} onPress={this.NavigateToMessage}>
+              <Text style={styles.secondaryWhiteText}>Chat Now</Text>
+            </Button>
 
           </View>
         );
@@ -436,13 +439,15 @@ export class ProductScreen extends Component {
 
         return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <TouchableOpacity>
-            <MainButton title='Buy Now' bluesecondary="true"/>
-          </TouchableOpacity>
+          
+          <Button light rounded large style={styles.secondaryBlueButton}>
+            <Text style={styles.secondaryWhiteText}>Buy Now</Text>
+          </Button>
+          
 
-          <TouchableOpacity>
-            <MainButton title='Chat Now' bluesecondary="true"/>
-          </TouchableOpacity>
+          <Button light rounded large style={styles.secondaryBlueButton}>
+            <Text style={styles.secondaryWhiteText}>Chat Now</Text>
+          </Button>
 
         </View>
         );
@@ -673,5 +678,68 @@ const styles = StyleSheet.create({
   reportAd: {
     color: Colors.primary,
     alignSelf: 'flex-end',
+  },
+  button: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 300,
+    margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
+  },
+  secondaryButton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 175,
+    margin: 5
+  },
+  secondaryBlueButton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 175,
+    margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
+  },
+  text: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "600",
+    letterSpacing: 1.2
+  },
+  secondaryText: {
+    color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+  secondaryWhiteText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+  lightText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+  icon: {
+    padding: 5,
+    paddingRight: 10
   }
 });
