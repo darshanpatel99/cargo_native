@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View, TouchableOpacity, Linking, Platform } from 'react-native';
+import { Image, View, TouchableOpacity,TouchableWithoutFeedback, Linking, Platform } from 'react-native';
 import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
 
 export default class TestScreen extends React.Component {
@@ -32,8 +32,8 @@ export default class TestScreen extends React.Component {
           <MainButton title='Chat Now'/>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={this.dialCall} activeOpacity={0.7}>
-          <MainButton title='Call Us' onPress={this.dialCall}/>
+        <TouchableOpacity  onPress={this.dialCall}>
+          <MainButton title='Call Us'/>
         </TouchableOpacity>
         </View> 
 

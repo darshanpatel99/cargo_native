@@ -7,17 +7,58 @@ const items = [
   {
     name: 'Electronics',
     id: 1,
-
+    children: [
+      {
+        name: 'Mobile Phone',
+        id: 2,
+      },
+      {
+        name: 'Computers',
+        id: 3,
+      },
+      {
+        name: 'Other Electronics',
+        id: 4,
+      },
+    ],
   },
 
   {
     name: 'Home Products',
-    id: 2,
+    id: 5,
+    children: [
+      {
+        name: 'Home Décor',
+        id: 6,
+      },
+      {
+        name: 'Kitchen and dining wares',
+        id: 7,
+      },
+      {
+        name: 'Other Home Products',
+        id: 8,
+      },
+    ],
   },
 
   {
     name: 'Baby Products',
-    id: 3,
+    id: 9,
+    children: [
+      {
+        name: 'Clothing',
+        id: 10,
+      },
+      {
+        name: 'Toys',
+        id: 11,
+      },
+      {
+        name: 'Cribs',
+        id: 12,
+      },
+    ],
   }
 
 ];
@@ -50,7 +91,7 @@ export default class extends Component {
           subKey="children"
           selectText="Select Category"
           showDropDowns={true}
-          readOnlyHeadings={false}
+          readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
           single={true}  
