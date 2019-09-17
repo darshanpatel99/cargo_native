@@ -686,7 +686,7 @@ deleteUserFromAuthDatabase() {
     //adding the suer with the all the information we have to firebase
     AddUser(data).then(()=>{
         //Get the notification token
-        this.getNotificationToken();
+        this.getNotificationToken(this.state.UID);
 
     });
     
