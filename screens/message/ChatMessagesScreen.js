@@ -2,6 +2,8 @@ import React from 'react';
 import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import firebaseChat from '../../FirebaseChat';
+import firebase from '../../Firebase'
+import AwesomeAlert from 'react-native-awesome-alerts';
 export default class ChatScreen extends React.Component {
 
   constructor(props) {
@@ -12,6 +14,7 @@ export default class ChatScreen extends React.Component {
     const sellerName = navigation.getParam('sellerName')
 
     // this.state({owner: owner})
+    let User = firebase.auth().currentUser;
 
     let chatDocumentReferenceId = ''
 
@@ -27,8 +30,9 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         buyerName: firebaseChat.userDisplayName,
-        owner: owner,
-        sellerName
+        User,
+        sellerName,
+        showAlert: true,
       };
       //this.firebaseGetSellerName();
 
@@ -52,9 +56,15 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         sellerName: firebaseChat.userDisplayName,
-        // owner: owner
+        User,
+        showAlert: true,
       };
     }
+
+ 
+
+  this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
   }
 
 
@@ -63,6 +73,16 @@ export default class ChatScreen extends React.Component {
     title: navigation.state.params.completeChatThread.chat || 'Chat',
   });
 
+  componentDidMount() {
+
+    const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+
+  });
+  }
 
 
   get user() {
@@ -78,7 +98,35 @@ export default class ChatScreen extends React.Component {
     };
   }
 
+  showAlert(){
+    this.setState({
+      showAlert: true,
+      
+    });
+  };
+
+  hideAlert(){
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: true
+    });
+    navigate('Account');
+  }; 
+
+  //listens to the change in auth state
+  onAuthStateChanged = User => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    this.setState({ User: User });
+    //navigate to the account screen if the user is not logged in
+
+  };
+
+
+
   render() {
+    const {showAlert} = this.state;
+
     return (
       <View style ={{flex: 1}}>
         <GiftedChat
@@ -93,7 +141,9 @@ export default class ChatScreen extends React.Component {
       </View>
 
     );
+    
   }
+  
 
 
   //passing the uid and seller id to grab the message thread
@@ -111,4 +161,13 @@ export default class ChatScreen extends React.Component {
   componentWillUnmount() {
     firebaseChat.refOff();
   }
+}
+
+const styles = {
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
 }

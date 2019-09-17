@@ -30,48 +30,48 @@ class Chat extends React.Component {
   }
 
   componentDidMount(){
-    this.setState({ loading: true });
-    firebase.database().ref('Chat').on('value', snapshot => {
-      this.setState({ loading: false });
+    // this.setState({ loading: true });
+    // firebase.database().ref('Chat').on('value', snapshot => {
+    //   this.setState({ loading: false });
 
-      this.setState({snapshot: snapshot.val()})
+    //   this.setState({snapshot: snapshot.val()})
 
-    for (var prop in snapshot.val()) {
-      if (prop.includes(this.state.userId)) {
-          // do stuff
-          newObj = {chat: 'this is test'}
-          console.log(prop)
-          this.setState({filteredChats: newObj})
-      }
-    }
+    // for (var prop in snapshot.val()) {
+    //   if (prop.includes(this.state.userId)) {
+    //       // do stuff
+    //       newObj = {chat: 'this is test'}
+    //       console.log(prop)
+    //       this.setState({filteredChats: newObj})
+    //   }
+    // }
 
-      this.setState({snapshot: snapshot.val()})
-    });
+    //   this.setState({snapshot: snapshot.val()})
+    // });
 
     
-    // const { navigation } = this.props;
+    const { navigation } = this.props;
       
-    // this.focusListener = navigation.addListener('didFocus', () => { 
+    this.focusListener = navigation.addListener('didFocus', () => { 
 
-    //   this.setState({ loading: true });
-    //   firebase.database().ref('Chat').on('value', snapshot => {
-    //     this.setState({ loading: false });
+      this.setState({ loading: true });
+      firebase.database().ref('Chat').on('value', snapshot => {
+        this.setState({ loading: false });
   
-    //     this.setState({snapshot: snapshot.val()})
+        this.setState({snapshot: snapshot.val()})
   
-    //   for (var prop in snapshot.val()) {
-    //     if (prop.includes(this.state.userId)) {
-    //         // do stuff
-    //         newObj = {chat: 'this is test'}
-    //         console.log(prop)
-    //         this.setState({filteredChats: newObj})
-    //     }
-    //   }
+      for (var prop in snapshot.val()) {
+        if (prop.includes(this.state.userId)) {
+            // do stuff
+            newObj = {chat: 'this is test'}
+            console.log(prop)
+            this.setState({filteredChats: newObj})
+        }
+      }
   
-    //     this.setState({snapshot: snapshot.val()})
-    //   });
+        this.setState({snapshot: snapshot.val()})
+      });
 
-    // });
+    });
     
   }
 

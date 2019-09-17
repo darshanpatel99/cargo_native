@@ -588,13 +588,15 @@ onAuthStateChanged = user => {
 
               <View style={[styles.settingsButton,{justifyContent:'center'}]}>
                   <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
-                  <TouchableOpacity onPress={this.goToEditMode}>
-                      <MainButton title='Edit' secondary="true" />
-                    </TouchableOpacity>
+                
+                    <Button light rounded large style={styles.secondaryButton} onPress={this.goToEditMode}>
+                      <Text style={styles.secondaryText}>Edit</Text>
+                    </Button>
 
-                    <TouchableOpacity onPress={this.logoutAsync}>
-                      <MainButton title='LogOut' secondary="true" />
-                    </TouchableOpacity>
+                    <Button light rounded large style={styles.secondaryButton} onPress={this.logoutAsync}>
+                      <Text style={styles.secondaryText}>LogOut</Text>
+                    </Button>
+
                   </View>
                   </View>
                               
@@ -658,13 +660,14 @@ onAuthStateChanged = user => {
               </View>
 
              <View style={styles.buttonsWithLogo}>
-               <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-                <MainButton title='Login'/>
-              </TouchableOpacity>
+               
+              <Button primary rounded large style={styles.button}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+                <Text style={styles.lightText}>Login</Text>
+              </Button>
 
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-                <MainButton title='SignUp'/>
-              </TouchableOpacity>
+              <Button primary rounded large style={styles.button}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+                <Text style={styles.lightText}>SignUp</Text>
+              </Button>
             </View> 
               
             </View>
@@ -852,4 +855,39 @@ buttonsWithLogo:{
   
   justifyContent:'center',
 },
+lightText: {
+  color: "#fff",
+  fontSize: 18,
+  fontWeight: "500",
+  letterSpacing: 1.2
+},
+button: {
+  flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: 300,
+  margin: 5,
+  backgroundColor: Colors.primary,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.5
+},
+secondaryButton: {
+  flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: 175,
+  margin: 5
+},
+secondaryText: {
+  color: Colors.primary,
+  fontSize: 18,
+  fontWeight: "500",
+  letterSpacing: 1.2
+},
+
 })

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Image, View, TouchableOpacity,TouchableWithoutFeedback, Linking, Platform } from 'react-native';
-import MainButton from '../../components/theme/MainButton'; //components\theme\MainButton.js
+import { Text,Image, View, Linking, Platform } from 'react-native';
+import { Button } from "native-base";
+import Colors from "../../constants/Colors";
 
 export default class TestScreen extends React.Component {
 
@@ -28,13 +29,15 @@ export default class TestScreen extends React.Component {
         </View>
 
         <View style={styles.buttonsWithLogo}>
-        <TouchableOpacity activeOpacity={0.7}>
-          <MainButton title='Chat Now'/>
-        </TouchableOpacity>
 
-        <TouchableOpacity  onPress={this.dialCall}>
-          <MainButton title='Call Us'/>
-        </TouchableOpacity>
+          <Button primary rounded large style={styles.button}>
+            <Text style={styles.lightText}>Chat Now</Text>
+          </Button>
+
+          <Button primary rounded large style={styles.button} onPress={this.dialCall}>
+            <Text style={styles.lightText}>Call Us</Text>
+          </Button>
+
         </View> 
 
       </View>
@@ -66,6 +69,26 @@ const styles = {
     flex:0.3,
     
     justifyContent:'center',
+  },
+
+  lightText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+  button: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 300,
+    margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
   },
 
 }
