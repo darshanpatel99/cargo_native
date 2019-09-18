@@ -397,7 +397,7 @@ onAuthStateChanged = user => {
           returnKeyType='done'
           autoCorrect={false}
           placeholder= 'phone number'
-          maxLength ={10}                                                            
+          maxLength ={12}                                                            
         />);      
     }
     else 
@@ -626,18 +626,18 @@ onAuthStateChanged = user => {
 
               <View style={[styles.buttons,styles.marginBottom]}>
                 <View style={styles.prodInfoButtons}>
-                  <Button full large primary rounded onPress={() => navigate('Listing', {id:this.state.userID})}>
-                    <Text style={[styles.buttonText,{color:'white'}]}>Listing</Text>
+                  <Button  light rounded large style={styles.secondaryBlueButton} onPress={() => navigate('Listing', {id:this.state.userID})}>
+                    <Text style={styles.secondaryWhiteText}>Listing</Text>
                   </Button>
                 </View>
                 <View style={styles.prodInfoButtons}>
-                  <Button full  large primary rounded onPress={() => navigate('Bought', {id:this.state.userID})}>
-                    <Text style={[styles.buttonText,{color:'white'}]}>Bought</Text>
+                  <Button light rounded large style={styles.secondaryBlueButton} onPress={() => navigate('Bought', {id:this.state.userID})}>
+                    <Text style={styles.secondaryWhiteText}>Bought</Text>
                   </Button>
                 </View>
                 <View style={styles.prodInfoButtons}>
-                  <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userID})}>
-                    <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
+                  <Button light rounded large style={styles.secondaryBlueButton} onPress={() => navigate('Sold', {id:this.state.userID})}>
+                    <Text style={styles.secondaryWhiteText}>Sold</Text>
                   </Button>
                 </View>
               </View>
@@ -888,6 +888,27 @@ secondaryText: {
   fontSize: 18,
   fontWeight: "500",
   letterSpacing: 1.2
+},
+
+secondaryWhiteText: {
+  color: "#fff",
+  fontSize: 18,
+  fontWeight: "500",
+  letterSpacing: 1.2
+},
+
+secondaryBlueButton: {
+  flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: Dimensions.get('screen').width*0.3,
+  margin: 5,
+  backgroundColor: Colors.primary,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.5
 },
 
 })

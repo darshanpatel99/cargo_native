@@ -42,7 +42,7 @@ const styles = {
     containerStyle:{
 
         flexDirection: 'row',
-        justifyContent:'right',
+        //justifyContent:'right',
         margin: 10,
         borderRadius: 40,
         alignItems:'center',
@@ -68,7 +68,7 @@ const styles = {
         // borderWidth:1,
         // borderColor:'black',
         marginLeft:Dimensions.get('window').width*0.1,
-        borderRadius:Dimensions.get('window').width*0.1,
+        //borderRadius:Dimensions.get('window').width*0.1,
         width:Dimensions.get('window').width*0.1,
         height:Dimensions.get('window').width*0.1,
         // width:25,
