@@ -5,6 +5,11 @@ import SearchFilterFunction from '../../handlers/ProductCardFlatListDynamicLoad'
 import Header from '../../components/headerComponents/Header';
 import { SearchBar } from 'react-native-elements';
 import RefineCategoryHomeScreen from '../../components/category/RefineCategoryHomeScreen'
+import { Platform } from '@unimodules/core';
+import { Notifications } from 'expo';
+import firebase from '../../Firebase';
+
+
 export default class HomeScreen extends React.Component {
 
 
@@ -14,9 +19,52 @@ export default class HomeScreen extends React.Component {
       sort: {'All': ''},
       query:'',
       filters: [],
+      notification: {},
     }
   }
 
+
+  //Consider changing the value from here, Creating the Notification Channels
+  componentDidMount=()=>{
+
+    //creating the notification channels
+    //Notification Channel for received messages
+    if(Platform.OS == 'android'){
+      Notifications.createChannelAndroidAsync('messages', {
+        name:'Messages',
+        priority: 'max',
+        vibrate: [0, 250,250,250],
+      });
+    }
+
+    
+   // this.createNotificationAsync();
+
+    //register the listener for messages channel
+   // this._notificationSubscription =  Notifications.addListener(this.handleNotification);
+
+
+  }
+
+
+  // //Function to handle the notification
+  // handleNotification = (notification) => {
+  //   this.setState({notification:notification});
+  // }
+
+  // //function to create the notification
+  // createNotificationAsync = () =>{
+  //   Notifications.presentLocalNotificationAsync({
+  //     title: 'CarGo',
+  //     body:'Coming to Kamloops Soon',
+  //     android:{
+  //       channelId: 'messages',
+  //       color: '#FF0000',
+  //     },
+  //   });
+  // }
+
+ 
   handleValues = (values) => {
     console.log('function called handleValues')
     this.setState({filters: values});
