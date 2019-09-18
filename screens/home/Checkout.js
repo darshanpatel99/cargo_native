@@ -318,7 +318,7 @@ export default class Checkout extends Component {
             </Text>
             <Item style={{marginLeft:10 }}>
               <TextInput
-               fontSize = '20'
+               fontSize = {20}
                 keyboardType='numeric'
                 maxLength={3}
                 value={this.state.tipAmount}
@@ -354,7 +354,8 @@ export default class Checkout extends Component {
           </View>
           <View style={Styles.payButton}>
             <Button large-green style= {{flex:1, justifyContent: 'center'}} onPress={this.NavigateToPay}>
-              <Text style={{justifyContent: 'center'}}>Pay</Text>
+              <Text style={{justifyContent: 'center',fontSize: 20,
+              fontFamily: 'nunito-SemiBold'}}>Pay</Text>
             </Button>
 
           </View>

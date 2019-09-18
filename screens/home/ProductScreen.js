@@ -3,13 +3,12 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  Text,
   TouchableHighlight,
   Dimensions,
   Platform,
   Alert
 } from 'react-native';
-import { Button } from "native-base";
+import { Button, Text,} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
@@ -210,7 +209,14 @@ export class ProductScreen extends Component {
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: user });
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({ User: user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
   };
  
 
@@ -423,7 +429,8 @@ export class ProductScreen extends Component {
         if (this.state.deliveryCharge != '' ) {
         return (
           <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-            <Button light rounded large style={styles.secondaryBlueButton} onPress={this.NavigateToCheckout} >
+
+            <Button light rounded large style={styles.secondaryBlueButton} onPress={this.NavigateToCheckout}>
               <Text style={styles.secondaryWhiteText}>Buy Now</Text>
             </Button>
             
