@@ -72,7 +72,15 @@ export default class SignUpScreen extends Component {
     console.log('Auth state of the user has been changed');
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ user });
+    //this.setState({ user });
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
   };
 
   //hide the alert

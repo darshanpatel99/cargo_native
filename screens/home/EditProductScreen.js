@@ -252,9 +252,14 @@ export default class PostProductScreen extends Component {
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: user });
-    //navigate to the account screen if the user is not logged in
-
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({ User: user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
   };
 
   //post the product
