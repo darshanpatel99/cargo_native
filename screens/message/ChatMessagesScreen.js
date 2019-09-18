@@ -98,21 +98,6 @@ export default class ChatScreen extends React.Component {
     };
   }
 
-  showAlert(){
-    this.setState({
-      showAlert: true,
-      
-    });
-  };
-
-  hideAlert(){
-    const { navigate } = this.props.navigation;
-    this.setState({
-      showAlert: true
-    });
-    navigate('Account');
-  }; 
-
   //listens to the change in auth state
   onAuthStateChanged = User => {
     // if the user logs in or out, this will be called and the state will update.
@@ -135,9 +120,6 @@ export default class ChatScreen extends React.Component {
           user={this.user}
         />
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
-
-        
-
       </View>
 
     );

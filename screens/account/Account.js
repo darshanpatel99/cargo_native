@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet,View,Image,Text,TouchableOpacity,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button} from "native-base";
@@ -31,16 +30,16 @@ export default class AccountScreen extends React.Component {
     userID:'',
     editMode:false,
     newData:[],
-     newPicture:[],
-     picture:'',
-     currentFolio:'',
-     Address:'',
-     UnitNumber:'',
+    newPicture:[],
+    picture:'',
+    currentFolio:'',
+    Address:'',
+    UnitNumber:'',
     }
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
-
+    
 
     if (user != null) {
 
@@ -79,7 +78,7 @@ componentDidMount() {
     if (user != null) {
 
       //firebase.auth().signInWithEmailAndPassword(email, password)
-        
+
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
       this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
@@ -95,16 +94,11 @@ componentDidMount() {
         picture:doc.data().ProfilePicture,
         }); 
       }); 
-    
-         
-      
   
     
     //firestore reference for the specific document associated with the user
     this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-
   }
-      
   });
 
   this.getPermissionAsync();
@@ -120,10 +114,17 @@ componentWillUnmount() {
   this.focusListener.remove();
 }
 
-onAuthStateChanged = user => {
+onAuthStateChanged = (user) => {
   // if the user logs in or out, this will be called and the state will update.
   // This value can also be accessed via: firebase.auth().currentUser
-  this.setState({ User: user });
+  if (user != null){
+    if(user.emailVerified){ // note difference on this line
+      this.setState({ User: user});
+    }
+  }
+  else{
+    this.setState({ User: null});
+  }
 };  
 
   //Function to logo out user21`22122
@@ -135,7 +136,6 @@ onAuthStateChanged = user => {
       // navigate('ChatScreen')
     } catch ({ message }) {
       alert('You are logged out!!');
-
     }
   }
 
