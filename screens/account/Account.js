@@ -660,14 +660,18 @@ onAuthStateChanged = (user) => {
               </View>
 
              <View style={styles.buttonsWithLogo}>
-               
-              <Button primary rounded large style={styles.button}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
+              <Button primary rounded large style={styles.button}  >
                 <Text style={styles.lightText}>Login</Text>
               </Button>
-
-              <Button primary rounded large style={styles.button}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+            </TouchableOpacity> 
+            <TouchableOpacity  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+              <Button primary rounded large style={styles.button} >
                 <Text style={styles.lightText}>SignUp</Text>
               </Button>
+            </TouchableOpacity>
+
             </View> 
               
             </View>

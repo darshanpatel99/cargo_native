@@ -6,7 +6,8 @@ import {
   TouchableHighlight,
   Dimensions,
   Platform,
-  Alert
+  Alert,
+  TouchableOpacity
 } from 'react-native';
 import { Button, Text,} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -14,7 +15,6 @@ import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import ReportAd from '../../functions/ReportAd';
 import Constants from 'expo-constants';
@@ -397,9 +397,11 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'sold' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <Button primary rounded large style={styles.button} onPress={this.ReactivateOrder}>
+          <TouchableOpacity  onPress={this.ReactivateOrder}>
+          <Button primary rounded large style={styles.button}>
             <Text style={styles.lightText}>Reactivate Product</Text>
           </Button>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -407,9 +409,11 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          <TouchableOpacity>
           <Button primary rounded large style={styles.button} >
             <Text style={styles.lightText}>Product Sold</Text>
           </Button>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -417,9 +421,12 @@ export class ProductScreen extends Component {
     else if(this.state.deliveryCharge != '' && this.state.Status === 'bought' && this.state.BuyerID === this.state.userID){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <Button primary rounded large style={styles.button} onPress={this.CancelOrder}>
+          <TouchableOpacity onPress={this.CancelOrder}>
+          <Button primary rounded large style={styles.button} >
             <Text style={styles.lightText}>Cancel Order</Text>
           </Button>
+          </TouchableOpacity>
+
         </View>
       );
     }

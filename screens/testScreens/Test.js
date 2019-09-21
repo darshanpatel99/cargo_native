@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text,Image, View, Linking, Platform } from 'react-native';
-import { Button } from "native-base";
+import {Image, View, Linking, Platform, TouchableOpacity } from 'react-native';
+import { Text, Button } from "native-base";
 import Colors from "../../constants/Colors";
 
 export default class TestScreen extends React.Component {
@@ -30,13 +30,17 @@ export default class TestScreen extends React.Component {
 
         <View style={styles.buttonsWithLogo}>
 
+        <TouchableOpacity >
           <Button primary rounded large style={styles.button}>
             <Text style={styles.lightText}>Chat Now</Text>
           </Button>
+        </TouchableOpacity>
 
-          <Button primary rounded large style={styles.button} onPress={this.dialCall}>
+        <TouchableOpacity  onPress={this.dialCall}>
+          <Button primary rounded large style={styles.button}>
             <Text style={styles.lightText}>Call Us</Text>
           </Button>
+        </TouchableOpacity>
 
         </View> 
 

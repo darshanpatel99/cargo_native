@@ -242,7 +242,7 @@ export default class Checkout extends Component {
     
     <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
+                placeholder='Delivery Address'
                 minLength={2}
                 autoFocus={false}
                 returnKeyType={'default'}
@@ -314,7 +314,7 @@ export default class Checkout extends Component {
                 fontFamily: 'nunito-SemiBold'
               }}
             >
-              Tip %:
+              Tip $`  `:
             </Text>
             <Item style={{marginLeft:10 }}>
               <TextInput
