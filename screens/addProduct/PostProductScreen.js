@@ -75,7 +75,8 @@ export default class PostProductScreen extends Component {
       changingAddress:0,
       priceAlert:false,
       buyerID:'',
-      sellerName:''
+      sellerName:'',
+      uploadCounter:0,
     }
 
     this.categoryRemover = React.createRef();
@@ -99,6 +100,8 @@ export default class PostProductScreen extends Component {
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
+
+    
 
    
     if (user != null) {
@@ -128,6 +131,10 @@ export default class PostProductScreen extends Component {
   }
 
   componentWillUnmount() {
+
+    //clearing the arrays
+    console.log("commponent will unmouutn tdsl;jfsaksf;jg");
+    this.setState({image:[], downloadURLs:[], addressArray:[],Avability:[], thumbnail:' ' });
     // Clean up: remove the listener
     this._unsubscribe();
     this.focusListener.remove();
@@ -170,6 +177,7 @@ export default class PostProductScreen extends Component {
       image: [],
       downloadURLs : [],
       addressArray:[],
+      uploadCounter:0,
     });
     navigate('Home');
   };
@@ -199,6 +207,53 @@ export default class PostProductScreen extends Component {
 
   };
 
+
+  //Uploading all the product related stuff
+  uploadImageData =  async () =>{
+      var array = this.state.image; //getting the uri array
+    
+      array.forEach(async (element) => {
+
+        if(this.state.firstTimeOnly){
+          await this.uploadThumbnailToFirebase(element)
+          .then(()=>{
+            console.log('Thumbnail got uploaded');
+            
+          })
+          .catch(error=>{
+            console.log("Hey there is an error:  " +error);
+          });
+        }
+
+        await this.uploadImageToFirebase(element, uuid.v1())
+        .then(() => {
+          console.log('Success' + uuid.v1());
+          
+          
+        })
+        .catch(error => {
+          console.log('Success' + uuid.v1()); 
+          console.log(error);
+        });
+
+        
+      });
+
+
+
+  }
+
+
+  //start post the add button
+  startPostTheProduct = async () =>{
+    await this.uploadImageData();
+  }
+
+
+
+
+
+
   //post the product
   postTheProduct = async() =>{
 
@@ -213,14 +268,17 @@ export default class PostProductScreen extends Component {
     console.log('length of the price' + priceLength.length);
 
     if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+
+    console.log("Uploading the images");
   
+
     console.log('Download urls --> '+this.state.downloadURLs)
     var data = {
       Description : this.state.description,
       Name : this.state.title,
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.Thumbnail,
+      Thumbnail : this.state.thumbnail,
       Owner : this.state.owner,
       Flag : true,
       FavouriteUsers:[],
@@ -251,6 +309,7 @@ export default class PostProductScreen extends Component {
     //change the overlay visibility to visible
     //this.setState({isOverlayVisible:true});
     this.showAlert2();
+
 
   } else {
     console.log('hello' + typeof(priceLength));
@@ -304,29 +363,29 @@ export default class PostProductScreen extends Component {
         image: this.state.image.concat([result.uri])
       });
 
-      console.log(this.state.firstTimeOnly);
-      if(this.state.firstTimeOnly){
-        console.log('I am first time');
-        await this.uploadThumbnailToFirebase(result.uri)
-          .then(()=>{
-            this.setState({firstTimeOnly:false});
-            console.log('Thumbnail got uploaded');
-          })
-          .catch(error=>{
-            console.log("Hey there is an error:  " +error);
-          })
-        }
+    //   console.log(this.state.firstTimeOnly);
+    //   if(this.state.firstTimeOnly){
+    //     console.log('I am first time');
+    //     await this.uploadThumbnailToFirebase(result.uri)
+    //       .then(()=>{
+    //         this.setState({firstTimeOnly:false});
+    //         console.log('Thumbnail got uploaded');
+    //       })
+    //       .catch(error=>{
+    //         console.log("Hey there is an error:  " +error);
+    //       })
+    //     }
     
 
 
-     await this.uploadImageToFirebase(result.uri, uuid.v1())
-        .then(() => {
-          console.log('Success' + uuid.v1());  
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
+    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
+    //     .then(() => {
+    //       console.log('Success' + uuid.v1());  
+    //     })
+    //     .catch(error => {
+    //       console.log('Success' + uuid.v1()); 
+    //       console.log(error);
+    //     });
     }
   };
 
@@ -350,29 +409,29 @@ export default class PostProductScreen extends Component {
       });
 
 
-      console.log(this.state.firstTimeOny);
+    //   console.log(this.state.firstTimeOny);
 
-      if(this.state.firstTimeOnly){
-       //Create Thumbnail only FirstTime
-         console.log('I am first time');
-        await this.uploadThumbnailToFirebase(result.uri)
-          .then(()=>{
-            this.setState({firstTimeOnly:false});
-            console.log('Thumbnail got uploaded');
-          })
-          .catch(error=>{
-            console.log(error);
-          })
-        }
+    //   if(this.state.firstTimeOnly){
+    //    //Create Thumbnail only FirstTime
+    //      console.log('I am first time');
+    //     await this.uploadThumbnailToFirebase(result.uri)
+    //       .then(()=>{
+    //         this.setState({firstTimeOnly:false});
+    //         console.log('Thumbnail got uploaded');
+    //       })
+    //       .catch(error=>{
+    //         console.log(error);
+    //       })
+    //     }
 
-     await this.uploadImageToFirebase(result.uri, uuid.v1())
-        .then(() => {
-          console.log('Success' + uuid.v1());  
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
+    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
+    //     .then(() => {
+    //       console.log('Success' + uuid.v1());  
+    //     })
+    //     .catch(error => {
+    //       console.log('Success' + uuid.v1()); 
+    //       console.log(error);
+    //     });
     }
   };
 
@@ -421,7 +480,10 @@ export default class PostProductScreen extends Component {
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           console.log('Thumbnail File available at', downloadURL);
-          that.setState({Thumbnail:downloadURL}); // setting the Thumbnail URL
+          that.setState({thumbnail:downloadURL}); // setting the Thumbnail URL
+          var uploadC = that.state.uploadCounter+1;
+          that.setState({uploadCounter:uploadC});
+
         });
       });
     }
@@ -492,6 +554,16 @@ export default class PostProductScreen extends Component {
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
         console.log('File available at', downloadURL);
         that.state.downloadURLs.push(downloadURL);
+
+        //some funcky stuff
+        var uploadC = that.state.uploadCounter+1;
+        that.setState({uploadCounter:uploadC});
+        var array = that.state.image;
+          if(uploadC==array.length+1){
+            //call the post product function
+            console.log("Number of products uploaded:" + uploadC);
+            that.postTheProduct();
+          }
       });
     });
     return 'Success';
@@ -865,7 +937,7 @@ export default class PostProductScreen extends Component {
                 //margin: 10
               }}
             >
-              <Button style={styles.postAdButton} onPress={this.postTheProduct}>
+              <Button style={styles.postAdButton} onPress={this.startPostTheProduct}>
                 <Text>Post Ad</Text>
               </Button>
             </View>
