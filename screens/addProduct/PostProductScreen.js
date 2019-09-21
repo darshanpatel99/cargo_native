@@ -37,6 +37,7 @@ import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as ImageManipulator from 'expo-image-manipulator';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -77,6 +78,7 @@ export default class PostProductScreen extends Component {
       buyerID:'',
       sellerName:'',
       uploadCounter:0,
+      loading: false,
     }
 
     this.categoryRemover = React.createRef();
@@ -210,6 +212,7 @@ export default class PostProductScreen extends Component {
 
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
+    this.setState({ loading: true });
       var array = this.state.image; //getting the uri array
     
       array.forEach(async (element) => {
@@ -303,7 +306,9 @@ export default class PostProductScreen extends Component {
     data.TimeStamp = currentDate.getTime();
     //if(this.checkFields == true)
     //Posting the product
-    PostProduct(data);
+    PostProduct(data).then(()=>{
+      this.setState({ loading: false });
+    });
     console.log("Product Posted---->" + data);
 
     //change the overlay visibility to visible
@@ -760,7 +765,11 @@ export default class PostProductScreen extends Component {
     if(this.state.User != null){
       return (
         <View style={{flex:1}}>
-        
+        <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
@@ -1077,6 +1086,9 @@ export default class PostProductScreen extends Component {
 const styles = {
   mainConatiner: {
     flex: 1
+  },
+  spinnerTextStyle: {
+    color: '#0000FF'
   },
   imageUploadStyle: {
     height: 100,
