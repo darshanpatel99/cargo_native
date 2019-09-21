@@ -1,5 +1,4 @@
 // This screen will be used by customer to post the product
-
 import React, { Component } from 'react';
 import {
   Platform,
@@ -92,7 +91,6 @@ export default class PostProductScreen extends Component {
       console.log(" State UID ==> from  " + this.state.Owner);
     }
 
-
   }
 
   componentDidMount() {
@@ -180,7 +178,6 @@ export default class PostProductScreen extends Component {
       downloadURLs : [],
       addressArray:[],
       uploadCounter:0,
-
     });
     navigate('Home');
   };
@@ -1145,6 +1142,4 @@ const styles = {
     borderColor: Colors.primary,
     borderWidth:0.5,
   },
-
-
 };

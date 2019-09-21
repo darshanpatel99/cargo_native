@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import { StyleSheet,View,Image,Text,TouchableOpacity,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
-import { Button} from "native-base";
+import { Button, Text} from "native-base";
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
@@ -495,8 +495,6 @@ onAuthStateChanged = (user) => {
     showDefaultPhoneNum =()=>{
       if(this.state.PhoneNumber ==''){
         return 'no phone number'
-          
-        
       }
       else{
         return this.state.PhoneNumber
@@ -659,23 +657,35 @@ onAuthStateChanged = (user) => {
               />
               </View>
 
-             <View style={styles.buttonsWithLogo}>
+          {/* <View style={styles.buttonsWithLogo}> */}
 
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
+            {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
               <Button primary rounded large style={styles.button}  >
-                <Text style={styles.lightText}>Login</Text>
+                <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})} style={styles.lightText}>Login</Text>
               </Button>
             </TouchableOpacity> 
+
             <TouchableOpacity  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
               <Button primary rounded large style={styles.button} >
-                <Text style={styles.lightText}>SignUp</Text>
+                <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})} style={styles.lightText}>SignUp</Text>
               </Button>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            </View> 
-              
+            <View style={styles.bigButton}>
+
+              <Button large-green   style={styles.loginbutton}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
+                <Text style={{justifyContent: 'center',fontSize: 20,  textAlign: 'center',
+                fontFamily: 'nunito-SemiBold'}}>Login</Text>
+              </Button>
+
+              <Button large-green style={styles.loginbutton} onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+                <Text style={{justifyContent: 'center',fontSize: 20,
+                fontFamily: 'nunito-SemiBold'}}>SignUp</Text>
+              </Button>
+
             </View>
-           
+          </View>
+       
         );
       }
   }
@@ -760,6 +770,26 @@ const styles = StyleSheet.create({
     color:'grey',
     margin:Dimensions.get('window').width*0.02,
   },
+  loginbutton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: Dimensions.get('window').width - 100,
+    margin: 5,
+    borderRadius: 100,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
+  },
+
+  bigButton: {
+    flex: 0.15,
+    flexDirection: 'column',
+  },
+
   
   infoBody:{    
     justifyContent:'space-evenly',
@@ -850,13 +880,11 @@ const styles = StyleSheet.create({
 },
 logoStyle:{
   flex:0.7,
-  
   justifyContent:'center',
 
 },
 buttonsWithLogo:{
   flex:0.3,
-  
   justifyContent:'center',
 },
 lightText: {
