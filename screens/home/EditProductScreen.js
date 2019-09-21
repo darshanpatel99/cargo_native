@@ -996,6 +996,10 @@ export default class PostProductScreen extends Component {
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
                     types: 'geocode', // default: 'geocode'
+                    location: '50.66648,-120.3192',
+                    region: 'Canada',
+                    radius: 20000,
+                    strictbounds: true,
                 }}
 
                 styles={{
