@@ -98,6 +98,9 @@ export default class ChatScreen extends React.Component {
           messages={this.state.messages}
           onSend={firebaseChat.send}
           user={this.user}
+          renderAvatar={() => {}}
+
+          
         />
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
       </View>
