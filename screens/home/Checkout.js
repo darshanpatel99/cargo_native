@@ -115,9 +115,9 @@ export default class Checkout extends Component {
         } else if(distanceInMeters >= 5000 && distanceInMeters <= 10000){
           deliveryCharge = 6.99;
         } else if (deliveryCharge >= 10000 && deliveryCharge <= 17000){
-          deliveryCharge = 9.99;
+          deliveryCharge = 8.99;
         } else {
-          deliveryCharge = 14.99;
+          deliveryCharge = 9.99;
         }
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
@@ -247,7 +247,6 @@ export default class Checkout extends Component {
                 autoFocus={false}
                 returnKeyType={'default'}
                 fetchDetails={true}
-                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
                 
@@ -275,11 +274,17 @@ export default class Checkout extends Component {
                     return this.state.GPSStringFormat; // text input default value
                 }}
 
+ 
+
                 query={{
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
                     types: 'geocode', // default: 'geocode'
+                    location: '50.66648,-120.3192',
+                    region: 'Canada',
+                    radius: 20000,
+                    strictbounds: true,
                 }}
 
                 styles={{
@@ -301,7 +306,7 @@ export default class Checkout extends Component {
                   color: '#1faadb'
                   },
               }}
-                currentLocation={false}vi
+                currentLocation={false}
                 />
 
 
