@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, KeyboardAvoidingView} from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, Dimensions, KeyboardAvoidingView} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -795,47 +795,21 @@ deleteUserFromAuthDatabase() {
           </Item>
 
 
-        <TouchableOpacity onPress={this.emailSignUpAsync}>
-          <Button secondary rounded large style={styles.button}>
+          <Button large-green style={styles.button} onPress={this.emailSignUpAsync}>
               <Text style={styles.lightText} >{prevPage}</Text>
           </Button>
-        </TouchableOpacity>
-      
+                
         <Text>Or</Text>
 
-        {/* <TouchableOpacity onPress={this.navigateToAdress}>
-          <Button secondary rounded large style={styles.button}>
-              <Text style={styles.lightText} >{prevPage}</Text>
-          </Button>
-        </TouchableOpacity>
-
-        <Text>Or</Text> */}
-
-
-      {/* 
-        <TouchableOpacity onPress={this.facebookLoginAsync}>
-          <Button primary rounded large style={styles.button}>
-            <Ionicons
-              size={30}
-              color="#fff"  
-              style={styles.icon}
-              name='logo-facebook'
-            />
-            <Text style={styles.lightText} >Facebook {prevPage}</Text>
-          </Button>
-        </TouchableOpacity> */}
-
-        <TouchableOpacity onPress ={this.googleLoginAsync}>
-          <Button primary rounded large style={styles.button}>
+          <Button large-green style={styles.button}  onPress ={this.googleLoginAsync}>
             <Ionicons
               size={30}
               color="#fff"
               style={styles.icon}
               name='logo-google'
             />
-            <Text style={styles.lightText} >Google {prevPage}</Text>
+            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google {prevPage}</Text>
           </Button>
-        </TouchableOpacity>
       </KeyboardAvoidingView>
       </DismissKeyboard>
     );
@@ -868,40 +842,25 @@ deleteUserFromAuthDatabase() {
         />                        
       </Item>
 
-        
-      <TouchableOpacity onPress={this.emailLoginAsync}>
-        <Button secondary rounded large style={styles.button}>
+      <View>
+        <Button large-green style={styles.button} onPress={this.emailLoginAsync}>
             <Text style={styles.lightText} >{prevPage}</Text>
         </Button>
-      </TouchableOpacity>
+      </View>
 
       <Text>Or</Text>
 
-
-        {/* 
-        <TouchableOpacity onPress={this.facebookLoginAsync}>
-          <Button primary rounded large style={styles.button}>
-            <Ionicons
-              size={30}
-              color="#fff"  
-              style={styles.icon}
-              name='logo-facebook'
-            />
-            <Text style={styles.lightText} >Facebook {prevPage}</Text>
-          </Button>
-        </TouchableOpacity> */}
-
-    <TouchableOpacity onPress ={this.googleLoginAsync}>
-      <Button primary rounded large style={styles.button}>
+      <View>
+      <Button large-green style={styles.button} onPress ={this.googleLoginAsync}>
         <Ionicons
           size={30}
           color="#fff"
           style={styles.icon}
           name='logo-google'
         />
-        <Text style={styles.lightText} >Google {prevPage}</Text>
+        <Text style={styles.lightText}>Google {prevPage}</Text>
       </Button>
-    </TouchableOpacity>
+      </View>
  
     </View>
     </DismissKeyboard>
@@ -958,13 +917,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+
   button: {
+    width: Dimensions.get('window').width - 100,
     flex: 0,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 100,
     height: 50,
-    width: 300,
     margin: 5,
     backgroundColor: Colors.primary,
     shadowColor: "#000",

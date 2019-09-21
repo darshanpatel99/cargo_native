@@ -11,6 +11,7 @@ export default class UserAddress extends React.Component {
         addressArray:[],
         Address:'',
         UnitNumber:'',
+        PhoneNumber: '',
     };
 
     this.finishFunc = this.finishFunc.bind(this);
@@ -34,7 +35,7 @@ export default class UserAddress extends React.Component {
 
     var userCollectionReference = firebase.firestore().collection('Users').doc(this.state.UID);
 
-    if(this.state.Address != ''){
+    if(this.state.Address != '' && this.state.PhoneNumber != ''){
 
     const {navigation} = this.props;
     navigation.navigate('Account');
@@ -45,6 +46,7 @@ export default class UserAddress extends React.Component {
         Street: this.state.addressArray,
         Address: this.state.Address,
         UnitNumber: this.state.UnitNumber,
+        PhoneNumber: this.state.PhoneNumber,
     })
     .then(function() {
         console.log("Document successfully updated!");
@@ -57,16 +59,14 @@ export default class UserAddress extends React.Component {
 
     }
     else{
-        alert('Please enter your address!')
+        alert('Please enter required fields!')
     }
-
   }
 
   ifInputEmpty =() =>{
       if(this.state.Address != ''){
-          return true
+        return true
       }
-      
       return false
   }
 
@@ -75,16 +75,34 @@ export default class UserAddress extends React.Component {
       return (
         <View style={styles.container}>
 
-            <View style={styles.topTitle}>
+          <View style={styles.topTitle}>
             <Text style={{
               marginLeft: 15,
-              fontSize: 30,
+              fontSize: 20,
               fontFamily: 'nunito-SemiBold'
-            }}>
-            Enter Your Address
-          </Text>
+            }}>Phone no. & Address</Text>
 
-            </View>
+          </View>
+
+          <View style={styles.bottomContainer}>
+            <TextInput
+                style={{height: 40, borderColor: 'gray', borderWidth: 1, width:Dimensions.get('screen').width-10, marginTop:15 }}
+                keyboardType='numeric'
+                returnKeyType='done'
+                placeholder="Apt number (Optional)"
+                onChangeText={(text) => this.setState({UnitNumber: text})}
+                value={this.state.UnitNumber}
+            />
+
+            <TextInput
+                style={{height: 40, borderColor: 'gray', borderWidth: 1, width:Dimensions.get('screen').width-10 , marginTop:15}}
+                keyboardType='numeric'
+                returnKeyType='done'
+                placeholder="Phone Number : "
+                onChangeText={(text) => this.setState({PhoneNumber: text})}
+                value={this.state.PhoneNumber}
+            />     
+          </View>
             
 
         <View style={this.ifInputEmpty()? styles.addressContainer : styles.inputAddressContainer}>
@@ -146,27 +164,11 @@ export default class UserAddress extends React.Component {
 
         </View>
 
-        <View style={styles.bottomContainer}>
-            <TextInput
-                style={{height: 40, borderColor: 'gray', borderWidth: 1, width:Dimensions.get('screen').width-10 }}
-                keyboardType='numeric'
-                returnKeyType='done'
-                placeholder="Apt number (Optional)"
-                onChangeText={(text) => this.setState({UnitNumber: text})}
-                value={this.state.UnitNumber}
-            />
-            <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-
-            {/* <TouchableOpacity  onPress={this.finishFunc}>
-                <MainButton title='Done' />
-            </TouchableOpacity> */}
-
-            <Button onPress={this.finishFunc} title='Done' />
-            </View>
-            
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly', marginTop:15}}>
+          <Button onPress={this.finishFunc} title='Done' />
         </View>
 
-        </View>
+      </View>
       );
     }
 }
