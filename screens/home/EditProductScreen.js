@@ -80,6 +80,7 @@ export default class PostProductScreen extends Component {
       changingAddress:0,
       canUpload:true,
       priceAlert:false,
+      uploadCounter:0,
     }
 
     this.categoryRemover = React.createRef();
@@ -220,6 +221,7 @@ export default class PostProductScreen extends Component {
 
      this.setState({
        showAlert2: false,
+       uploadCounter: 0,
     //   title : "",
     //   description : "",
     //   price : "",
@@ -231,7 +233,7 @@ export default class PostProductScreen extends Component {
      });
     
 
-    this.saveChanges();
+   // this.saveChanges();
     this.resetStack();
   
     
@@ -262,6 +264,50 @@ export default class PostProductScreen extends Component {
     }
   };
 
+  
+  //Uploading all the product related stuff
+  uploadImageData =  async () =>{
+    var array = this.state.image; //getting the uri array
+  
+    array.forEach(async (element) => {
+
+      if(this.state.firstTimeOnly){
+        await this.uploadThumbnailToFirebase(element)
+        .then(()=>{
+          console.log('Thumbnail got uploaded');
+          
+        })
+        .catch(error=>{
+          console.log("Hey there is an error:  " +error);
+        });
+      }
+
+      await this.uploadImageToFirebase(element, uuid.v1())
+      .then(() => {
+        console.log('Success' + uuid.v1());
+        
+        
+      })
+      .catch(error => {
+        console.log('Success' + uuid.v1()); 
+        console.log(error);
+      });
+
+      
+    });
+
+
+
+}
+
+
+
+   //start post the add button
+  startEditTheProduct = async () =>{
+    await this.uploadImageData();
+  }
+
+
   //post the product
   postTheProduct = async() =>{
 
@@ -281,7 +327,7 @@ export default class PostProductScreen extends Component {
       Name : this.state.title,
       Price : this.state.price,
       Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.Thumbnail,
+      Thumbnail : this.state.thumbnail,
       Owner : this.state.owner,
       Flag : true,
       FavouriteUsers:[],
@@ -335,7 +381,7 @@ export default class PostProductScreen extends Component {
 
   };  
   /**
-   * Function Description:
+   * Function Description: Pick image from the gallery
    */
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -352,40 +398,40 @@ export default class PostProductScreen extends Component {
         image: this.state.image.concat([result.uri])
       });
 
-      console.log(this.state.firstTimeOnly);
-      if(this.state.firstTimeOnly){
-        console.log('I am first time');
-        await this.uploadThumbnailToFirebase(result.uri)
-          .then(()=>{
-            this.setState({firstTimeOnly:false});
-            console.log('Thumbnail got uploaded');
-          })
-          .catch(error=>{
-            console.log("Hey there is an error:  " +error);
-          })
-        }
+    //   console.log(this.state.firstTimeOnly);
+    //   if(this.state.firstTimeOnly){
+    //     console.log('I am first time');
+    //     await this.uploadThumbnailToFirebase(result.uri)
+    //       .then(()=>{
+    //         this.setState({firstTimeOnly:false});
+    //         console.log('Thumbnail got uploaded');
+    //       })
+    //       .catch(error=>{
+    //         console.log("Hey there is an error:  " +error);
+    //       })
+    //     }
     
 
 
-     await this.uploadImageToFirebase(result.uri, uuid.v1())
-        .then(() => {
-          console.log('Success' + uuid.v1());  
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
+    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
+    //     .then(() => {
+    //       console.log('Success' + uuid.v1());  
+    //     })
+    //     .catch(error => {
+    //       console.log('Success' + uuid.v1()); 
+    //       console.log(error);
+    //     });
     }
   };
 
     /**
-   * Function Description:
+   * Function Description: Pick the image using the camera
    */
     
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.2,
+      quality:0.2
       //allowsEditing: true,
       
     });
@@ -398,29 +444,29 @@ export default class PostProductScreen extends Component {
       });
 
 
-      console.log(this.state.firstTimeOny);
+    //   console.log(this.state.firstTimeOny);
 
-      if(this.state.firstTimeOnly){
-       //Create Thumbnail only FirstTime
-         console.log('I am first time');
-        await this.uploadThumbnailToFirebase(result.uri)
-          .then(()=>{
-            this.setState({firstTimeOnly:false});
-            console.log('Thumbnail got uploaded');
-          })
-          .catch(error=>{
-            console.log(error);
-          })
-        }
+    //   if(this.state.firstTimeOnly){
+    //    //Create Thumbnail only FirstTime
+    //      console.log('I am first time');
+    //     await this.uploadThumbnailToFirebase(result.uri)
+    //       .then(()=>{
+    //         this.setState({firstTimeOnly:false});
+    //         console.log('Thumbnail got uploaded');
+    //       })
+    //       .catch(error=>{
+    //         console.log(error);
+    //       })
+    //     }
 
-     await this.uploadImageToFirebase(result.uri, uuid.v1())
-        .then(() => {
-          console.log('Success' + uuid.v1());  
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
+    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
+    //     .then(() => {
+    //       console.log('Success' + uuid.v1());  
+    //     })
+    //     .catch(error => {
+    //       console.log('Success' + uuid.v1()); 
+    //       console.log(error);
+    //     });
     }
   };
 
@@ -469,7 +515,10 @@ export default class PostProductScreen extends Component {
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           console.log('Thumbnail File available at', downloadURL);
-          that.setState({Thumbnail:downloadURL}); // setting the Thumbnail URL
+          that.setState({thumbnail:downloadURL}); // setting the Thumbnail URL
+          var uploadC = that.state.uploadCounter+1;
+          that.setState({uploadCounter:uploadC});
+
         });
       });
     }
@@ -498,44 +547,62 @@ export default class PostProductScreen extends Component {
 
 
 
- 
-  //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, imageName) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    console.log('INside upload Image to Firebase')
-    var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
-    const that = this;
-    
-    // Register three observers:
-    // 1. 'state_changed' observer, called any time the state changes
-    // 2. Error observer, called on failure
-    // 3. Completion observer, called on successful completion
-    uploadTask.on('state_changed', function(snapshot){
-      // Observe state change events such as progress, pause, and resume
-      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case firebase.storage.TaskState.PAUSED: // or 'paused'
-          console.log('Upload is paused');
-          break;
-        case firebase.storage.TaskState.RUNNING: // or 'running'
-          console.log('Upload is running');
-          break;
-      }
-    }, function(error) {
-      // Handle unsuccessful uploads
-    }, function() {
-      // Handle successful uploads on complete
-      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        console.log('File available at', downloadURL);
-        that.state.downloadURLs.push(downloadURL);
-      });
+ //Uploading an Image to the Firebase
+ uploadImageToFirebase = async (uri, imageName) => {
+
+  const manipResult = await ImageManipulator.manipulateAsync(
+    uri,
+    [],
+    { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+  )
+
+
+  const response = await fetch(manipResult.uri);
+  const blob = await response.blob();
+  console.log('INside upload Image to Firebase')
+  var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+  const that = this;
+  
+  // Register three observers:
+  // 1. 'state_changed' observer, called any time the state changes
+  // 2. Error observer, called on failure
+  // 3. Completion observer, called on successful completion
+  uploadTask.on('state_changed', function(snapshot){
+    // Observe state change events such as progress, pause, and resume
+    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    switch (snapshot.state) {
+      case firebase.storage.TaskState.PAUSED: // or 'paused'
+        console.log('Upload is paused');
+        break;
+      case firebase.storage.TaskState.RUNNING: // or 'running'
+        console.log('Upload is running');
+        break;
+    }
+  }, function(error) {
+    // Handle unsuccessful uploads
+  }, function() {
+    // Handle successful uploads on complete
+    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+      console.log('File available at', downloadURL);
+      that.state.downloadURLs.push(downloadURL);
+
+      //some funcky stuff
+      var uploadC = that.state.uploadCounter+1;
+      that.setState({uploadCounter:uploadC});
+      var array = that.state.image;
+        if(uploadC==array.length+1){
+          //call the post product function
+          console.log("Number of products uploaded:" + uploadC);
+          that.saveChanges();
+          //that.resetStack();
+        }
     });
-    return 'Success';
-  };
+  });
+  return 'Success';
+};
  
 
   //Delete Image on Remove
@@ -728,7 +795,7 @@ export default class PostProductScreen extends Component {
              margin: 10
            }}
          >
-           <Button style={styles.postAdButton} onPress={()=>{this.showAlert2()}}>
+           <Button style={styles.postAdButton} onPress={()=>{this.startEditTheProduct()}}>
              <Text>Save changes</Text>
            </Button>
          </View>
@@ -743,7 +810,7 @@ export default class PostProductScreen extends Component {
        margin: 10
      }}
    >
-     <Button disabled style={styles.postAdButton} onPress={this.saveChanges}>
+     <Button disabled style={styles.postAdButton} onPress={this.startEditTheProduct()}>
        <Text>Save changes</Text>
      </Button>
    </View>
@@ -758,11 +825,14 @@ export default class PostProductScreen extends Component {
         Name:this.state.title,
         Pictures:this.state.downloadURLs,
         Price:this.state.price,
-        //Thumbnail : this.state.Thumbnail, 
+        Thumbnail : this.state.thumbnail, 
         Description:this.state.description,
         Category: this.state.Category,
         Avability: this.state.Avability,
         AddressArray:this.state.addressArray,    
+    }).then(()=>{
+      //show the alert
+      this.showAlert2();
     });
 
     //this.setState({isOverlayVisible:true});
