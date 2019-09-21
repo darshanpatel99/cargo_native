@@ -3,7 +3,6 @@ import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import firebaseChat from '../../FirebaseChat';
 import firebase from '../../Firebase'
-import AwesomeAlert from 'react-native-awesome-alerts';
 export default class ChatScreen extends React.Component {
 
   constructor(props) {
@@ -12,9 +11,6 @@ export default class ChatScreen extends React.Component {
     const owner = navigation.getParam('owner');
     const previousScreen = navigation.getParam('previousScreen')
     const sellerName = navigation.getParam('sellerName')
-
-    // this.state({owner: owner})
-    let User = firebase.auth().currentUser;
 
     let chatDocumentReferenceId = ''
 
@@ -30,9 +26,7 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         buyerName: firebaseChat.userDisplayName,
-        User,
         sellerName,
-        showAlert: true,
       };
       //this.firebaseGetSellerName();
 
@@ -56,14 +50,12 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         sellerName: firebaseChat.userDisplayName,
-        User,
-        showAlert: true,
       };
     }
 
  
 
-  this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  //this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
   }
 
@@ -98,20 +90,8 @@ export default class ChatScreen extends React.Component {
     };
   }
 
-  //listens to the change in auth state
-  onAuthStateChanged = User => {
-    // if the user logs in or out, this will be called and the state will update.
-    // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: User });
-    //navigate to the account screen if the user is not logged in
-
-  };
-
-
 
   render() {
-    const {showAlert} = this.state;
-
     return (
       <View style ={{flex: 1}}>
         <GiftedChat
