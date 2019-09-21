@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Alert} from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, KeyboardAvoidingView} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +16,13 @@ import * as Permissions from 'expo-permissions';
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+ );
+
 export default class SignUpScreen extends Component {
   FacebookApiKey= '2872116616149463';
 
@@ -740,7 +747,9 @@ deleteUserFromAuthDatabase() {
     //Returning the UI elements on this page
     return (
 
-      <View style={styles.viewStyle}>
+      <DismissKeyboard>
+        
+      <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
 
                 <View style={styles.container}>
                       <TextInput
@@ -827,10 +836,13 @@ deleteUserFromAuthDatabase() {
             <Text style={styles.lightText} >Google {prevPage}</Text>
           </Button>
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
+      </DismissKeyboard>
     );
     }else{
       return(
+
+        <DismissKeyboard>
 
         <View style={styles.viewStyle}>
 
@@ -892,6 +904,7 @@ deleteUserFromAuthDatabase() {
     </TouchableOpacity>
  
     </View>
+    </DismissKeyboard>
     );
       
     }
