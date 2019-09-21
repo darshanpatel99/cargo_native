@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet,View,Image,Text,TouchableOpacity,Dimensions,ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import MainButton from "../../components/theme/MainButton"; //components\theme\MainButton.js
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button} from "native-base";
@@ -31,16 +30,16 @@ export default class AccountScreen extends React.Component {
     userID:'',
     editMode:false,
     newData:[],
-     newPicture:[],
-     picture:'',
-     currentFolio:'',
-     Address:'',
-     UnitNumber:'',
+    newPicture:[],
+    picture:'',
+    currentFolio:'',
+    Address:'',
+    UnitNumber:'',
     }
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
-
+    
 
     if (user != null) {
 
@@ -79,7 +78,7 @@ componentDidMount() {
     if (user != null) {
 
       //firebase.auth().signInWithEmailAndPassword(email, password)
-        
+
       this.state.userID = user.uid;
       console.log(" State UID: " + this.state.userID);
       this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
@@ -95,16 +94,11 @@ componentDidMount() {
         picture:doc.data().ProfilePicture,
         }); 
       }); 
-    
-         
-      
   
     
     //firestore reference for the specific document associated with the user
     this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-
   }
-      
   });
 
   this.getPermissionAsync();
@@ -120,10 +114,17 @@ componentWillUnmount() {
   this.focusListener.remove();
 }
 
-onAuthStateChanged = user => {
+onAuthStateChanged = (user) => {
   // if the user logs in or out, this will be called and the state will update.
   // This value can also be accessed via: firebase.auth().currentUser
-  this.setState({ User: user });
+  if (user != null){
+    if(user.emailVerified){ // note difference on this line
+      this.setState({ User: user});
+    }
+  }
+  else{
+    this.setState({ User: null});
+  }
 };  
 
   //Function to logo out user21`22122
@@ -135,7 +136,6 @@ onAuthStateChanged = user => {
       // navigate('ChatScreen')
     } catch ({ message }) {
       alert('You are logged out!!');
-
     }
   }
 
@@ -397,7 +397,7 @@ onAuthStateChanged = user => {
           returnKeyType='done'
           autoCorrect={false}
           placeholder= 'phone number'
-          maxLength ={10}                                                            
+          maxLength ={12}                                                            
         />);      
     }
     else 
@@ -588,13 +588,15 @@ onAuthStateChanged = user => {
 
               <View style={[styles.settingsButton,{justifyContent:'center'}]}>
                   <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
-                  <TouchableOpacity onPress={this.goToEditMode}>
-                      <MainButton title='Edit' secondary="true" />
-                    </TouchableOpacity>
+                
+                    <Button light rounded large style={styles.secondaryButton} onPress={this.goToEditMode}>
+                      <Text style={styles.secondaryText}>Edit</Text>
+                    </Button>
 
-                    <TouchableOpacity onPress={this.logoutAsync}>
-                      <MainButton title='LogOut' secondary="true" />
-                    </TouchableOpacity>
+                    <Button light rounded large style={styles.secondaryButton} onPress={this.logoutAsync}>
+                      <Text style={styles.secondaryText}>LogOut</Text>
+                    </Button>
+
                   </View>
                   </View>
                               
@@ -624,18 +626,18 @@ onAuthStateChanged = user => {
 
               <View style={[styles.buttons,styles.marginBottom]}>
                 <View style={styles.prodInfoButtons}>
-                  <Button full large primary rounded onPress={() => navigate('Listing', {id:this.state.userID})}>
-                    <Text style={[styles.buttonText,{color:'white'}]}>Listing</Text>
+                  <Button  light rounded large style={styles.secondaryBlueButton} onPress={() => navigate('Listing', {id:this.state.userID})}>
+                    <Text style={styles.secondaryWhiteText}>Listing</Text>
                   </Button>
                 </View>
                 <View style={styles.prodInfoButtons}>
-                  <Button full  large primary rounded onPress={() => navigate('Bought', {id:this.state.userID})}>
-                    <Text style={[styles.buttonText,{color:'white'}]}>Bought</Text>
+                  <Button light rounded large style={styles.secondaryBlueButton} onPress={() => navigate('Bought', {id:this.state.userID})}>
+                    <Text style={styles.secondaryWhiteText}>Bought</Text>
                   </Button>
                 </View>
                 <View style={styles.prodInfoButtons}>
-                  <Button full large primary rounded onPress={() => navigate('Sold', {id:this.state.userID})}>
-                    <Text style={[styles.buttonText,{color:'white'}]}>Sold</Text>
+                  <Button light rounded large style={styles.secondaryBlueButton} onPress={() => navigate('Sold', {id:this.state.userID})}>
+                    <Text style={styles.secondaryWhiteText}>Sold</Text>
                   </Button>
                 </View>
               </View>
@@ -658,13 +660,18 @@ onAuthStateChanged = user => {
               </View>
 
              <View style={styles.buttonsWithLogo}>
-               <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-                <MainButton title='Login'/>
-              </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-                <MainButton title='SignUp'/>
-              </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
+              <Button primary rounded large style={styles.button}  >
+                <Text style={styles.lightText}>Login</Text>
+              </Button>
+            </TouchableOpacity> 
+            <TouchableOpacity  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
+              <Button primary rounded large style={styles.button} >
+                <Text style={styles.lightText}>SignUp</Text>
+              </Button>
+            </TouchableOpacity>
+
             </View> 
               
             </View>
@@ -852,4 +859,60 @@ buttonsWithLogo:{
   
   justifyContent:'center',
 },
+lightText: {
+  color: "#fff",
+  fontSize: 18,
+  fontWeight: "500",
+  letterSpacing: 1.2
+},
+button: {
+  flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: 300,
+  margin: 5,
+  backgroundColor: Colors.primary,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.5
+},
+secondaryButton: {
+  flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: 175,
+  margin: 5
+},
+secondaryText: {
+  color: Colors.primary,
+  fontSize: 18,
+  fontWeight: "500",
+  letterSpacing: 1.2
+},
+
+secondaryWhiteText: {
+  color: "#fff",
+  fontSize: 18,
+  fontWeight: "500",
+  letterSpacing: 1.2
+},
+
+secondaryBlueButton: {
+  flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: Dimensions.get('screen').width*0.3,
+  margin: 5,
+  backgroundColor: Colors.primary,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.5
+},
+
 })

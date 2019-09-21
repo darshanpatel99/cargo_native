@@ -8,17 +8,58 @@ const items = [
   {
     name: 'Electronics',
     id: 1,
-
+    children: [
+      {
+        name: 'Mobile Phone',
+        id: 2,
+      },
+      {
+        name: 'Computers',
+        id: 3,
+      },
+      {
+        name: 'Other Electronics',
+        id: 4,
+      },
+    ],
   },
 
   {
     name: 'Home Products',
-    id: 2,
+    id: 5,
+    children: [
+      {
+        name: 'Home Décor',
+        id: 6,
+      },
+      {
+        name: 'Kitchen and dining wares',
+        id: 7,
+      },
+      {
+        name: 'Other Home Products',
+        id: 8,
+      },
+    ],
   },
 
   {
     name: 'Baby Products',
-    id: 3,
+    id: 9,
+    children: [
+      {
+        name: 'Clothing',
+        id: 10,
+      },
+      {
+        name: 'Toys',
+        id: 11,
+      },
+      {
+        name: 'Cribs',
+        id: 12,
+      },
+    ],
   }
 
 ];
@@ -58,17 +99,17 @@ export default class RefineCategoryHomeScreen extends Component {
           removeAllText= "Remove All"
           colors= {{chipColor: Colors.primary}}
         //   selectToggleIconComponent = "filter-list"
-            styles = {{
-                backdrop: {
-                    justifyContent: 'center',
-                  },
-                  container: {
-                    width: '100%',
-                    height: '80%',
-                    flex: 0,
-                    alignSelf: 'center',
-                  }}
-            }
+          styles = {{
+            backdrop: {
+              justifyContent: 'center',
+            },
+            container: {
+              width: '100%',
+              height: '80%',
+              flex: 0,
+              alignSelf: 'center',
+            }}
+          }
         />
       </View>
     );

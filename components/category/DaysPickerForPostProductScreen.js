@@ -76,7 +76,7 @@ export default class extends Component {
           items={shift}
           uniqueKey="id"
           subKey="children"
-          selectText="Avability"
+          selectText="Availability"
           showDropDowns={true}
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}

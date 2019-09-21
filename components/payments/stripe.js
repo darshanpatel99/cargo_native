@@ -8,6 +8,7 @@ var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6
 import Colors from "../../constants/Colors";
 import firebase from '../../Firebase.js';
 import firebaseChat from '../../FirebaseChat';
+import PostTransaction from '../../functions/PostTransaction';
 
 
 const DismissKeyboard = ({ children }) => (
@@ -114,6 +115,52 @@ export default class Stripe extends React.Component {
       this.setState({token})
     }
 
+    updateProductOnPayment(){
+      console.log('updateProductOnPayment function called');
+      var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
+      return productStatusReference.update({
+        Status: 'bought',
+        BuyerID: this.state.userId,
+        BuyerName: firebaseChat.userDisplayName,
+        BuyerAddress: this.state.BuyerAddress,
+        DeliveryFee: this.state.DeliveryFee,
+        TotalFee:  Math.round(this.props.charge),
+        BoughtStatus: 'true',
+
+      })
+    }
+
+    postTransactionOnPayment(){
+      console.log('postTransactionOnPaymen function called');
+      var data = {
+        ProductId: '',
+        Price : this.state.price,
+        DeliveryFee: this.state.DeliveryFee,
+        TotalFee:  Math.round(this.props.charge),
+        Commission:'',
+        BuyerAddress: this.state.BuyerAddress,
+        BuyerName: firebaseChat.userDisplayName,
+        BuyerID: this.state.userId,
+        SellerAddress: '',
+        AddressArray: '',
+        SellerName: '',
+        Owner : '',
+        TimeStamp: null,
+        PaymentStatus:'',
+        OrderNumber:'',
+        StripeReference:'',
+        DeliveryTracking:'',
+        Notes:''
+      }
+  
+      //Getting the current time stamp
+      var currentDate = new Date();
+      data.TimeStamp = currentDate.getTime();
+      //if(this.checkFields == true)
+      //Posting the product
+      PostTransaction(data);
+      console.log("Product Posted---->" + data);
+    }
 
     //AWS lambda function call
     makeLambdaCal(token) {
@@ -149,20 +196,9 @@ export default class Stripe extends React.Component {
         if(this.state.responseJson == 'Payment Successfull'){
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
+          this.updateProductOnPayment();
+          //this.postTransactionOnPayment();
           this.showAlert();
-          var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
-
-          return productStatusReference.update({
-            Status: 'bought',
-            BuyerID: this.state.userId,
-            BuyerName: firebaseChat.userDisplayName,
-            BuyerAddress: this.state.BuyerAddress,
-            DeliveryFee: this.state.DeliveryFee,
-            TotalFee:  Math.round(this.props.charge),
-            BoughtStatus: 'true',
-
-          })
-
         }else{
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
