@@ -2,6 +2,7 @@ import React from 'react';
 import {View, KeyboardAvoidingView, Platform} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import firebaseChat from '../../FirebaseChat';
+import firebase from '../../Firebase'
 export default class ChatScreen extends React.Component {
 
   constructor(props) {
@@ -10,8 +11,6 @@ export default class ChatScreen extends React.Component {
     const owner = navigation.getParam('owner');
     const previousScreen = navigation.getParam('previousScreen')
     const sellerName = navigation.getParam('sellerName')
-
-    // this.state({owner: owner})
 
     let chatDocumentReferenceId = ''
 
@@ -27,8 +26,7 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         buyerName: firebaseChat.userDisplayName,
-        owner: owner,
-        sellerName
+        sellerName,
       };
       //this.firebaseGetSellerName();
 
@@ -52,9 +50,13 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         sellerName: firebaseChat.userDisplayName,
-        // owner: owner
       };
     }
+
+ 
+
+  //this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
   }
 
 
@@ -63,6 +65,16 @@ export default class ChatScreen extends React.Component {
     title: navigation.state.params.completeChatThread.chat || 'Chat',
   });
 
+  componentDidMount() {
+
+    const { navigation } = this.props;
+    
+    this.focusListener = navigation.addListener('didFocus', () => { 
+    //checking the current user and setting uid
+    let user = firebase.auth().currentUser;
+
+  });
+  }
 
 
   get user() {
@@ -78,6 +90,7 @@ export default class ChatScreen extends React.Component {
     };
   }
 
+
   render() {
     return (
       <View style ={{flex: 1}}>
@@ -85,15 +98,17 @@ export default class ChatScreen extends React.Component {
           messages={this.state.messages}
           onSend={firebaseChat.send}
           user={this.user}
+          renderAvatar={() => {}}
+
+          
         />
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
-
-        
-
       </View>
 
     );
+    
   }
+  
 
 
   //passing the uid and seller id to grab the message thread
@@ -111,4 +126,13 @@ export default class ChatScreen extends React.Component {
   componentWillUnmount() {
     firebaseChat.refOff();
   }
+}
+
+const styles = {
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
 }

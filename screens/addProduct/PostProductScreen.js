@@ -191,8 +191,14 @@ export default class PostProductScreen extends Component {
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: user });
-    //navigate to the account screen if the user is not logged in
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({ User: user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
 
   };
 
@@ -334,7 +340,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      compress: 0.5,
+      quality:0.2
       //allowsEditing: true,
       
     });
@@ -450,7 +456,15 @@ export default class PostProductScreen extends Component {
  
   //Uploading an Image to the Firebase
   uploadImageToFirebase = async (uri, imageName) => {
-    const response = await fetch(uri);
+
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [],
+      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+    )
+
+
+    const response = await fetch(manipResult.uri);
     const blob = await response.blob();
     console.log('INside upload Image to Firebase')
     var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);

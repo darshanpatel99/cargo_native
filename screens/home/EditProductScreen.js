@@ -252,9 +252,14 @@ export default class PostProductScreen extends Component {
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: user });
-    //navigate to the account screen if the user is not logged in
-
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({ User: user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
   };
 
   //post the product
@@ -335,7 +340,7 @@ export default class PostProductScreen extends Component {
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.6,
+      quality:0.2,
      // allowsEditing: true,
       
     });
@@ -380,7 +385,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.6,
+      quality:0.2,
       //allowsEditing: true,
       
     });

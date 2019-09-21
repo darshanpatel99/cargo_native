@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Alert} from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, KeyboardAvoidingView} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,9 +11,18 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
+import {Notifications} from 'expo';
+import * as Permissions from 'expo-permissions';
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+ );
+
 export default class SignUpScreen extends Component {
   FacebookApiKey= '2872116616149463';
 
@@ -21,6 +30,7 @@ export default class SignUpScreen extends Component {
     super(props);
     //creating the firebase reference for the users collection
     this.firebaseRef = firebase.firestore().collection('Users');
+
     //Following is the state of this  component
     this.state ={
       password:'',
@@ -46,6 +56,7 @@ export default class SignUpScreen extends Component {
       profilePic:'',
       showAlert: true,
       showOverlay: false,
+      deviceNotificationToken: '',
     }
 
     
@@ -68,7 +79,15 @@ export default class SignUpScreen extends Component {
     console.log('Auth state of the user has been changed');
     // if the user logs in or out, this will be called and the state will update.
     // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ user });
+    //this.setState({ user });
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
   };
 
   //hide the alert
@@ -121,6 +140,7 @@ async facebookLogin() {
 async googleLogin(){
 
   try{
+    //Configuration File
     const config ={ 
         expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
         iosClientId:'572236256696-rebjkd10nh1rbveidpq4d338nrgga709.apps.googleusercontent.com',
@@ -151,7 +171,7 @@ async googleLogin(){
     }
 
   }catch({message}){
-    alert('login' + message);
+    alert('login: ' + message);
   }
 }
 
@@ -252,6 +272,10 @@ emailLogin = async (email, password) =>{
               console.log('1--inside firebase snap')
               if(docSnapshot.exists){
                 console.log('2--inside firebase snap')
+
+                //get the token and update the value
+                this.getNotificationToken(userUID);
+
                 this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
               else{
@@ -368,6 +392,8 @@ googleLoginAsync = async () => {
   if (!accessToken) return;
   // Use the facebook token to authenticate our user in firebase.
   const credential = firebase.auth.GoogleAuthProvider.credential(null,accessToken);
+
+  console.log('Got the credentials from Google SignIn');
   try {
     // login with credential
     await firebase.auth().signInWithCredential(credential).then((result)=>{
@@ -386,6 +412,7 @@ googleLoginAsync = async () => {
           try{
             //verify user is signed up or not
             var userUID = this.state.UID;
+            
             console.log('The uid that is going to be verified: ' + userUID);
 
             this.firebaseRef.doc(userUID)
@@ -393,7 +420,12 @@ googleLoginAsync = async () => {
               .then(docSnapshot => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
-                  console.log('2--inside firebase snap')
+                  console.log('2--inside firebase snap');
+                  
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
                   
                   const resetAction = StackActions.reset({
                     index: 0, // <-- currect active route from actions array
@@ -577,13 +609,70 @@ deleteUserFromAuthDatabase() {
 
 
   navigateToAdress = () =>{
-
   const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('AddressScreen', {userId: '0zVVJrL8Pdb3ogpAmqV7oprwaah1'})
   }
 
+
+
+   //Getting the push token for the device
+   getNotificationToken = async (userUID) =>{
+    try{
+        
+        console.log('Getting the Notification Token');
+        const { status: existingStatus } = await Permissions.getAsync(
+          Permissions.NOTIFICATIONS
+        );
+        let finalStatus = existingStatus;
+      
+        // only ask if permissions have not already been determined, because
+        // iOS won't necessarily prompt the user a second time.
+        if (existingStatus !== 'granted') {
+          // Android remote notification permissions are granted during the app
+          // install, so this will only ask on iOS
+          console.log('Notification permission is not granted');
+          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+          finalStatus = status;
+        }
+      
+        // Stop here if the user did not grant permissions
+        if (finalStatus !== 'granted') {
+          return;
+        }
+      // Get the token that uniquely identifies this device
+        
+      console.log('going to get the notification token');
+      
+       await Notifications.getDevicePushTokenAsync().then((token)=>{
+          console.log('Go the following device notification token: '+ token);
+          console.log('Type of token: '+ typeof(token));
+          //this.setState({deviceNotification.Token:token});
+          this.firebaseRef.doc(userUID).update({NotificationToken:token});
+          
+        });
+
+
+      
+    }
+    catch(error){
+      alert(error);
+    }
+  }
+
+  //set the notification token state
+  setDeviceNotificationToken = async (token) =>{
+
+    //setting the device notification token
+    this.setState({deviceNotificationToken:token});
+  }
+
   finishFunc =() =>{
+
+    console.log('In the finishFunc function');
+    
+
+
 
     //Sample dat object for each user
     var data={
@@ -602,6 +691,7 @@ deleteUserFromAuthDatabase() {
       Address:'',
       UnitNumber:'',
       UID: this.state.UID.toString(),
+      NotificationToken: this.state.deviceNotificationToken
     }
 
     // const resetAction = StackActions.reset({
@@ -609,7 +699,12 @@ deleteUserFromAuthDatabase() {
     //   //action:[NavigationActions.navigate({routeName: 'AccountInfo'})]
     // })
     //adding the suer with the all the information we have to firebase
-    AddUser(data);
+    AddUser(data).then(()=>{
+        //Get the notification token
+        this.getNotificationToken(this.state.UID);
+
+    });
+    
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
 
@@ -652,7 +747,9 @@ deleteUserFromAuthDatabase() {
     //Returning the UI elements on this page
     return (
 
-      <View style={styles.viewStyle}>
+      <DismissKeyboard>
+        
+      <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
 
                 <View style={styles.container}>
                       <TextInput
@@ -739,10 +836,13 @@ deleteUserFromAuthDatabase() {
             <Text style={styles.lightText} >Google {prevPage}</Text>
           </Button>
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
+      </DismissKeyboard>
     );
     }else{
       return(
+
+        <DismissKeyboard>
 
         <View style={styles.viewStyle}>
 
@@ -804,6 +904,7 @@ deleteUserFromAuthDatabase() {
     </TouchableOpacity>
  
     </View>
+    </DismissKeyboard>
     );
       
     }
