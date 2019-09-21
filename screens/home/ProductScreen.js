@@ -306,7 +306,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+      navigate('ChatDetailMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'Details'})
   }
     else{
       this.setState({
