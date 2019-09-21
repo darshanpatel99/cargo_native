@@ -7,9 +7,9 @@ import {
   Dimensions,
   Platform,
   Alert,
-  TouchableOpacity
+  TouchableOpacity, Text,
 } from 'react-native';
-import { Button, Text,} from "native-base";
+import { Button} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
@@ -397,11 +397,9 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'sold' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <TouchableOpacity  onPress={this.ReactivateOrder}>
-          <Button primary rounded large style={styles.button}>
+          <Button large-green style={styles.buttonLarge} onPress={this.ReactivateOrder}>
             <Text style={styles.lightText}>Reactivate Product</Text>
           </Button>
-          </TouchableOpacity>
         </View>
       );
     }
@@ -409,11 +407,9 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <TouchableOpacity>
-          <Button primary rounded large style={styles.button} >
+          <Button large-green style={styles.buttonLarge} >
             <Text style={styles.lightText}>Product Sold</Text>
           </Button>
-          </TouchableOpacity>
         </View>
       );
     }
@@ -421,11 +417,10 @@ export class ProductScreen extends Component {
     else if(this.state.deliveryCharge != '' && this.state.Status === 'bought' && this.state.BuyerID === this.state.userID){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <TouchableOpacity onPress={this.CancelOrder}>
-          <Button primary rounded large style={styles.button} >
+
+          <Button large-green style={styles.buttonLarge} onPress={this.CancelOrder}>
             <Text style={styles.lightText}>Cancel Order</Text>
           </Button>
-          </TouchableOpacity>
 
         </View>
       );
@@ -693,13 +688,14 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     alignSelf: 'flex-end',
   },
-  button: {
+  buttonLarge: {
     flex: 0,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
+    borderRadius: 100,
     margin: 5,
     backgroundColor: Colors.primary,
     shadowColor: "#000",

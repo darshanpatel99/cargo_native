@@ -140,7 +140,7 @@ export default class Checkout extends Component {
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
     KEYBOARD_VERTICAL_OFFSET_HEIGHT =
       Platform.OS === 'ios'
-        ? headerAndStatusBarHeight - 700
+        ? headerAndStatusBarHeight - 500
         : headerAndStatusBarHeight;
     
     this.focusListener = navigation.addListener('didFocus', () => { 
@@ -319,7 +319,7 @@ export default class Checkout extends Component {
                 fontFamily: 'nunito-SemiBold'
               }}
             >
-              Tip $`  `:
+              Tip $ :
             </Text>
             <Item style={{marginLeft:10 }}>
               <TextInput
@@ -337,7 +337,6 @@ export default class Checkout extends Component {
                 }}
                 placeholder='Enter Tip amound in CAD'
               />
-              {/* <Icon type='Feather' name='percent' /> */}
             </Item>
           </View>
           <Text
@@ -452,8 +451,8 @@ const Styles = StyleSheet.create({
   },
   payButton: {
     // marginBottom: 5,
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: 10,
+    marginRight: 10,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',

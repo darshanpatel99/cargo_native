@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, View, Linking, Platform, TouchableOpacity } from 'react-native';
+import {Image, View, Linking, Platform, TouchableOpacity, Dimensions } from 'react-native';
 import { Text, Button } from "native-base";
 import Colors from "../../constants/Colors";
 
@@ -16,7 +16,6 @@ export default class TestScreen extends React.Component {
     Linking.openURL(phoneNumber);
   };
 
-
   render() {
 
     return (
@@ -25,22 +24,14 @@ export default class TestScreen extends React.Component {
           <Image
           style={{width: 300, height: 300, borderRadius:20}}
           source={require('../../assets/images/support.png')}
-        />
+          />
         </View>
 
         <View style={styles.buttonsWithLogo}>
 
-        <TouchableOpacity >
-          <Button primary rounded large style={styles.button}>
-            <Text style={styles.lightText}>Chat Now</Text>
-          </Button>
-        </TouchableOpacity>
-
-        <TouchableOpacity  onPress={this.dialCall}>
-          <Button primary rounded large style={styles.button}>
+          <Button large-green style={styles.button} onPress={this.dialCall}>
             <Text style={styles.lightText}>Call Us</Text>
           </Button>
-        </TouchableOpacity>
 
         </View> 
 
@@ -86,8 +77,9 @@ const styles = {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 100,
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
     margin: 5,
     backgroundColor: Colors.primary,
     shadowColor: "#000",
