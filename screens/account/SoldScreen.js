@@ -3,7 +3,7 @@ import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
 
-const products = [];
+let products = [];
 export default class SoldScreen extends Component{
 constructor(props){
     super(props);
@@ -69,6 +69,7 @@ componentDidMount(prevProps) {
 
 componentWillUnmount(){
   this.unsubscribe();
+  products=[];
 }
 
 

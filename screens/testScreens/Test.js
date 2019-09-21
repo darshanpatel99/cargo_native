@@ -12,7 +12,7 @@ export default class TestScreen extends React.Component {
 
   dialCall(){ 
     let phoneNumber = '';
-    phoneNumber = `${Platform.OS === 'ios' ? 'telprompt:' : 'tel:'}${12508193073}`;
+    phoneNumber = `${Platform.OS === 'ios' ? 'tel:' : 'tel:'}${12508193073}`;
     Linking.openURL(phoneNumber);
   };
 

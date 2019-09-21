@@ -40,7 +40,6 @@ class Chat extends React.Component {
   }
 
   componentDidMount(){
-    
     const { navigation } = this.props;
       
     this.focusListener = navigation.addListener('didFocus', () => { 

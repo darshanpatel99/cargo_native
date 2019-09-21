@@ -895,12 +895,6 @@ export default class PostProductScreen extends Component {
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                 }}
 
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'distance',
-                  input :'address',
-                  circle: '5000@50.676609,-120.339020',
-                }}
 
                
 
@@ -911,7 +905,11 @@ export default class PostProductScreen extends Component {
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
-                    types: 'address', // default: 'geocode'
+                    types: 'geocode', // default: 'geocode'
+                    location: '50.66648,-120.3192',
+                    region: 'Canada',
+                    radius: 20000,
+                    strictbounds: true,
                 }}
 
                 styles={{
