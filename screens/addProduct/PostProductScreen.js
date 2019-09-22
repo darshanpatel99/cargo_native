@@ -944,7 +944,7 @@ export default class PostProductScreen extends Component {
             show={showAlert2}
             showProgress={false}
             title="Alert"
-            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
+            message={'Successfully Posted!!\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}

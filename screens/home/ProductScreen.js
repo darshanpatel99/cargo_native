@@ -397,12 +397,13 @@ export class ProductScreen extends Component {
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
 
           <Button light rounded large style={styles.secondaryButton} onPress={this.NavigateToEdit}>
-            <Text style={styles.secondaryText}>Edit product</Text>
+            <Text style={styles.secondaryText}>Edit</Text>
           </Button>
 
           <Button light rounded large style={styles.secondaryButton} onPress={this.sooldItem}>
             <Text style={styles.secondaryText}>Mark sold</Text>
           </Button>
+          
         </View>
           
       );
