@@ -12,6 +12,7 @@ import ListingScreen from '../screens/account/ListingScreen';
 import BoughtScreen from '../screens/account/BoughtScreen';
 import SoldScreen from '../screens/account/SoldScreen';
 import UserAddressScreen from '../screens/account/UserAddress';
+import  {ProductScreen}  from '../screens/home/ProductScreen';
 
 export default AccountStack = createStackNavigator({
 
@@ -55,6 +56,14 @@ export default AccountStack = createStackNavigator({
     screen: AccountInfoScreen,
     navigationOptions: {
       header: null,
+    },
+  },
+
+  Details: {
+    screen: ProductScreen,
+    navigationOptions: {
+      title: 'Detail',
+      
     },
   },
   

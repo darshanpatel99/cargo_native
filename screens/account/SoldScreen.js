@@ -90,7 +90,7 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent  BoughtStatus={item.BoughtStatus}  Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
+          <ProductCardComponent  prevPage={'Sold'} BoughtStatus={item.BoughtStatus}  Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
         </View>
       }
       />

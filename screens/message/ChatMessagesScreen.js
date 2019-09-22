@@ -5,7 +5,6 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import firebaseChat from '../../FirebaseChat';
 import firebase from '../../Firebase'
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationActions } from 'react-navigation';
 
 export default class ChatScreen extends React.Component {
 
@@ -61,47 +60,14 @@ export default class ChatScreen extends React.Component {
 
   }
 
-  // goBack(){
-  //   console.log('*****************************************Inside func')
-  //   if(navigation.state.params.previousScreen == 'Details') {
-
-  //     console.log('###############################################')
-  //    const resetAction = StackActions.reset({
-  //       index: 0, // <-- currect active route from actions array
-  //       actions: [
-  //         NavigationActions.navigate({ routeName: 'Details'}),
-  //       ],
-  //     });
-      
-  //     this.props.navigation.dispatch(resetAction);
-  //   }
-  //   else{
-  //     const resetAction = StackActions.reset({
-  //       index: 0, // <-- currect active route from actions array
-  //       //params: {userId: this.state.UID},
-  //       actions: [
-  //         NavigationActions.navigate({ routeName: 'Chat'}),
-  //       ],
-  //     });
-      
-  //     this.props.navigation.dispatch(resetAction);
-  //   }
-
-  // };
-
-  goback(){
-    
-  }
   static navigationOptions = ({ navigation }) => ({
 
     title: navigation.state.params.completeChatThread.chat || 'Chat',
-
-
     headerLeft: (
       <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.previousScreen)}>
           <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons name='ios-arrow-back' color={Colors.primary} style={{ marginLeft: 5 , marginTop: 10, fontSize:30}} />
-            <Text style={{ marginLeft: 5 , marginTop: 15, fontSize:13}}>{navigation.state.params.previousScreen}</Text>
+            <Ionicons name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 5 , marginTop: 10, fontSize:30}} />
+            {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:23, marginRight:10}}>{navigation.state.params.previousScreen}</Text> */}
           </View>
       </TouchableOpacity>
     ),
