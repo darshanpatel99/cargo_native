@@ -436,7 +436,8 @@ onAuthStateChanged = (user) => {
               keyboardType='default'
               returnKeyType='done'
               autoCorrect={false}
-              placeholder='Address'                                                          
+              placeholder='Address'
+              maxLength={30}                                                          
             />);          
         }
       //   else{
@@ -879,20 +880,20 @@ secondaryButton: {
   flexDirection: "row",
   justifyContent: "center",
   alignItems: "center",
-  height: 50,
-  width: 175,
+  height:Dimensions.get('window').height*0.065,
+  width: Dimensions.get('window').width*0.35,
   margin: 5
 },
 secondaryText: {
   color: Colors.primary,
-  fontSize: 18,
+  fontSize:Dimensions.get('window').width*0.04,
   fontWeight: "500",
   letterSpacing: 1.2
 },
 
 secondaryWhiteText: {
   color: "#fff",
-  fontSize: 18,
+  fontSize: Dimensions.get('window').width*0.04,
   fontWeight: "500",
   letterSpacing: 1.2
 },

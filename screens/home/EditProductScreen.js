@@ -102,15 +102,7 @@ export default class PostProductScreen extends Component {
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
-    const newData = navigation.getParam('data');
-
-    this.setState({
-        title: newData.title,
-        price:newData.price,
-        image:newData.pictures,
-        downloadURLs:newData.pictures,
-        description:newData.description,
-    })
+    
 
     if (user != null) {
         
@@ -119,8 +111,12 @@ export default class PostProductScreen extends Component {
 
     }
   });
-  
 
+  console.log("This is a cat " + this.state.Category);
+  
+  var arrayTest = [this.state.Category];
+  
+  //this.categoryRemover.current.presetState(arrayTest);
 
     this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -135,7 +131,7 @@ export default class PostProductScreen extends Component {
  
 
   componentWillMount() {
-
+    const { navigation } = this.props;
   // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
   const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
   console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
@@ -143,6 +139,22 @@ export default class PostProductScreen extends Component {
     Platform.OS === 'ios'
       ? headerAndStatusBarHeight - 700
       : headerAndStatusBarHeight;
+
+      const newData = navigation.getParam('data');
+
+    console.log("This is a cat " + newData.category)
+
+    this.setState({
+        title: newData.title,
+        price:newData.price,
+        image:newData.pictures,
+        downloadURLs:newData.pictures,
+        description:newData.description,
+    })
+
+    console.log("This is a cat " + this.state.Category);
+
+   
   }
  
   showAlert(){
@@ -728,8 +740,8 @@ export default class PostProductScreen extends Component {
              margin: 10
            }}
          >
-           <Button style={styles.postAdButton} onPress={()=>{this.showAlert2()}}>
-             <Text>Save changes</Text>
+           <Button  light rounded large style={styles.postAdButton} onPress={()=>{this.showAlert2()}}>
+             <Text style={styles.secondaryWhiteText}>Save</Text>
            </Button>
          </View>
      );
@@ -850,7 +862,7 @@ export default class PostProductScreen extends Component {
 
               {/* Pick category for the product */}
               <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
-              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
+              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover} />
               
               </View>
               
@@ -905,7 +917,6 @@ export default class PostProductScreen extends Component {
                   onChangeText: (text) => {this.testFunction(text)}
                  }}
                 onPress={(data, details = null) => {
-
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
@@ -914,9 +925,21 @@ export default class PostProductScreen extends Component {
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
+
+                currentLocation={false}
+                
                 GoogleReverseGeocodingQuery={{
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                 }}
+
+                GooglePlacesSearchQuery={{
+                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                  rankby: 'distance',
+                  input :'address',
+                  circle: '5000@50.676609,-120.339020',
+                }}
+
+               
 
                 getDefaultValue={() => {
                     return ''; // text input default value
@@ -925,7 +948,7 @@ export default class PostProductScreen extends Component {
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
+                    types: 'address', // default: 'geocode'
                 }}
 
                 styles={{
@@ -935,17 +958,18 @@ export default class PostProductScreen extends Component {
                     borderBottomWidth:0
                     },
                     textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
                     height: 38,
                     color: '#5d5d5d',
-                    fontSize: 16
+                    fontSize: 16,
+                    borderWidth: 1,
+                    borderColor:'blue',
+                    marginLeft: 0,
+                    marginRight: 0,
                     },
                     predefinedPlacesDescription: {
                     color: '#1faadb'
                     },
                 }}
-                currentLocation={false}
                 />
 
             
@@ -962,7 +986,10 @@ export default class PostProductScreen extends Component {
               {/* <Button style={styles.postAdButton} onPress={this.postTheProduct}>
                 <Text>Post Ad</Text>
               </Button> */}
-              {this.saveButton()}
+              <Button  light rounded large style={styles.postAdButton} onPress={()=>{this.props.navigation.goBack()}}>
+             <Text style={styles.secondaryWhiteText} >Cancel</Text>
+            </Button>
+              {this.saveButton()}               
             </View>
           </InputScrollView>
           </KeyboardAvoidingView>
@@ -988,7 +1015,7 @@ export default class PostProductScreen extends Component {
             show={showAlert2}
             showProgress={false}
             title="Alert"
-            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
+            message={'Successfully changes'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
@@ -1147,7 +1174,17 @@ const styles = {
     bottom: 0
   },
   postAdButton: {
-    backgroundColor: Colors.secondary
+    flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: Dimensions.get('screen').width*0.3,
+  margin: 5,
+  backgroundColor: Colors.primary,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.5
   },
   container: {
     flex: 1,
@@ -1184,5 +1221,28 @@ const styles = {
     borderWidth:0.5,
   },
 
+  secondaryWhiteText: {
+    color: "#fff",
+    fontSize: Dimensions.get('window').width*0.04,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+
+  cancelButton:{
+    color: "#fff",
+    fontSize: Dimensions.get('window').width*0.04,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+
+  secondaryButton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height:Dimensions.get('window').height*0.065,
+    width: Dimensions.get('window').width*0.35,
+    margin: 5
+  },
 
 };
