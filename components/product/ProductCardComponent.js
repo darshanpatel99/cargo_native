@@ -13,7 +13,7 @@ class ProductCardComponent extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID, Category : this.props.category} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {prevPage:this.props.prevPage, BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID, thumbnail:this.props.thumbnail, Category : this.props.category} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
@@ -52,7 +52,6 @@ const styles = {
         height: 125,
         // background: "#FDFCF5",
         backgroundColor:'#FDFCF5',
-        elevation:0.2,
         shadowColor: 'grey',
         shadowOpacity: 0.4,
         shadowRadius: 5,

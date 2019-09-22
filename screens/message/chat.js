@@ -5,6 +5,7 @@ import ChatDynamicFlatList from '../../handlers/ChatDynamicFlatList';
 import firebase from 'firebase';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Colors from '../../constants/Colors';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 let testObj ={}
@@ -20,6 +21,7 @@ class Chat extends React.Component {
       userId: firebaseChat.uid,
       showAlert: true,
       User:null,
+      loading: false,
     };
   //checking the current user and setting uid
   let user = firebase.auth().currentUser;
@@ -38,7 +40,6 @@ class Chat extends React.Component {
   }
 
   componentDidMount(){
-    
     const { navigation } = this.props;
       
     this.focusListener = navigation.addListener('didFocus', () => { 
@@ -66,7 +67,6 @@ class Chat extends React.Component {
       this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
     });
-    
   }
 
   //listens to the change in auth state
@@ -107,6 +107,11 @@ class Chat extends React.Component {
     if(this.state.User != null){
       return (
       <View style ={styles.containerStyle}>
+        <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
         <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
       </View>
     );
@@ -156,6 +161,9 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
+  },
+    spinnerTextStyle: {
+    color: '#0000FF'
   },
 }
 

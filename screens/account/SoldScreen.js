@@ -3,7 +3,7 @@ import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
 
-const products = [];
+let products = [];
 export default class SoldScreen extends Component{
 constructor(props){
     super(props);
@@ -69,6 +69,7 @@ componentDidMount(prevProps) {
 
 componentWillUnmount(){
   this.unsubscribe();
+  products=[];
 }
 
 
@@ -89,7 +90,7 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent  BoughtStatus={item.BoughtStatus}  Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
+          <ProductCardComponent  prevPage={'Sold'} BoughtStatus={item.BoughtStatus}  Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
         </View>
       }
       />

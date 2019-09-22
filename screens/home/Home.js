@@ -41,7 +41,7 @@ export default class HomeScreen extends React.Component {
    // this.createNotificationAsync();
 
     //register the listener for messages channel
-   // this._notificationSubscription =  Notifications.addListener(this.handleNotification);
+    //this._notificationSubscription =  Notifications.addListener(this.handleNotification);
 
 
   }

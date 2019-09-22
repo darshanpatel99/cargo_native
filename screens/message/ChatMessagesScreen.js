@@ -1,9 +1,11 @@
 import React from 'react';
-import {View, KeyboardAvoidingView, Platform} from 'react-native';
+import {View, KeyboardAvoidingView, Platform, Text, TouchableOpacity } from 'react-native';
+import Colors from '../../constants/Colors.js';
 import { GiftedChat } from 'react-native-gifted-chat';
 import firebaseChat from '../../FirebaseChat';
 import firebase from '../../Firebase'
-import AwesomeAlert from 'react-native-awesome-alerts';
+import { Ionicons } from '@expo/vector-icons';
+
 export default class ChatScreen extends React.Component {
 
   constructor(props) {
@@ -13,12 +15,9 @@ export default class ChatScreen extends React.Component {
     const previousScreen = navigation.getParam('previousScreen')
     const sellerName = navigation.getParam('sellerName')
 
-    // this.state({owner: owner})
-    let User = firebase.auth().currentUser;
-
     let chatDocumentReferenceId = ''
 
-    if(previousScreen == 'ProductScreen') {
+    if(previousScreen == 'Details') {
 
       if(owner < firebaseChat.uid) {
         chatDocumentReferenceId = owner+firebaseChat.uid
@@ -30,9 +29,7 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         buyerName: firebaseChat.userDisplayName,
-        User,
         sellerName,
-        showAlert: true,
       };
       //this.firebaseGetSellerName();
 
@@ -56,21 +53,24 @@ export default class ChatScreen extends React.Component {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         sellerName: firebaseChat.userDisplayName,
-        User,
-        showAlert: true,
       };
     }
 
- 
-
-  this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  //this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
   }
-
 
   static navigationOptions = ({ navigation }) => ({
 
     title: navigation.state.params.completeChatThread.chat || 'Chat',
+    headerLeft: (
+      <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.previousScreen)}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <Ionicons name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 5 , marginTop: 10, fontSize:30}} />
+            {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:23, marginRight:10}}>{navigation.state.params.previousScreen}</Text> */}
+          </View>
+      </TouchableOpacity>
+    ),
   });
 
   componentDidMount() {
@@ -98,26 +98,17 @@ export default class ChatScreen extends React.Component {
     };
   }
 
-  //listens to the change in auth state
-  onAuthStateChanged = User => {
-    // if the user logs in or out, this will be called and the state will update.
-    // This value can also be accessed via: firebase.auth().currentUser
-    this.setState({ User: User });
-    //navigate to the account screen if the user is not logged in
-
-  };
-
-
 
   render() {
-    const {showAlert} = this.state;
-
     return (
       <View style ={{flex: 1}}>
         <GiftedChat
           messages={this.state.messages}
           onSend={firebaseChat.send}
           user={this.user}
+          renderAvatar={() => {}}
+
+          
         />
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
       </View>

@@ -4,23 +4,25 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
+  TouchableOpacity,
   Dimensions,
   Platform,
-  Alert
+  Alert,
+  Text,
 } from 'react-native';
-import { Button, Text,} from "native-base";
+import { Button} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase.js';
 import { SliderBox } from 'react-native-image-slider-box';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import ReportAd from '../../functions/ReportAd';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Ionicons } from '@expo/vector-icons';
 
 
 let storageRef;
@@ -45,6 +47,8 @@ export class ProductScreen extends Component {
 
     console.log("This is category" + Category);
 
+    const thumbnail = navigation.getParam('thumbnail');
+    const prevPage = navigation.getParam('prevPage');
 
     this.state = {
       location: null,
@@ -59,6 +63,7 @@ export class ProductScreen extends Component {
       count: 0,
       description,
       pictures,
+      thumbnail : thumbnail,
       price,
       id,
       owner,
@@ -73,6 +78,7 @@ export class ProductScreen extends Component {
       Status,
       sellerName,
       BoughtStatus,
+      prevPage,
       completeChatThread: {'chat' : sellerName}
     };
     onLayout = e => {
@@ -310,7 +316,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'ProductScreen'})
+      navigate('ChatDetailMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'Details'})
   }
     else{
       this.setState({
@@ -331,6 +337,7 @@ export class ProductScreen extends Component {
       description:this.state.description,
       id:this.state.id,
       category: this.state.Category,
+      thumbnail:this.state.thumbnail,
     }
 
     console.log("Before edit cat -->" + data.category);
@@ -366,7 +373,15 @@ export class ProductScreen extends Component {
         >
           <AntDesign name='message1' size={30} color={Colors.primary} />
         </TouchableHighlight>
-      )
+      ),
+      headerLeft: (
+        <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.prevPage)}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 10 , marginTop: 10, fontSize:30}} />
+              {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:13, marginRight:10}}>{navigation.state.params.prevPage}</Text> */}
+            </View>
+        </TouchableOpacity>
+      ),
     };
   };
 
@@ -404,7 +419,7 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'sold' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <Button primary rounded large style={styles.button} onPress={this.ReactivateOrder}>
+          <Button large-green style={styles.buttonLarge} onPress={this.ReactivateOrder}>
             <Text style={styles.lightText}>Reactivate Product</Text>
           </Button>
         </View>
@@ -414,7 +429,7 @@ export class ProductScreen extends Component {
     else if(this.state.Status === 'bought' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' && this.state.BoughtStatus == 'true'){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <Button primary rounded large style={styles.button} >
+          <Button large-green style={styles.buttonLarge} >
             <Text style={styles.lightText}>Product Sold</Text>
           </Button>
         </View>
@@ -424,9 +439,11 @@ export class ProductScreen extends Component {
     else if(this.state.deliveryCharge != '' && this.state.Status === 'bought' && this.state.BuyerID === this.state.userID){
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
-          <Button primary rounded large style={styles.button} onPress={this.CancelOrder}>
+
+          <Button large-green style={styles.buttonLarge} onPress={this.CancelOrder}>
             <Text style={styles.lightText}>Cancel Order</Text>
           </Button>
+
         </View>
       );
     }
@@ -693,13 +710,14 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     alignSelf: 'flex-end',
   },
-  button: {
+  buttonLarge: {
     flex: 0,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
+    borderRadius: 100,
     margin: 5,
     backgroundColor: Colors.primary,
     shadowColor: "#000",

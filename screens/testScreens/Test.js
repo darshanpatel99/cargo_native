@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text,Image, View, Linking, Platform } from 'react-native';
-import { Button } from "native-base";
+import {Image, View, Linking, Platform, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, Button } from "native-base";
 import Colors from "../../constants/Colors";
 
 export default class TestScreen extends React.Component {
@@ -12,10 +12,9 @@ export default class TestScreen extends React.Component {
 
   dialCall(){ 
     let phoneNumber = '';
-    phoneNumber = `${Platform.OS === 'ios' ? 'telprompt:' : 'tel:'}${12508193073}`;
+    phoneNumber = `${Platform.OS === 'ios' ? 'tel:' : 'tel:'}${12508193073}`;
     Linking.openURL(phoneNumber);
   };
-
 
   render() {
 
@@ -25,16 +24,12 @@ export default class TestScreen extends React.Component {
           <Image
           style={{width: 300, height: 300, borderRadius:20}}
           source={require('../../assets/images/support.png')}
-        />
+          />
         </View>
 
         <View style={styles.buttonsWithLogo}>
 
-          <Button primary rounded large style={styles.button}>
-            <Text style={styles.lightText}>Chat Now</Text>
-          </Button>
-
-          <Button primary rounded large style={styles.button} onPress={this.dialCall}>
+          <Button large-green style={styles.button} onPress={this.dialCall}>
             <Text style={styles.lightText}>Call Us</Text>
           </Button>
 
@@ -82,8 +77,9 @@ const styles = {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 100,
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
     margin: 5,
     backgroundColor: Colors.primary,
     shadowColor: "#000",

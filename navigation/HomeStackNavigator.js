@@ -5,6 +5,7 @@ import { ProductScreen } from '../screens/home/ProductScreen';
 import EditProductScreen from '../screens/home/EditProductScreen';
 import StripeScreen from '../screens/payments/StripeScreen'
 import ImageScreen from '../screens/home/ImageScreen'
+import ChatDetailMessagesScreen from '../screens/message/ChatMessagesScreen'
 
 export default (HomeStack = createStackNavigator({
   Home: {
@@ -18,8 +19,11 @@ export default (HomeStack = createStackNavigator({
     screen: ProductScreen,
     navigationOptions: {
       title: 'Detail',
-      
     },
+  },
+
+  ChatDetailMessagesScreen:{
+    screen:ChatDetailMessagesScreen
   },
 
   StripeScreen: {
