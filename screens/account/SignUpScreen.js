@@ -947,7 +947,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
     margin: 5
   },
   text: {
@@ -982,7 +982,7 @@ TextInputStyle: {
     textAlign: "center",
     alignItems: "center",
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
     borderRadius: 20,
     margin: 10,
     backgroundColor: "#f8f8f8",
@@ -997,7 +997,7 @@ container: {
     alignItems: 'center',
     borderRadius: 20,
     height: 50,
-    width: 300,
+    width: Dimensions.get('window').width - 100,
     margin:10,
     backgroundColor: "#f8f8f8",
 },
