@@ -57,6 +57,7 @@ export default class SignUpScreen extends Component {
       showAlert: true,
       showOverlay: false,
       deviceNotificationToken: '',
+      expoNotificationToken:'',
     }
 
     
@@ -390,7 +391,7 @@ googleLoginAsync = async () => {
   const accessToken = await this.googleLogin();
 
   if (!accessToken) return;
-  // Use the facebook token to authenticate our user in firebase.
+  // Use the google token to authenticate our user in firebase.
   const credential = firebase.auth.GoogleAuthProvider.credential(null,accessToken);
 
   console.log('Got the credentials from Google SignIn');
@@ -645,11 +646,18 @@ deleteUserFromAuthDatabase() {
       console.log('going to get the notification token');
       
        await Notifications.getDevicePushTokenAsync().then((token)=>{
-          console.log('Go the following device notification token: '+ token);
+          console.log('Got the following device notification token: '+ token);
           console.log('Type of token: '+ typeof(token));
-          //this.setState({deviceNotification.Token:token});
+          //this.setState({deviceNotificationToken:token});
           this.firebaseRef.doc(userUID).update({NotificationToken:token});
           
+        });
+
+        await Notifications.getExpoPushTokenAsync().then((token)=>{
+          console.log('Got the following device expo notification token: '+ token);
+          console.log('Type of token: '+ typeof(token));
+          //this.setState({expoNotificationToken:token});
+          this.firebaseRef.doc(userUID).update({ExpoNotificationToken:token});
         });
 
 
@@ -691,7 +699,8 @@ deleteUserFromAuthDatabase() {
       Address:'',
       UnitNumber:'',
       UID: this.state.UID.toString(),
-      NotificationToken: this.state.deviceNotificationToken
+      NotificationToken: this.state.deviceNotificationToken,
+      ExpoNotificationToken: this.state.expoNotificationToken,
     }
 
     // const resetAction = StackActions.reset({

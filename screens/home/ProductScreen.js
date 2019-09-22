@@ -43,6 +43,10 @@ export class ProductScreen extends Component {
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
     const BoughtStatus = navigation.getParam('BoughtStatus');
+    const Category = navigation.getParam('Category');
+
+    console.log("This is category" + Category);
+
     const thumbnail = navigation.getParam('thumbnail');
     const prevPage = navigation.getParam('prevPage');
 
@@ -64,6 +68,7 @@ export class ProductScreen extends Component {
       id,
       owner,
       userID:'',
+      Category,
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
       soldArray:[],
@@ -331,8 +336,11 @@ export class ProductScreen extends Component {
       pictures:this.state.pictures,
       description:this.state.description,
       id:this.state.id,
+      category: this.state.Category,
       thumbnail:this.state.thumbnail,
     }
+
+    console.log("Before edit cat -->" + data.category);
 
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('EditProduct',{data: data})
