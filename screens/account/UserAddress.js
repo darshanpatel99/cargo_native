@@ -1,7 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions, Button, TextInput } from 'react-native';
+import {  Platform,   KeyboardAvoidingView,View, StyleSheet, Dimensions, TextInput } from 'react-native';
+import { Header } from 'react-navigation';
+import Constants from 'expo-constants';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import firebase from '../../Firebase.js';
+import { Text, Button } from "native-base";
+import Colors from "../../constants/Colors";
+var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
+
 
 export default class UserAddress extends React.Component {
   constructor(props) {
@@ -23,10 +29,16 @@ export default class UserAddress extends React.Component {
     this.setState({UID: testId})
   }
 
-  testFunction(text){
-    //this.state.Address = text;
-    //this.setState({googleAddressEmpty: 'test'})
-    }
+
+  componentWillMount() {
+
+    // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
+    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+      Platform.OS === 'ios'
+        ? headerAndStatusBarHeight - 700
+        : headerAndStatusBarHeight;
+  }
 
 
   finishFunc(){
@@ -74,6 +86,12 @@ export default class UserAddress extends React.Component {
    
       return (
         <View style={styles.container}>
+
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior='padding'
+            keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+          >
 
           <View style={styles.topTitle}>
             <Text style={{
@@ -165,9 +183,11 @@ export default class UserAddress extends React.Component {
         </View>
 
         <View style ={{flexDirection:'row',justifyContent:'space-evenly', marginTop:15}}>
-          <Button onPress={this.finishFunc} title='Done' />
+          <Button large-green style={styles.button} onPress={this.finishFunc}>
+            <Text style={styles.lightText}>Done</Text>
+          </Button>
         </View>
-
+        </KeyboardAvoidingView>
       </View>
       );
     }
@@ -202,5 +222,19 @@ const styles = StyleSheet.create({
     marginTop: 40,
     alignItems: 'center',
     // backgroundColor: '#fff',
-  }
+  },
+  button: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 100,
+    height: 50,
+    width: Dimensions.get('window').width - 100,
+    margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5
+  },
 })

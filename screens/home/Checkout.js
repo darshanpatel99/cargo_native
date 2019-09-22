@@ -180,11 +180,9 @@ export default class Checkout extends Component {
   NavigateToPay(){
     const { navigate } = this.props.navigation;
     if(this.state.GPSStringFormat != ''){
-      console.log('Inside if =>>>>>>>>>')
       navigate('StripeScreen', {deliveryFee:this.state.deliveryFee,  GPSStringFormat:this.state.GPSStringFormat, Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})
     }
     else{
-      console.log('Inside else =>>>>>>>>>')
       this.showAlert();
     }
   }
@@ -240,7 +238,7 @@ export default class Checkout extends Component {
             Update Delivery Address
           </Text>
     
-    <GooglePlacesAutocomplete
+              <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Delivery Address'
                 minLength={2}
@@ -249,14 +247,7 @@ export default class Checkout extends Component {
                 fetchDetails={true}
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
-                
-                // textInputProps={{
-                //   onChangeText: (text) => {this.testFunction(text)}
-                //  }}
-
                 onPress={(data, details = null) => {
-                
-                
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
