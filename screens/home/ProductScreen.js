@@ -41,6 +41,7 @@ export class ProductScreen extends Component {
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
     const BoughtStatus = navigation.getParam('BoughtStatus');
+    const thumbnail = navigation.getParam('thumbnail');
 
 
     this.state = {
@@ -56,6 +57,7 @@ export class ProductScreen extends Component {
       count: 0,
       description,
       pictures,
+      thumbnail : thumbnail,
       price,
       id,
       owner,
@@ -326,6 +328,7 @@ export class ProductScreen extends Component {
       pictures:this.state.pictures,
       description:this.state.description,
       id:this.state.id,
+      thumbnail:this.state.thumbnail,
     }
 
     //this.props.navigation.dispatch(StackActions.popToTop());

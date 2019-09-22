@@ -39,6 +39,8 @@ import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { StackActions, NavigationActions } from 'react-navigation';
 import * as ImageManipulator from 'expo-image-manipulator';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -81,6 +83,9 @@ export default class PostProductScreen extends Component {
       canUpload:true,
       priceAlert:false,
       uploadCounter:0,
+      loading: false,
+      isImagesChanged: false,
+
     }
 
     this.categoryRemover = React.createRef();
@@ -111,6 +116,7 @@ export default class PostProductScreen extends Component {
         image:newData.pictures,
         downloadURLs:newData.pictures,
         description:newData.description,
+        thumbnail:newData.thumbnail,
     })
 
     if (user != null) {
@@ -268,7 +274,8 @@ export default class PostProductScreen extends Component {
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
     var array = this.state.image; //getting the uri array
-  
+    console.log(array.length);
+    this.setState({ loading: true });
     array.forEach(async (element) => {
 
       if(this.state.firstTimeOnly){
@@ -300,11 +307,16 @@ export default class PostProductScreen extends Component {
 
 }
 
-
-
    //start post the add button
   startEditTheProduct = async () =>{
+    if(this.state.isImagesChanged){
+      console.log(this.state.isImagesChanged);
     await this.uploadImageData();
+    }
+    else{
+      console.log('Image data is not changed during editing');
+      this.saveChanges();
+    }
   }
 
 
@@ -395,7 +407,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]), isImagesChanged:true
       });
 
     //   console.log(this.state.firstTimeOnly);
@@ -440,7 +452,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]), isImagesChanged:true
       });
 
 
@@ -589,6 +601,7 @@ export default class PostProductScreen extends Component {
       console.log('File available at', downloadURL);
       that.state.downloadURLs.push(downloadURL);
 
+      console.log(that.state.uploadCounter);
       //some funcky stuff
       var uploadC = that.state.uploadCounter+1;
       that.setState({uploadCounter:uploadC});
@@ -597,6 +610,7 @@ export default class PostProductScreen extends Component {
           //call the post product function
           console.log("Number of products uploaded:" + uploadC);
           that.saveChanges();
+
           //that.resetStack();
         }
     });
@@ -615,7 +629,7 @@ export default class PostProductScreen extends Component {
     var fireArray = [...this.state.downloadURLs];
     fireArray.splice(index,1);
     //console.log(array);
-    this.setState({ image: array, downloadURLs:fireArray });
+    this.setState({ image: array, downloadURLs:fireArray, isImagesChanged:true });
   }
 
   // goToHome=()=>{
@@ -626,6 +640,7 @@ export default class PostProductScreen extends Component {
 
   _renderImages() {
     let images = [];
+    console.log("number of images we have: "+ this.state.image.length);
 
     //let remainder = 4 - (this.state.devices % 4);
     this.state.image.map((item, index) => {
@@ -832,6 +847,7 @@ export default class PostProductScreen extends Component {
         AddressArray:this.state.addressArray,    
     }).then(()=>{
       //show the alert
+      this.setState({ loading: false });
       this.showAlert2();
     });
 
@@ -864,7 +880,11 @@ export default class PostProductScreen extends Component {
     if(this.state.User != null){
       return (
         <View style={{flex:1}}>
-        
+        <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
