@@ -19,7 +19,6 @@ export default (HomeStack = createStackNavigator({
     screen: ProductScreen,
     navigationOptions: {
       title: 'Detail',
-      
     },
   },
 

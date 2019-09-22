@@ -78,15 +78,12 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
+          <ProductCardComponent prevPage={'Listing'} Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
         </View>
       }
       />
 
       </ScrollView>
-      {/* <View style={{flexDirection: 'row', justifyContent:'center'}}>
-          <MainButton title= 'Edit List'/>
-        </View> */}
       </View>
     );
 }

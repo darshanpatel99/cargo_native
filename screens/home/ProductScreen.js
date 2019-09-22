@@ -4,10 +4,11 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
+  TouchableOpacity,
   Dimensions,
   Platform,
   Alert,
-  TouchableOpacity, Text,
+  Text,
 } from 'react-native';
 import { Button} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -21,6 +22,7 @@ import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Ionicons } from '@expo/vector-icons';
 
 
 let storageRef;
@@ -42,7 +44,7 @@ export class ProductScreen extends Component {
     const sellerName = navigation.getParam('sellerName');
     const BoughtStatus = navigation.getParam('BoughtStatus');
     const thumbnail = navigation.getParam('thumbnail');
-
+    const prevPage = navigation.getParam('prevPage');
 
     this.state = {
       location: null,
@@ -71,6 +73,7 @@ export class ProductScreen extends Component {
       Status,
       sellerName,
       BoughtStatus,
+      prevPage,
       completeChatThread: {'chat' : sellerName}
     };
     onLayout = e => {
@@ -362,7 +365,15 @@ export class ProductScreen extends Component {
         >
           <AntDesign name='message1' size={30} color={Colors.primary} />
         </TouchableHighlight>
-      )
+      ),
+      headerLeft: (
+        <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.prevPage)}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 10 , marginTop: 10, fontSize:30}} />
+              {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:13, marginRight:10}}>{navigation.state.params.prevPage}</Text> */}
+            </View>
+        </TouchableOpacity>
+      ),
     };
   };
 
