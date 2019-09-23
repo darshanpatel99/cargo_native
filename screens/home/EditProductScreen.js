@@ -295,12 +295,16 @@ export default class PostProductScreen extends Component {
   uploadImageData =  async () =>{
     var array = this.state.image; //getting the uri array
     console.log(array.length);
+    var first = this.state.firstTimeOnly;
     this.setState({ loading: true });
     array.forEach(async (element) => {
 
-      if(this.state.firstTimeOnly){
+      if(first){
+        first=false;
+        this.setState({firstTimeOnly:false});
         await this.uploadThumbnailToFirebase(element)
         .then(()=>{
+          
           console.log('Thumbnail got uploaded');
           
         })
@@ -329,6 +333,14 @@ export default class PostProductScreen extends Component {
 
    //start post the add button
   startEditTheProduct = async () =>{
+    let titleLength = this.state.title;
+    let priceLength = parseInt( this.state.price);
+    let descriptionLength = this.state.description;
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.googleAddressEmpty;
+    if(titleLength.length > 0 &&priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
     if(this.state.isImagesChanged){
       console.log(this.state.isImagesChanged);
     await this.uploadImageData();
@@ -337,6 +349,32 @@ export default class PostProductScreen extends Component {
       console.log('Image data is not changed during editing');
       this.saveChanges();
     }
+  } else {
+    console.log('hello');
+
+    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      this.setState({
+        priceAlert:true,
+      })      
+    }
+    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        availableAlert:true,
+      })
+    }
+
+    console.log(address)
+
+    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        showAddressAlert:true,
+      })
+    }
+
+    this.setState({
+      postAdClicked: true,
+    })
+  }
   }
 
 
