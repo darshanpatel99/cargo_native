@@ -37,6 +37,7 @@ import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as ImageManipulator from 'expo-image-manipulator';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -77,6 +78,7 @@ export default class PostProductScreen extends Component {
       buyerID:'',
       sellerName:'',
       uploadCounter:0,
+      loading: false,
     }
 
     this.categoryRemover = React.createRef();
@@ -184,7 +186,6 @@ export default class PostProductScreen extends Component {
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
-      console.log('ask permission');
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
@@ -214,6 +215,7 @@ export default class PostProductScreen extends Component {
       var array = this.state.image; //getting the uri array
       var first = this.state.firstTimeOnly;
       console.log("Total number of uris we have"+ array.length)
+      this.setState({ loading: true });
       array.forEach(async (element) => {
 
    
@@ -342,6 +344,10 @@ export default class PostProductScreen extends Component {
     data.TimeStamp = currentDate.getTime();
     //if(this.checkFields == true)
     //Posting the product
+    PostProduct(data).then(()=>{
+      this.setState({ loading: false });
+    });
+
     PostProduct(data);
     console.log("Product Posted---->" + data);
 
@@ -435,9 +441,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.2
-      //allowsEditing: true,
-      
+      quality:0.2      
     });
     
     console.log(result);
@@ -799,6 +803,13 @@ export default class PostProductScreen extends Component {
     if(this.state.User != null){
       return (
         <View style={{flex:1}}>
+
+        <Spinner
+          visible={this.state.loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+
         
         <KeyboardAvoidingView
 
@@ -941,6 +952,12 @@ export default class PostProductScreen extends Component {
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                    location: '50.66648,-120.3192',
+                    region: 'Canada',
+                    radius: 20000,
+                    strictbounds: true,
+
                     types: 'address', // default: 'geocode'
                 }}
 
@@ -1171,6 +1188,11 @@ const styles = {
     marginTop: 5,
     //alignItems:'center'
   },
+  
+  spinnerTextStyle: {
+    color: '#0000FF'
+  },
+
 
   errorStyle:{
     borderColor:'red',
