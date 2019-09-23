@@ -37,6 +37,7 @@ import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as ImageManipulator from 'expo-image-manipulator';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -77,6 +78,7 @@ export default class PostProductScreen extends Component {
       buyerID:'',
       sellerName:'',
       uploadCounter:0,
+      loading: false,
     }
 
     this.categoryRemover = React.createRef();
@@ -210,7 +212,7 @@ export default class PostProductScreen extends Component {
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
       var array = this.state.image; //getting the uri array
-    
+      this.setState({ loading: true });
       array.forEach(async (element) => {
 
         if(this.state.firstTimeOnly){
@@ -299,6 +301,10 @@ export default class PostProductScreen extends Component {
     data.TimeStamp = currentDate.getTime();
     //if(this.checkFields == true)
     //Posting the product
+    PostProduct(data).then(()=>{
+      this.setState({ loading: false });
+    });
+
     PostProduct(data);
     console.log("Product Posted---->" + data);
 
@@ -754,6 +760,13 @@ export default class PostProductScreen extends Component {
     if(this.state.User != null){
       return (
         <View style={{flex:1}}>
+
+        <Spinner
+          visible={this.state.loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+
         
         <KeyboardAvoidingView
 
@@ -896,6 +909,12 @@ export default class PostProductScreen extends Component {
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
                     language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                    location: '50.66648,-120.3192',
+                    region: 'Canada',
+                    radius: 20000,
+                    strictbounds: true,
+
                     types: 'address', // default: 'geocode'
                 }}
 
@@ -1126,6 +1145,11 @@ const styles = {
     marginTop: 5,
     //alignItems:'center'
   },
+  
+  spinnerTextStyle: {
+    color: '#0000FF'
+  },
+
 
   errorStyle:{
     borderColor:'red',
