@@ -180,6 +180,7 @@ export default class PostProductScreen extends Component {
       downloadURLs : [],
       addressArray:[],
       uploadCounter:0,
+      firstTimeOnly:true,
     });
     navigate('Home');
   };
