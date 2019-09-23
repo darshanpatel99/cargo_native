@@ -184,7 +184,6 @@ export default class PostProductScreen extends Component {
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
-      console.log('ask permission');
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
@@ -393,9 +392,7 @@ export default class PostProductScreen extends Component {
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.2
-      //allowsEditing: true,
-      
+      quality:0.2      
     });
     
     console.log(result);
