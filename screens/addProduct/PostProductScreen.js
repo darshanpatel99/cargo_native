@@ -346,14 +346,13 @@ export default class PostProductScreen extends Component {
     //Posting the product
     PostProduct(data).then(()=>{
       this.setState({ loading: false });
+      this.showAlert2();
     });
-
-    PostProduct(data);
     console.log("Product Posted---->" + data);
 
     //change the overlay visibility to visible
     //this.setState({isOverlayVisible:true});
-    this.showAlert2();
+   
 
 
   } else {
