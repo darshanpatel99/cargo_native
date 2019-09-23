@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput } from 'react-native';
+import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput, Dimensions } from 'react-native';
 import {Button,Text,Item,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
@@ -220,8 +220,8 @@ export default class Checkout extends Component {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior='padding'
-        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+        // behavior='padding'
+        // keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
 
         >
 
@@ -231,7 +231,7 @@ export default class Checkout extends Component {
             style={{
               marginLeft: 15,
               marginTop: 20,
-              fontSize: 30,
+              fontSize: Dimensions.get('screen').width * 0.04,
               fontFamily: 'nunito-SemiBold'
             }}
           >
@@ -299,7 +299,12 @@ export default class Checkout extends Component {
               }}
                 currentLocation={false}
                 />
+        <KeyboardAvoidingView
+        //style={{ flex: 1 }}
+        behavior='padding'
+        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
 
+        >
 
           <View style={Styles.AddressFunctionButtonView}>
             <Text
@@ -330,6 +335,7 @@ export default class Checkout extends Component {
               />
             </Item>
           </View>
+          </KeyboardAvoidingView>
           <Text
             style={{
               marginLeft: 15,
