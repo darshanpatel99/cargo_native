@@ -7,7 +7,6 @@ import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
-import { TouchableOpacity } from "react-native-gesture-handler";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
@@ -851,15 +850,12 @@ deleteUserFromAuthDatabase() {
         />                        
       </Item>
 
-      <View>
         <Button large-green style={styles.button} onPress={this.emailLoginAsync}>
             <Text style={styles.lightText} >{prevPage}</Text>
         </Button>
-      </View>
 
       <Text>Or</Text>
 
-      <View>
       <Button large-green style={styles.button} onPress ={this.googleLoginAsync}>
         <Ionicons
           size={30}
@@ -869,7 +865,12 @@ deleteUserFromAuthDatabase() {
         />
         <Text style={styles.lightText}>Google {prevPage}</Text>
       </Button>
-      </View>
+
+      <Text>Or</Text>
+
+      <Button large-green style={styles.button} onPress ={()=> this.props.navigation.navigate('ChangePassword')}>
+        <Text style={styles.lightText}>Forgot Password</Text>
+      </Button>
  
     </View>
     </DismissKeyboard>

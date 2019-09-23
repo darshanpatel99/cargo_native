@@ -411,7 +411,7 @@ export class ProductScreen extends Component {
           <Button light rounded large style={styles.secondaryButton} onPress={this.sooldItem}>
             <Text style={styles.secondaryText}>Mark sold</Text>
           </Button>
-          
+
         </View>
           
       );
@@ -539,25 +539,13 @@ export class ProductScreen extends Component {
           />
          
 
-      </View>
-        {/* <ImageViewer imageUrls={this.state.pictures}  /> */}
-    
+      </View>    
 
         {/* <View style={styles.infotext}> */}
           <View style={styles.nameAndPrice}>
             <Text style={styles.productName} numberOfLines={2} ellipsizeMode="tail">{this.state.title}</Text>
             <Text style={styles.productPrice} numberOfLines={2} ellipsizeMode="tail">$ {this.state.price}</Text>
           </View>
-
-          {/* <Text>Local number => {this.state.count} </Text>
-         <Text>Total product in firebase => {this.state.cart.length}</Text> */}
-          {/* <View style={styles.LocViewAndPrice}>
-            <View style={styles.priceDr}>
-              <Text style={styles.price}>$ {this.state.deliveryCharge}  </Text>
-              <FontAwesome name='car' size={22} color={Colors.primary} />
-            </View>
-          </View> */}
-
         
           <Text style={styles.productDesc}>{this.state.description}</Text>
         {/* </View> */}
