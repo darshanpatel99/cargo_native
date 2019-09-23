@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Keyboard, TouchableWithoutFeedback, Dimensions, TextInput } from 'react-native';
 import Colors from "../../constants/Colors.js";
 import { Button, Text } from "native-base";
+import firebase from '../../Firebase.js';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -10,6 +11,33 @@ const DismissKeyboard = ({ children }) => (
  );
 
 export default class ChangePasswordScreen extends Component {
+  //constructor
+  constructor(props) {
+    super(props);
+    this.state={
+      email:'',
+    }
+  }
+
+  /**
+   * function Description: Send the email with the link to change the password
+   */
+  sendPasswordResetEmail=()=>{
+
+    //sending password rest link to the email
+    var auth = firebase.auth();
+    var email = this.state.email;
+    //change the password it is here just for testing purposes
+    auth.sendPasswordResetEmail(email).then(()=>{
+      console.log('password reset email sent');
+    }).catch((error)=>{
+      console.log('Got the following error while sending password reset email: '+ error);
+      alert(error);
+    });
+
+  }
+
+
   render() {
     return (
 
@@ -24,13 +52,13 @@ export default class ChangePasswordScreen extends Component {
                 autoCapitalize='none'
                 autoCorrect={false}
                 style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email})}
+                onChangeText = {email => this.setState({email:email.trim()})}
                 />
         </View>
 
-        <Button large-green style={styles.button}>
+        <Button large-green style={styles.button} onPress={this.sendPasswordResetEmail()}>
             <Text style={styles.lightText} >Send Email</Text>
-        </Button>
+        </Button> 
 
       </View>
       </DismissKeyboard>
