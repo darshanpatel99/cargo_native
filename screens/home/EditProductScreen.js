@@ -1347,5 +1347,9 @@ const styles = {
     margin: 5,
     backgroundColor: Colors.primary,
   },
+  
+  spinnerTextStyle: {
+    color: '#0000FF'
+  },
 
 };
