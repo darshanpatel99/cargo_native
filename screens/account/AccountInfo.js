@@ -43,22 +43,10 @@ export default class AccountInfo extends Component {
 
 
   componentDidMount() {
-    this.getPermissionAsync();
     console.log('component did mount');
   }
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      console.log('ask permission');
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-
   chooseanImage = async () =>{
-
     this.setState({
       newPicture:[this.state.data.ProfilePicture],
     })
@@ -293,7 +281,7 @@ export default class AccountInfo extends Component {
       props.navigation.navigate('Account');
     
     } catch ({ message }) {
-      alert(message);
+      //alert(message);
     }
   }
 
