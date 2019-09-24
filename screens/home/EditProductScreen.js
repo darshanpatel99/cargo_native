@@ -66,6 +66,7 @@ export default class PostProductScreen extends Component {
       price : "",
       thumbnail : " ",
       image: [],
+      newImage:[],
       downloadURLs : [],
       User:null,
       Category: 0,
@@ -85,6 +86,7 @@ export default class PostProductScreen extends Component {
       uploadCounter:0,
       loading: false,
       isImagesChanged: false,
+      allOldDeleted: false,
 
     }
 
@@ -248,13 +250,16 @@ export default class PostProductScreen extends Component {
      this.setState({
        showAlert2: false,
        uploadCounter: 0,
-    //   title : "",
-    //   description : "",
-    //   price : "",
-    //   thumbnail : " ",
-    //   image: [],
-    //   downloadURLs : [],
-    //   addressArray:[],
+      title : "",
+      description : "",
+      price : "",
+      thumbnail : " ",
+      image: [],
+      newImage:[],
+      downloadURLs : [],
+      addressArray:[],
+      uploadCounter:0,
+      firstTimeOnly:true,
 
      });
     
@@ -293,13 +298,14 @@ export default class PostProductScreen extends Component {
   
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
-    var array = this.state.image; //getting the uri array
+    var array = this.state.newImage; //getting the uri array
     console.log(array.length);
     var first = this.state.firstTimeOnly;
+    var allDeleted = this.state.allOldDeleted;
     this.setState({ loading: true });
     array.forEach(async (element) => {
 
-      if(first){
+      if(first && allDeleted){
         first=false;
         this.setState({firstTimeOnly:false});
         await this.uploadThumbnailToFirebase(element)
@@ -327,9 +333,9 @@ export default class PostProductScreen extends Component {
       
     });
 
-
-
 }
+
+
 
    //start post the add button
   startEditTheProduct = async () =>{
@@ -465,7 +471,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri]), isImagesChanged:true
+        newImage: this.state.Image.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri])
       });
 
     //   console.log(this.state.firstTimeOnly);
@@ -510,7 +516,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri]), isImagesChanged:true
+        newImage: this.state.newImage.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri])
       });
 
 
@@ -663,14 +669,24 @@ export default class PostProductScreen extends Component {
       //some funcky stuff
       var uploadC = that.state.uploadCounter+1;
       that.setState({uploadCounter:uploadC});
-      var array = that.state.image;
-        if(uploadC==array.length+1){
+      var array = that.state.newImage;
+      var allDeleted = that.state.allOldDeleted;
+      if(!allDeleted){
+        if(uploadC==array.length){
           //call the post product function
           console.log("Number of products uploaded:" + uploadC);
           that.saveChanges();
 
           //that.resetStack();
         }
+      }else{
+        if(uploadC==array.length+1){
+          //call the post product function
+          console.log("Number of products uploaded:" + uploadC);
+          that.saveChanges();
+          //that.resetStack();
+        }
+      }
     });
   });
   return 'Success';
@@ -688,6 +704,11 @@ export default class PostProductScreen extends Component {
     fireArray.splice(index,1);
     //console.log(array);
     this.setState({ image: array, downloadURLs:fireArray, isImagesChanged:true });
+
+    //if after remove the image array is empty set allOldDeleted to true
+    if(array.length==0){
+      this.setState({allOldDeleted:true});
+    }
   }
 
   // goToHome=()=>{
