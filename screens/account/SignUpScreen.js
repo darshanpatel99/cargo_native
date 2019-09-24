@@ -835,7 +835,7 @@ deleteUserFromAuthDatabase() {
               autoCapitalize='none'
               autoCorrect={false}
               style={styles.TextInputStyle}
-              onChangeText = {email => this.setState({email:email})}
+              onChangeText = {email => this.setState({email:email.trim()})}
               />
       </View>
 
