@@ -4,7 +4,7 @@
 
 import * as firebase from 'firebase';
 
-export default function PostProduct(data) {
+export default function AddJob(data) {
     
     //Fuction that adds product to the database.
     var jobsCollectionReference = firebase.firestore().collection('Jobs');

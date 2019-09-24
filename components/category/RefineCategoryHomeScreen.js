@@ -104,10 +104,11 @@ export default class RefineCategoryHomeScreen extends Component {
               justifyContent: 'center',
             },
             container: {
-              width: '100%',
-              height: '80%',
+              width: '80%',
+              height: '60%',
               flex: 0,
               alignSelf: 'center',
+              marginTop:50
             }}
           }
         />
