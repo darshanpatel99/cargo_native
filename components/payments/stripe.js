@@ -4,7 +4,6 @@ import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-i
 import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Spinner from 'react-native-loading-spinner-overlay';
-var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 import Colors from "../../constants/Colors";
 import firebase from '../../Firebase.js';
 import firebaseChat from '../../FirebaseChat';
@@ -17,6 +16,9 @@ const DismissKeyboard = ({ children }) => (
     {children}
   </TouchableWithoutFeedback>
 );
+
+
+var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');
 
 export default class Stripe extends React.Component {
     
@@ -73,6 +75,7 @@ export default class Stripe extends React.Component {
 
     async onPayment() {
         //alert('Payment processed..')
+        try{
         let information = {
           card: {
             number: this.state.card_number,
@@ -82,6 +85,7 @@ export default class Stripe extends React.Component {
             name: this.props.BuyerName,
           }
         }
+
         var card = await stripe.createToken(information);
         console.log(card)
         var token = card.id;
@@ -91,11 +95,18 @@ export default class Stripe extends React.Component {
           console.log(Object.keys(card))
           console.log(card.error.code)
           alert(card.error.message, { cancelable: false })
-          this.sendTokenToStripe(token);
+          //this.sendTokenToStripe(token);
         }
         // this.setState({token})
         //await promisedSetState({token: token});
         // send token to backend for processing
+
+      } 
+      catch (error) {
+        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        console.log(error);
+        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+      }
     }
 
     promisedSetState(newState) {

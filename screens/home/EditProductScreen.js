@@ -66,6 +66,7 @@ export default class PostProductScreen extends Component {
       price : "",
       thumbnail : " ",
       image: [],
+      newImage:[],
       downloadURLs : [],
       User:null,
       Category: 0,
@@ -85,6 +86,7 @@ export default class PostProductScreen extends Component {
       uploadCounter:0,
       loading: false,
       isImagesChanged: false,
+      allOldDeleted: false,
 
     }
 
@@ -126,8 +128,12 @@ export default class PostProductScreen extends Component {
 
     }
   });
-  
 
+  console.log("This is a cat " + this.state.Category);
+  
+  var arrayTest = [this.state.Category];
+  
+  //this.categoryRemover.current.presetState(arrayTest);
 
     this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -142,7 +148,7 @@ export default class PostProductScreen extends Component {
  
 
   componentWillMount() {
-
+    const { navigation } = this.props;
   // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
   const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
   console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
@@ -150,6 +156,22 @@ export default class PostProductScreen extends Component {
     Platform.OS === 'ios'
       ? headerAndStatusBarHeight - 700
       : headerAndStatusBarHeight;
+
+      const newData = navigation.getParam('data');
+
+    console.log("This is a cat " + newData.category)
+
+    this.setState({
+        title: newData.title,
+        price:newData.price,
+        image:newData.pictures,
+        downloadURLs:newData.pictures,
+        description:newData.description,
+    })
+
+    console.log("This is a cat " + this.state.Category);
+
+   
   }
  
   showAlert(){
@@ -228,13 +250,16 @@ export default class PostProductScreen extends Component {
      this.setState({
        showAlert2: false,
        uploadCounter: 0,
-    //   title : "",
-    //   description : "",
-    //   price : "",
-    //   thumbnail : " ",
-    //   image: [],
-    //   downloadURLs : [],
-    //   addressArray:[],
+      title : "",
+      description : "",
+      price : "",
+      thumbnail : " ",
+      image: [],
+      newImage:[],
+      downloadURLs : [],
+      addressArray:[],
+      uploadCounter:0,
+      firstTimeOnly:true,
 
      });
     
@@ -273,14 +298,19 @@ export default class PostProductScreen extends Component {
   
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
-    var array = this.state.image; //getting the uri array
+    var array = this.state.newImage; //getting the uri array
     console.log(array.length);
+    var first = this.state.firstTimeOnly;
+    var allDeleted = this.state.allOldDeleted;
     this.setState({ loading: true });
     array.forEach(async (element) => {
 
-      if(this.state.firstTimeOnly){
+      if(first && allDeleted){
+        first=false;
+        this.setState({firstTimeOnly:false});
         await this.uploadThumbnailToFirebase(element)
         .then(()=>{
+          
           console.log('Thumbnail got uploaded');
           
         })
@@ -303,12 +333,20 @@ export default class PostProductScreen extends Component {
       
     });
 
-
-
 }
+
+
 
    //start post the add button
   startEditTheProduct = async () =>{
+    let titleLength = this.state.title;
+    let priceLength = parseInt( this.state.price);
+    let descriptionLength = this.state.description;
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.googleAddressEmpty;
+    if(titleLength.length > 0 &&priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
     if(this.state.isImagesChanged){
       console.log(this.state.isImagesChanged);
     await this.uploadImageData();
@@ -317,6 +355,32 @@ export default class PostProductScreen extends Component {
       console.log('Image data is not changed during editing');
       this.saveChanges();
     }
+  } else {
+    console.log('hello');
+
+    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      this.setState({
+        priceAlert:true,
+      })      
+    }
+    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        availableAlert:true,
+      })
+    }
+
+    console.log(address)
+
+    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        showAddressAlert:true,
+      })
+    }
+
+    this.setState({
+      postAdClicked: true,
+    })
+  }
   }
 
 
@@ -407,7 +471,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri]), isImagesChanged:true
+        newImage: this.state.Image.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri])
       });
 
     //   console.log(this.state.firstTimeOnly);
@@ -452,7 +516,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri]), isImagesChanged:true
+        newImage: this.state.newImage.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri])
       });
 
 
@@ -605,14 +669,24 @@ export default class PostProductScreen extends Component {
       //some funcky stuff
       var uploadC = that.state.uploadCounter+1;
       that.setState({uploadCounter:uploadC});
-      var array = that.state.image;
-        if(uploadC==array.length+1){
+      var array = that.state.newImage;
+      var allDeleted = that.state.allOldDeleted;
+      if(!allDeleted){
+        if(uploadC==array.length){
           //call the post product function
           console.log("Number of products uploaded:" + uploadC);
           that.saveChanges();
 
           //that.resetStack();
         }
+      }else{
+        if(uploadC==array.length+1){
+          //call the post product function
+          console.log("Number of products uploaded:" + uploadC);
+          that.saveChanges();
+          //that.resetStack();
+        }
+      }
     });
   });
   return 'Success';
@@ -630,6 +704,11 @@ export default class PostProductScreen extends Component {
     fireArray.splice(index,1);
     //console.log(array);
     this.setState({ image: array, downloadURLs:fireArray, isImagesChanged:true });
+
+    //if after remove the image array is empty set allOldDeleted to true
+    if(array.length==0){
+      this.setState({allOldDeleted:true});
+    }
   }
 
   // goToHome=()=>{
@@ -810,8 +889,8 @@ export default class PostProductScreen extends Component {
              margin: 10
            }}
          >
-           <Button style={styles.postAdButton} onPress={()=>{this.startEditTheProduct()}}>
-             <Text>Save changes</Text>
+           <Button light rounded large style={styles.secondaryButton} onPress={()=>{this.startEditTheProduct()}}>
+             <Text style = {styles.secondaryWhiteText}>Save</Text>
            </Button>
          </View>
      );
@@ -825,7 +904,7 @@ export default class PostProductScreen extends Component {
        margin: 10
      }}
    >
-     <Button disabled style={styles.postAdButton} onPress={this.startEditTheProduct()}>
+     <Button disabled style={styles.secondaryButton} onPress={this.startEditTheProduct()}>
        <Text>Save changes</Text>
      </Button>
    </View>
@@ -940,7 +1019,7 @@ export default class PostProductScreen extends Component {
 
               {/* Pick category for the product */}
               <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
-              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
+              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover} />
               
               </View>
               
@@ -995,7 +1074,6 @@ export default class PostProductScreen extends Component {
                   onChangeText: (text) => {this.testFunction(text)}
                  }}
                 onPress={(data, details = null) => {
-
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
@@ -1004,9 +1082,21 @@ export default class PostProductScreen extends Component {
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
+
+                currentLocation={false}
+                
                 GoogleReverseGeocodingQuery={{
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                 }}
+
+                GooglePlacesSearchQuery={{
+                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                  rankby: 'distance',
+                  input :'address',
+                  circle: '5000@50.676609,-120.339020',
+                }}
+
+               
 
                 getDefaultValue={() => {
                     return ''; // text input default value
@@ -1029,17 +1119,18 @@ export default class PostProductScreen extends Component {
                     borderBottomWidth:0
                     },
                     textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
                     height: 38,
                     color: '#5d5d5d',
-                    fontSize: 16
+                    fontSize: 16,
+                    borderWidth: 1,
+                    borderColor:'blue',
+                    marginLeft: 0,
+                    marginRight: 0,
                     },
                     predefinedPlacesDescription: {
                     color: '#1faadb'
                     },
                 }}
-                currentLocation={false}
                 />
 
             
@@ -1056,7 +1147,10 @@ export default class PostProductScreen extends Component {
               {/* <Button style={styles.postAdButton} onPress={this.postTheProduct}>
                 <Text>Post Ad</Text>
               </Button> */}
-              {this.saveButton()}
+              <Button  light rounded large style={styles.secondaryButton} onPress={()=>{this.props.navigation.goBack()}}>
+             <Text style={styles.secondaryWhiteText} >Cancel</Text>
+            </Button>
+              {this.saveButton()}               
             </View>
           </InputScrollView>
           </KeyboardAvoidingView>
@@ -1082,7 +1176,7 @@ export default class PostProductScreen extends Component {
             show={showAlert2}
             showProgress={false}
             title="Alert"
-            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
+            message={'Successfully changes'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
@@ -1241,7 +1335,17 @@ const styles = {
     bottom: 0
   },
   postAdButton: {
-    backgroundColor: Colors.secondary
+    flex: 0,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 50,
+  width: Dimensions.get('screen').width*0.3,
+  margin: 5,
+  backgroundColor: Colors.primary,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.5
   },
   container: {
     flex: 1,
@@ -1278,5 +1382,33 @@ const styles = {
     borderWidth:0.5,
   },
 
+  secondaryWhiteText: {
+    color: "#fff",
+    fontSize: Dimensions.get('window').width*0.04,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+
+  cancelButton:{
+    color: "#fff",
+    fontSize: Dimensions.get('window').width*0.04,
+    fontWeight: "500",
+    letterSpacing: 1.2
+  },
+
+  secondaryButton: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height:Dimensions.get('window').height*0.065,
+    width: Dimensions.get('window').width*0.35,
+    margin: 5,
+    backgroundColor: Colors.primary,
+  },
+  
+  spinnerTextStyle: {
+    color: '#0000FF'
+  },
 
 };

@@ -1,4 +1,5 @@
 // This screen will be used by customer to post the product
+
 import React, { Component } from 'react';
 import {
   Platform,
@@ -36,8 +37,10 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import uuid from 'react-native-uuid';
 import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { StackActions, NavigationActions } from 'react-navigation';
 import * as ImageManipulator from 'expo-image-manipulator';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -51,6 +54,9 @@ export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
     storageRef = firebase.storage().ref();
+    const{navigation} = this.props;
+    const reference = navigation.getParam('data');
+    this.productRef = firebase.firestore().collection('Products').doc(reference.id),
     this.state={
       postAdClicked: false,
       showAlert: true,
@@ -74,11 +80,12 @@ export default class PostProductScreen extends Component {
       long: 0,
       googleAddressEmpty: '',
       changingAddress:0,
+      canUpload:true,
       priceAlert:false,
-      buyerID:'',
-      sellerName:'',
       uploadCounter:0,
       loading: false,
+      isImagesChanged: false,
+
     }
 
     this.categoryRemover = React.createRef();
@@ -89,10 +96,8 @@ export default class PostProductScreen extends Component {
     let user = firebase.auth().currentUser;
     if (user != null) {
       this.state.owner = user.uid;
-      this.state.sellerName = user.displayName;
       console.log(" State UID ==> from  " + this.state.Owner);
     }
-
   }
 
   componentDidMount() {
@@ -103,9 +108,17 @@ export default class PostProductScreen extends Component {
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
 
-    
+    const newData = navigation.getParam('data');
 
-   
+    this.setState({
+        title: newData.title,
+        price:newData.price,
+        image:newData.pictures,
+        downloadURLs:newData.pictures,
+        description:newData.description,
+        thumbnail:newData.thumbnail,
+    })
+
     if (user != null) {
         
       this.state.owner = user.uid;
@@ -113,7 +126,7 @@ export default class PostProductScreen extends Component {
 
     }
   });
-
+  
 
 
     this.getPermissionAsync();
@@ -121,25 +134,22 @@ export default class PostProductScreen extends Component {
     console.log('component did mount');
   }
 
-   componentWillMount() {
-
-    // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
-    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
-    console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
-    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
-      Platform.OS === 'ios'
-        ? headerAndStatusBarHeight - 700
-        : headerAndStatusBarHeight;
-  }
-
   componentWillUnmount() {
-
-    //clearing the arrays
-    console.log("commponent will unmouutn tdsl;jfsaksf;jg");
-    this.setState({image:[], downloadURLs:[], addressArray:[],Avability:[], thumbnail:' ' });
     // Clean up: remove the listener
-    this._unsubscribe();
+    //this._unsubscribe();
     this.focusListener.remove();
+  }
+ 
+
+  componentWillMount() {
+
+  // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
+  const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+  console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
+  KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+    Platform.OS === 'ios'
+      ? headerAndStatusBarHeight - 700
+      : headerAndStatusBarHeight;
   }
  
   showAlert(){
@@ -157,105 +167,7 @@ export default class PostProductScreen extends Component {
     navigate('Account');
   };
 
-  showAlert2 () {
-    this.setState({
-      showAlert2: true
-    });
-  };
-
-  hideAlert2(){
-    const { navigate } = this.props.navigation;
-    this.categoryRemover.current.changeState();
-    this.avabilityRemover.current.changeState();
-    this.googlePlacesAutocomplete._handleChangeText('')
-    //this.addressRemover.current.changeAddressState();
-
-    this.setState({
-      showAlert2: false,
-      title : "",
-      description : "",
-      price : "",
-      thumbnail : " ",
-      image: [],
-      downloadURLs : [],
-      addressArray:[],
-      uploadCounter:0,
-      firstTimeOnly:true,
-    });
-    navigate('Home');
-  };
-
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-
-  //listens to the change in auth state
-  onAuthStateChanged = user => {
-    // if the user logs in or out, this will be called and the state will update.
-    // This value can also be accessed via: firebase.auth().currentUser
-    if (user != null){
-      if(user.emailVerified){ // note difference on this line
-        this.setState({ User: user});
-      }
-    }
-    else{
-      this.setState({ User: null});
-    }
-
-  };
-
-
-  //Uploading all the product related stuff
-  uploadImageData =  async () =>{
-    
-      var array = this.state.image; //getting the uri array
-      var first = this.state.firstTimeOnly;
-      console.log("Total number of uris we have"+ array.length)
-      this.setState({ loading: true });
-      array.forEach(async (element) => {
-
-   
-        if(first){
-
-          first=false;
-          this.setState({firstTimeOnly:false});
-          await this.uploadThumbnailToFirebase(element)
-          .then(()=>{   
-            
-            console.log('Thumbnail got uploaded');
-          })
-          .catch(error=>{
-            console.log("Hey there is an error:  " +error);
-          });
-          
-        }
-
-        await this.uploadImageToFirebase(element, uuid.v1())
-        .then(() => {
-          console.log('Success' + uuid.v1());
-          
-          
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
-
-        
-      });
-
-
-
-  }
-
-
-  //start post the add button
-  startPostTheProduct = async () =>{
+  showAlert2 =()=> {
     let titleLength = this.state.title;
     let priceLength = parseInt( this.state.price);
     let descriptionLength = this.state.description;
@@ -263,101 +175,16 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
+
     if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
-    await this.uploadImageData();
-    }
-    else {
-      console.log('hello');
-  
-      if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
-        this.setState({
-          priceAlert:true,
-        })      
-      }
-      else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
-        this.setState({
-          availableAlert:true,
-        })
-      }
-  
-      console.log(address)
-  
-      if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
-        this.setState({
-          showAddressAlert:true,
-        })
-      }
   
       this.setState({
-        postAdClicked: true,
-      })
-    }
-  }
-
-
-  //post the product
-  postTheProduct = async() =>{
-
-    let titleLength = this.state.title;
-    let priceLength = parseInt( this.state.price);
-    let descriptionLength = this.state.description;
-    let productCategory = this.state.Category;
-    let picArray = this.state.image;
-    let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
-
-    console.log('length of the price' + priceLength.length);
-
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
-
-    console.log("Uploading the images");
-  
-
-    console.log('Download urls --> '+this.state.downloadURLs)
-    var data = {
-      Description : this.state.description,
-      Name : this.state.title,
-      Price : this.state.price,
-      Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.thumbnail,
-      Owner : this.state.owner,
-      Flag : true,
-      FavouriteUsers:[],
-      TimeStamp: null,
-      UserClicks:[],
-      Category: this.state.Category,
-      Avability: this.state.Avability,
-      Status:'active',
-      AddressArray: this.state.addressArray,
-      BuyerID:'',
-      SellerName: this.state.sellerName,
-      BuyerName:'',
-      BuyerAddress:'',
-      DeliveryFee:'',
-      TotalFee:'',
-      BoughtStatus:'false',
-      OrderNumber: -1,
-
-    }
-
-    //Getting the current time stamp
-    var currentDate = new Date();
-    data.TimeStamp = currentDate.getTime();
-    //if(this.checkFields == true)
-    //Posting the product
-    PostProduct(data).then(()=>{
-      this.setState({ loading: false });
-      this.showAlert2();
-    });
-    console.log("Product Posted---->" + data);
-
-    //change the overlay visibility to visible
-    //this.setState({isOverlayVisible:true});
-   
-
+        showAlert2: true
+      });
+      
 
   } else {
-    console.log('hello' + typeof(priceLength));
+    console.log('hello');
 
     if(picArray.length==0){
       this.setState({
@@ -387,11 +214,186 @@ export default class PostProductScreen extends Component {
     this.setState({
       postAdClicked: true,
     })
+    
+  };
+}
+
+  hideAlert2(){
+    const { navigate } = this.props.navigation;
+    // this.categoryRemover.current.changeState();
+    // this.avabilityRemover.current.changeState();
+    // this.googlePlacesAutocomplete._handleChangeText('');
+    // this.addressRemover.current.changeAddressState();
+
+     this.setState({
+       showAlert2: false,
+       uploadCounter: 0,
+    //   title : "",
+    //   description : "",
+    //   price : "",
+    //   thumbnail : " ",
+    //   image: [],
+    //   downloadURLs : [],
+    //   addressArray:[],
+
+     });
+    
+
+   // this.saveChanges();
+    this.resetStack();
+  
+    
+    //navigate('Home');
+  };
+
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  };
+
+  //listens to the change in auth state
+  onAuthStateChanged = user => {
+    // if the user logs in or out, this will be called and the state will update.
+    // This value can also be accessed via: firebase.auth().currentUser
+    if (user != null){
+      if(user.emailVerified){ // note difference on this line
+        this.setState({ User: user});
+      }
+    }
+    else{
+      this.setState({ User: null});
+    }
+  };
+
+  
+  //Uploading all the product related stuff
+  uploadImageData =  async () =>{
+    var array = this.state.image; //getting the uri array
+    console.log(array.length);
+    this.setState({ loading: true });
+    array.forEach(async (element) => {
+
+      if(this.state.firstTimeOnly){
+        await this.uploadThumbnailToFirebase(element)
+        .then(()=>{
+          console.log('Thumbnail got uploaded');
+          
+        })
+        .catch(error=>{
+          console.log("Hey there is an error:  " +error);
+        });
+      }
+
+      await this.uploadImageToFirebase(element, uuid.v1())
+      .then(() => {
+        console.log('Success' + uuid.v1());
+        
+        
+      })
+      .catch(error => {
+        console.log('Success' + uuid.v1()); 
+        console.log(error);
+      });
+
+      
+    });
+
+
+
+}
+
+   //start post the add button
+  startEditTheProduct = async () =>{
+    if(this.state.isImagesChanged){
+      console.log(this.state.isImagesChanged);
+    await this.uploadImageData();
+    }
+    else{
+      console.log('Image data is not changed during editing');
+      this.saveChanges();
+    }
+  }
+
+
+  //post the product
+  postTheProduct = async() =>{
+
+    let titleLength = this.state.title;
+    let priceLength = parseInt( this.state.price);
+    let descriptionLength = this.state.description;
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.googleAddressEmpty;
+
+    if(titleLength.length > 0 &&priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+  
+    console.log('Download urls --> '+this.state.downloadURLs)
+    var data = {
+      Description : this.state.description,
+      Name : this.state.title,
+      Price : this.state.price,
+      Pictures : this.state.downloadURLs,
+      Thumbnail : this.state.thumbnail,
+      Owner : this.state.owner,
+      Flag : true,
+      FavouriteUsers:[],
+      TimeStamp: null,
+      UserClicks:[],
+      Category: this.state.Category,
+      Avability: this.state.Avability,
+      Status:'active',
+      AddressArray: this.state.addressArray,
+   
+    }
+
+    //Getting the current time stamp
+    var currentDate = new Date();
+    data.TimeStamp = currentDate.getTime();
+    //if(this.checkFields == true)
+    //Posting the product
+    PostProduct(data);
+    console.log("Product Posted---->" + data);
+
+    //change the overlay visibility to visible
+    //this.setState({isOverlayVisible:true});
+    this.showAlert2();
+
+  } else {
+    console.log('hello');
+
+    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      this.setState({
+        priceAlert:true,
+      })      
+    }
+    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        availableAlert:true,
+      })
+    }
+
+    console.log(address)
+
+    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      this.setState({
+        showAddressAlert:true,
+      })
+    }
+
+    this.setState({
+      postAdClicked: true,
+    })
   }
 
   };  
   /**
-   * Function Description:
+   * Function Description: Pick image from the gallery
    */
   _pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -405,7 +407,7 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]), isImagesChanged:true
       });
 
     //   console.log(this.state.firstTimeOnly);
@@ -435,20 +437,22 @@ export default class PostProductScreen extends Component {
   };
 
     /**
-   * Function Description:
+   * Function Description: Pick the image using the camera
    */
     
   _pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.2      
+      quality:0.2
+      //allowsEditing: true,
+      
     });
     
     console.log(result);
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]), isImagesChanged:true
       });
 
 
@@ -486,7 +490,7 @@ export default class PostProductScreen extends Component {
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize:{width:400, height:400} }],
+      [{ resize:{width:200, height:200} }],
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -534,7 +538,7 @@ export default class PostProductScreen extends Component {
 
 
   
-    checkIfInputNotEmpty(text) {
+  checkIfInputNotEmpty(text) {
       // console.log(text)
       // if(this.props.postAdClicked  == true && text.length == 0) {
       //     alert('Please input address')
@@ -555,62 +559,64 @@ export default class PostProductScreen extends Component {
 
 
 
- 
-  //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, imageName) => {
+ //Uploading an Image to the Firebase
+ uploadImageToFirebase = async (uri, imageName) => {
 
-    const manipResult = await ImageManipulator.manipulateAsync(
-      uri,
-      [],
-      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
-    )
+  const manipResult = await ImageManipulator.manipulateAsync(
+    uri,
+    [],
+    { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+  )
 
 
-    const response = await fetch(manipResult.uri);
-    const blob = await response.blob();
-    console.log('INside upload Image to Firebase')
-    var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
-    const that = this;
-    
-    // Register three observers:
-    // 1. 'state_changed' observer, called any time the state changes
-    // 2. Error observer, called on failure
-    // 3. Completion observer, called on successful completion
-    uploadTask.on('state_changed', function(snapshot){
-      // Observe state change events such as progress, pause, and resume
-      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case firebase.storage.TaskState.PAUSED: // or 'paused'
-          console.log('Upload is paused');
-          break;
-        case firebase.storage.TaskState.RUNNING: // or 'running'
-          console.log('Upload is running');
-          break;
-      }
-    }, function(error) {
-      // Handle unsuccessful uploads
-    }, function() {
-      // Handle successful uploads on complete
-      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        console.log('File available at', downloadURL);
-        that.state.downloadURLs.push(downloadURL);
+  const response = await fetch(manipResult.uri);
+  const blob = await response.blob();
+  console.log('INside upload Image to Firebase')
+  var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
+  const that = this;
+  
+  // Register three observers:
+  // 1. 'state_changed' observer, called any time the state changes
+  // 2. Error observer, called on failure
+  // 3. Completion observer, called on successful completion
+  uploadTask.on('state_changed', function(snapshot){
+    // Observe state change events such as progress, pause, and resume
+    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    switch (snapshot.state) {
+      case firebase.storage.TaskState.PAUSED: // or 'paused'
+        console.log('Upload is paused');
+        break;
+      case firebase.storage.TaskState.RUNNING: // or 'running'
+        console.log('Upload is running');
+        break;
+    }
+  }, function(error) {
+    // Handle unsuccessful uploads
+  }, function() {
+    // Handle successful uploads on complete
+    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+      console.log('File available at', downloadURL);
+      that.state.downloadURLs.push(downloadURL);
 
-        //some funcky stuff
-        var uploadC = that.state.uploadCounter+1;
-        that.setState({uploadCounter:uploadC});
-        var array = that.state.image;
-          if(uploadC==array.length+1){
-            //call the post product function
-            console.log("Number of products uploaded:" + uploadC);
-            that.postTheProduct();
-          }
-      });
+      console.log(that.state.uploadCounter);
+      //some funcky stuff
+      var uploadC = that.state.uploadCounter+1;
+      that.setState({uploadCounter:uploadC});
+      var array = that.state.image;
+        if(uploadC==array.length+1){
+          //call the post product function
+          console.log("Number of products uploaded:" + uploadC);
+          that.saveChanges();
+
+          //that.resetStack();
+        }
     });
-    return 'Success';
-  };
+  });
+  return 'Success';
+};
  
 
   //Delete Image on Remove
@@ -623,7 +629,7 @@ export default class PostProductScreen extends Component {
     var fireArray = [...this.state.downloadURLs];
     fireArray.splice(index,1);
     //console.log(array);
-    this.setState({ image: array, downloadURLs:fireArray });
+    this.setState({ image: array, downloadURLs:fireArray, isImagesChanged:true });
   }
 
   // goToHome=()=>{
@@ -634,6 +640,7 @@ export default class PostProductScreen extends Component {
 
   _renderImages() {
     let images = [];
+    console.log("number of images we have: "+ this.state.image.length);
 
     //let remainder = 4 - (this.state.devices % 4);
     this.state.image.map((item, index) => {
@@ -737,7 +744,7 @@ export default class PostProductScreen extends Component {
     
     
     if(this.state.postAdClicked) {
-      if(text >= 10 && text <=1000){
+      if(text > 10 && text <1000){
         return true
       } else{
         return false
@@ -792,6 +799,76 @@ export default class PostProductScreen extends Component {
     
   }
 
+  saveButton =() =>{
+    if(this.state.canUpload){
+     return(
+       <View
+           style={{
+             flexDirection: 'row',
+             justifyContent: 'center',
+             alignItems: 'center',
+             margin: 10
+           }}
+         >
+           <Button style={styles.postAdButton} onPress={()=>{this.startEditTheProduct()}}>
+             <Text>Save changes</Text>
+           </Button>
+         </View>
+     );
+    }
+    else{
+     <View
+     style={{
+       flexDirection: 'row',
+       justifyContent: 'center',
+       alignItems: 'center',
+       margin: 10
+     }}
+   >
+     <Button disabled style={styles.postAdButton} onPress={this.startEditTheProduct()}>
+       <Text>Save changes</Text>
+     </Button>
+   </View>
+    }
+  }
+
+  saveChanges(){
+
+    console.log('this is a length of the downloadURLs array' + this.state.downloadURLs.length);
+    console.log('this is a length ' + this.state.price);
+    this.productRef.update({
+        Name:this.state.title,
+        Pictures:this.state.downloadURLs,
+        Price:this.state.price,
+        Thumbnail : this.state.thumbnail, 
+        Description:this.state.description,
+        Category: this.state.Category,
+        Avability: this.state.Avability,
+        AddressArray:this.state.addressArray,    
+    }).then(()=>{
+      //show the alert
+      this.setState({ loading: false });
+      this.showAlert2();
+    });
+
+    //this.setState({isOverlayVisible:true});
+    //this.resetStack();
+
+  }
+
+  resetStack = () => {
+    this.props
+      .navigation
+      .dispatch(StackActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({
+            routeName: 'Home',
+          }),
+        ],
+      }))
+   }
+
   render() {
 
     let { image } = this.state;
@@ -803,14 +880,11 @@ export default class PostProductScreen extends Component {
     if(this.state.User != null){
       return (
         <View style={{flex:1}}>
-
         <Spinner
-          visible={this.state.loading}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
-
-        
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
@@ -851,7 +925,7 @@ export default class PostProductScreen extends Component {
                   returnKeyType='done'
                     />
               </Item>
-              <Item style={[{ marginBottom: 10},this.forPrice(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
+              <Item style={[{ marginBottom: 10},this.forPrice(parseInt(this.state.price)) ? styles.correctStyle : styles.errorStyle]}>
                 <Foundation name='dollar' size={32} style={{ padding: 10 }} />
                 <Input keyboardType='numeric' 
                   placeholder='0.00'
@@ -884,7 +958,7 @@ export default class PostProductScreen extends Component {
                     value={this.state.description}
                     style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
                     maxLength={500}
-                    //returnKeyType='return'
+                    returnKeyType='return'
                     
                   />
                 ) : (
@@ -897,7 +971,7 @@ export default class PostProductScreen extends Component {
                     value={this.state.description}
                     style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
                     maxLength={500}
-                    //3returnKeyType='return'
+                    returnKeyType='return'
                     
                   />
                 )}
@@ -921,6 +995,7 @@ export default class PostProductScreen extends Component {
                   onChangeText: (text) => {this.testFunction(text)}
                  }}
                 onPress={(data, details = null) => {
+
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
@@ -929,21 +1004,9 @@ export default class PostProductScreen extends Component {
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
-
-                currentLocation={false}
-                
                 GoogleReverseGeocodingQuery={{
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                 }}
-
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'distance',
-                  input :'address',
-                  circle: '5000@50.676609,-120.339020',
-                }}
-
-               
 
                 getDefaultValue={() => {
                     return ''; // text input default value
@@ -957,8 +1020,6 @@ export default class PostProductScreen extends Component {
                     region: 'Canada',
                     radius: 20000,
                     strictbounds: true,
-
-                    types: 'address', // default: 'geocode'
                 }}
 
                 styles={{
@@ -968,18 +1029,17 @@ export default class PostProductScreen extends Component {
                     borderBottomWidth:0
                     },
                     textInput: {
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16,
-                    borderWidth: 1,
-                    borderColor:'blue',
                     marginLeft: 0,
                     marginRight: 0,
+                    height: 38,
+                    color: '#5d5d5d',
+                    fontSize: 16
                     },
                     predefinedPlacesDescription: {
                     color: '#1faadb'
                     },
                 }}
+                currentLocation={false}
                 />
 
             
@@ -993,17 +1053,36 @@ export default class PostProductScreen extends Component {
                 //margin: 10
               }}
             >
-              <Button style={styles.postAdButton} onPress={this.startPostTheProduct}>
+              {/* <Button style={styles.postAdButton} onPress={this.postTheProduct}>
                 <Text>Post Ad</Text>
-              </Button>
+              </Button> */}
+              {this.saveButton()}
             </View>
           </InputScrollView>
           </KeyboardAvoidingView>
+
+          {/* <Overlay
+            isVisible={this.state.isOverlayVisible}
+            windowBackgroundColor="rgba(255, 255, 255, .5)"
+            overlayBackgroundColor=" #f5f2d0"
+            
+            width="auto"
+            height="auto"
+            >
+            <Image source={{uri:successImageUri}} style={{ width: 100, height: 100, marginBottom: 25 }}/>
+            <Button onPress={this.goToHome}>
+              <Text>Go to Home</Text>
+            </Button>
+
+          </Overlay> */}
+
+          
+
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
             title="Alert"
-            message={'Successfully Posted!!\n'}
+            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
@@ -1188,11 +1267,6 @@ const styles = {
     marginTop: 5,
     //alignItems:'center'
   },
-  
-  spinnerTextStyle: {
-    color: '#0000FF'
-  },
-
 
   errorStyle:{
     borderColor:'red',
@@ -1203,4 +1277,6 @@ const styles = {
     borderColor: Colors.primary,
     borderWidth:0.5,
   },
+
+
 };

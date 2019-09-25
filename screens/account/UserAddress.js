@@ -1,7 +1,19 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions, Button, TextInput } from 'react-native';
+import {  Platform,   KeyboardAvoidingView,View, StyleSheet, Dimensions, TextInput,Keyboard,TouchableWithoutFeedback, } from 'react-native';
+import { Header } from 'react-navigation';
+import Constants from 'expo-constants';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import firebase from '../../Firebase.js';
+import { Text, Button } from "native-base";
+import Colors from "../../constants/Colors";
+var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
+
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+ );
 
 export default class UserAddress extends React.Component {
   constructor(props) {
@@ -23,10 +35,16 @@ export default class UserAddress extends React.Component {
     this.setState({UID: testId})
   }
 
-  testFunction(text){
-    //this.state.Address = text;
-    //this.setState({googleAddressEmpty: 'test'})
-    }
+
+  componentWillMount() {
+
+    // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
+    const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
+    KEYBOARD_VERTICAL_OFFSET_HEIGHT =
+      Platform.OS === 'ios'
+        ? headerAndStatusBarHeight - 700
+        : headerAndStatusBarHeight;
+  }
 
 
   finishFunc(){
@@ -73,42 +91,58 @@ export default class UserAddress extends React.Component {
   render() {
    
       return (
+
+        <DismissKeyboard>
+
         <View style={styles.container}>
+
+          {/* <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior='padding'
+            keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+          > */}
 
           <View style={styles.topTitle}>
             <Text style={{
               marginLeft: 15,
-              fontSize: 20,
-              fontFamily: 'nunito-SemiBold'
+              fontSize: Dimensions.get('screen').width * 0.08,
+              fontFamily: 'nunito-SemiBold',
+              color:'white',
+
             }}>Phone no. & Address</Text>
 
           </View>
 
           <View style={styles.bottomContainer}>
+            <View>
             <TextInput
-                style={{height: 40, borderColor: 'gray', borderWidth: 1, width:Dimensions.get('screen').width-10, marginTop:15 }}
+                style={styles.textInputStyle}
                 keyboardType='numeric'
                 returnKeyType='done'
                 placeholder="Apt number (Optional)"
                 onChangeText={(text) => this.setState({UnitNumber: text})}
                 value={this.state.UnitNumber}
+                maxLength ={8}
             />
 
             <TextInput
-                style={{height: 40, borderColor: 'gray', borderWidth: 1, width:Dimensions.get('screen').width-10 , marginTop:15}}
+                style={styles.textInputStyle}
                 keyboardType='numeric'
                 returnKeyType='done'
                 placeholder="Phone Number : "
                 onChangeText={(text) => this.setState({PhoneNumber: text})}
                 value={this.state.PhoneNumber}
-            />     
+                maxLength ={12}
+            />
+            </View>
+                 
           </View>
             
 
-        <View style={this.ifInputEmpty()? styles.addressContainer : styles.inputAddressContainer}>
+        <View style={this.ifInputEmpty()? styles.inputAddressContainer : styles.inputAddressContainer}>
           <GooglePlacesAutocomplete
             ref={c => this.googlePlacesAutocomplete = c}
-            placeholder='Pickup Address'
+            placeholder='Your Address'
             minLength={2}
             autoFocus={false}
             returnKeyType={'default'}
@@ -150,25 +184,39 @@ export default class UserAddress extends React.Component {
             styles={{
                 textInputContainer: {
                     width: '100%',
-                    height:40
+                    height:40,
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderTopWidth: 0,
+                    borderBottomWidth:0
                 },
                 description: {
                     fontWeight: 'bold'
                 },
                 predefinedPlacesDescription: {
                     color: '#1faadb'
-                }
+                },
+                textInput: {
+                  height: 38,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                  borderWidth: 1,
+                  borderColor:Colors.primary,
+                 marginHorizontal:Dimensions.get('screen').width*0.1,
+                  },
                 }}
             currentLocation={false}
             />
 
         </View>
 
-        <View style ={{flexDirection:'row',justifyContent:'space-evenly', marginTop:15}}>
-          <Button onPress={this.finishFunc} title='Done' />
+        <View style ={{flexDirection:'row',justifyContent:'space-evenly',}}>
+          <Button large-green style={styles.button} onPress={this.finishFunc}>
+            <Text style={styles.lightText}>Done</Text>
+          </Button>
         </View>
-
       </View>
+      </DismissKeyboard>
+      
       );
     }
 }
@@ -178,29 +226,70 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     //alignItems: 'center',
     backgroundColor: '#fff',
-    marginTop: Dimensions.get('screen').height*0.1,
+    //marginTop: Dimensions.get('screen').height*0.1,
   },
   topTitle:{
-    flex:0.05,
+    flex:0.15,
+    justifyContent:'flex-end',
+    backgroundColor:Colors.secondary,
+    // borderColor:'black',
+    // borderWidth:0.5,
+    //marginTop: Dimensions.get('window').height*0.08,
   },
   inputAddressContainer: {
     flex: 0.3, 
      alignItems: 'center',
      justifyContent:'center',
     // backgroundColor: '#fff',
-    marginTop: 40,
+    // borderColor:'black',
+    // borderWidth:0.5,
+    //marginTop: 40,
+    //marginTop:Dimensions.get('window').width*0.1,
   },
   addressContainer: {
-    flex: 0.05, 
+    flex: 0.1, 
      alignItems: 'center',
      justifyContent:'center',
     // backgroundColor: '#fff',
-    marginTop: 40,
+    //marginTop:Dimensions.get('window').height*0.05,
+    // borderColor:'black',
+    // borderWidth:0.5,
+    marginHorizontal: Dimensions.get('screen').width*0.1,
   },
   bottomContainer: {
-    flex: 0.3, 
-    marginTop: 40,
+    flex: 0.2, 
+    //marginTop: 40,
     alignItems: 'center',
+    justifyContent:'space-evenly',
     // backgroundColor: '#fff',
+    // borderColor:'black',
+    // borderWidth:0.5,
+    marginHorizontal: Dimensions.get('screen').width*0.01,
+  },
+  button: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 100,
+    height: 50,
+    width: Dimensions.get('window').width - 100,
+    //margin: 5,
+    backgroundColor: Colors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    // borderColor:'black',
+    // borderWidth:0.5,
+  },
+
+  textInputStyle:{
+    height: 40,
+    paddingLeft :  Dimensions.get('screen').width*0.01, 
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius:10,
+    borderBottomColor:Colors.primary, 
+    width:Dimensions.get('screen').width - Dimensions.get('screen').width*0.05,
   }
 })

@@ -7,6 +7,7 @@ import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
+import { TouchableOpacity } from "react-native-gesture-handler";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
@@ -850,12 +851,15 @@ deleteUserFromAuthDatabase() {
         />                        
       </Item>
 
+      <View>
         <Button large-green style={styles.button} onPress={this.emailLoginAsync}>
             <Text style={styles.lightText} >{prevPage}</Text>
         </Button>
+      </View>
 
       <Text>Or</Text>
 
+      <View>
       <Button large-green style={styles.button} onPress ={this.googleLoginAsync}>
         <Ionicons
           size={30}
@@ -865,12 +869,7 @@ deleteUserFromAuthDatabase() {
         />
         <Text style={styles.lightText}>Google {prevPage}</Text>
       </Button>
-
-      <Text>Or</Text>
-
-      <Button large-green style={styles.button} onPress ={()=> this.props.navigation.navigate('ChangePassword')}>
-        <Text style={styles.lightText}>Forgot Password</Text>
-      </Button>
+      </View>
  
     </View>
     </DismissKeyboard>
@@ -948,7 +947,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: 300,
     margin: 5
   },
   text: {
@@ -983,7 +982,7 @@ TextInputStyle: {
     textAlign: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: 300,
     borderRadius: 20,
     margin: 10,
     backgroundColor: "#f8f8f8",
@@ -998,7 +997,7 @@ container: {
     alignItems: 'center',
     borderRadius: 20,
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: 300,
     margin:10,
     backgroundColor: "#f8f8f8",
 },

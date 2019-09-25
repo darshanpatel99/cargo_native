@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput } from 'react-native';
+import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput, Dimensions } from 'react-native';
 import {Button,Text,Item,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
@@ -180,11 +180,9 @@ export default class Checkout extends Component {
   NavigateToPay(){
     const { navigate } = this.props.navigation;
     if(this.state.GPSStringFormat != ''){
-      console.log('Inside if =>>>>>>>>>')
       navigate('StripeScreen', {deliveryFee:this.state.deliveryFee,  GPSStringFormat:this.state.GPSStringFormat, Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})
     }
     else{
-      console.log('Inside else =>>>>>>>>>')
       this.showAlert();
     }
   }
@@ -222,8 +220,8 @@ export default class Checkout extends Component {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior='padding'
-        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
+        // behavior='padding'
+        // keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
 
         >
 
@@ -233,14 +231,14 @@ export default class Checkout extends Component {
             style={{
               marginLeft: 15,
               marginTop: 20,
-              fontSize: 30,
+              fontSize: Dimensions.get('screen').width * 0.04,
               fontFamily: 'nunito-SemiBold'
             }}
           >
             Update Delivery Address
           </Text>
     
-    <GooglePlacesAutocomplete
+              <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Delivery Address'
                 minLength={2}
@@ -249,14 +247,7 @@ export default class Checkout extends Component {
                 fetchDetails={true}
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
-                
-                // textInputProps={{
-                //   onChangeText: (text) => {this.testFunction(text)}
-                //  }}
-
                 onPress={(data, details = null) => {
-                
-                
                 console.log(Object.values(details.geometry.location))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
@@ -308,7 +299,12 @@ export default class Checkout extends Component {
               }}
                 currentLocation={false}
                 />
+        <KeyboardAvoidingView
+        //style={{ flex: 1 }}
+        behavior='padding'
+        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
 
+        >
 
           <View style={Styles.AddressFunctionButtonView}>
             <Text
@@ -339,6 +335,7 @@ export default class Checkout extends Component {
               />
             </Item>
           </View>
+          </KeyboardAvoidingView>
           <Text
             style={{
               marginLeft: 15,
