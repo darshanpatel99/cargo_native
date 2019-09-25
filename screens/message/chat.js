@@ -25,21 +25,46 @@ class Chat extends React.Component {
     };
   //checking the current user and setting uid
   let user = firebase.auth().currentUser;
-  
+
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
   });
 
   componentWillMount() {
-    //let chatObjects = firebaseChat.getAllChats(firebaseChat.uid);
-    //this.setState({chats: chatObjects})
+    const { navigation } = this.props;
   }
+
+  // loadChats(){
+  //   let user = firebase.auth().currentUser;
+
+  //   this.setState({ loading: true });
+  //   firebase.database().ref('Chat').on('value', snapshot => {
+  //     this.setState({ loading: false });
+
+  //     this.setState({snapshot: snapshot.val()})
+
+  //   for (var prop in snapshot.val()) {
+  //     if (prop.includes(this.state.userId)) {
+  //         // do stuff
+  //         newObj = {chat: 'this is test'}
+  //         console.log(prop)
+  //         this.setState({filteredChats: newObj})
+  //     }
+  //   }
+
+  //     this.setState({snapshot: snapshot.val()})
+  //   });
+
+  //   this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  // }
+
   componentWillUnmount() {
     firebaseChat.refOff();
   }
 
   componentDidMount(){
+    
     const { navigation } = this.props;
       
     this.focusListener = navigation.addListener('didFocus', () => { 
@@ -76,6 +101,7 @@ class Chat extends React.Component {
     if (user != null){
       if(user.emailVerified){ // note difference on this line
         this.setState({ User: user});
+        
       }
     }
     else{

@@ -134,7 +134,7 @@ onAuthStateChanged = (user) => {
       // const { navigate } = this.props.navigation;
       // navigate('ChatScreen')
     } catch ({ message }) {
-      alert('You are logged out!!');
+      //alert('You are logged out!!');
     }
   }
 
@@ -319,30 +319,30 @@ onAuthStateChanged = (user) => {
 
 
   //Function to choose an image for your profile picture
-  chooseanImage = async () =>{
+  // chooseanImage = async () =>{
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,      
-    });
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.All,      
+  //   });
 
-    this.setState({
-      newPicture:[this.state.data.ProfilePicture],
-    });
+  //   this.setState({
+  //     newPicture:[this.state.data.ProfilePicture],
+  //   });
 
-    if(!result.cancelled){
-      console.log(result.uri);   
+  //   if(!result.cancelled){
+  //     console.log(result.uri);   
     
-    await this.uploadImageToFirebase(result.uri, uuid.v1())
-        .then(() => {
-          console.log('Success' + uuid.v1());
+  //   await this.uploadImageToFirebase(result.uri, uuid.v1())
+  //       .then(() => {
+  //         console.log('Success' + uuid.v1());
             
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
-      }
-  }
+  //       })
+  //       .catch(error => {
+  //         console.log('Success' + uuid.v1()); 
+  //         console.log(error);
+  //       });
+  //     }
+  // }
 
   changeCurrentFolio =()=>{
     console.log('changing folio');
@@ -354,9 +354,6 @@ onAuthStateChanged = (user) => {
     }
   }
 
-
-
-  
 
   inputText =(num) =>{
     if(num==0 || num==1){
@@ -423,8 +420,8 @@ onAuthStateChanged = (user) => {
               keyboardType='default'
               returnKeyType='done'
               autoCorrect={false}
-              placeholder='Address' 
-              maxLength= {30}                                                         
+              placeholder='Address'
+              maxLength={30}                                                          
             />);          
         }
       //   else{
@@ -504,9 +501,9 @@ onAuthStateChanged = (user) => {
                 <View style={styles.imageView}>
                 <ImageBackground source={{uri:this.state.currentFolio}} ImageStyle={[styles.ProfilePicture,{borderRadius:25}]} style={styles.profileBackground}>
                       <View style={{position:'absolute', alignSelf:'flex-end',bottom:0,justifyContent:'center',alignItems:'center'}}>
-                        <Button icon  transparent  onPress={this.chooseanImage}> 
+                        {/* <Button icon  transparent  onPress={this.chooseanImage}> 
                           <FontAwesome name='camera' size={35} color={Colors.primary}/>                    
-                        </Button>
+                        </Button> */}
                       </View>
                       </ImageBackground>
                 </View>               

@@ -8,7 +8,7 @@ import Colors from "../../constants/Colors";
 import firebase from '../../Firebase.js';
 import firebaseChat from '../../FirebaseChat';
 import PostTransaction from '../../functions/PostTransaction';
-import AddJob from '../../functions/AddJob';
+import AddJob from "../../functions/AddJob"
 
 
 const DismissKeyboard = ({ children }) => (
@@ -16,6 +16,7 @@ const DismissKeyboard = ({ children }) => (
     {children}
   </TouchableWithoutFeedback>
 );
+var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');
 
 
 var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');

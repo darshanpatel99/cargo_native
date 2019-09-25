@@ -158,15 +158,15 @@ async googleLogin(){
     if(type=='success'){
       //alert('You got looged in with google');
 
-      Alert.alert(
-        'Alert',
-        'You got logged in with google',
-        [
-          // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
-          {text: 'OK'},
-        ],
-        {cancelable: true},
-      );
+      // Alert.alert(
+      //   'Alert',
+      //   'You got logged in with google',
+      //   [
+      //     // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+      //     {text: 'OK'},
+      //   ],
+      //   {cancelable: true},
+      // );
       return accessToken;
     }
 
@@ -835,7 +835,7 @@ deleteUserFromAuthDatabase() {
               autoCapitalize='none'
               autoCorrect={false}
               style={styles.TextInputStyle}
-              onChangeText = {email => this.setState({email:email})}
+              onChangeText = {email => this.setState({email:email.trim()})}
               />
       </View>
 

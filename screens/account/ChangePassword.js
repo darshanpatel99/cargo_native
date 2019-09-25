@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, Keyboard, TouchableWithoutFeedback, Dimensions, TextInput } from 'react-native';
+import { View, Keyboard, TouchableWithoutFeedback, Dimensions, TextInput,KeyboardAvoidingView } from 'react-native';
 import Colors from "../../constants/Colors.js";
 import { Button, Text } from "native-base";
 import firebase from '../../Firebase.js';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -16,6 +17,7 @@ export default class ChangePasswordScreen extends Component {
     super(props);
     this.state={
       email:'',
+      showAlert: false,
     }
   }
 
@@ -29,6 +31,7 @@ export default class ChangePasswordScreen extends Component {
     var email = this.state.email;
     //change the password it is here just for testing purposes
     auth.sendPasswordResetEmail(email).then(()=>{
+      this.showAlert();
       console.log('password reset email sent');
     }).catch((error)=>{
       console.log('Got the following error while sending password reset email: '+ error);
@@ -37,12 +40,31 @@ export default class ChangePasswordScreen extends Component {
 
   }
 
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    const { navigate } = this.props.navigation;
+    this.setState({
+      showAlert: false
+    });
+    navigate('Account');
+  };
+
+
 
   render() {
+    const {showAlert} = this.state;
+
+
     return (
 
-      <DismissKeyboard>
 
+      <DismissKeyboard>
+        <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
       <View style={styles.viewStyle}>
 
         <View style={styles.container}>
@@ -60,7 +82,28 @@ export default class ChangePasswordScreen extends Component {
             <Text style={styles.lightText} >Send Email</Text>
         </Button> 
 
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Hello!!"
+          message="Please check your email :)"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          //showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Go To Login!"
+          confirmButtonColor= {Colors.primary}
+          onCancelPressed={() => {
+            this.hideAlert();
+          }}
+          onConfirmPressed={() => {
+            this.hideAlert();
+          }}
+        />
+
       </View>
+      </KeyboardAvoidingView>
       </DismissKeyboard>
     );
   }

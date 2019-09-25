@@ -43,6 +43,10 @@ export class ProductScreen extends Component {
     const Status = navigation.getParam('Status');
     const sellerName = navigation.getParam('sellerName');
     const BoughtStatus = navigation.getParam('BoughtStatus');
+    const Category = navigation.getParam('Category');
+
+    console.log("This is category" + Category);
+
     const thumbnail = navigation.getParam('thumbnail');
     const prevPage = navigation.getParam('prevPage');
 
@@ -64,6 +68,7 @@ export class ProductScreen extends Component {
       id,
       owner,
       userID:'',
+      Category,
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
       soldArray:[],
@@ -259,7 +264,7 @@ export class ProductScreen extends Component {
     //navigation.navigate('Account');
 
     return productStatusReference.update({
-        Status:'active'
+        Status:'pending'
     })
     .then(function() {
         console.log("Document successfully updated!");
@@ -286,7 +291,7 @@ export class ProductScreen extends Component {
     //navigation.navigate('Account');
 
     return productStatusReference.update({
-        Status:'pending'
+        Status:'active'
     })
     .then(function() {
         console.log("Document successfully updated!");
@@ -331,8 +336,11 @@ export class ProductScreen extends Component {
       pictures:this.state.pictures,
       description:this.state.description,
       id:this.state.id,
+      category: this.state.Category,
       thumbnail:this.state.thumbnail,
     }
+
+    console.log("Before edit cat -->" + data.category);
 
     //this.props.navigation.dispatch(StackActions.popToTop());
     navigate('EditProduct',{data: data})
@@ -397,12 +405,13 @@ export class ProductScreen extends Component {
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
 
           <Button light rounded large style={styles.secondaryButton} onPress={this.NavigateToEdit}>
-            <Text style={styles.secondaryText}>Edit product</Text>
+            <Text style={styles.secondaryText}>Edit</Text>
           </Button>
 
           <Button light rounded large style={styles.secondaryButton} onPress={this.sooldItem}>
             <Text style={styles.secondaryText}>Mark sold</Text>
           </Button>
+
         </View>
           
       );
@@ -530,25 +539,13 @@ export class ProductScreen extends Component {
           />
          
 
-      </View>
-        {/* <ImageViewer imageUrls={this.state.pictures}  /> */}
-    
+      </View>    
 
         {/* <View style={styles.infotext}> */}
           <View style={styles.nameAndPrice}>
             <Text style={styles.productName} numberOfLines={2} ellipsizeMode="tail">{this.state.title}</Text>
             <Text style={styles.productPrice} numberOfLines={2} ellipsizeMode="tail">$ {this.state.price}</Text>
           </View>
-
-          {/* <Text>Local number => {this.state.count} </Text>
-         <Text>Total product in firebase => {this.state.cart.length}</Text> */}
-          {/* <View style={styles.LocViewAndPrice}>
-            <View style={styles.priceDr}>
-              <Text style={styles.price}>$ {this.state.deliveryCharge}  </Text>
-              <FontAwesome name='car' size={22} color={Colors.primary} />
-            </View>
-          </View> */}
-
         
           <Text style={styles.productDesc}>{this.state.description}</Text>
         {/* </View> */}

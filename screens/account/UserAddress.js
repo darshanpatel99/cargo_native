@@ -1,6 +1,6 @@
 import React from 'react';
 import {  Platform,   KeyboardAvoidingView,View, StyleSheet, Dimensions, TextInput,Keyboard,TouchableWithoutFeedback, } from 'react-native';
-import { Header } from 'react-navigation';
+import { Header,StackActions, NavigationActions } from 'react-navigation';
 import Constants from 'expo-constants';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import firebase from '../../Firebase.js';
@@ -55,8 +55,9 @@ export default class UserAddress extends React.Component {
 
     if(this.state.Address != '' && this.state.PhoneNumber != ''){
 
-    const {navigation} = this.props;
-    navigation.navigate('Account');
+    // const {navigation} = this.props;
+    // navigation.navigate('Account');
+    this.resetStack();
 
     //userCollectionReference.update(data);
 
@@ -80,6 +81,19 @@ export default class UserAddress extends React.Component {
         alert('Please enter required fields!')
     }
   }
+
+  resetStack = () => {
+    this.props
+      .navigation
+      .dispatch(StackActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({
+            routeName: 'Account',
+          }),
+        ],
+      }))
+   }
 
   ifInputEmpty =() =>{
       if(this.state.Address != ''){

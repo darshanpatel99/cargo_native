@@ -189,7 +189,7 @@ export default class PostProductScreen extends Component {
     if (Constants.platform.ios) {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
       if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
+        alert('Sorry, we need camera roll permissions to post the product!');
       }
     }
   };
@@ -787,7 +787,7 @@ export default class PostProductScreen extends Component {
     console.log('test fucntion');
     checkGoogleAddress = 'lalalals'
     console.log(checkGoogleAddress)
-    this.state.googleAddressEmpty = text;
+    this.state.googleAddressEmpty = '';
     //this.setState({googleAddressEmpty: 'test'})
     
   }

@@ -33,7 +33,7 @@ const styles = {
         shadowOpacity: 0.2,
         shadowOffset: {
         width: 0,
-        height: 2
+        height: 4
         },
     },
 

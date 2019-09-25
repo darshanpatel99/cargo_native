@@ -30,6 +30,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.developer.cargo",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take product images."
+      },
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i"
