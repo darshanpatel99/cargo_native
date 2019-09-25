@@ -181,19 +181,36 @@ export default class UserAddress extends React.Component {
             //this.props.parentCallback(this.state.lat, this.state.long);
             //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
             }}
-            GoogleReverseGeocodingQuery={{
-                // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-            }}
+            currentLocation={false}
+                
+                GoogleReverseGeocodingQuery={{
+                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                }}
 
-            getDefaultValue={() => {
-                return ''; // text input default value
-            }}
-            query={{
-                // available options: https://developers.google.com/places/web-service/autocomplete
-                key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                language: 'en', // language of the results
-                types: 'geocode', // default: 'geocode'
-            }}
+                GooglePlacesSearchQuery={{
+                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                  rankby: 'distance',
+                  input :'address',
+                  circle: '5000@50.676609,-120.339020',
+                }}
+
+               
+
+                getDefaultValue={() => {
+                    return ''; // text input default value
+                }}
+                query={{
+                    // available options: https://developers.google.com/places/web-service/autocomplete
+                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
+                    language: 'en', // language of the results
+                    types: 'geocode', // default: 'geocode'
+                    location: '50.66648,-120.3192',
+                    region: 'Canada',
+                    radius: 20000,
+                    strictbounds: true,
+
+                    types: 'address', // default: 'geocode'
+                }}
 
             styles={{
                 textInputContainer: {
