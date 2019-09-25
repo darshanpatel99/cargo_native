@@ -264,7 +264,7 @@ export class ProductScreen extends Component {
     //navigation.navigate('Account');
 
     return productStatusReference.update({
-        Status:'active'
+        Status:'pending'
     })
     .then(function() {
         console.log("Document successfully updated!");
@@ -291,7 +291,7 @@ export class ProductScreen extends Component {
     //navigation.navigate('Account');
 
     return productStatusReference.update({
-        Status:'pending'
+        Status:'active'
     })
     .then(function() {
         console.log("Document successfully updated!");
