@@ -16,8 +16,6 @@ const DismissKeyboard = ({ children }) => (
     {children}
   </TouchableWithoutFeedback>
 );
-
-
 var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');
 
 export default class Stripe extends React.Component {

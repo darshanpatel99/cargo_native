@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+import Colors from '../../constants/Colors'
 
 const shift = [
   // this is the parent or 'item'
@@ -22,7 +23,6 @@ const shift = [
         id: 3,
       },
     ],
-
   },
   {
     name: 'Weekends',
@@ -44,9 +44,24 @@ const shift = [
     ],
 
   },
-
-
-
+  {
+    name: 'clothing',
+    id: 13,
+    children: [
+      {
+        name: "men's clothing",
+        id: 14,
+      },
+      {
+        name: "women's clothing",
+        id: 15,
+      },
+      {
+        name: 'other',
+        id: 16,
+      },
+    ],
+  }
 ];
 
 export default class extends Component {
@@ -77,12 +92,26 @@ export default class extends Component {
           uniqueKey="id"
           subKey="children"
           selectText="Availability"
+          hideSearch={true}
           showDropDowns={true}
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
-        //single={true}  
-              
+        //single={true}
+        colors= {{chipColor: Colors.primary}}
+        //   selectToggleIconComponent = "filter-list"
+          styles = {{
+            backdrop: {
+              justifyContent: 'center',
+            },
+            container: {
+              width: '80%',
+              height: '60%',
+              flex: 0,
+              alignSelf: 'center',
+              marginTop:50
+            }}
+          }
         />
       </View>
     );

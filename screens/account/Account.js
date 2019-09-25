@@ -101,7 +101,6 @@ componentDidMount() {
   }
   });
 
-  this.getPermissionAsync();
   // List to the authentication state
   this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 }
@@ -135,7 +134,7 @@ onAuthStateChanged = (user) => {
       // const { navigate } = this.props.navigation;
       // navigate('ChatScreen')
     } catch ({ message }) {
-      alert('You are logged out!!');
+      //alert('You are logged out!!');
     }
   }
 
@@ -355,21 +354,6 @@ onAuthStateChanged = (user) => {
     }
   }
 
-
-  
-
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      console.log('ask permission');
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-
-
-  
 
   inputText =(num) =>{
     if(num==0 || num==1){
