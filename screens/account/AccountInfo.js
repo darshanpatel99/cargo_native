@@ -4,8 +4,6 @@ import {  FontAwesome } from '@expo/vector-icons';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button} from "native-base";
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
 
