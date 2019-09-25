@@ -8,7 +8,8 @@ import Colors from "../../constants/Colors";
 import firebase from '../../Firebase.js';
 import firebaseChat from '../../FirebaseChat';
 import PostTransaction from '../../functions/PostTransaction';
-import AddJob from '../../functions/AddJob';
+import AddJob from "../../functions/AddJob"
+
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

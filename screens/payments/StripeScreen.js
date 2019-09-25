@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Keyboard,  TouchableWithoutFeedback } from 'react-native';
+import {View, Keyboard,  TouchableWithoutFeedback,Dimensions } from 'react-native';
 import Stripe from '../../components/payments/stripe'
 
 const DismissKeyboard = ({ children }) => (
@@ -51,6 +51,7 @@ const styles = {
     flex:1,
     flexDirection:'row',
     alignItems:'center',
-    justifyContent:'center'
+    //justifyContent:'center'
+    marginBottom:Dimensions.get('screen').height*0.2,
   }
 }
