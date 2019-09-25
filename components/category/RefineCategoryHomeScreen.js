@@ -60,6 +60,25 @@ const items = [
         id: 12,
       },
     ],
+  },
+
+  {
+    name: 'clothing',
+    id: 13,
+    children: [
+      {
+        name: "men's clothing",
+        id: 14,
+      },
+      {
+        name: "women's clothing",
+        id: 15,
+      },
+      {
+        name: 'other',
+        id: 16,
+      },
+    ],
   }
 
 ];
@@ -89,7 +108,7 @@ export default class RefineCategoryHomeScreen extends Component {
           subKey="children"
           selectText="Refine"
           showDropDowns={true}
-          readOnlyHeadings={false}
+          readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
           single={false}
