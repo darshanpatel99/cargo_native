@@ -873,7 +873,7 @@ export default class PostProductScreen extends Component {
     console.log('test fucntion');
     checkGoogleAddress = 'lalalals'
     console.log(checkGoogleAddress)
-    this.state.googleAddressEmpty = text;
+    this.state.googleAddressEmpty = '';
     //this.setState({googleAddressEmpty: 'test'})
     
   }

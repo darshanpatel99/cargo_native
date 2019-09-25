@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Keyboard, TouchableWithoutFeedback, Dimensions, TextInput } from 'react-native';
+import { View, Keyboard, TouchableWithoutFeedback, Dimensions, TextInput,KeyboardAvoidingView } from 'react-native';
 import Colors from "../../constants/Colors.js";
 import { Button, Text } from "native-base";
 import firebase from '../../Firebase.js';
@@ -42,7 +42,7 @@ export default class ChangePasswordScreen extends Component {
     return (
 
       <DismissKeyboard>
-
+        <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
       <View style={styles.viewStyle}>
 
         <View style={styles.container}>
@@ -61,6 +61,7 @@ export default class ChangePasswordScreen extends Component {
         </Button> 
 
       </View>
+      </KeyboardAvoidingView>
       </DismissKeyboard>
     );
   }
