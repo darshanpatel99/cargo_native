@@ -351,7 +351,7 @@ export default class Checkout extends Component {
             <Text>Subtotal: ${this.state.subTotal}</Text>
             <Text>Tip: ${this.state.tipAmount}</Text>
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
-            <Text>Convienence Fee (5%): ${this.state.deliveryFee}</Text>
+            {/* <Text>Convienence Fee (5%): ${this.state.deliveryFee}</Text> */}
             <Text>Total Amount: ${this.state.totalAmount} </Text>
           </View>
           <View style={Styles.payButton}>
