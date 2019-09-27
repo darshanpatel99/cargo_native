@@ -44,24 +44,6 @@ const shift = [
     ],
 
   },
-  {
-    name: 'clothing',
-    id: 13,
-    children: [
-      {
-        name: "men's clothing",
-        id: 14,
-      },
-      {
-        name: "women's clothing",
-        id: 15,
-      },
-      {
-        name: 'other',
-        id: 16,
-      },
-    ],
-  }
 ];
 
 export default class extends Component {

@@ -61,10 +61,10 @@ export default class ChangePasswordScreen extends Component {
 
 
     return (
-
+<View style={{flex:1}}>
 
       <DismissKeyboard>
-        <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
+      <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
       <View style={styles.viewStyle}>
 
         <View style={styles.container}>
@@ -81,30 +81,33 @@ export default class ChangePasswordScreen extends Component {
         <Button large-green style={styles.button} onPress={this.sendPasswordResetEmail}>
             <Text style={styles.lightText} >Send Email</Text>
         </Button> 
-
-        <AwesomeAlert
-          show={showAlert}
-          showProgress={false}
-          title="Hello!!"
-          message="Please check your email :)"
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={false}
-          //showCancelButton={true}
-          showConfirmButton={true}
-          cancelText="No, cancel"
-          confirmText="Go To Login!"
-          confirmButtonColor= {Colors.primary}
-          onCancelPressed={() => {
-            this.hideAlert();
-          }}
-          onConfirmPressed={() => {
-            this.hideAlert();
-          }}
-        />
-
       </View>
       </KeyboardAvoidingView>
       </DismissKeyboard>
+
+        <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Hello!!"
+        message="Please check your email :)"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        //showCancelButton={true}
+        showConfirmButton={true}
+        cancelText="No, cancel"
+        confirmText="Go To Login!"
+        confirmButtonColor= {Colors.primary}
+        onCancelPressed={() => {
+          this.hideAlert();
+        }}
+        onConfirmPressed={() => {
+          this.hideAlert();
+        }}
+        />
+
+        </View>
+
+
     );
   }
 }

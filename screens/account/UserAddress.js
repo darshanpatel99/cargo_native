@@ -131,7 +131,7 @@ export default class UserAddress extends React.Component {
             <View>
             <TextInput
                 style={styles.textInputStyle}
-                keyboardType='numeric'
+                //keyboardType='numeric'
                 returnKeyType='done'
                 placeholder="Apt number (Optional)"
                 onChangeText={(text) => this.setState({UnitNumber: text})}
