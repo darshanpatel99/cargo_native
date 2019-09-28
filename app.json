@@ -13,7 +13,7 @@
       "android",
       "web"
     ],
-    "version": "2.0.4",
+    "version": "2.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -31,7 +31,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.developer.cargo",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to take product images."
+        "NSCameraUsageDescription": "This app uses the camera to take product images.",
+        "NSPhotoLibraryUsageDescription": "Please give photos permission to upload product images to your ad"
       },
       "config": {
         "googleSignIn": {
