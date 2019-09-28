@@ -102,9 +102,6 @@ export default class PostProductScreen extends Component {
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
-
-    
-
    
     if (user != null) {
         
@@ -113,8 +110,6 @@ export default class PostProductScreen extends Component {
 
     }
   });
-
-
 
     //this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -180,6 +175,7 @@ export default class PostProductScreen extends Component {
       downloadURLs : [],
       addressArray:[],
       uploadCounter:0,
+      firstTimeOnly:true,
     });
     navigate('Home');
   };
@@ -212,20 +208,27 @@ export default class PostProductScreen extends Component {
 
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
-    this.setState({ loading: true });
-      var array = this.state.image; //getting the uri array
     
+      var array = this.state.image; //getting the uri array
+      var first = this.state.firstTimeOnly;
+      console.log("Total number of uris we have"+ array.length)
+      this.setState({ loading: true });
       array.forEach(async (element) => {
 
-        if(this.state.firstTimeOnly){
+   
+        if(first){
+
+          first=false;
+          this.setState({firstTimeOnly:false});
           await this.uploadThumbnailToFirebase(element)
-          .then(()=>{
-            console.log('Thumbnail got uploaded');
+          .then(()=>{   
             
+            console.log('Thumbnail got uploaded');
           })
           .catch(error=>{
             console.log("Hey there is an error:  " +error);
           });
+          
         }
 
         await this.uploadImageToFirebase(element, uuid.v1())
@@ -249,12 +252,43 @@ export default class PostProductScreen extends Component {
 
   //start post the add button
   startPostTheProduct = async () =>{
+    let titleLength = this.state.title;
+    let priceLength = parseInt( this.state.price);
+    let descriptionLength = this.state.description;
+    let productCategory = this.state.Category;
+    let picArray = this.state.image;
+    let timeArray = this.state.Avability;
+    let address = this.state.googleAddressEmpty;
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
     await this.uploadImageData();
+    }
+    else {
+      console.log('hello');
+  
+      if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+        this.setState({
+          priceAlert:true,
+        })      
+      }
+      else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+        this.setState({
+          availableAlert:true,
+        })
+      }
+  
+      console.log(address)
+  
+      if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+        this.setState({
+          showAddressAlert:true,
+        })
+      }
+  
+      this.setState({
+        postAdClicked: true,
+      })
+    }
   }
-
-
-
-
 
 
   //post the product
@@ -298,6 +332,7 @@ export default class PostProductScreen extends Component {
       DeliveryFee:'',
       TotalFee:'',
       BoughtStatus:'false',
+      OrderNumber: -1,
 
     }
 
@@ -308,12 +343,13 @@ export default class PostProductScreen extends Component {
     //Posting the product
     PostProduct(data).then(()=>{
       this.setState({ loading: false });
+      this.showAlert2();
     });
     console.log("Product Posted---->" + data);
 
     //change the overlay visibility to visible
     //this.setState({isOverlayVisible:true});
-    this.showAlert2();
+   
 
 
   } else {
@@ -356,12 +392,13 @@ export default class PostProductScreen extends Component {
   _pickImage = async () => {
 
     if (Constants.platform.ios) {
+      console.log('ask permission');
+      //const { status } = await Permissions.askAsync(Permissions.CAMERA);
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (status !== 'granted') {
-        alert('Sorry, we need photos permissions to make this work!');
+        alert('Sorry, we need camera roll permissions to make this work!');
       }
     }
-
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2,
@@ -387,6 +424,7 @@ export default class PostProductScreen extends Component {
     if (Constants.platform.ios) {
       console.log('ask permission');
       const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { cameraRollStatus } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
@@ -394,9 +432,7 @@ export default class PostProductScreen extends Component {
 
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality:0.2
-      //allowsEditing: true,
-      
+      quality:0.2      
     });
     
     console.log(result);
@@ -416,7 +452,7 @@ export default class PostProductScreen extends Component {
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize:{width:200, height:200} }],
+      [{ resize:{width:400, height:400} }],
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -733,11 +769,14 @@ export default class PostProductScreen extends Component {
     if(this.state.User != null){
       return (
         <View style={{flex:1}}>
+
         <Spinner
-            visible={this.state.loading}
-            textContent={'Loading...'}
-            textStyle={styles.spinnerTextStyle}
-          />
+          visible={this.state.loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+
+        
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
@@ -863,6 +902,12 @@ export default class PostProductScreen extends Component {
                     // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
                 }}
 
+                GooglePlacesSearchQuery={{
+                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                  rankby: 'distance',
+                  input :'address',
+                  circle: '5000@50.676609,-120.339020',
+                }}
 
                
 
@@ -878,6 +923,8 @@ export default class PostProductScreen extends Component {
                     region: 'Canada',
                     radius: 20000,
                     strictbounds: true,
+
+                    types: 'address', // default: 'geocode'
                 }}
 
                 styles={{
@@ -922,7 +969,7 @@ export default class PostProductScreen extends Component {
             show={showAlert2}
             showProgress={false}
             title="Alert"
-            message={'This is warning 1  \n This is warning 2 \n This is warning 3 '}
+            message={'Successfully Posted!!\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
@@ -1053,9 +1100,6 @@ const styles = {
   mainConatiner: {
     flex: 1
   },
-  spinnerTextStyle: {
-    color: '#0000FF'
-  },
   imageUploadStyle: {
     height: 100,
     width: width/2 - 15,
@@ -1110,6 +1154,11 @@ const styles = {
     marginTop: 5,
     //alignItems:'center'
   },
+  
+  spinnerTextStyle: {
+    color: '#0000FF'
+  },
+
 
   errorStyle:{
     borderColor:'red',

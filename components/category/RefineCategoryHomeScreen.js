@@ -61,21 +61,20 @@ const items = [
       },
     ],
   },
-
   {
-    name: 'clothing',
+    name: 'Clothing',
     id: 13,
     children: [
       {
-        name: "men's clothing",
+        name: "Men's clothing",
         id: 14,
       },
       {
-        name: "women's clothing",
+        name: "Women's clothing",
         id: 15,
       },
       {
-        name: 'other',
+        name: 'Other',
         id: 16,
       },
     ],
