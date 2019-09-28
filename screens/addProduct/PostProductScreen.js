@@ -184,15 +184,15 @@ export default class PostProductScreen extends Component {
     navigate('Home');
   };
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      console.log('ask permission');
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
+  // getPermissionAsync = async () => {
+  //   if (Constants.platform.ios) {
+  //     console.log('ask permission');
+  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
+  //     if (status !== 'granted') {
+  //       alert('Sorry, we need camera roll permissions to make this work!');
+  //     }
+  //   }
+  // };
 
   //listens to the change in auth state
   onAuthStateChanged = user => {
@@ -375,30 +375,6 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-
-    //   console.log(this.state.firstTimeOnly);
-    //   if(this.state.firstTimeOnly){
-    //     console.log('I am first time');
-    //     await this.uploadThumbnailToFirebase(result.uri)
-    //       .then(()=>{
-    //         this.setState({firstTimeOnly:false});
-    //         console.log('Thumbnail got uploaded');
-    //       })
-    //       .catch(error=>{
-    //         console.log("Hey there is an error:  " +error);
-    //       })
-    //     }
-    
-
-
-    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
-    //     .then(() => {
-    //       console.log('Success' + uuid.v1());  
-    //     })
-    //     .catch(error => {
-    //       console.log('Success' + uuid.v1()); 
-    //       console.log(error);
-    //     });
     }
   };
 
@@ -407,8 +383,6 @@ export default class PostProductScreen extends Component {
    */
     
   _pickImageCamera = async () => {
-    // const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    // const {status_roll} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
     if (Constants.platform.ios) {
       console.log('ask permission');
@@ -431,31 +405,6 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-
-
-    //   console.log(this.state.firstTimeOny);
-
-    //   if(this.state.firstTimeOnly){
-    //    //Create Thumbnail only FirstTime
-    //      console.log('I am first time');
-    //     await this.uploadThumbnailToFirebase(result.uri)
-    //       .then(()=>{
-    //         this.setState({firstTimeOnly:false});
-    //         console.log('Thumbnail got uploaded');
-    //       })
-    //       .catch(error=>{
-    //         console.log(error);
-    //       })
-    //     }
-
-    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
-    //     .then(() => {
-    //       console.log('Success' + uuid.v1());  
-    //     })
-    //     .catch(error => {
-    //       console.log('Success' + uuid.v1()); 
-    //       console.log(error);
-    //     });
     }
   };
 
