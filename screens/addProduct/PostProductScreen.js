@@ -180,16 +180,6 @@ export default class PostProductScreen extends Component {
     navigate('Home');
   };
 
-<<<<<<< HEAD
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-=======
   // getPermissionAsync = async () => {
   //   if (Constants.platform.ios) {
   //     console.log('ask permission');
@@ -199,7 +189,6 @@ export default class PostProductScreen extends Component {
   //     }
   //   }
   // };
->>>>>>> upstream/master
 
   //listens to the change in auth state
   onAuthStateChanged = user => {
@@ -422,8 +411,6 @@ export default class PostProductScreen extends Component {
    */
     
   _pickImageCamera = async () => {
-<<<<<<< HEAD
-=======
 
     if (Constants.platform.ios) {
       console.log('ask permission');
@@ -433,7 +420,6 @@ export default class PostProductScreen extends Component {
       }
     }
 
->>>>>>> upstream/master
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2      
