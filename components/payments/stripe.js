@@ -298,7 +298,7 @@ export default class Stripe extends React.Component {
           {/* <Button title="Stripe" onPress={this.onPayment}/> */}
 
             <View style = {styles.payButton}>
-              {this.state.valid ? EnabledButton : DisabledButton}
+              {this.state.valid ? EnabledButton : EnabledButton}
             </View>
 
           <AwesomeAlert
