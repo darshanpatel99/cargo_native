@@ -354,8 +354,14 @@ export default class PostProductScreen extends Component {
    * Function Description:
    */
   _pickImage = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    const {status_roll} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need photos permissions to make this work!');
+      }
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2,
@@ -401,8 +407,17 @@ export default class PostProductScreen extends Component {
    */
     
   _pickImageCamera = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    const {status_roll} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    // const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    // const {status_roll} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2

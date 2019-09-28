@@ -135,7 +135,7 @@ export default class PostProductScreen extends Component {
   
   //this.categoryRemover.current.presetState(arrayTest);
 
-    this.getPermissionAsync();
+    //this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
   }
@@ -460,6 +460,14 @@ export default class PostProductScreen extends Component {
    * Function Description: Pick image from the gallery
    */
   _pickImage = async () => {
+
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need photos permissions to make this work!');
+      }
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2,
@@ -505,6 +513,15 @@ export default class PostProductScreen extends Component {
    */
     
   _pickImageCamera = async () => {
+
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+    
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2
