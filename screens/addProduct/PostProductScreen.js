@@ -111,7 +111,7 @@ export default class PostProductScreen extends Component {
     }
   });
 
-    this.getPermissionAsync();
+    //this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
   }
@@ -180,16 +180,6 @@ export default class PostProductScreen extends Component {
     navigate('Home');
   };
 
-<<<<<<< HEAD
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-=======
   // getPermissionAsync = async () => {
   //   if (Constants.platform.ios) {
   //     console.log('ask permission');
@@ -199,7 +189,6 @@ export default class PostProductScreen extends Component {
   //     }
   //   }
   // };
->>>>>>> upstream/master
 
   //listens to the change in auth state
   onAuthStateChanged = user => {
@@ -401,6 +390,15 @@ export default class PostProductScreen extends Component {
    * Function Description:
    */
   _pickImage = async () => {
+
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      //const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2,
@@ -422,18 +420,16 @@ export default class PostProductScreen extends Component {
    */
     
   _pickImageCamera = async () => {
-<<<<<<< HEAD
-=======
 
     if (Constants.platform.ios) {
       console.log('ask permission');
       const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { cameraRollStatus } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
     }
 
->>>>>>> upstream/master
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2      

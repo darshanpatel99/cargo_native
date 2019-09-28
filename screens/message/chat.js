@@ -130,7 +130,7 @@ class Chat extends React.Component {
 
     const {showAlert} = this.state;
 
-    if(this.state.User != null){
+    if(this.state.User != null){ 
       return (
       <View style ={styles.containerStyle}>
         <Spinner
