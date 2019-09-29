@@ -6,11 +6,8 @@ import firebase from 'firebase';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Colors from '../../constants/Colors';
 import Spinner from 'react-native-loading-spinner-overlay';
-
-
 let testObj ={}
 class Chat extends React.Component {
-
   constructor(props) {
     super(props);
     // let chatObjects = this.getAllChats(firebaseChat.uid);
@@ -25,52 +22,40 @@ class Chat extends React.Component {
     };
   //checking the current user and setting uid
   let user = firebase.auth().currentUser;
-
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
   });
-
   componentWillMount() {
     const { navigation } = this.props;
   }
-
-  // loadChats(){
-  //   let user = firebase.auth().currentUser;
-
-  //   this.setState({ loading: true });
-  //   firebase.database().ref('Chat').on('value', snapshot => {
-  //     this.setState({ loading: false });
-
-  //     this.setState({snapshot: snapshot.val()})
-
-  //   for (var prop in snapshot.val()) {
-  //     if (prop.includes(this.state.userId)) {
-  //         // do stuff
-  //         newObj = {chat: 'this is test'}
-  //         console.log(prop)
-  //         this.setState({filteredChats: newObj})
-  //     }
-  //   }
-
-  //     this.setState({snapshot: snapshot.val()})
-  //   });
-
-  //   this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-  // }
-
+  loadChats(){
+    let user = firebase.auth().currentUser;
+    this.setState({ loading: true });
+    firebase.database().ref('Chat').on('value', snapshot => {
+      this.setState({ loading: false });
+      this.setState({snapshot: snapshot.val()})
+    for (var prop in snapshot.val()) {
+      if (prop.includes(this.state.userId)) {
+          // do stuff
+          newObj = {chat: 'this is test'}
+          console.log(prop)
+          this.setState({filteredChats: newObj})
+      }
+    }
+      this.setState({snapshot: snapshot.val()})
+    });
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
   componentWillUnmount() {
     firebaseChat.refOff();
   }
-
   componentDidMount(){
     
     const { navigation } = this.props;
       
     this.focusListener = navigation.addListener('didFocus', () => { 
-
       let user = firebase.auth().currentUser;
-
       this.setState({ loading: true });
       firebase.database().ref('Chat').on('value', snapshot => {
         this.setState({ loading: false });
@@ -88,12 +73,9 @@ class Chat extends React.Component {
   
         this.setState({snapshot: snapshot.val()})
       });
-
       this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-
     });
   }
-
   //listens to the change in auth state
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
@@ -101,21 +83,19 @@ class Chat extends React.Component {
     if (user != null){
       if(user.emailVerified){ // note difference on this line
         this.setState({ User: user});
-        
+        this.loadChats()
       }
     }
     else{
       this.setState({ User: null});
     }
   };
-
   showAlert(){
     this.setState({
       showAlert: true,
       
     });
   };
-
   hideAlert(){
     const { navigate } = this.props.navigation;
     this.setState({
@@ -123,14 +103,9 @@ class Chat extends React.Component {
     });
     navigate('Account');
   };
-
-
-
   render() {
-
     const {showAlert} = this.state;
-
-    if(this.state.User != null){ 
+    if(this.state.User != null){
       return (
       <View style ={styles.containerStyle}>
         <Spinner
@@ -142,7 +117,6 @@ class Chat extends React.Component {
       </View>
     );
     }
-
     else{
       return (
         <View style={styles.container}>
@@ -165,19 +139,11 @@ class Chat extends React.Component {
               this.hideAlert();
             }}
           />
-
-
         </View>
       );
     }
-
-
   }
-
-
-
 }
-
 const styles = {
   containerStyle: {
     flex: 1,
@@ -192,5 +158,4 @@ const styles = {
     color: '#0000FF'
   },
 }
-
 export default Chat;

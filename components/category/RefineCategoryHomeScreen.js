@@ -61,7 +61,6 @@ const items = [
       },
     ],
   },
-
   {
     name: 'Clothing',
     id: 13,

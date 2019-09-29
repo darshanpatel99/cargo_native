@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, Dimensions, KeyboardAvoidingView, Platform} from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, Dimensions, KeyboardAvoidingView} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,13 +7,12 @@ import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
+import { TouchableOpacity } from "react-native-gesture-handler";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
 import {Notifications} from 'expo';
 import * as Permissions from 'expo-permissions';
-import Spinner from 'react-native-loading-spinner-overlay';
-
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
@@ -59,7 +58,6 @@ export default class SignUpScreen extends Component {
       showOverlay: false,
       deviceNotificationToken: '',
       expoNotificationToken:'',
-      loading: false,
     }
 
     
@@ -155,41 +153,26 @@ async googleLogin(){
 
     };
 
-    // if(Platform.OS=='ios'){
-    //   this.setState({ loading: false });
-    // }
-    //this.setState({ loading: false });
-   
 
     const {type, accessToken} = await Google.logInAsync(config);
 
     if(type=='success'){
-
       //alert('You got looged in with google');
 
-      // Alert.alert(
-      //   'Alert',
-      //   'You got logged in with google',
-      //   [
-      //     // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
-      //     {text: 'OK'},
-      //   ],
-      //   {cancelable: true},
-      // );
-      
-      //start the loader again
-      console.log('successfully got the access topken');
-      this.setState({ loading: true });
-
+      Alert.alert(
+        'Alert',
+        'You got logged in with google',
+        [
+          // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+          {text: 'OK'},
+        ],
+        {cancelable: true},
+      );
       return accessToken;
-    }
-    else{
-      this.setState({ loading: false });
     }
 
   }catch({message}){
-    this.setState({ loading: false });
-    //alert('');
+    alert('login: ' + message);
   }
 }
 
@@ -402,10 +385,8 @@ emailLoginAsync = async () =>{
 
 //Google Login Async functions
 googleLoginAsync = async () => {
+  console.log('in loginAsync() method');
 
-
-  this.setState({ loading: true });
-  console.log('statettttttttttttttttttttttttttttttt: '+this.state.loading);
   // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
   const accessToken = await this.googleLogin();
 
@@ -440,14 +421,13 @@ googleLoginAsync = async () => {
               .then(docSnapshot => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
-                 
                   console.log('2--inside firebase snap');
                   
                   
                   this.getNotificationToken(userUID);
                   console.log('Notification token has been updated');
                   console.log('2--inside firebase snap');
-                  this.setState({ loading: false });
+                  
                   const resetAction = StackActions.reset({
                     index: 0, // <-- currect active route from actions array
                     //params: {userId: this.state.UID},
@@ -463,11 +443,9 @@ googleLoginAsync = async () => {
                 else{
                   console.log('User is not sign up');
                   //add user to the database using the finishFunc
-
                   this.finishFunc();
               
                 }
-               
               });
             }
             catch (e) {
@@ -701,6 +679,9 @@ deleteUserFromAuthDatabase() {
 
     console.log('In the finishFunc function');
     
+
+
+
     //Sample dat object for each user
     var data={
       ActiveProducts : [],
@@ -735,7 +716,7 @@ deleteUserFromAuthDatabase() {
     
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
-    this.setState({ loading: false });
+
     const resetAction = StackActions.reset({
       index: 0, // <-- currect active route from actions array
       //params: {userId: this.state.UID},
@@ -778,43 +759,38 @@ deleteUserFromAuthDatabase() {
       <DismissKeyboard>
         
       <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
-        <Spinner
-            visible={this.state.loading}
-            textContent={'Loading...'}
-            textStyle={styles.spinnerTextStyle}
-          />
 
-        <View style={styles.container}>
-              <TextInput
-                  placeholder= 'First Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { firstName=> this.setState({firstName:firstName})}
-                  />
-          </View>
+                <View style={styles.container}>
+                      <TextInput
+                          placeholder= 'First Name'
+                          underlineColorAndroid="transparent"
+                          autoCorrect={false}
+                          style={styles.TextInputStyle}
+                          onChangeText = { firstName=> this.setState({firstName:firstName})}
+                          />
+                  </View>
 
-          <View style={styles.container}>
-              <TextInput
-                  placeholder= 'Last Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { lastName=> this.setState({lastName:lastName})}
-                  />
-          </View>
+                  <View style={styles.container}>
+                      <TextInput
+                          placeholder= 'Last Name'
+                          underlineColorAndroid="transparent"
+                          autoCorrect={false}
+                          style={styles.TextInputStyle}
+                          onChangeText = { lastName=> this.setState({lastName:lastName})}
+                          />
+                  </View>
 
 
-        <View style={styles.container}>
-            <TextInput
-                placeholder= 'Email'
-                underlineColorAndroid="transparent"
-                autoCapitalize='none'
-                autoCorrect={false}
-                style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email.trim()})}
-                />
-        </View>
+                <View style={styles.container}>
+                    <TextInput
+                        placeholder= 'Email'
+                        underlineColorAndroid="transparent"
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        style={styles.TextInputStyle}
+                        onChangeText = {email => this.setState({email:email.trim()})}
+                        />
+                </View>
 
           <Item style={styles.container}>                
                   <TextInput style={styles.TextInputStyle}
@@ -852,11 +828,6 @@ deleteUserFromAuthDatabase() {
         <DismissKeyboard>
 
         <View style={styles.viewStyle}>
-        <Spinner
-            visible={this.state.loading}
-            textContent={'Loading...'}
-            textStyle={styles.spinnerTextStyle}
-          />
 
       <View style={styles.container}>
           <TextInput
@@ -865,7 +836,7 @@ deleteUserFromAuthDatabase() {
               autoCapitalize='none'
               autoCorrect={false}
               style={styles.TextInputStyle}
-              onChangeText = {email => this.setState({email:email.trim()})}
+              onChangeText = {email => this.setState({email:email})}
               />
       </View>
 
@@ -880,12 +851,15 @@ deleteUserFromAuthDatabase() {
         />                        
       </Item>
 
+      <View>
         <Button large-green style={styles.button} onPress={this.emailLoginAsync}>
             <Text style={styles.lightText} >{prevPage}</Text>
         </Button>
+      </View>
 
       <Text>Or</Text>
 
+      <View>
       <Button large-green style={styles.button} onPress ={this.googleLoginAsync}>
         <Ionicons
           size={30}
@@ -895,12 +869,7 @@ deleteUserFromAuthDatabase() {
         />
         <Text style={styles.lightText}>Google {prevPage}</Text>
       </Button>
-
-      <Text>Or</Text>
-
-      <Button large-green style={styles.button} onPress ={()=> this.props.navigation.navigate('ChangePassword')}>
-        <Text style={styles.lightText}>Forgot Password</Text>
-      </Button>
+      </View>
  
     </View>
     </DismissKeyboard>
@@ -978,7 +947,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: 300,
     margin: 5
   },
   text: {
@@ -1013,7 +982,7 @@ TextInputStyle: {
     textAlign: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: 300,
     borderRadius: 20,
     margin: 10,
     backgroundColor: "#f8f8f8",
@@ -1028,7 +997,7 @@ container: {
     alignItems: 'center',
     borderRadius: 20,
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: 300,
     margin:10,
     backgroundColor: "#f8f8f8",
 },
@@ -1037,9 +1006,5 @@ alertContainer:{
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: '#fff',
-},
-  
-spinnerTextStyle: {
-  color: '#0000FF'
-},
+}
 });

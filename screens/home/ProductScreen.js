@@ -619,15 +619,16 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     alignItems: 'flex-start',
-    margin:10,
+    marginHorizontal:Dimensions.get('screen').width*0.01,
     flexWrap: 'wrap',
+    flex: 0.7,
   },
   productPrice: {
     fontSize: 25,
     fontWeight: 'bold',
-    marginHorizontal:10,
-    margin: 10,
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    flex:0.3,
+    textAlign:'right',
   },
   nameAndPrice: {
     flex: 1,

@@ -100,12 +100,14 @@ export default class PostProductScreen extends Component {
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
+   
     if (user != null) {
       this.state.owner = user.uid;
       console.log(" State UID ==> from  " + this.state.Owner);
     }
   });
-    this.getPermissionAsync();
+
+    //this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
     console.log('component did mount');
   }
@@ -173,14 +175,15 @@ export default class PostProductScreen extends Component {
     navigate('Home');
   };
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to post the product!');
-      }
-    }
-  };
+  // getPermissionAsync = async () => {
+  //   if (Constants.platform.ios) {
+  //     console.log('ask permission');
+  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
+  //     if (status !== 'granted') {
+  //       alert('Sorry, we need camera roll permissions to make this work!');
+  //     }
+  //   }
+  // };
 
   //listens to the change in auth state
   onAuthStateChanged = user => {
@@ -382,6 +385,15 @@ export default class PostProductScreen extends Component {
    * Function Description:
    */
   _pickImage = async () => {
+
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      //const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2,
@@ -395,30 +407,6 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-
-    //   console.log(this.state.firstTimeOnly);
-    //   if(this.state.firstTimeOnly){
-    //     console.log('I am first time');
-    //     await this.uploadThumbnailToFirebase(result.uri)
-    //       .then(()=>{
-    //         this.setState({firstTimeOnly:false});
-    //         console.log('Thumbnail got uploaded');
-    //       })
-    //       .catch(error=>{
-    //         console.log("Hey there is an error:  " +error);
-    //       })
-    //     }
-    
-
-
-    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
-    //     .then(() => {
-    //       console.log('Success' + uuid.v1());  
-    //     })
-    //     .catch(error => {
-    //       console.log('Success' + uuid.v1()); 
-    //       console.log(error);
-    //     });
     }
   };
 
@@ -427,6 +415,16 @@ export default class PostProductScreen extends Component {
    */
     
   _pickImageCamera = async () => {
+
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { cameraRollStatus } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2      
@@ -438,31 +436,6 @@ export default class PostProductScreen extends Component {
       this.setState({
         image: this.state.image.concat([result.uri])
       });
-
-
-    //   console.log(this.state.firstTimeOny);
-
-    //   if(this.state.firstTimeOnly){
-    //    //Create Thumbnail only FirstTime
-    //      console.log('I am first time');
-    //     await this.uploadThumbnailToFirebase(result.uri)
-    //       .then(()=>{
-    //         this.setState({firstTimeOnly:false});
-    //         console.log('Thumbnail got uploaded');
-    //       })
-    //       .catch(error=>{
-    //         console.log(error);
-    //       })
-    //     }
-
-    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
-    //     .then(() => {
-    //       console.log('Success' + uuid.v1());  
-    //     })
-    //     .catch(error => {
-    //       console.log('Success' + uuid.v1()); 
-    //       console.log(error);
-    //     });
     }
   };
 
@@ -474,7 +447,7 @@ export default class PostProductScreen extends Component {
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize:{width:200, height:200} }],
+      [{ resize:{width:400, height:400} }],
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -775,7 +748,7 @@ export default class PostProductScreen extends Component {
     console.log('test fucntion');
     checkGoogleAddress = 'lalalals'
     console.log(checkGoogleAddress)
-    this.state.googleAddressEmpty = '';
+    this.state.googleAddressEmpty = text;
     //this.setState({googleAddressEmpty: 'test'})
     
   }

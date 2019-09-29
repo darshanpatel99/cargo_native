@@ -5,12 +5,15 @@
     "privacy": "unlisted",
     "sdkVersion": "35.0.0",
     "scheme": "cargo",
+    "notification": {
+      "icon": "./assets/images/icon.png"
+    },
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "1.0.3",
+    "version": "2.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -28,7 +31,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.developer.cargo",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to take product images."
+        "NSCameraUsageDescription": "This app uses the camera to take product images.",
+        "NSPhotoLibraryUsageDescription": "Please give photos permission to upload product images to your ad"
       },
       "config": {
         "googleSignIn": {
@@ -38,7 +42,8 @@
     },
     "android": {
       "package": "com.developer.cargo",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 2
     },
     "hooks": {
       "postPublish": [
