@@ -12,6 +12,8 @@ import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
 import {Notifications} from 'expo';
 import * as Permissions from 'expo-permissions';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
@@ -57,6 +59,7 @@ export default class SignUpScreen extends Component {
       showOverlay: false,
       deviceNotificationToken: '',
       expoNotificationToken:'',
+      loading: false,
     }
 
     
@@ -168,6 +171,9 @@ async googleLogin(){
       //   {cancelable: true},
       // );
       return accessToken;
+    }
+    else{
+      this.setState({ loading: false });
     }
 
   }catch({message}){
@@ -384,7 +390,9 @@ emailLoginAsync = async () =>{
 
 //Google Login Async functions
 googleLoginAsync = async () => {
-  console.log('in loginAsync() method');
+
+
+  this.setState({ loading: true });
 
   // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
   const accessToken = await this.googleLogin();
@@ -445,6 +453,7 @@ googleLoginAsync = async () => {
                   this.finishFunc();
               
                 }
+                this.setState({ loading: false });
               });
             }
             catch (e) {
@@ -758,38 +767,43 @@ deleteUserFromAuthDatabase() {
       <DismissKeyboard>
         
       <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
+        <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
 
-                <View style={styles.container}>
-                      <TextInput
-                          placeholder= 'First Name'
-                          underlineColorAndroid="transparent"
-                          autoCorrect={false}
-                          style={styles.TextInputStyle}
-                          onChangeText = { firstName=> this.setState({firstName:firstName})}
-                          />
-                  </View>
+        <View style={styles.container}>
+              <TextInput
+                  placeholder= 'First Name'
+                  underlineColorAndroid="transparent"
+                  autoCorrect={false}
+                  style={styles.TextInputStyle}
+                  onChangeText = { firstName=> this.setState({firstName:firstName})}
+                  />
+          </View>
 
-                  <View style={styles.container}>
-                      <TextInput
-                          placeholder= 'Last Name'
-                          underlineColorAndroid="transparent"
-                          autoCorrect={false}
-                          style={styles.TextInputStyle}
-                          onChangeText = { lastName=> this.setState({lastName:lastName})}
-                          />
-                  </View>
+          <View style={styles.container}>
+              <TextInput
+                  placeholder= 'Last Name'
+                  underlineColorAndroid="transparent"
+                  autoCorrect={false}
+                  style={styles.TextInputStyle}
+                  onChangeText = { lastName=> this.setState({lastName:lastName})}
+                  />
+          </View>
 
 
-                <View style={styles.container}>
-                    <TextInput
-                        placeholder= 'Email'
-                        underlineColorAndroid="transparent"
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        style={styles.TextInputStyle}
-                        onChangeText = {email => this.setState({email:email.trim()})}
-                        />
-                </View>
+        <View style={styles.container}>
+            <TextInput
+                placeholder= 'Email'
+                underlineColorAndroid="transparent"
+                autoCapitalize='none'
+                autoCorrect={false}
+                style={styles.TextInputStyle}
+                onChangeText = {email => this.setState({email:email.trim()})}
+                />
+        </View>
 
           <Item style={styles.container}>                
                   <TextInput style={styles.TextInputStyle}
@@ -827,6 +841,11 @@ deleteUserFromAuthDatabase() {
         <DismissKeyboard>
 
         <View style={styles.viewStyle}>
+        <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
 
       <View style={styles.container}>
           <TextInput
@@ -1007,5 +1026,9 @@ alertContainer:{
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: '#fff',
-}
+},
+  
+spinnerTextStyle: {
+  color: '#0000FF'
+},
 });
