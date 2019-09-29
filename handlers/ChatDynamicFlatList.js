@@ -53,6 +53,7 @@ class ChatDyanmicFlatList extends React.Component {
         this.setState({ loading: true });
         firebase.database().ref('Chat').on('value', snapshot => {
             this.setState({ loading: false });
+
             this.setState({snapshot: snapshot.val()})
             let chatCardsArray=[];
         for (var prop in snapshot.val()) {

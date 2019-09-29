@@ -38,6 +38,7 @@ export default class ChatScreen extends React.Component {
       const completeChatThread = navigation.getParam('completeChatThread');
       var reciverId = completeChatThread.reciverId;
       var senderId = completeChatThread.senderId;
+      var senderName = completeChatThread.senderName;
 
       if(reciverId < senderId) {
         chatDocumentReferenceId = reciverId+senderId
@@ -45,13 +46,13 @@ export default class ChatScreen extends React.Component {
         chatDocumentReferenceId = senderId+reciverId
       }
       
-      alert(reciverId)
+      //alert(reciverId)
       //chatDocumentReferenceId = 
       //alert(chatDocumentReferenceId)
       this.state = {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
-        sellerName: senderId,
+        sellerName: senderName,
       };
 
     }
