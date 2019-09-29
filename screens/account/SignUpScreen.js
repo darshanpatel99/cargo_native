@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, Dimensions, KeyboardAvoidingView} from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, Dimensions, KeyboardAvoidingView, Platform} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -155,10 +155,16 @@ async googleLogin(){
 
     };
 
+    // if(Platform.OS=='ios'){
+    //   this.setState({ loading: false });
+    // }
+    //this.setState({ loading: false });
+   
 
     const {type, accessToken} = await Google.logInAsync(config);
 
     if(type=='success'){
+
       //alert('You got looged in with google');
 
       // Alert.alert(
@@ -170,6 +176,11 @@ async googleLogin(){
       //   ],
       //   {cancelable: true},
       // );
+      
+      //start the loader again
+      console.log('successfully got the access topken');
+      this.setState({ loading: true });
+
       return accessToken;
     }
     else{
@@ -177,7 +188,8 @@ async googleLogin(){
     }
 
   }catch({message}){
-    alert('login: ' + message);
+    this.setState({ loading: false });
+    //alert('');
   }
 }
 
@@ -393,7 +405,7 @@ googleLoginAsync = async () => {
 
 
   this.setState({ loading: true });
-
+  console.log('statettttttttttttttttttttttttttttttt: '+this.state.loading);
   // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
   const accessToken = await this.googleLogin();
 
@@ -428,13 +440,14 @@ googleLoginAsync = async () => {
               .then(docSnapshot => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
+                 
                   console.log('2--inside firebase snap');
                   
                   
                   this.getNotificationToken(userUID);
                   console.log('Notification token has been updated');
                   console.log('2--inside firebase snap');
-                  
+                  this.setState({ loading: false });
                   const resetAction = StackActions.reset({
                     index: 0, // <-- currect active route from actions array
                     //params: {userId: this.state.UID},
@@ -450,10 +463,11 @@ googleLoginAsync = async () => {
                 else{
                   console.log('User is not sign up');
                   //add user to the database using the finishFunc
+
                   this.finishFunc();
               
                 }
-                this.setState({ loading: false });
+               
               });
             }
             catch (e) {
@@ -687,9 +701,6 @@ deleteUserFromAuthDatabase() {
 
     console.log('In the finishFunc function');
     
-
-
-
     //Sample dat object for each user
     var data={
       ActiveProducts : [],
@@ -724,7 +735,7 @@ deleteUserFromAuthDatabase() {
     
     console.log('Hello! finished adding data');
     console.log('following data is added ' + data);
-
+    this.setState({ loading: false });
     const resetAction = StackActions.reset({
       index: 0, // <-- currect active route from actions array
       //params: {userId: this.state.UID},
