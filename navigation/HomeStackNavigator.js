@@ -25,7 +25,9 @@ export default (HomeStack = createStackNavigator({
   ChatDetailMessagesScreen:{
     screen:ChatDetailMessagesScreen
   },
-
+  ChatFromHomeScreen:{
+    screen:ChatDetailMessagesScreen
+  },
   StripeScreen: {
     screen: StripeScreen,
     navigationOptions: {
