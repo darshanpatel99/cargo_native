@@ -59,7 +59,7 @@ export default class HomeScreen extends React.Component {
     let senderId = notification.data.senderId;
     let senderName= notification.data.senderName
     if(notification.origin=='selected'){
-    this.props.navigation.push('ChatMessagesScreen', {senderName: senderName, userID:senderId, owner: this.state.owner, previousScreen:'Home', reciverId: receiverId, senderId: senderId, completeChatThread: {chat: senderName, reciverId: receiverId, senderId: senderId  }})
+    this.props.navigation.push('ChatFromHomeScreen', {senderName: senderName, userID:senderId, owner: this.state.owner, previousScreen:'Home', reciverId: receiverId, senderId: senderId, completeChatThread: {chat: senderName, reciverId: receiverId, senderId: senderId  }})
     }
     if(Platform.OS == 'ios'){
       //PushNotificationIOS.presentLocalNotification({alertTitle: 'this is title', alertBody: 'this is body'});
