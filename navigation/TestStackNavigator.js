@@ -1,6 +1,4 @@
-import {
-  createStackNavigator
-} from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import TestScreen from '../screens/testScreens/Test'; 
 
 export default TestStack = createStackNavigator({
