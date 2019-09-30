@@ -1,4 +1,6 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import {
+  createStackNavigator
+} from 'react-navigation';
 //importing components
 //importing screens
 import AccountScreen from '../screens/account/Account'; 
