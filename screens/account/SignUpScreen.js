@@ -155,9 +155,9 @@ async googleLogin(){
 
     };
 
-    // if(Platform.OS=='ios'){
-    //   this.setState({ loading: false });
-    // }
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
     //this.setState({ loading: false });
    
 

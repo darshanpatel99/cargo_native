@@ -33,7 +33,30 @@ export default class ChatScreen extends React.Component {
       };
       //this.firebaseGetSellerName();
 
-    } else {
+    } else if (previousScreen == 'Home') {
+
+      const completeChatThread = navigation.getParam('completeChatThread');
+      var reciverId = completeChatThread.reciverId;
+      var senderId = completeChatThread.senderId;
+      var senderName = completeChatThread.senderName;
+
+      if(reciverId < senderId) {
+        chatDocumentReferenceId = reciverId+senderId
+      } else {
+        chatDocumentReferenceId = senderId+reciverId
+      }
+      
+      //alert(reciverId)
+      //chatDocumentReferenceId = 
+      //alert(chatDocumentReferenceId)
+      this.state = {
+        messages: [],
+        senderAndRecieverId: chatDocumentReferenceId,
+        sellerName: senderName,
+      };
+
+    }
+    else {
       const completeChatThread = navigation.getParam('completeChatThread')
       console.log(JSON.stringify(completeChatThread.reciverId))
       var reciverId = completeChatThread.reciverId;
@@ -47,6 +70,7 @@ export default class ChatScreen extends React.Component {
         chatDocumentReferenceId = firebaseChat.uid+reciverId
       }
       
+      //alert(chatDocumentReferenceId)
       //chatDocumentReferenceId = 
       //alert(chatDocumentReferenceId)
       this.state = {

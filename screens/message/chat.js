@@ -67,31 +67,32 @@ class Chat extends React.Component {
     
     const { navigation } = this.props;
       
+    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+
     this.focusListener = navigation.addListener('didFocus', () => { 
+      console.log('chat.js on foucus')
+      //let user = firebase.auth().currentUser;
 
-      let user = firebase.auth().currentUser;
-
-      this.setState({ loading: true });
-      firebase.database().ref('Chat').on('value', snapshot => {
-        this.setState({ loading: false });
+    //   this.setState({ loading: true });
+    //   firebase.database().ref('Chat').on('value', snapshot => {
+    //     this.setState({ loading: false });
   
-        this.setState({snapshot: snapshot.val()})
+    //     this.setState({snapshot: snapshot.val()})
   
-      for (var prop in snapshot.val()) {
-        if (prop.includes(this.state.userId)) {
-            // do stuff
-            newObj = {chat: 'this is test'}
-            console.log(prop)
-            this.setState({filteredChats: newObj})
-        }
-      }
+    //   for (var prop in snapshot.val()) {
+    //     if (prop.includes(this.state.userId)) {
+    //         // do stuff
+    //         newObj = {chat: 'this is test'}
+    //         console.log(prop)
+    //         this.setState({filteredChats: newObj})
+    //     }
+    //   }
   
-        this.setState({snapshot: snapshot.val()})
-      });
+    //     this.setState({snapshot: snapshot.val()})
+    //   });
 
-      this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
-    });
+     });
   }
 
   //listens to the change in auth state
@@ -138,7 +139,7 @@ class Chat extends React.Component {
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-        <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
+        <ChatDynamicFlatList navigation = {this.props.navigation}/>
       </View>
     );
     }
