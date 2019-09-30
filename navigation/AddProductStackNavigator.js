@@ -1,6 +1,4 @@
-import {
-  createStackNavigator
-} from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import PostProductScreen from '../screens/addProduct/PostProductScreen';
 
 export default AddProductStack = createStackNavigator({
