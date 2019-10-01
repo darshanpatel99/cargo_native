@@ -3,6 +3,8 @@ import { View, FlatList, ScrollView, TouchableOpacity} from 'react-native';
 import firebase from 'firebase'
 import firebaseChat from '../FirebaseChat'
 import ChatCard from '../components/product/ChatCard'
+import AwesomeAlert from 'react-native-awesome-alerts';
+import Colors from '../constants/Colors';
 
 class ChatDyanmicFlatList extends React.Component {
 
@@ -12,11 +14,16 @@ class ChatDyanmicFlatList extends React.Component {
         chatCardsArray: [],
         chats:{},
         filteredChats:{},
-        firstNames:[]
+        firstNames:[],
+        showAlert: false,
         };
+
+        this.showAlert = this.showAlert.bind(this);
+
     }
 
- 
+    
+
     componentWillUnmount() {
         firebaseChat.refOff();
     }
@@ -89,12 +96,44 @@ class ChatDyanmicFlatList extends React.Component {
 
 }
 
-goToChatScreen = (item) => {
-   this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item})
-}
+    goToChatScreen = (item) => {
+        this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item})
+    }
+
+    _onLongPressButton = () => {
+        this.showAlert();
+    }
+
+    showAlert(){
+        this.setState({
+            showAlert: true,
+        });
+    };
+
+    hideAlert(){
+        this.setState({
+        showAlert: false
+        });
+    };
+
+    deleteChat(){
+        this.setState({
+            showAlert: false
+        });
+    }
+
+    blockUser(){
+        this.setState({
+            showAlert: false
+        });
+    }
 
     render(){
+
+        const {showAlert} = this.state;
+
         return(
+            <View style={styles.viewStyle}>
             <ScrollView style={styles.scrollContainer}>
 
             <FlatList
@@ -110,6 +149,27 @@ goToChatScreen = (item) => {
               }
             />
             </ScrollView>
+
+            <AwesomeAlert
+                show={showAlert}
+                showProgress={false}
+                title="Advance Option"
+                //message="Please check your email :)"
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={true}
+                showConfirmButton={true}
+                cancelText="Block User"
+                confirmText="Delete Chat"
+                confirmButtonColor= {Colors.primary}
+                onCancelPressed={() => {
+                this.blockUser();
+                }}
+                onConfirmPressed={() => {
+                this.deleteChat();
+                }}
+                />
+            </View>
         )
 
         // return  (
@@ -126,7 +186,13 @@ const styles= {
     scrollContainer: {
         flex: 1,
         paddingBottom: 22
-       }
+       },
+
+       viewStyle: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center'
+      },
 }
 
 export default ChatDyanmicFlatList;
