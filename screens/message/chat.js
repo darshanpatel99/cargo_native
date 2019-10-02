@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View,Text} from 'react-native';
 import firebaseChat from '../../FirebaseChat';
 import ChatDynamicFlatList from '../../handlers/ChatDynamicFlatList';
 import firebase from 'firebase';
@@ -22,6 +22,7 @@ class Chat extends React.Component {
       showAlert: true,
       User:null,
       loading: false,
+      isChatEmpty:true,
     };
   //checking the current user and setting uid
   let user = firebase.auth().currentUser;
@@ -81,8 +82,9 @@ class Chat extends React.Component {
         if (prop.includes(this.state.userId)) {
             // do stuff
             newObj = {chat: 'this is test'}
-            console.log(prop)
-            this.setState({filteredChats: newObj})
+            console.log("that is a prop " + prop)
+            console.log("new object which is " + newObj)
+            this.setState({filteredChats: newObj, isChatEmpty:false})
         }
       }
   
@@ -92,6 +94,8 @@ class Chat extends React.Component {
       this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
     });
+
+   
   }
 
   //listens to the change in auth state
@@ -124,7 +128,19 @@ class Chat extends React.Component {
     navigate('Account');
   };
 
-
+  showChats =() =>{
+    
+    if(this.state.isChatEmpty && !this.state.loading){
+     return(
+       <View style={styles.nochats}>
+         <Text style={{fontSize:20,color:'grey'}}>
+          No chats yet
+        </Text>
+       </View>
+       
+     )
+    }
+  }
 
   render() {
 
@@ -133,12 +149,18 @@ class Chat extends React.Component {
     if(this.state.User != null){ 
       return (
       <View style ={styles.containerStyle}>
+
+        { this.showChats()}
+
         <Spinner
             visible={this.state.loading}
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
+         
         <ChatDynamicFlatList chats = {this.state.filteredChats} navigation = {this.props.navigation}/>
+
+        
       </View>
     );
     }
@@ -190,6 +212,17 @@ const styles = {
   },
     spinnerTextStyle: {
     color: '#0000FF'
+  },
+
+  nochats:{
+    flex:1,
+     //borderRadius:20,
+     alignItems:'center',
+     justifyContent:'flex-end',
+    //  shadowColor: "#000",
+    //  shadowOffset: { width: 0, height: 2 },
+    //  shadowOpacity: 0.5,
+    //  backgroundColor:"white",
   },
 }
 
