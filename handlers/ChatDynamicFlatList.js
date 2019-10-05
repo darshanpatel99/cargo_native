@@ -37,12 +37,12 @@ class ChatDyanmicFlatList extends React.Component {
                 var userName={'chat' : doc.data().FirstName, "reciverId": doc.data().UID}
                 //var recieverId = {'recieverId' : this.state.chatCardsArray[i].chat}
                 turmarkers.push(userName)
-    
+                this.setState({
+                    firstNames:turmarkers
+                });
              });
     
-            this.setState({
-                firstNames:turmarkers
-            });
+
         });   
         
     }

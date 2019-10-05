@@ -5,7 +5,7 @@ import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { Header } from 'react-navigation';
+import { Header } from 'react-navigation-stack';
 import Constants from 'expo-constants';
 
 const DismissKeyboard = ({ children }) => (

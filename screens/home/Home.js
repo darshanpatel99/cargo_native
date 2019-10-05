@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, PushNotificationIOS } from 'react-native';
 import ProductCardFlatListDynamicLoad from '../../handlers/ProductCardFlatListDynamicLoad';
 import SearchFilterFunction from '../../handlers/ProductCardFlatListDynamicLoad';
 import Header from '../../components/headerComponents/Header';
@@ -55,7 +55,18 @@ export default class HomeScreen extends React.Component {
 
   // //function to create the notification
   createNotificationAsync = (notification) =>{
-    Notifications.presentLocalNotificationAsync(notification);
+    let receiverId = notification.data.recieverId;
+    let senderId = notification.data.senderId;
+    let senderName= notification.data.senderName
+    if(notification.origin=='selected'){
+    this.props.navigation.push('ChatFromHomeScreen', {senderName: senderName, userID:senderId, owner: this.state.owner, previousScreen:'Home', reciverId: receiverId, senderId: senderId, completeChatThread: {chat: senderName, reciverId: receiverId, senderId: senderId  }})
+    }
+    if(Platform.OS == 'ios'){
+      //PushNotificationIOS.presentLocalNotification({alertTitle: 'this is title', alertBody: 'this is body'});
+      //Notifications.presentLocalNotificationAsync({title: notification.data.title, body: notification.data.body});
+
+    }
+    //Notifications.presentLocalNotificationAsync({title: notification.data.title, body: notification.data.body});
   }
 
  

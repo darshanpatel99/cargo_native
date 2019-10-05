@@ -1,4 +1,4 @@
-import { createStackNavigator,} from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen from '../screens/home/Home';
 import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
@@ -25,7 +25,9 @@ export default (HomeStack = createStackNavigator({
   ChatDetailMessagesScreen:{
     screen:ChatDetailMessagesScreen
   },
-
+  ChatFromHomeScreen:{
+    screen:ChatDetailMessagesScreen
+  },
   StripeScreen: {
     screen: StripeScreen,
     navigationOptions: {
