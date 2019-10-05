@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { WebView, View, Text, Button} from 'react-native';
 import PaymentPage from './BraintreePayments.html';
-import { Constants } from 'expo';
 
 
 
@@ -89,7 +88,6 @@ export default class MyWeb extends Component {
         container: {
             flex: 1,
             justifyContent: 'center',
-            paddingTop: Constants.statusBarHeight,
             backgroundColor: '#ecf0f1',
             padding: 8,
           },
