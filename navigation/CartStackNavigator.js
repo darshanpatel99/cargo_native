@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator } from 'react-navigation';
 import CartScreen from '../screens/cart/Cart';
 //import CheckoutScreen from '../screens/home/Checkout';
 import TabBarIcon from '../components/navigation/TabBarIcon';
