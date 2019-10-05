@@ -53,6 +53,7 @@
     "react-native-snap-carousel": "^3.8.0",
     "react-native-uuid": "^1.4.9",
     "react-native-vector-icons": "^6.6.0",
+    "react-native-webview": "^5.8.2",
     "react-navigation": "^3.11.0",
     "react-stripe-elements": "^4.0.0",
     "sentry-expo": "^2.0.0",
