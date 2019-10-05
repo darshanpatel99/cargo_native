@@ -3,7 +3,7 @@
     "name": "CarGo",
     "slug": "cargo-native",
     "privacy": "unlisted",
-    "sdkVersion": "33.0.0",
+    "sdkVersion": "35.0.0",
     "scheme": "cargo",
     "notification": {
       "icon": "./assets/images/icon.png"
