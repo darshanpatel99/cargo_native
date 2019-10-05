@@ -24,7 +24,7 @@ import {
   
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
-import { Header } from 'react-navigation';
+import { Header } from 'react-navigation-stack';
 import Colors from '../../constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -1423,9 +1423,7 @@ const styles = {
     margin: 5,
     backgroundColor: Colors.primary,
   },
-  
   spinnerTextStyle: {
     color: '#0000FF'
   },
-
 };
