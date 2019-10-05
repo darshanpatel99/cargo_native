@@ -23,7 +23,7 @@ import {
   
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
-import { Header } from 'react-navigation-stack';
+import { Header } from 'react-navigation';
 import Colors from '../../constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -96,14 +96,18 @@ export default class PostProductScreen extends Component {
   }
 
   componentDidMount() {
+
     const { navigation } = this.props;
+    
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
    
     if (user != null) {
+        
       this.state.owner = user.uid;
       console.log(" State UID ==> from  " + this.state.Owner);
+
     }
   });
 
@@ -126,6 +130,7 @@ export default class PostProductScreen extends Component {
   componentWillUnmount() {
 
     //clearing the arrays
+    console.log("commponent will unmouutn tdsl;jfsaksf;jg");
     this.setState({image:[], downloadURLs:[], addressArray:[],Avability:[], thumbnail:' ' });
     // Clean up: remove the listener
     this._unsubscribe();
