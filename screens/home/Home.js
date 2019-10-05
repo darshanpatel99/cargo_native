@@ -90,7 +90,7 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
         <Header/>
         <SearchBar        
-          placeholder="Type Here..."        
+          placeholder="Search"        
           lightTheme        
           round  
           onChangeText={this.handleQueryChange}  
