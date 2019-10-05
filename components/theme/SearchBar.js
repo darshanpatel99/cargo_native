@@ -25,7 +25,7 @@ export default class SearchBarTheme extends Component {
       <View style={styles.containerStyle}>
 
           <SearchBar        
-            placeholder="Type Here..."        
+            placeholder="Search"        
             lightTheme        
             round  
             onChangeText={this.handleQueryChange}  
