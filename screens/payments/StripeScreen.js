@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Keyboard,  TouchableWithoutFeedback,Dimensions } from 'react-native';
 import Stripe from '../../components/payments/stripe'
+import TestWebView from './TestWebView';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -37,11 +38,7 @@ export default class StripeScreen extends Component {
 
   render() {
     return(
-      <DismissKeyboard>
-      <View style= {styles.TestContainer}> 
-        <Stripe deliveryFee={this.state.deliveryFee} GPSStringFormat={this.state.GPSStringFormat} Email ={this.state.Email} Title= {this.state.Title} SellerAddress ={this.state.SellerAddress} charge = {this.state.TotalAmount} BuyerName= {this.state.BuyerName} navigation={this.props.navigation} productID={this.state.productID} userId ={this.state.userId}/>
-      </View>
-      </DismissKeyboard>
+        <TestWebView/>
     )
   }
 }

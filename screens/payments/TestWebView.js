@@ -73,7 +73,6 @@ export default class MyWeb extends Component {
                 <View>
                     <Text>Thanks for choosing CarGo</Text>
                     <Text>You will be notified before delivery</Text>
-                    <Button title="OK" />
                 </View>
             );
         }
