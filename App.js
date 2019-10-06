@@ -2,12 +2,10 @@ import { AppLoading, registerRootComponent } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Text, Image } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
 import AppTabNavigator from './navigation/AppTabNavigator';
 import * as Sentry from 'sentry-expo';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo';
 
 // import { SentrySeverity, SentryLog } from 'react-native-sentry';
 //Sentry.config('https://18325944fed842348b66ce82bf59467d@sentry.io/1727748').install();
@@ -31,20 +29,16 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showRealApp: false,
       isLoadingComplete:false,
       showRealApp: false,
     }
   }
 
   handleFinishLoading() {
-    // setLoadingComplete(true);
-     this.setState({
+       this.setState({
        isLoadingComplete: true,
        
      });
-     //setCustomText(CustomText);
-     // setCustomView(customViewProps);
   }
 
   async loadResourcesAsync() {
@@ -86,6 +80,23 @@ export default class App extends React.Component {
     };
     _onSkip = () => {
       this.setState({ showRealApp: true });
+    };
+
+    _renderItem = ({ item }) => {
+      return (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: item.backgroundColor,
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            paddingBottom: 100
+          }}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Image style={styles.image} source={item.image} />
+          <Text style={styles.text}>{item.text}</Text>
+        </View>
+      );
     };
 
 
@@ -131,8 +142,8 @@ const styles = StyleSheet.create({
     //backgroundColor: '#fff',
   },
   image: {
-    width: 200,
-    height: 200,
+    width:Dimensions.get('window').width,
+    height: 300,
   },
   text: {
     fontSize: 18,
@@ -144,7 +155,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: 'white',
     textAlign: 'center',
-    marginBottom: 16,
+    marginTop: 25,
+    fontWeight: 'bold',
   },
 
 });
@@ -154,29 +166,21 @@ const slides = [
     key: 's1',
     title: 'Welcome to CarGo',
     text: 'CarGo is a next generation used goods marketplace.\nCreate an account and get started today.\nStart shopping now, stress free.',
-    image: {
-      uri:
-        'https://raw.githubusercontent.com/AboutReact/sampleresource/master/intro_flight_ticket_booking.png',
-    },
+    image: require('./assets/images/welcome.png'),
     backgroundColor: '#febe29',
   },
   {
     key: 's2',
     title: 'Post, Buy and Sell',
-    text: 'Simply post your used goods on our marketplace.\nBrowse and Buy items on our extensive online marketplace.\nWatch as your items leave your hands and arrive in another.',
-    image: {
-      uri: 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/intro_best_deals.png',
-    },
+    text: 'Simply post your used goods.\nBrowse and Buy items on our extensive online.\nWatch as your items leave your hands and arrive in another.',
+    image: require('./assets/images/pay.png'),
     backgroundColor: '#3395ff',
   },
   {
     key: 's3',
     title: 'Delivery on Demand',
     text: 'Our drivers show up at your door and deliver your sold items.\nPurchase an item and have it delivered directly to you.\nOur reliable drivers deliver items quickly and efficiently.',
-    image: {
-      uri:
-        'https://raw.githubusercontent.com/AboutReact/sampleresource/master/intro_bus_ticket_booking.png',
-    },
+    image: require('./assets/images/delivery.png'),
     backgroundColor: '#f6437b',
   },
 ];
