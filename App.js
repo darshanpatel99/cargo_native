@@ -2,7 +2,7 @@ import { AppLoading, registerRootComponent } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
+import {AsyncStorage, Platform, StatusBar, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
 import AppTabNavigator from './navigation/AppTabNavigator';
 import * as Sentry from 'sentry-expo';
 import AppIntroSlider from 'react-native-app-intro-slider';
@@ -31,7 +31,19 @@ export default class App extends React.Component {
     this.state = {
       isLoadingComplete:false,
       showRealApp: false,
+      firstLaunch: null,
     }
+  }
+
+  componentDidMount(){
+    AsyncStorage.getItem("alreadyLaunched").then(value => {
+        if(value == null){
+             AsyncStorage.setItem('alreadyLaunched', 'true'); // No need to wait for `setItem` to finish, although you might want to handle errors
+             this.setState({firstLaunch: true});
+        }
+        else{
+             this.setState({firstLaunch: false});
+        }}) // Add some error handling, also you can simply do this.setState({fistLaunch: value == null})
   }
 
   handleFinishLoading() {
@@ -63,8 +75,6 @@ export default class App extends React.Component {
         'nunito-SemiBold':require('./assets/fonts/nunito/Nunito-SemiBold.ttf'),
         'Roboto': require('./node_modules/native-base/Fonts/Roboto.ttf'),
         'Roboto_medium': require('./node_modules/native-base/Fonts/Roboto_medium.ttf'),
-        
-      
       }),
     ]);
   }
@@ -76,9 +86,11 @@ export default class App extends React.Component {
     }
 
     _onDone = () => {
+      console.log('Done pressed')
       this.setState({ showRealApp: true });
     };
     _onSkip = () => {
+      console.log('Skip pressed')
       this.setState({ showRealApp: true });
     };
 
@@ -101,36 +113,39 @@ export default class App extends React.Component {
 
 
   render() {
-  if (!(this.state.isLoadingComplete) && !(this.props.skipLoadingScreen)) {
+  if (!this.state.isLoadingComplete && !this.state.showRealApp) {
     return (
       <AppLoading
-          startAsync={this.loadResourcesAsync}
-          onFinish={() => this.setState({ isLoadingComplete: true })}
-          onError={console.warn}
-        />
+        startAsync={this.loadResourcesAsync}
+        onFinish={() => this.setState({ isLoadingComplete: true })}
+        onError={console.warn}
+      />
     );
-  } else {
-    if (this.state.showRealApp) {
-      return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar hidden={false} barStyle="default" />}
-          <AppTabNavigator />
+  } 
+  
+  else {
 
-        </View>
-      );
-    }
-    else {
+    if(this.state.firstLaunch === null){
+      return null; // This is the 'tricky' part: The query to AsyncStorage is not finished, but we have to present something to the user. Null will just render nothing, so you can also put a placeholder of some sort, but effectively the interval between the first mount and AsyncStorage retrieving your data won't be noticeable to the user.
+    }else if(this.state.firstLaunch == true && this.state.showRealApp == false){
       return (
-          <AppIntroSlider
-            slides={slides}
-            renderItem={this._renderItem}
-            onDone={this._onDone}
-            showSkipButton={true}
-            onSkip={this._onSkip}
-          />
+        <AppIntroSlider
+          slides={slides}
+          renderItem={this._renderItem}
+          onDone={this._onDone}
+          showSkipButton={true}
+          onSkip={this._onSkip}
+        />
+      );
+      }else{
+        return (
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar hidden={false} barStyle="default" />}
+            <AppTabNavigator />
+          </View>
         );
+      }
     }
-  }
   
 }
 
