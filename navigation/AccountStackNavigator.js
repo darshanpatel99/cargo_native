@@ -60,8 +60,7 @@ export default AccountStack = createStackNavigator({
   Details: {
     screen: ProductScreen,
     navigationOptions: {
-      title: 'Detail',
-      
+      //title: 'Detail',
     },
   },
   

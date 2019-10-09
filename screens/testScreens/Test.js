@@ -2,18 +2,43 @@ import React from 'react';
 import {Image, View, Linking, Platform, TouchableOpacity, Dimensions } from 'react-native';
 import { Text, Button } from "native-base";
 import Colors from "../../constants/Colors";
-import MyWeb from './TestWebView'
 
 export default class TestScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.dialCall = this.dialCall.bind(this);
   }
 
-  render(){
+  dialCall(){ 
+    let phoneNumber = '';
+    phoneNumber = `${Platform.OS === 'ios' ? 'tel:' : 'tel:'}${12508193073}`;
+    Linking.openURL(phoneNumber);
+  };
+
+  render() {
+
     return (
-      <MyWeb />
-    )
+      <View style={styles.viewStyle}>
+        <View style={styles.logoStyle}>
+          <Image
+          style={{width: 300, height: 300, borderRadius:20}}
+          source={require('../../assets/images/support.png')}
+          />
+        </View>
+
+        <View style={styles.buttonsWithLogo}>
+
+          <Button large-green style={styles.button} onPress={this.dialCall}>
+            <Text style={styles.lightText}>Call Us</Text>
+          </Button>
+
+        </View> 
+
+      </View>
+
+    );
+
   }
 
 
