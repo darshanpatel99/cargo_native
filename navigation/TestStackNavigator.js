@@ -1,21 +1,21 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import TestScreen from '../screens/testScreens/Test'; 
+import HelpScreen from '../screens/helpScreens/Help'; 
 
-export default TestStack = createStackNavigator({
-  Test:{
-    screen: TestScreen,
+export default HelpStack = createStackNavigator({
+  Help:{
+    screen: HelpScreen,
       navigationOptions: {
         title: 'Help'
       },
   },
 });
 
-TestStack.navigationOptions = ({ navigation }) => {
+HelpStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible= true;
   
   if (navigation.state.routes.length > 0) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Test' || 'UserAddressScreen') {
+      if (route.routeName === 'Help' || 'UserAddressScreen') {
         tabBarVisible = true;
       } else {
         tabBarVisible = false;

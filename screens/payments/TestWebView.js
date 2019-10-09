@@ -55,15 +55,15 @@ export default class MyWeb extends Component {
                 <View style={styles.container}>
 
                 <WebView
-                style={styles.container}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                injectedJavaScript={this.injectedToHtml()}
-                onNavigationStateChange={this._onNavigationStateChange.bind(this)}
-                useWebKit={true}
-                cacheEnabled={false}
-                onMessage={this.onMessage}
-                source={{ uri: 'http://35.232.190.65:3000/'  }}>
+                    style={styles.container}
+                    javaScriptEnabled={true}
+                    domStorageEnabled={true}
+                    injectedJavaScript={this.injectedToHtml()}
+                    onNavigationStateChange={this._onNavigationStateChange.bind(this)}
+                    useWebKit={true}
+                    cacheEnabled={false}
+                    onMessage={this.onMessage}
+                    source={{ uri: 'http://35.232.190.65:3000/'  }}>
                 </WebView>
 
                 </View>
