@@ -38,7 +38,12 @@ export default class StripeScreen extends Component {
 
   render() {
     return(
-        <TestWebView/>
+      <DismissKeyboard>
+      <View style= {styles.TestContainer}> 
+        <Stripe deliveryFee={this.state.deliveryFee} GPSStringFormat={this.state.GPSStringFormat} Email ={this.state.Email} Title= {this.state.Title} SellerAddress ={this.state.SellerAddress} charge = {this.state.TotalAmount} BuyerName= {this.state.BuyerName} navigation={this.props.navigation} productID={this.state.productID} userId ={this.state.userId}/>
+        {/* <TestWebView/> */}
+      </View>
+      </DismissKeyboard>
     )
   }
 }
