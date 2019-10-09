@@ -24,7 +24,7 @@ export default class StripeScreen extends Component {
     const GPSStringFormat = navigation.getParam('GPSStringFormat');
     const deliveryFee = navigation.getParam('deliveryFee');
     this.state={
-      TotalAmount: TotalCartAmount,
+      TotalCartAmount: TotalCartAmount,
       BuyerName: BuyerName,
       SellerAddress: SellerAddress,
       Title: Title,
@@ -32,13 +32,13 @@ export default class StripeScreen extends Component {
       productID:productID,
       userId:userId,
       deliveryFee,
-      GPSStringFormat
+      GPSStringFormat,
     }
   }
 
   render() {
     return(
-        <TestWebView/>
+        <TestWebView TotalCartAmount={this.state.TotalCartAmount}/>
     )
   }
 }
