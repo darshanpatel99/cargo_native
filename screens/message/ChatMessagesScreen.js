@@ -14,8 +14,9 @@ export default class ChatScreen extends React.Component {
     const owner = navigation.getParam('owner');
     const previousScreen = navigation.getParam('previousScreen')
     const sellerName = navigation.getParam('sellerName')
-    const profileImage = navigation.getParam('profileImage');
     let chatDocumentReferenceId = ''
+
+
 
     if(previousScreen == 'Details') {
 
@@ -24,13 +25,24 @@ export default class ChatScreen extends React.Component {
       } else {
         chatDocumentReferenceId = firebaseChat.uid+owner
       }
+
+      var currentLoggedInUID = firebaseChat.uid;
+
+      firebase.firestore().collection("Users")
+      .where('UID', '==', currentLoggedInUID)
+      .get()
+      .then(querySnapshot => {
+        console.log('profile image querysnap -->')
+        console.log(querySnapshot.docs[0].data().ProfilePicture)
+        this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+      });
       
       this.state = {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         buyerName: firebaseChat.userDisplayName,
         sellerName,
-        profileImage
+        
       };
       //this.firebaseGetSellerName();
 
@@ -46,6 +58,17 @@ export default class ChatScreen extends React.Component {
       } else {
         chatDocumentReferenceId = senderId+reciverId
       }
+
+      var currentLoggedInUID = firebaseChat.uid;
+
+      firebase.firestore().collection("Users")
+      .where('UID', '==', currentLoggedInUID)
+      .get()
+      .then(querySnapshot => {
+        console.log('profile image querysnap -->')
+        console.log(querySnapshot.docs[0].data().ProfilePicture)
+        this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+      });
       
       //alert(reciverId)
       //chatDocumentReferenceId = 
@@ -74,13 +97,29 @@ export default class ChatScreen extends React.Component {
       //alert(chatDocumentReferenceId)
       //chatDocumentReferenceId = 
       //alert(chatDocumentReferenceId)
+      //const profileImage = navigation.getParam('profileImage');
+
+    var currentLoggedInUID = firebaseChat.uid;
+
+    firebase.firestore().collection("Users")
+    .where('UID', '==', currentLoggedInUID)
+    .get()
+    .then(querySnapshot => {
+      console.log('profile image querysnap -->')
+      console.log(querySnapshot.docs[0].data().ProfilePicture)
+      this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+    });
+     
+
       this.state = {
         messages: [],
         senderAndRecieverId: chatDocumentReferenceId,
         sellerName: firebaseChat.userDisplayName,
+      
       };
-    }
 
+
+    }
   //this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
   }
@@ -120,6 +159,7 @@ export default class ChatScreen extends React.Component {
       // reciverID: this.state.owner,
       senderId: firebaseChat.uid ,
       _id: firebaseChat.uid, // need `fo`r gifted-chat
+      avatar: this.state.post_user_name,
     };
   }
 
@@ -131,7 +171,6 @@ export default class ChatScreen extends React.Component {
           messages={this.state.messages}
           onSend={firebaseChat.send}
           user={this.user}
-          renderAvatar={() => {this.state.profileImage}}
           showAvatarForEveryMessage ={true}
         />
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }

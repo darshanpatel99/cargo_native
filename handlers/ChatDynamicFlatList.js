@@ -99,7 +99,7 @@ class ChatDyanmicFlatList extends React.Component {
 }
 
 goToChatScreen = (item) => {
-   this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item})
+   this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item, profileImage:item.profImage})
 }
 
     render(){

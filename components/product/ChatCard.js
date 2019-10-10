@@ -12,6 +12,7 @@ class ChatCard extends React.Component {
 
     render() {
         console.log(this.props.profPic + " is the image");
+        Image.getSize(this.props.profPic, (width , height) => {console.log("width is " + width + "  heigth" + height)})
         return (
             <View style = {styles.containerStyle}>
                 
