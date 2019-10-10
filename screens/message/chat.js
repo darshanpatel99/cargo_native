@@ -126,19 +126,19 @@ class Chat extends React.Component {
     navigate('Account');
   };
 
-  showChats =() =>{
+  // showChats =() =>{
     
-    if(this.state.isChatEmpty && !this.state.loading){
-     return(
-       <View style={styles.nochats}>
-         <Text style={{fontSize:20,color:'grey'}}>
-          No chats yet
-        </Text>
-       </View>
+  //   if(this.state.isChatEmpty && !this.state.loading){
+  //    return(
+  //      <View style={styles.nochats}>
+  //        <Text style={{fontSize:20,color:'grey'}}>
+  //         No chats yet
+  //       </Text>
+  //      </View>
        
-     )
-    }
-  }
+  //    )
+  //   }
+  // }
 
   render() {
 
@@ -147,8 +147,6 @@ class Chat extends React.Component {
     if(this.state.User != null){ 
       return (
       <View style ={styles.containerStyle}>
-
-        { this.showChats()}
 
         <Spinner
             visible={this.state.loading}
@@ -211,13 +209,13 @@ const styles = {
 
   nochats:{
     flex:1,
-     //borderRadius:20,
+     borderRadius:20,
      alignItems:'center',
-     justifyContent:'flex-end',
-    //  shadowColor: "#000",
-    //  shadowOffset: { width: 0, height: 2 },
-    //  shadowOpacity: 0.5,
-    //  backgroundColor:"white",
+     justifyContent:'center',
+     shadowColor: "#000",
+     shadowOffset: { width: 0, height: 2 },
+     shadowOpacity: 0.5,
+     backgroundColor:"white",
   },
 }
 

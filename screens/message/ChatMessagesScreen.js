@@ -14,7 +14,7 @@ export default class ChatScreen extends React.Component {
     const owner = navigation.getParam('owner');
     const previousScreen = navigation.getParam('previousScreen')
     const sellerName = navigation.getParam('sellerName')
-
+    const profileImage = navigation.getParam('profileImage');
     let chatDocumentReferenceId = ''
 
     if(previousScreen == 'Details') {
@@ -30,6 +30,7 @@ export default class ChatScreen extends React.Component {
         senderAndRecieverId: chatDocumentReferenceId,
         buyerName: firebaseChat.userDisplayName,
         sellerName,
+        profileImage
       };
       //this.firebaseGetSellerName();
 
@@ -130,9 +131,8 @@ export default class ChatScreen extends React.Component {
           messages={this.state.messages}
           onSend={firebaseChat.send}
           user={this.user}
-          renderAvatar={() => {}}
-
-          
+          renderAvatar={() => {this.state.profileImage}}
+          showAvatarForEveryMessage ={true}
         />
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={80}/> : <View></View> }
       </View>
