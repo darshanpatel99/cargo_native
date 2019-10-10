@@ -5,7 +5,8 @@ import firebaseChat from '../FirebaseChat'
 import ChatCard from '../components/product/ChatCard'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { Icon } from 'native-base';
-
+import AwesomeAlert from 'react-native-awesome-alerts';
+import Colors from '../constants/Colors';
 
 class ChatDyanmicFlatList extends React.Component {
 
@@ -18,10 +19,15 @@ class ChatDyanmicFlatList extends React.Component {
         firstNames:[],
         isChatEmpty:true,
         //loading:true,
+        showAlert: false,
         };
+
+        this.showAlert = this.showAlert.bind(this);
+
     }
 
- 
+    
+
     componentWillUnmount() {
         firebaseChat.refOff();
     }
@@ -98,28 +104,60 @@ class ChatDyanmicFlatList extends React.Component {
 
 }
 
-goToChatScreen = (item) => {
-   this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item, profileImage:item.profImage})
-}
+    goToChatScreen = (item) => {
+        this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item, profileImage:item.profImage})
+    }
+
+    _onLongPressButton = () => {
+        this.showAlert();
+    }
+
+    showAlert(){
+        this.setState({
+            showAlert: true,
+        });
+    };
+
+    hideAlert(){
+        this.setState({
+        showAlert: false
+        });
+    };
+
+    deleteChat(){
+        this.setState({
+            showAlert: false
+        });
+    }
+
+    blockUser(){
+        this.setState({
+            showAlert: false
+        });
+    }
 
     render(){
 
-        if(this.state.isChatEmpty && !this.state.loading){
-            return(
-              <View style={styles.nochats}>
-                  <View style={styles.noChatBox}>
-                      <Text style={styles.noChatText}>
-                      {<Text style={styles.heading}>Hey!</Text>}  {<Icon type ="MaterialCommunityIcons" name ="human-greeting" style={{fontSize:30, color: '#FBA21C'}}/>} {"\n"}
-                      You don't have any chats currently!!!{"\n"} 
-                     </Text>
+        const {showAlert} = this.state;
+
+            if(this.state.isChatEmpty && !this.state.loading){
+                return(
+                  <View style={styles.nochats}>
+                      <View style={styles.noChatBox}>
+                          <Text style={styles.noChatText}>
+                          {<Text style={styles.heading}>Hey!</Text>}  {<Icon type ="MaterialCommunityIcons" name ="human-greeting" style={{fontSize:30, color: '#FBA21C'}}/>} {"\n"}
+                          You don't have any chats currently!!!{"\n"} 
+                         </Text>
+                      </View>
+                    
                   </View>
-                
-              </View>
-              
-            )
-           }
-           else{
+                  
+                )
+               }
+               else{
+
         return(
+            <View style={styles.viewStyle}>
             <ScrollView style={styles.scrollContainer}>
                  <Spinner
             visible={this.state.loading}
@@ -142,6 +180,27 @@ goToChatScreen = (item) => {
               }
             />
             </ScrollView>
+
+            <AwesomeAlert
+                show={showAlert}
+                showProgress={false}
+                title="Advance Option"
+                //message="Please check your email :)"
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={true}
+                showConfirmButton={true}
+                cancelText="Block User"
+                confirmText="Delete Chat"
+                confirmButtonColor= {Colors.primary}
+                onCancelPressed={() => {
+                this.blockUser();
+                }}
+                onConfirmPressed={() => {
+                this.deleteChat();
+                }}
+                />
+            </View>
         )
 
         // return  (
@@ -190,7 +249,12 @@ const styles= {
 
     heading:{
         fontSize:30,
-    }
+    },
+       viewStyle: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center'
+      },
 }
 
 export default ChatDyanmicFlatList;

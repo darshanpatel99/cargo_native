@@ -523,6 +523,76 @@ export default class PostProductScreen extends Component {
     var finalH = 1 ; 
     var finalW = 1 ;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     finalH = changedH.value/difValue;
 
     finalW = changedW.value/difValue;

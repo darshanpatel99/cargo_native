@@ -294,12 +294,10 @@ export class ProductScreen extends Component {
         Status:'active'
     })
     .then(function() {
-        console.log("Document successfully updated!");
         //alert('Your order has cancelled!');
-
         Alert.alert(  
-          'Alert !',  
-          'Your product is cancelled!',  
+          'Thank You',  
+          'Your product is activated!',  
           [ 
             {text: 'OK', onPress: () => navigation.navigate('Home')},  
           ]  
