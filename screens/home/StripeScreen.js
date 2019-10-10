@@ -38,7 +38,7 @@ export default class StripeScreen extends Component {
 
   render() {
     return(
-        <TestWebView TotalCartAmount={this.state.TotalCartAmount}/>
+        <TestWebView TotalCartAmount={this.state.TotalCartAmount} navigation={this.props.navigation}/>
     )
   }
 }

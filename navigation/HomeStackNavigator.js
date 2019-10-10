@@ -3,10 +3,10 @@ import HomeScreen from '../screens/home/Home';
 import CheckoutScreen from '../screens/home/Checkout';
 import { ProductScreen } from '../screens/home/ProductScreen';
 import EditProductScreen from '../screens/home/EditProductScreen';
-import StripeScreen from '../screens/payments/StripeScreen'
+import StripeScreen from '../screens/home/StripeScreen'
 import ImageScreen from '../screens/home/ImageScreen'
 import ChatDetailMessagesScreen from '../screens/message/ChatMessagesScreen'
-
+import PaymentSuccessScreen from '../screens/home/PaymentSuccessScreen'
 export default (HomeStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
@@ -18,7 +18,7 @@ export default (HomeStack = createStackNavigator({
   Details: {
     screen: ProductScreen,
     navigationOptions: {
-      title: 'Detail',
+      //title: 'Detail',
     },
   },
 
@@ -28,6 +28,7 @@ export default (HomeStack = createStackNavigator({
   ChatFromHomeScreen:{
     screen:ChatDetailMessagesScreen
   },
+
   StripeScreen: {
     screen: StripeScreen,
     navigationOptions: {
@@ -63,12 +64,18 @@ export default (HomeStack = createStackNavigator({
     },
   },
 
+  PaymentSuccessScreen:{
+    screen:PaymentSuccessScreen,
+    navigationOptions: {
+      //title: 'Home',
+      header: null
+    }
+  }
+
 }));
 
 HomeStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
-
-  const prevScreen = navigation.getParam('PreviousScreen');
 
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { WebView, View, Text, Button} from 'react-native';
-
-
+import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class MyWeb extends Component {
 
@@ -35,11 +34,20 @@ export default class MyWeb extends Component {
         //     console.log(data.SyntheticEvent);
         //     console.log(data)
         // }
+        const { navigate } = this.props.navigation;
 
         console.log(data.nativeEvent.data);
         if(data.nativeEvent.data == "success" ){
             console.log(data.nativeEvent.data)
-            this.setState({webviewState: false})
+            //this.setState({webviewState: false})
+            const resetAction = StackActions.reset({
+                index: 0, // <-- currect active route from actions array
+                //params: {userId: this.state.UID},
+                actions: [
+                  NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: { responseMessage: this.state.responseMessage, navigation: this.props.navigation }} ),
+                ],
+              });
+              this.props.navigation.dispatch(resetAction);
         } else if(data.nativeEvent.data == 'failed') {
             this.setState({responseMessage: 'Please try again'});
             this.setState({tryAgainButton: true})

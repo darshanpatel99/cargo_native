@@ -1,7 +1,16 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import HelpScreen from '../screens/helpScreens/Help'; 
+import PaymentSuccessScreen from '../screens/home/PaymentSuccessScreen'
 
 export default HelpStack = createStackNavigator({
+  PaymentSuccessScreen:{
+    screen:PaymentSuccessScreen,
+    navigationOptions: {
+      //title: 'Home',
+      header: null
+    }
+  },
+  
   Help:{
     screen: HelpScreen,
       navigationOptions: {
@@ -15,7 +24,7 @@ HelpStack.navigationOptions = ({ navigation }) => {
   
   if (navigation.state.routes.length > 0) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Help' || 'UserAddressScreen') {
+      if (route.routeName === 'Help' || 'PaymentSuccessScreen') {
         tabBarVisible = true;
       } else {
         tabBarVisible = false;
