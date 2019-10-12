@@ -3,14 +3,6 @@ import HelpScreen from '../screens/helpScreens/Help';
 import PaymentSuccessScreen from '../screens/home/PaymentSuccessScreen'
 
 export default HelpStack = createStackNavigator({
-  PaymentSuccessScreen:{
-    screen:PaymentSuccessScreen,
-    navigationOptions: {
-      //title: 'Home',
-      header: null
-    }
-  },
-  
   Help:{
     screen: HelpScreen,
       navigationOptions: {
