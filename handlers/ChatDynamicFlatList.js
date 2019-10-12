@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, FlatList, ScrollView, TouchableOpacity} from 'react-native';
+import { View, FlatList, ScrollView, TouchableOpacity,Text} from 'react-native';
 import firebase from 'firebase'
 import firebaseChat from '../FirebaseChat'
 import ChatCard from '../components/product/ChatCard'
+import Spinner from 'react-native-loading-spinner-overlay'
+import { Icon } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Colors from '../constants/Colors';
 
@@ -15,6 +17,8 @@ class ChatDyanmicFlatList extends React.Component {
         chats:{},
         filteredChats:{},
         firstNames:[],
+        isChatEmpty:true,
+        //loading:true,
         showAlert: false,
         };
 
@@ -41,7 +45,7 @@ class ChatDyanmicFlatList extends React.Component {
     
         db.collection("Users").where("UID","==", this.state.chatCardsArray[i].chat).get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => { 
-                var userName={'chat' : doc.data().FirstName, "reciverId": doc.data().UID}
+                var userName={'chat' : doc.data().FirstName, "reciverId": doc.data().UID, 'profImage' : doc.data().ProfilePicture}
                 //var recieverId = {'recieverId' : this.state.chatCardsArray[i].chat}
                 turmarkers.push(userName)
                 this.setState({
@@ -79,6 +83,10 @@ class ChatDyanmicFlatList extends React.Component {
                 }
                 //newObj = {chat: res}
                 chatCardsArray.push(newObj)
+
+                this.setState({
+                    isChatEmpty:false,
+                })
             }
         }
 
@@ -97,7 +105,7 @@ class ChatDyanmicFlatList extends React.Component {
 }
 
     goToChatScreen = (item) => {
-        this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item})
+        this.props.navigation.push('ChatMessagesScreen', {userID:this.state.userID, owner: this.state.owner, previousScreen:'Chat', completeChatThread: item, profileImage:item.profImage})
     }
 
     _onLongPressButton = () => {
@@ -132,9 +140,32 @@ class ChatDyanmicFlatList extends React.Component {
 
         const {showAlert} = this.state;
 
+            if(this.state.isChatEmpty && !this.state.loading){
+                return(
+                  <View style={styles.nochats}>
+                      <View style={styles.noChatBox}>
+                          <Text style={styles.noChatText}>
+                          {<Text style={styles.heading}>Hey!</Text>}  {<Icon type ="MaterialCommunityIcons" name ="human-greeting" style={{fontSize:30, color: '#FBA21C'}}/>} {"\n"}
+                          You don't have any chats currently!!!{"\n"} 
+                         </Text>
+                      </View>
+                    
+                  </View>
+                  
+                )
+               }
+               else{
+
         return(
             <View style={styles.viewStyle}>
             <ScrollView style={styles.scrollContainer}>
+                 <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
+
+          
 
             <FlatList
               data={this.state.firstNames}
@@ -142,7 +173,7 @@ class ChatDyanmicFlatList extends React.Component {
               <View >
                 <TouchableOpacity onPress={() => this.goToChatScreen(item)}>
                 <View >
-                    <ChatCard   title = {item.chat}  />
+                    <ChatCard   title = {item.chat} profPic = {item.profImage} />
                 </View>
                 </TouchableOpacity>
               </View>
@@ -178,6 +209,7 @@ class ChatDyanmicFlatList extends React.Component {
         //     </View>
         // )
     }
+}
 
 
 }
@@ -188,6 +220,36 @@ const styles= {
         paddingBottom: 22
        },
 
+       spinnerTextStyle: {
+        color: '#0000FF'
+      },
+
+       nochats:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center',
+        paddingHorizontal:4,
+        marginVertical:10,  
+      },
+
+    noChatBox:{
+        //borderRadius:20,
+             
+        // shadowColor: "#000",
+        // shadowOffset: { width: 0, height: 2 },
+        // shadowOpacity: 0.5,
+        // backgroundColor:"white",
+    },
+    noChatText:{
+        fontSize:20,
+        color:'grey',
+        textAlign:'center',
+        lineHeight:30,
+    },
+
+    heading:{
+        fontSize:30,
+    },
        viewStyle: {
         flex: 1,
         flexDirection: 'column',

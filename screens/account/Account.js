@@ -4,6 +4,11 @@ import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button, Text} from "native-base";
 import uuid from 'react-native-uuid';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import { FontAwesome} from '@expo/vector-icons';
+
 
 let storageRef;
 
@@ -230,11 +235,18 @@ onAuthStateChanged = (user) => {
 
   goToEditMode =() =>{
     let info = this.state.data;
+    let tempFolio = '';
+
+    if(this.state.picture == ''){
+      tempFolio = require('../../assets/images/user.png')
+    }
+    else {
+      tempFolio = {uri:this.state.picture};
+    }
     this.setState({
       editMode:true,
-      //newData:[info.FirstName,info.LastName,info.Street,info.City,info.Country,info.Email,info.PhoneNumber],
       newPicture:[info.ProfilePicture],
-      currentFolio:info.ProfilePicture,
+      currentFolio:tempFolio,
     })
   }
 
@@ -315,36 +327,46 @@ onAuthStateChanged = (user) => {
 
 
   //Function to choose an image for your profile picture
-  // chooseanImage = async () =>{
+  chooseanImage = async () =>{
 
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,      
-  //   });
+    if (Constants.platform.ios) {
+      console.log('ask permission');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { cameraRollStatus } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
 
-  //   this.setState({
-  //     newPicture:[this.state.data.ProfilePicture],
-  //   });
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality:0.1,      
+    });
 
-  //   if(!result.cancelled){
-  //     console.log(result.uri);   
+    this.setState({
+      newPicture:[this.state.data.ProfilePicture],
+    });
+
+    if(!result.cancelled){
+      console.log(result.uri);   
     
-  //   await this.uploadImageToFirebase(result.uri, uuid.v1())
-  //       .then(() => {
-  //         console.log('Success' + uuid.v1());
+    await this.uploadImageToFirebase(result.uri, uuid.v1())
+        .then(() => {
+          console.log('Success' + uuid.v1());
             
-  //       })
-  //       .catch(error => {
-  //         console.log('Success' + uuid.v1()); 
-  //         console.log(error);
-  //       });
-  //     }
-  // }
+        })
+        .catch(error => {
+          console.log('Success' + uuid.v1()); 
+          console.log(error);
+        });
+      }
+  }
 
   changeCurrentFolio =()=>{
     console.log('changing folio');
     if(this.state.newPicture.length==2){
       this.setState({
-        currentFolio:this.state.newPicture[1],
+        currentFolio:{uri:this.state.newPicture[1]},
         
       })
     }
@@ -484,10 +506,20 @@ onAuthStateChanged = (user) => {
 
   render() {
     const {navigate} = this.props.navigation;
+    let profileImage=''
+
+    if(this.state.picture == '') {
+      profileImage=require('../../assets/images/user.png')
+    }
+    else{
+      profileImage= {uri:this.state.picture}
+    }
+    
     if(this.state.User != null){
 
       if(this.state.editMode){
         console.log('editing');
+
         return (
           <DismissKeyboard>
 
@@ -495,11 +527,11 @@ onAuthStateChanged = (user) => {
 
               <View style={styles.pictureHolder}>                  
                 <View style={styles.imageView}>
-                <ImageBackground source={{uri:this.state.currentFolio}} ImageStyle={[styles.ProfilePicture,{borderRadius:25}]} style={styles.profileBackground}>
+                <ImageBackground source={this.state.currentFolio} ImageStyle={[styles.ProfilePicture,{borderRadius:25}]} style={styles.profileBackground}>
                       <View style={{position:'absolute', alignSelf:'flex-end',bottom:0,justifyContent:'center',alignItems:'center'}}>
-                        {/* <Button icon  transparent  onPress={this.chooseanImage}> 
+                        <Button icon  transparent  onPress={this.chooseanImage}> 
                           <FontAwesome name='camera' size={35} color={Colors.primary}/>                    
-                        </Button> */}
+                        </Button>
                       </View>
                       </ImageBackground>
                 </View>               
@@ -561,7 +593,7 @@ onAuthStateChanged = (user) => {
 
               <View style={styles.pictureHolder}>                  
                 <View style={styles.imageView}>
-                  <Image source={{uri:this.state.picture}} style={styles.profilePicture}/>
+                  <Image source={profileImage} style={styles.profilePicture}/>
                 </View>
               </View>
 
