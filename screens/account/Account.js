@@ -409,7 +409,7 @@ onAuthStateChanged = (user) => {
           editable={true}
           value={this.state.UnitNumber}
           onChangeText={ (value) => {this.setState({UnitNumber:value})}}
-          keyboardType='number-pad'
+          //keyboardType='number-pad'
           returnKeyType='done'
           autoCorrect={false}
           placeholder='Unit Number'

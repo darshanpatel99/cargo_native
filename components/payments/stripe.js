@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Alert, Keyboard,  TouchableWithoutFeedback} from 'react-native';
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
+import { StackActions, NavigationActions } from 'react-navigation';
 import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -30,6 +31,7 @@ export default class Stripe extends React.Component {
     const deliveryFee = navigation.getParam('deliveryFee');
     const GPSStringFormat = navigation.getParam('GPSStringFormat');
     const charge = navigation.getParam('charge');
+    const TotalCartAmount = navigation.getParam('TotalCartAmount');
     
     this.state={
       showAlert: false,
@@ -49,6 +51,8 @@ export default class Stripe extends React.Component {
       BuyerAddress: GPSStringFormat,
       DeliveryFee: deliveryFee,
       TotalFee:charge,
+      TotalCartAmount,
+      GPSStringFormat,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
@@ -102,9 +106,7 @@ export default class Stripe extends React.Component {
 
       } 
       catch (error) {
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
         console.log(error);
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
       }
     }
 
@@ -152,8 +154,6 @@ export default class Stripe extends React.Component {
             console.log('Job Successfully Posted');
           })
       });
-    
-
       console.log('updateProductOnPayment function called');
       var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
       return productStatusReference.update({
@@ -164,7 +164,6 @@ export default class Stripe extends React.Component {
         DeliveryFee: this.state.DeliveryFee,
         TotalFee:  Math.round(this.props.charge),
         BoughtStatus: 'true',
-
       })
     }
 
@@ -188,7 +187,8 @@ export default class Stripe extends React.Component {
         OrderNumber:'',
         StripeReference:'',
         DeliveryTracking:'',
-        Notes:''
+        Notes:'',
+        orderNumber:'99',
       }
   
       //Getting the current time stamp
@@ -202,7 +202,8 @@ export default class Stripe extends React.Component {
 
     //AWS lambda function call
     makeLambdaCal(token) {
-      
+
+      const { navigate } = this.props.navigation;
 
       try{
         this.state.loading =true;
@@ -217,13 +218,12 @@ export default class Stripe extends React.Component {
         },
         body: JSON.stringify({
           'stripeToken': token,
-          'charge': Math.round(this.props.charge*100),
+          'charge': Math.round(this.state.TotalCartAmount*100),
           'buyerName': this.props.BuyerName,
           'title': this.props.Title,
           'sellerAddress': this.props.SellerAddress,
           'email': this.props.Email,
         }),
-
       })
       .then((response) => response.json())
       .then((responseJson) => {
@@ -237,7 +237,18 @@ export default class Stripe extends React.Component {
           console.log('Loading state ' + this.state.loading);
           this.updateProductOnPayment();
           //this.postTransactionOnPayment();
-          this.showAlert();
+          //this.showAlert();
+          console.log("Trying to navigate");
+          //navigate('PaymentSuccessScreen');
+          const resetAction = StackActions.reset({
+            index: 0, // <-- currect active route from actions array
+            //params: {userId: this.state.UID},
+            actions: [
+              NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: {responseMessage: this.state.responseMessage, navigation: this.props.navigation }} ),
+            ],
+          });
+          this.props.navigation.dispatch(resetAction);
+
         }else{
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
@@ -323,7 +334,6 @@ export default class Stripe extends React.Component {
         </View>
         </DismissKeyboard>
       );
-    
   }
 }
 

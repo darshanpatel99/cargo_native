@@ -333,7 +333,6 @@ export default class PostProductScreen extends Component {
       TotalFee:'',
       BoughtStatus:'false',
       OrderNumber: -1,
-
     }
 
     //Getting the current time stamp

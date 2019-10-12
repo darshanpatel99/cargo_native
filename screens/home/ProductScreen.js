@@ -648,10 +648,11 @@ const styles = StyleSheet.create({
   },
   productDesc: {
     fontSize: 15,
-    fontWeight: '100',
+    //fontWeight: '100',
     marginTop:10,
     //marginLeft: 10,
     marginRight: 10,
+    alignItems: 'center',
     paddingHorizontal:Dimensions.get('screen').width*0.03, 
   },
   price: {
