@@ -14,7 +14,6 @@ export default class ProductThumbnail extends Component {
     render() {
         Image.getSize(this.props.url, (width, height) => {imageWidth = width ; imageHeigth = height})
 
-        console.log("WWW " + imageWidth + "  HHH" + imageHeigth);
         return (
                 <Image
                 style={ styles.imageItself }

@@ -6,7 +6,8 @@ export default HelpStack = createStackNavigator({
   Help:{
     screen: HelpScreen,
       navigationOptions: {
-        title: 'Help'
+        //title: 'Help'
+        header: null,
       },
   },
 });
