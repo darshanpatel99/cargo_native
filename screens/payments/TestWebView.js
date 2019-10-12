@@ -25,7 +25,7 @@ export default class MyWeb extends Component {
       }
 
     injectedToHtml() {
-        let injectedData = "document.getElementById('container').innerHTML = '56';";
+        let injectedData = "document.getElementById('container').innerHTML = "+this.props.TotalCartAmount+";";
         return injectedData;
        }
 
