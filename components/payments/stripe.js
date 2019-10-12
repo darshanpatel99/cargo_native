@@ -52,6 +52,7 @@ export default class Stripe extends React.Component {
       DeliveryFee: deliveryFee,
       TotalFee:charge,
       TotalCartAmount,
+      GPSStringFormat,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
@@ -186,7 +187,8 @@ export default class Stripe extends React.Component {
         OrderNumber:'',
         StripeReference:'',
         DeliveryTracking:'',
-        Notes:''
+        Notes:'',
+        orderNumber:'99',
       }
   
       //Getting the current time stamp
@@ -222,7 +224,6 @@ export default class Stripe extends React.Component {
           'sellerAddress': this.props.SellerAddress,
           'email': this.props.Email,
         }),
-
       })
       .then((response) => response.json())
       .then((responseJson) => {
@@ -243,7 +244,7 @@ export default class Stripe extends React.Component {
             index: 0, // <-- currect active route from actions array
             //params: {userId: this.state.UID},
             actions: [
-              NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: { responseMessage: this.state.responseMessage, navigation: this.props.navigation }} ),
+              NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: {responseMessage: this.state.responseMessage, navigation: this.props.navigation }} ),
             ],
           });
           this.props.navigation.dispatch(resetAction);
@@ -333,7 +334,6 @@ export default class Stripe extends React.Component {
         </View>
         </DismissKeyboard>
       );
-    
   }
 }
 

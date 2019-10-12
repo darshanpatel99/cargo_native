@@ -7,6 +7,7 @@ import StripeScreen from '../screens/home/StripeScreen'
 import ImageScreen from '../screens/home/ImageScreen'
 import ChatDetailMessagesScreen from '../screens/message/ChatMessagesScreen'
 import PaymentSuccessScreen from '../screens/home/PaymentSuccessScreen'
+
 export default (HomeStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
@@ -17,9 +18,9 @@ export default (HomeStack = createStackNavigator({
   },
   Details: {
     screen: ProductScreen,
-    navigationOptions: {
-      //title: 'Detail',
-    },
+    // navigationOptions: {
+    //   //title: 'Detail',
+    // },
   },
 
   ChatDetailMessagesScreen:{

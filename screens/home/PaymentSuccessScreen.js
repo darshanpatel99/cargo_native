@@ -11,6 +11,7 @@ export default class paymentSuccess extends React.Component {
   constructor(props) {
     super(props);
   }
+  
 
   navigateToHome(){
     const resetAction = StackActions.reset({
@@ -35,7 +36,7 @@ export default class paymentSuccess extends React.Component {
             We will be in contact with you shortly regarding delivery details. We value your business and hope to see you again.
         </Text>
         <Text style={styles.textContent}>
-            Your order number is <Text style={{fontWeight: 'bold', color: colors.primary}}>007</Text>
+            Your order number is <Text style={{fontWeight: 'bold', color: colors.primary}}>99</Text>
         </Text>
         </View>
 
