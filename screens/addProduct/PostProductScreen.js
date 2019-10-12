@@ -521,77 +521,6 @@ export default class PostProductScreen extends Component {
 
     var finalH = 1 ; 
     var finalW = 1 ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     finalH = changedH.value/difValue;
 
     finalW = changedW.value/difValue;
@@ -1116,14 +1045,14 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Alert"
-            message={'Successfully Posted!!\n'}
+            title="Nice"
+            message={'You just added a post!\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
             showConfirmButton={true}
             cancelText="No, cancel"
-            confirmText="Go to Home !!"
+            confirmText=" OK "
             confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert2();
