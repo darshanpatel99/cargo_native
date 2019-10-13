@@ -154,9 +154,7 @@ class ChatDyanmicFlatList extends React.Component {
                           Currently you don't have any chats!{"\n"} 
                          </Text>
                       </View>
-                    
                   </View>
-                  
                 )
                }
                else{

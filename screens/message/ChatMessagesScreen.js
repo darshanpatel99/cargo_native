@@ -249,8 +249,7 @@ export default class ChatScreen extends React.Component {
   additionalOption(index){
     if (index == 0){
       firebaseChat.deleteChatThread(this.state.senderAndRecieverId);
-      alert('Chat deleted')
-      this.props.navigation.navigate('Chat', {refresh:'refresh'})
+      this.props.navigation.navigate('Chat')
     }
     else if (index == 1){
       alert('Report User')
