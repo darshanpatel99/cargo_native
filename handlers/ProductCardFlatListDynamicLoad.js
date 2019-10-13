@@ -152,6 +152,17 @@ export default class ProductCardFlatListDynamicLoad extends Component {
           return ({ sort: nextProps.filtersAndSorts } && {searchText: nextProps.searchText} && {searchProducts: filteredProducts})
       }
 
+
+
+      /**
+       * Function Description: Loading the next products in the lazy load
+       */
+        loadMore = () => {
+
+          
+
+        }
+
       render() {
         
         if(this.state.isLoading){
@@ -167,6 +178,8 @@ export default class ProductCardFlatListDynamicLoad extends Component {
 
         <FlatList
           data={this.state.searchProducts}
+          onEndReached={this.loadMore}
+          onEndReachedThreshold={0.7}
           renderItem={({item}) =>
           <View >
             <ProductCardComponent prevPage={'Home'} sellerName={item.SellerName} Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures}  category = {item.Category}/>

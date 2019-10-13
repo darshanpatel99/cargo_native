@@ -29,19 +29,19 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.developer.cargo",
+      "bundleIdentifier": "com.developer.cargodev",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take product images.",
         "NSPhotoLibraryUsageDescription": "Please give photos permission to upload product images to your ad"
       },
       "config": {
         "googleSignIn": {
-          "reservedClientId": "com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i"
+          "reservedClientId": "com.googleusercontent.apps.12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5"
         }
       }
     },
     "android": {
-      "package": "com.developer.cargo",
+      "package": "com.developer.cargodev",
       "googleServicesFile": "./google-services.json",
       "versionCode": 4
     },
