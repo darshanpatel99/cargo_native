@@ -5,11 +5,28 @@ import Colors from "../../constants/Colors";
 import { StackActions, NavigationActions } from 'react-navigation';
 import firebaseChat from '../../FirebaseChat';
 import { colors } from 'react-native-elements';
+import firebase from '../../Firebase.js';
 
 export default class paymentSuccess extends React.Component {
 
   constructor(props) {
     super(props);
+    const { navigation } = this.props;
+    const productId= navigation.getParam('productId');
+    //const orderNo = 0;
+    
+    this.state={
+      orderNumber: '',
+    }
+
+    firebase.firestore().collection('Products').doc(productId).get().then((doc)=>{
+      var data = doc.data();
+
+      var orderNo = JSON.stringify(data.OrderNumber);
+      console.log("Order Number:" + orderNo);
+      this.setState({orderNumber: orderNo});
+    });
+   
   }
   
 
@@ -36,7 +53,7 @@ export default class paymentSuccess extends React.Component {
             We will be in contact with you shortly regarding delivery details. We value your business and hope to see you again.
         </Text>
         <Text style={styles.textContent}>
-            Your order number is <Text style={{fontWeight: 'bold', color: colors.primary}}>99</Text>
+            Your order number is <Text style={{fontWeight: 'bold', color: colors.primary}}>{this.state.orderNumber}</Text>
         </Text>
         </View>
 

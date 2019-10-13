@@ -53,6 +53,7 @@ export default class Stripe extends React.Component {
       TotalFee:charge,
       TotalCartAmount,
       GPSStringFormat,
+      orderNumber:-1,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
@@ -152,6 +153,19 @@ export default class Stripe extends React.Component {
             var productStatusReferenceTemp = firebase.firestore().collection('Products').doc(this.state.productID);
             productStatusReferenceTemp.update({OrderNumber: newOrderNumber});
             console.log('Job Successfully Posted');
+            //change the order number state
+            this.setState({orderNumber:newOrderNumber});
+
+
+            const resetAction = StackActions.reset({
+              index: 0, // <-- currect active route from actions array
+              //params: {userId: this.state.UID},
+              actions: [
+                NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: {responseMessage: this.state.responseMessage, navigation: this.props.navigation, productId:this.state.productID }} ),
+              ],
+            });
+            this.props.navigation.dispatch(resetAction);
+
           })
       });
       console.log('updateProductOnPayment function called');
@@ -240,14 +254,7 @@ export default class Stripe extends React.Component {
           //this.showAlert();
           console.log("Trying to navigate");
           //navigate('PaymentSuccessScreen');
-          const resetAction = StackActions.reset({
-            index: 0, // <-- currect active route from actions array
-            //params: {userId: this.state.UID},
-            actions: [
-              NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: {responseMessage: this.state.responseMessage, navigation: this.props.navigation }} ),
-            ],
-          });
-          this.props.navigation.dispatch(resetAction);
+      
 
         }else{
           this.setState({ loading: false });
