@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { WebView, View, Text, Button} from 'react-native';
-import PaymentPage from './BraintreePayments.html';
-
-
+import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class MyWeb extends Component {
 
@@ -26,7 +24,7 @@ export default class MyWeb extends Component {
       }
 
     injectedToHtml() {
-        let injectedData = "document.getElementById('container').innerHTML = '56';";
+        let injectedData = "document.getElementById('container').innerHTML = "+this.props.TotalCartAmount+";";
         return injectedData;
        }
 
@@ -36,11 +34,20 @@ export default class MyWeb extends Component {
         //     console.log(data.SyntheticEvent);
         //     console.log(data)
         // }
+        const { navigate } = this.props.navigation;
 
         console.log(data.nativeEvent.data);
         if(data.nativeEvent.data == "success" ){
             console.log(data.nativeEvent.data)
-            this.setState({webviewState: false})
+            //this.setState({webviewState: false})
+            const resetAction = StackActions.reset({
+                index: 0, // <-- currect active route from actions array
+                //params: {userId: this.state.UID},
+                actions: [
+                  NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: { responseMessage: this.state.responseMessage, navigation: this.props.navigation }} ),
+                ],
+              });
+              this.props.navigation.dispatch(resetAction);
         } else if(data.nativeEvent.data == 'failed') {
             this.setState({responseMessage: 'Please try again'});
             this.setState({tryAgainButton: true})
@@ -55,24 +62,26 @@ export default class MyWeb extends Component {
 
                 <View style={styles.container}>
 
-<Text>HELLO THETE</Text>
                 <WebView
-                style={styles.container}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                injectedJavaScript={this.injectedToHtml()}
-                onNavigationStateChange={this._onNavigationStateChange.bind(this)}
-                useWebKit={true}
-                cacheEnabled={false}
-                onMessage={this.onMessage}
-                source={{ uri: 'http://localhost:3000/'  }}>
+                    style={styles.container}
+                    javaScriptEnabled={true}
+                    domStorageEnabled={true}
+                    injectedJavaScript={this.injectedToHtml()}
+                    onNavigationStateChange={this._onNavigationStateChange.bind(this)}
+                    useWebKit={true}
+                    cacheEnabled={false}
+                    onMessage={this.onMessage}
+                    source={{ uri: 'http://35.232.190.65:3000/'  }}>
                 </WebView>
 
                 </View>
             );
         } else {
             return (
-            <Button title= {this.state.responseMessage} onPress = { () => { this.setState({webviewState: true}) }}/>
+                <View>
+                    <Text>Thanks for choosing CarGo</Text>
+                    <Text>You will be notified before delivery</Text>
+                </View>
             );
         }
     }

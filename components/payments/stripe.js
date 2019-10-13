@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Alert, Keyboard,  TouchableWithoutFeedback} from 'react-native';
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
+import { StackActions, NavigationActions } from 'react-navigation';
 import { Button } from 'native-base';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -16,10 +17,8 @@ const DismissKeyboard = ({ children }) => (
     {children}
   </TouchableWithoutFeedback>
 );
-var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');
 
-
-var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');
+var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 
 export default class Stripe extends React.Component {
     
@@ -32,6 +31,7 @@ export default class Stripe extends React.Component {
     const deliveryFee = navigation.getParam('deliveryFee');
     const GPSStringFormat = navigation.getParam('GPSStringFormat');
     const charge = navigation.getParam('charge');
+    const TotalCartAmount = navigation.getParam('TotalCartAmount');
     
     this.state={
       showAlert: false,
@@ -51,6 +51,9 @@ export default class Stripe extends React.Component {
       BuyerAddress: GPSStringFormat,
       DeliveryFee: deliveryFee,
       TotalFee:charge,
+      TotalCartAmount,
+      GPSStringFormat,
+      orderNumber:-1,
     }
     this.sendTokenToStripe = this.sendTokenToStripe.bind(this);
     this.onPayment = this.onPayment.bind(this);
@@ -104,9 +107,7 @@ export default class Stripe extends React.Component {
 
       } 
       catch (error) {
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
         console.log(error);
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
       }
     }
 
@@ -152,10 +153,21 @@ export default class Stripe extends React.Component {
             var productStatusReferenceTemp = firebase.firestore().collection('Products').doc(this.state.productID);
             productStatusReferenceTemp.update({OrderNumber: newOrderNumber});
             console.log('Job Successfully Posted');
+            //change the order number state
+            this.setState({orderNumber:newOrderNumber});
+
+
+            const resetAction = StackActions.reset({
+              index: 0, // <-- currect active route from actions array
+              //params: {userId: this.state.UID},
+              actions: [
+                NavigationActions.navigate({ routeName: 'PaymentSuccessScreen', params: {responseMessage: this.state.responseMessage, navigation: this.props.navigation, productId:this.state.productID }} ),
+              ],
+            });
+            this.props.navigation.dispatch(resetAction);
+
           })
       });
-    
-
       console.log('updateProductOnPayment function called');
       var productStatusReference = firebase.firestore().collection('Products').doc(this.state.productID);
       return productStatusReference.update({
@@ -166,7 +178,6 @@ export default class Stripe extends React.Component {
         DeliveryFee: this.state.DeliveryFee,
         TotalFee:  Math.round(this.props.charge),
         BoughtStatus: 'true',
-
       })
     }
 
@@ -190,7 +201,8 @@ export default class Stripe extends React.Component {
         OrderNumber:'',
         StripeReference:'',
         DeliveryTracking:'',
-        Notes:''
+        Notes:'',
+        orderNumber:'99',
       }
   
       //Getting the current time stamp
@@ -204,13 +216,14 @@ export default class Stripe extends React.Component {
 
     //AWS lambda function call
     makeLambdaCal(token) {
-      
+
+      const { navigate } = this.props.navigation;
 
       try{
         this.state.loading =true;
         console.log('Loading state before ' + this.state.loading);
 
-      fetch('https://5nhq1a2ccj.execute-api.us-west-1.amazonaws.com/dev/processStripePayment', {
+      fetch('https://7w745rxni6.execute-api.us-west-1.amazonaws.com/development', {
         method: 'POST',
         headers: {
           Accept: '*/*',
@@ -219,26 +232,30 @@ export default class Stripe extends React.Component {
         },
         body: JSON.stringify({
           'stripeToken': token,
-          'charge': Math.round(this.props.charge*100),
+          'charge': Math.round(this.state.TotalCartAmount*100),
           'buyerName': this.props.BuyerName,
           'title': this.props.Title,
           'sellerAddress': this.props.SellerAddress,
           'email': this.props.Email,
         }),
-
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log('response JSon ' + JSON.stringify(responseJson))
+        console.log('response JSon ' + responseJson.body)
+        //alert(responseJson.body)
         // this.state.loading = false; 
-        this.state.responseJson = responseJson;
+        this.state.responseJson = responseJson.body;
 
         if(this.state.responseJson == 'Payment Successfull'){
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
           this.updateProductOnPayment();
           //this.postTransactionOnPayment();
-          this.showAlert();
+          //this.showAlert();
+          console.log("Trying to navigate");
+          //navigate('PaymentSuccessScreen');
+      
+
         }else{
           this.setState({ loading: false });
           console.log('Loading state ' + this.state.loading);
@@ -324,7 +341,6 @@ export default class Stripe extends React.Component {
         </View>
         </DismissKeyboard>
       );
-    
   }
 }
 

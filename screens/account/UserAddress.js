@@ -1,7 +1,7 @@
 import React from 'react';
 import {  Platform,   KeyboardAvoidingView,View, StyleSheet, Dimensions, TextInput,Keyboard,TouchableWithoutFeedback, } from 'react-native';
 import { Header } from 'react-navigation-stack';
-import { StackActions, NavigationActions } from 'react-navigation';
+import {StackActions, NavigationActions} from 'react-navigation';
 import Constants from 'expo-constants';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import firebase from '../../Firebase.js';

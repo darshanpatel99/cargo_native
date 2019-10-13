@@ -562,8 +562,8 @@ export class ProductScreen extends Component {
             showProgress={false}
             title="   Alert   "
             message="Please login first!"
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={true}
             //showCancelButton={true}
             showConfirmButton={true}
             cancelText="No, cancel"
@@ -617,7 +617,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     alignItems: 'flex-start',
-    marginHorizontal:Dimensions.get('screen').width*0.01,
+    paddingTop:Dimensions.get('screen').height*0.01,
+    paddingHorizontal:Dimensions.get('screen').width*0.03,
     flexWrap: 'wrap',
     flex: 0.7,
   },
@@ -627,6 +628,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flex:0.3,
     textAlign:'right',
+    paddingHorizontal:Dimensions.get('screen').width*0.03,
+    paddingTop:Dimensions.get('screen').height*0.01,
   },
   nameAndPrice: {
     flex: 1,
@@ -645,10 +648,12 @@ const styles = StyleSheet.create({
   },
   productDesc: {
     fontSize: 15,
-    fontWeight: '100',
+    //fontWeight: '100',
     marginTop:10,
-    marginLeft: 10,
-    marginRight: 10 
+    //marginLeft: 10,
+    marginRight: 10,
+    alignItems: 'center',
+    paddingHorizontal:Dimensions.get('screen').width*0.03, 
   },
   price: {
     fontSize: 18,
@@ -697,6 +702,7 @@ const styles = StyleSheet.create({
   reportAd: {
     color: Colors.primary,
     alignSelf: 'flex-end',
+    paddingHorizontal:Dimensions.get('screen').width*0.03,
   },
   buttonLarge: {
     flex: 0,

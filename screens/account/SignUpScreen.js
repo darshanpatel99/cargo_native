@@ -715,7 +715,7 @@ deleteUserFromAuthDatabase() {
       FirstName : this.state.firstName,
       LastName : this.state.lastname,
       PhoneNumber : this.state.phoneNumber,
-      ProfilePicture : 'https://firebasestorage.googleapis.com/v0/b/cargo-488e8.appspot.com/o/UserImages%2Favatar.png?alt=media&token=91ea9f59-11a8-4928-9963-0235a0cd5201',
+      ProfilePicture :'',
       SoldProducts : [],
       Street : '',
       Address:'',

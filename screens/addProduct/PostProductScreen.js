@@ -47,6 +47,9 @@ let width = Dimensions.get('window').width;
 
 let checkGoogleAddress= '';
 
+
+
+
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -60,6 +63,7 @@ export default class PostProductScreen extends Component {
       price : "",
       thumbnail : " ",
       image: [],
+      imageSizes:[],
       downloadURLs : [],
       User:null,
       Category: 0,
@@ -203,19 +207,20 @@ export default class PostProductScreen extends Component {
 
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
-    
+      var arraySizes = this.state.imageSizes;
       var array = this.state.image; //getting the uri array
       var first = this.state.firstTimeOnly;
       console.log("Total number of uris we have"+ array.length)
       this.setState({ loading: true });
-      array.forEach(async (element) => {
+      array.forEach(async (element,index) => {
 
+        console.log("b " + arraySizes[index].bigSide + " s " + arraySizes[index].smallSide);
    
         if(first){
 
           first=false;
           this.setState({firstTimeOnly:false});
-          await this.uploadThumbnailToFirebase(element)
+          await this.uploadThumbnailToFirebase(element, arraySizes[index])
           .then(()=>{   
             
             console.log('Thumbnail got uploaded');
@@ -328,7 +333,6 @@ export default class PostProductScreen extends Component {
       TotalFee:'',
       BoughtStatus:'false',
       OrderNumber: -1,
-
     }
 
     //Getting the current time stamp
@@ -405,7 +409,8 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]),
+        imageSizes : this.state.imageSizes.concat([this.sizeOfImageObj(result)])
       });
     }
   };
@@ -429,25 +434,102 @@ export default class PostProductScreen extends Component {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2      
     });
+    console.log("res is below");
     
-    console.log(result);
 
+    console.log("W2 " + result.width + "  H2" + result.height);
+    console.log(result);
+    
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]),
+        imageSizes : this.state.imageSizes.concat([this.sizeOfImageObj(result)])
       });
     }
   };
 
+  sizeOfImageObj = (result) =>{
 
+    var imageWidth = result.width;
+    var imageHeigth = result.height;
+    var biggerSide =0;
+    var smallerSide = 0 ;
+
+    if(imageHeigth>imageWidth){
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+    if(imageHeigth<imageWidth){
+      biggerSide = imageWidth;
+      smallerSide = imageHeigth;
+    }
+    if(imageHeigth == imageWidth)
+    {
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+
+    var localSizeObject = {
+      'height' : imageHeigth,
+      'width' : imageWidth,
+    }
+
+    return localSizeObject;
+  }
 
   //Uploading the thumbnail to the Firebase Storage
-  uploadThumbnailToFirebase = async (uri)=>{
+  uploadThumbnailToFirebase = async (uri, localSizeObject)=>{
     console.log('inside the upload thumbnial function');
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 400){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 400){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/400);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/400) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + "  " + finalH)
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize:{width:400, height:400} }],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -963,14 +1045,14 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Alert"
-            message={'Successfully Posted!!\n'}
+            title="Nice"
+            message={'You just added a post!\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
             showConfirmButton={true}
             cancelText="No, cancel"
-            confirmText="Go to Home !!"
+            confirmText=" OK "
             confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert2();
