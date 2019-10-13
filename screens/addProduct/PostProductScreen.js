@@ -83,6 +83,7 @@ export default class PostProductScreen extends Component {
       sellerName:'',
       uploadCounter:0,
       loading: false,
+      completeStringAddress:'',
     }
 
     this.categoryRemover = React.createRef();
@@ -259,7 +260,8 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    let completeStringAddress = this.state.completeStringAddress;
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && this.state.completeStringAddress != '')  {
     await this.uploadImageData();
     }
     else {
@@ -276,9 +278,9 @@ export default class PostProductScreen extends Component {
         })
       }
   
-      console.log(address)
+      console.log(completeStringAddress)
   
-      if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      if( completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
         this.setState({
           showAddressAlert:true,
         })
@@ -301,6 +303,7 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
+    let completeStringAddress = this.state.completeStringAddress;
 
     console.log('length of the price' + priceLength.length);
 
@@ -371,9 +374,9 @@ export default class PostProductScreen extends Component {
       })
     }
 
-    console.log(address)
+    console.log(completeStringAddress)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    if(completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         showAddressAlert:true,
       })
@@ -969,6 +972,8 @@ export default class PostProductScreen extends Component {
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
                 this.setState({googleAddressEmpty: 'Added stuff'})
+                let completeStringAddress= JSON.stringify(details.formatted_address)
+                this.setState({completeStringAddress})
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}

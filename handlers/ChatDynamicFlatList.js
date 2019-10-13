@@ -26,7 +26,6 @@ class ChatDyanmicFlatList extends React.Component {
 
     }
 
-    
 
     componentWillUnmount() {
         firebaseChat.refOff();
@@ -61,6 +60,12 @@ class ChatDyanmicFlatList extends React.Component {
     }
 
     componentDidMount(){
+
+        // const {navigation} = this.props;
+        // this.focusListener = navigation.addListener('didFocus', () => {
+        //     refreshStatus = navigation.getParam('refresh')
+        // });
+
         this.setState({ loading: true });
         firebase.database().ref('Chat').on('value', snapshot => {
             this.setState({ loading: false });
@@ -146,12 +151,10 @@ class ChatDyanmicFlatList extends React.Component {
                       <View style={styles.noChatBox}>
                           <Text style={styles.noChatText}>
                           {<Text style={styles.heading}>Hey!</Text>}  {<Icon type ="MaterialCommunityIcons" name ="human-greeting" style={{fontSize:30, color: '#FBA21C'}}/>} {"\n"}
-                          You don't have any chats currently!!!{"\n"} 
+                          Currently you don't have any chats!{"\n"} 
                          </Text>
                       </View>
-                    
                   </View>
-                  
                 )
                }
                else{

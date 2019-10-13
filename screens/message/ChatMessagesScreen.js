@@ -21,7 +21,10 @@ export default class ChatScreen extends React.Component {
 
 
     if(previousScreen == 'Details') {
-
+      //alert('Came from Details screen')
+      //const completeChatThread = navigation.getParam('completeChatThread')
+      //console.log(JSON.stringify(completeChatThread.reciverId))
+      // var reciverId = completeChatThread.reciverId;
       if(owner < firebaseChat.uid) {
         chatDocumentReferenceId = owner+firebaseChat.uid
       } else {
@@ -35,8 +38,7 @@ export default class ChatScreen extends React.Component {
       .get()
       .then(querySnapshot => {
         console.log('profile image querysnap -->')
-        c
-        onsole.log(querySnapshot.docs[0].data().ProfilePicture)
+        console.log(querySnapshot.docs[0].data().ProfilePicture)
         this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
       });
       
