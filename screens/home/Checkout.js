@@ -20,13 +20,14 @@ export default class Checkout extends Component {
   constructor(props) {
     super(props);
     const { navigation } = this.props;
-    const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount')) ;
+    const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount'));
     const DeliveryCharge = parseFloat(navigation.getParam('DeliveryCharge'));
     const userId = navigation.getParam('userID');
     const sellerAddress = navigation.getParam('SellerAddress');
     const productTitle = navigation.getParam('Title');
-    const GPSStringFormat = navigation.getParam('GPSLocation')
-    const productID = navigation.getParam('productID')
+    const GPSStringFormat = navigation.getParam('GPSLocation');
+    const productID = navigation.getParam('productID');
+
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
@@ -82,9 +83,7 @@ export default class Checkout extends Component {
     .catch(err => {
       console.log('Error getting document', err);
     });
-  
     this.unsubscribe = null;
-
   }
   googleAddressCallback = (latitude, longitude) => {
     console.log('Product SellerAddress ' + this.state.sellerAddress )
@@ -106,11 +105,6 @@ export default class Checkout extends Component {
       .then((response) => response.json())
       .then((responseJson) => {
         //return responseJson.movies;
-        console.log(productLocationLatitude);
-        console.log(productLocationLongitude)
-        console.log('&&&&&&&&&&&&&&&&&')
-        console.log(responseJson.rows[0].elements[0].distance.value);
-
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
         if(distanceInMeters <= 5000) {
@@ -151,7 +145,6 @@ export default class Checkout extends Component {
         totalAmount: amount,
       })
     }); 
-
   }
 
   componentWillUnmount() {
@@ -254,11 +247,11 @@ export default class Checkout extends Component {
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
                 onPress={(data, details = null) => {
-                console.log(Object.values(details.geometry.location))
+                console.log('******************************' + JSON.stringify(details.formatted_address))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
-                this.setState({GPSStringFormat: (Object.values(details.geometry.location))});
+                this.setState({GPSStringFormat: JSON.stringify(details.formatted_address)});
                 this._getLocationAsync(lat, long)
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
@@ -270,9 +263,6 @@ export default class Checkout extends Component {
                 getDefaultValue={() => {
                     return this.state.GPSStringFormat; // text input default value
                 }}
-
- 
-
                 query={{
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
@@ -355,15 +345,12 @@ export default class Checkout extends Component {
               maxValue={99}
               valueType='integer'
               rounded 
-              textColor='#B0228C' 
+              textColor='#000000' 
               iconStyle={{ color: 'white' }} 
-              rightButtonBackgroundColor='#EA3788' 
-              leftButtonBackgroundColor='#E56B70'/>
+              rightButtonBackgroundColor='#0000cc' 
+              leftButtonBackgroundColor='#0080ff'/>
 
             </Item>
-
-            
-
           </View>
           
           </KeyboardAvoidingView>

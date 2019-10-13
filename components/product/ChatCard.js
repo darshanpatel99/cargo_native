@@ -11,12 +11,14 @@ class ChatCard extends React.Component {
     }
 
     render() {
+        console.log(this.props.profPic + " is the image");
+        Image.getSize(this.props.profPic, (width , height) => {console.log("width is " + width + "  heigth" + height)})
         return (
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
                 <View style = {styles.thumbnailContainer}>
-                    <ProductThumbnail url = {'https://firebasestorage.googleapis.com/v0/b/cargo-488e8.appspot.com/o/UserImages%2Favatar.png?alt=media&token=91ea9f59-11a8-4928-9963-0235a0cd5201'}/>    
+                    <ProductThumbnail url = {this.props.profPic}/>    
                     {/* <Image style ={{width:50,height:50}}
                     //'https://firebasestorage.googleapis.com/v0/b/cargo-488e8.appspot.com/o/UserImages%2Favatar.png?alt=media&token=91ea9f59-11a8-4928-9963-0235a0cd5201'
                     //https://cdn.pixabay.com/photo/2016/04/10/21/34/woman-1320810__340.jpg
@@ -73,7 +75,7 @@ const styles = {
         height:Dimensions.get('window').width*0.1,
         // width:25,
         // height:25,
-
+        borderRadius:50,
         elevation:8,
         shadowColor: 'grey',
         shadowOpacity: 0.3,
