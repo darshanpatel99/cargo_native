@@ -143,13 +143,16 @@ async facebookLogin() {
 async googleLogin(){
 
   try{
+  
+
+
     //Configuration File
-    const config ={ 
+    const configDev ={ 
         expoClientId:'12592995924-cmat1v9r7i2muq4j14ilfjcbbdcftod7.apps.googleusercontent.com', // cargo-dev
         iosClientId:'12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5.apps.googleusercontent.com', //cargo-dev
-        androidClientId:'12592995924-oihqp1oe39rji359jaee4hj99ch2u5iq.apps.googleusercontent.com', //cargo-dev
-        iosStandaloneAppClientId: '572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
-        androidStandaloneAppClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
+        androidClientId:'12592995924-6sul322o56a88e3cs0o6627jlfq22l88.apps.googleusercontent.com', //cargo-dev
+        iosStandaloneAppClientId: '12592995924-kcoo3s6sgqhkh46ggap62e36dgjhbq4o.apps.googleusercontent.com',//cargo-dev
+        androidStandaloneAppClientId:'12592995924-c6jjfdudjgk0t8n3pumj2obti504edrv.apps.googleusercontent.com', //cargo-dev
         scopes:['profile', 'email'],
         redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google` // this is the LINE 
 
@@ -161,7 +164,7 @@ async googleLogin(){
     //this.setState({ loading: false });
    
 
-    const {type, accessToken} = await Google.logInAsync(config);
+    const {type, accessToken} = await Google.logInAsync(configDev);
 
     if(type=='success'){
 
