@@ -1050,8 +1050,8 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Nice"
-            message={'You just added a post!\n'}
+            title="Thank you"
+            message={'Your add has been successfully submitted\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
