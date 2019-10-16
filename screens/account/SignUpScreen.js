@@ -213,7 +213,6 @@ emailSignUp = async (email, password)=>{
       
       user.sendEmailVerification().then((result)=>{
         console.log('email verification sent');
-        alert('email verification sent');
 
         //set the overlay parameter to tru
         this.setState({showOverlay:true});
@@ -623,7 +622,6 @@ deleteUserFromAuthDatabase() {
 
   user.delete().then(function() {
     // User deleted.
-    alert('User deleted')
   }, function(error) {
     // An error happened.
     console.log(error)
