@@ -7,6 +7,7 @@ import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { FontAwesome} from '@expo/vector-icons';
 
 
@@ -250,8 +251,65 @@ onAuthStateChanged = (user) => {
     })
   }
 
-  uploadImageToFirebase = async (uri, imageName) => {
-    const response = await fetch(uri);
+  uploadImageToFirebase = async (uri, localSizeObject) => {
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 400){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 400){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/400);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/400) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + "  " + finalH)
+
+
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize:{width:finalW, height:finalH} }],
+      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+    )
+
+      console.log("Hey I  am the ManipResult:  "+ manipResult.uri);
+
+    const response = await fetch(manipResult.uri);
     const blob = await response.blob();
     console.log('Inside upload Image to Firebase')
     var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
@@ -343,14 +401,18 @@ onAuthStateChanged = (user) => {
       quality:0.1,      
     });
 
+    console.log("W2 " + result.width + "  H2" + result.height);
+    console.log(result);
+
     this.setState({
       newPicture:[this.state.data.ProfilePicture],
+      
     });
 
     if(!result.cancelled){
       console.log(result.uri);   
     
-    await this.uploadImageToFirebase(result.uri, uuid.v1())
+    await this.uploadImageToFirebase(result.uri,  this.sizeOfImageObj(result))
         .then(() => {
           console.log('Success' + uuid.v1());
             
@@ -360,6 +422,35 @@ onAuthStateChanged = (user) => {
           console.log(error);
         });
       }
+  }
+
+  sizeOfImageObj = (result) =>{
+
+    var imageWidth = result.width;
+    var imageHeigth = result.height;
+    var biggerSide =0;
+    var smallerSide = 0 ;
+
+    if(imageHeigth>imageWidth){
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+    if(imageHeigth<imageWidth){
+      biggerSide = imageWidth;
+      smallerSide = imageHeigth;
+    }
+    if(imageHeigth == imageWidth)
+    {
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+
+    var localSizeObject = {
+      'height' : imageHeigth,
+      'width' : imageWidth,
+    }
+
+    return localSizeObject;
   }
 
   changeCurrentFolio =()=>{
