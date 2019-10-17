@@ -35,7 +35,7 @@ export default class SignUpScreen extends Component {
     //Following is the state of this  component
     this.state ={
       password:'',
-      prevPage:'',
+      prevPage:'Signup',
       phoneNumber:'',
       remove:true,
       buttonOn:false,           
@@ -89,7 +89,7 @@ export default class SignUpScreen extends Component {
       }
     }
     else{
-      this.setState({ User: null});
+      this.setState({ user: null});
     }
   };
 
@@ -220,39 +220,6 @@ emailSignUp = async (email, password)=>{
       });
 
       //See if the email is verified or not
-
-
-    //   if(tempUID!=null){
-    //     console.log("THIS is UUID =-=-=> " + tempUID)
-    //     this.setState({UID:tempUID});
-    //     try{
-    //       //verify user is signed up or not
-    //       var userUID = this.state.UID;
-    //       console.log('The uid that is going to be verified: ' + userUID);
-      
-            
-    //       this.firebaseRef.doc(userUID)
-    //         .get()
-    //         .then(docSnapshot => {
-    //           console.log('1--inside firebase snap')
-    //           if(docSnapshot.exists){
-    //             console.log('2--inside firebase snap')
-    //             //through them to the account screen and pass the  user uid  so that we can only get details for the current user
-    //             this.props.navigation.navigate('Account', {userid:this.state.UID});
-    //           }
-    //           else{
-    //             console.log('User is not sign up');
-    //             //add user to the database using the finishFunc
-    //             this.finishFunc();
-            
-    //           }
-    //         });
-    //       }
-    //       catch (e) {
-    //         alert('Following error occured during checking whether user exists or not:  ' + e)
-    //         console.warn(e);
-    //       } 
-    // }
     });
   }catch (error){
     alert(error.toString(error));
@@ -299,8 +266,8 @@ emailLogin = async (email, password) =>{
                 console.log('User is not sign up');
                 //if the user doesnot exist through them to the signup screen
 
-                this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'});
-
+                //this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'});*******************
+                this.showAlert();
               }
             });
           }
@@ -311,8 +278,9 @@ emailLogin = async (email, password) =>{
     }
     });
   }catch (error){
-    alert(error.toString(error));
-    console.log(erro.toString(error));
+    //alert(error.toString(error));
+    alert('Invaid email or password\n Please try again!')
+    console.log(error.toString(error));
   }
 
 }
@@ -622,6 +590,7 @@ deleteUserFromAuthDatabase() {
 
   user.delete().then(function() {
     // User deleted.
+    console.log('Account Deleted')
   }, function(error) {
     // An error happened.
     console.log(error)
@@ -768,83 +737,8 @@ deleteUserFromAuthDatabase() {
 
     if(this.state.showOverlay==false){
     //if the prevPage is SignUp screen than ask for first name and last name 
-    if(prevPage=='SignUp'){
+    if(prevPage=='Login'){
 
-    //Returning the UI elements on this page
-    return (
-
-      <DismissKeyboard>
-        
-      <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
-        <Spinner
-            visible={this.state.loading}
-            textContent={'Loading...'}
-            textStyle={styles.spinnerTextStyle}
-          />
-
-        <View style={styles.container}>
-              <TextInput
-                  placeholder= 'First Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { firstName=> this.setState({firstName:firstName})}
-                  />
-          </View>
-
-          <View style={styles.container}>
-              <TextInput
-                  placeholder= 'Last Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { lastName=> this.setState({lastName:lastName})}
-                  />
-          </View>
-
-
-        <View style={styles.container}>
-            <TextInput
-                placeholder= 'Email'
-                underlineColorAndroid="transparent"
-                autoCapitalize='none'
-                autoCorrect={false}
-                style={styles.TextInputStyle}
-                onChangeText = {email => this.setState({email:email.trim()})}
-                />
-        </View>
-
-          <Item style={styles.container}>                
-                  <TextInput style={styles.TextInputStyle}
-                        secureTextEntry={true}
-                        placeholder= 'Password'
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        underlineColorAndroid="transparent"  
-                        onChangeText={password=> this.setState({password:password})} 
-                    />                        
-          </Item>
-
-
-          <Button large-green style={styles.button} onPress={this.emailSignUpAsync}>
-              <Text style={styles.lightText} >{prevPage}</Text>
-          </Button>
-                
-        <Text>Or</Text>
-
-          <Button large-green style={styles.button}  onPress ={this.googleLoginAsync}>
-            <Ionicons
-              size={30}
-              color="#fff"
-              style={styles.icon}
-              name='logo-google'
-            />
-            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google {prevPage}</Text>
-          </Button>
-      </KeyboardAvoidingView>
-      </DismissKeyboard>
-    );
-    }else{
       return(
 
         <DismissKeyboard>
@@ -903,10 +797,87 @@ deleteUserFromAuthDatabase() {
     </View>
     </DismissKeyboard>
     );
-      
+
+    
+    }else{
+
+      //Returning the UI elements on this page
+    return (
+
+      <DismissKeyboard>
+        
+      <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
+        <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
+
+        <View style={styles.container}>
+              <TextInput
+                  placeholder= 'First Name'
+                  underlineColorAndroid="transparent"
+                  autoCorrect={false}
+                  style={styles.TextInputStyle}
+                  onChangeText = { firstName=> this.setState({firstName:firstName})}
+                  />
+          </View>
+
+          <View style={styles.container}>
+              <TextInput
+                  placeholder= 'Last Name'
+                  underlineColorAndroid="transparent"
+                  autoCorrect={false}
+                  style={styles.TextInputStyle}
+                  onChangeText = { lastName=> this.setState({lastName:lastName})}
+                  />
+          </View>
+
+
+        <View style={styles.container}>
+            <TextInput
+                placeholder= 'Email'
+                underlineColorAndroid="transparent"
+                autoCapitalize='none'
+                autoCorrect={false}
+                style={styles.TextInputStyle}
+                onChangeText = {email => this.setState({email:email.trim()})}
+                />
+        </View>
+
+          <Item style={styles.container}>                
+                  <TextInput style={styles.TextInputStyle}
+                        secureTextEntry={true}
+                        placeholder= 'Password'
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        underlineColorAndroid="transparent"  
+                        onChangeText={password=> this.setState({password:password})} 
+                    />                        
+          </Item>
+
+
+          <Button large-green style={styles.button} onPress={this.emailSignUpAsync}>
+              <Text style={styles.lightText} >Signup</Text>
+          </Button>
+                
+        <Text>Or</Text>
+
+          <Button large-green style={styles.button}  onPress ={this.googleLoginAsync}>
+            <Ionicons
+              size={30}
+              color="#fff"
+              style={styles.icon}
+              name='logo-google'
+            />
+            <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google Signup</Text>
+          </Button>
+      </KeyboardAvoidingView>
+      </DismissKeyboard>
+    );
     }
 
-      }
+    }
     
     else{
       console.log('Showing the awesomeAlert');
@@ -923,14 +894,14 @@ deleteUserFromAuthDatabase() {
             closeOnHardwareBackPress={false}
             showCancelButton={true}
             showConfirmButton={true}
-            cancelText="No, cancel"
+            cancelText="Edit email"
             confirmText="SignIn!!"
             confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.setState({user:null});
               this.hideAlert();
               this.deleteUserFromAuthDatabase()
-              this.props.navigation.navigate('Account')
+              this.props.navigation.navigate('SignUp')
 
             }}
             onConfirmPressed={() => {
