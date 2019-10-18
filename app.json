@@ -22,7 +22,7 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "enabled": false 
     },
     "assetBundlePatterns": [
       "**/*"
@@ -43,7 +43,7 @@
     "android": {
       "package": "com.developer.cargodev",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 4
+      "versionCode": 5
     },
     "hooks": {
       "postPublish": [
