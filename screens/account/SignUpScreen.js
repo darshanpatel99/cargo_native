@@ -203,31 +203,47 @@ emailSignUp = async (email, password)=>{
   //saving email and password as the state
   this.setState({email:email, password:password});
   try{
-    await firebase.auth().createUserWithEmailAndPassword(email,password).then((result)=>{
-      console.log('Done creating the credentials');
-      
-      var user = result.user;
-      var uid = user.uid;
-      tempUID = uid;
-      console.log('Your user get the following user uid: '+ uid);
-      this.setState({UID:uid, user:user});
+    firebase.auth().fetchSignInMethodsForEmail(email).then(async (result)=>{
+      console.log("I am aliiiiiiiiiivvvvvvveeee");
+    if(result.length > 0){  
+      console.log("I am there");
+      this.setState({showOverlay:true});
+      var user = firebase.auth().currentUser;
+      await user.delete();
+      await console.log(this.state.showAlert);
 
-      //testing to send the email verification email
-      
-      user.sendEmailVerification().then((result)=>{
-        console.log('email verification sent');
-
-        //set the overlay parameter to tru
-        this.setState({showOverlay:true});
-
+    }
+    else{
+      await firebase.auth().createUserWithEmailAndPassword(email,password).then(async(result)=>{
+        console.log('Done creating the credentials');
+        
+        var user = result.user;
+        var uid = user.uid;
+        tempUID = uid;
+        console.log('Your user get the following user uid: '+ uid);
+        this.setState({UID:uid, user:user});
+  
+        //testing to send the email verification email
+        
+        user.sendEmailVerification().then((result)=>{
+          console.log('email verification sent');
+  
+          //set the overlay parameter to tru
+          this.setState({showOverlay:true});
+  
+        });
+        //See if the email is verified or not
       });
 
-      //See if the email is verified or not
+    }
+    }).catch((error)=>{
+      console.log("We got the following error: ", error);
     });
   }catch (error){
     alert(error.toString(error));
     console.log(error.toString(error));
   }
+  
 }
 
 //sigUp with Email and password
@@ -897,7 +913,7 @@ deleteUserFromAuthDatabase() {
             closeOnHardwareBackPress={false}
             showCancelButton={true}
             showConfirmButton={true}
-            cancelText="Edit email"
+            cancelText="Resend email"
             confirmText="SignIn!!"
             confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
