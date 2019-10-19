@@ -90,7 +90,7 @@ export default class UserAddress extends React.Component {
         index: 0,
         actions: [
           NavigationActions.navigate({
-            routeName: 'Account',
+            routeName: 'Account', 
           }),
         ],
       }))
