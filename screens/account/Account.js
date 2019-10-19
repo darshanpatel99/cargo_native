@@ -13,6 +13,8 @@ import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
 import {Notifications} from 'expo';
 import Spinner from 'react-native-loading-spinner-overlay';
+import AddUser from '../../functions/AddUser';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 let storageRef;
 
@@ -27,6 +29,10 @@ export default class AccountScreen extends React.Component {
   constructor(props){
     super(props);
     storageRef = firebase.storage().ref();
+
+    //creating the firebase reference for the users collection
+    this.firebaseRef = firebase.firestore().collection('Users');
+
     this.state = {
     data: {},
     name:'',
@@ -64,6 +70,7 @@ export default class AccountScreen extends React.Component {
     showOverlay: false,
     deviceNotificationToken: '',
     expoNotificationToken:'',
+    firstTimeGoogleSignUp:true,
     }
 
     //checking the current user and setting uid
@@ -94,6 +101,9 @@ export default class AccountScreen extends React.Component {
     //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
+
+  //bind the function
+  this.logoutAsync = this.logoutAsync.bind(this);
     
 }
 
@@ -105,7 +115,7 @@ componentDidMount() {
     let user = firebase.auth().currentUser;
 
     if (user != null) {
-
+      this.setState({firstTimeGoogleSignUp:false});
       //firebase.auth().signInWithEmailAndPassword(email, password)
 
       this.state.userID = user.uid;
@@ -219,7 +229,6 @@ async googleLogin(){
 //Google Login Async functions
 googleLoginAsync = async () => {
 
-
   this.setState({ loading: true });
   console.log('statettttttttttttttttttttttttttttttt: '+this.state.loading);
   // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
@@ -234,6 +243,8 @@ googleLoginAsync = async () => {
     // login with credential
     await firebase.auth().signInWithCredential(credential).then((result)=>{
       console.log('Done creating credentials with the Google');
+
+
 
       var user = result.user;
       var uid = user.uid;
@@ -263,7 +274,21 @@ googleLoginAsync = async () => {
                   this.getNotificationToken(userUID);
                   console.log('Notification token has been updated');
                   console.log('2--inside firebase snap');
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
                   this.setState({ loading: false });
+
                   // const resetAction = StackActions.reset({
                   //   index: 0, // <-- currect active route from actions array
                   //   //params: {userId: this.state.UID},
@@ -350,6 +375,10 @@ getNotificationToken = async (userUID) =>{
   }
 }
 
+
+/**
+ * Function Description: Finish It Bruh
+ */
 finishFunc =() =>{
 
   console.log('In the finishFunc function');
@@ -398,6 +427,9 @@ finishFunc =() =>{
   });
   
   this.props.navigation.dispatch(resetAction);
+
+
+
   // this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
   // this.props.navigation.dispatch(resetAction);
   // this.setState({
@@ -414,18 +446,26 @@ finishFunc =() =>{
   // });
 }
 
-
-
-
   //Function to logo out user21`22122
   async logoutAsync() {
     try {
-      await firebase.auth().signOut();
+      this.setState({
+        name:'',
+        //globalAddress:doc.data().City + ', ' + doc.data().Country,
+        UnitNumber:'',
+        Address:'',
+        Email:'',
+        PhoneNumber:'',
+        picture:'',
+        });
+    
+     await firebase.auth().signOut();
+     
       //props.navigation.navigate('Home');
       // const { navigate } = this.props.navigation;
       // navigate('ChatScreen')
     } catch ({ message }) {
-      //alert('You are logged out!!');
+      alert('You are logged out!! ' + message);
     }
   }
 
@@ -805,7 +845,7 @@ finishFunc =() =>{
       profileImage= {uri:this.state.picture}
     }
     
-    if(this.state.User != null){
+    if(this.state.User != null && this.state.firstTimeGoogleSignUp==false){
 
       if(this.state.editMode){
         console.log('editing');
