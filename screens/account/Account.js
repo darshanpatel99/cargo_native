@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import { FontAwesome} from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 
 let storageRef;
@@ -664,36 +665,53 @@ onAuthStateChanged = (user) => {
         return (
             <View style={styles.viewStyle}>
               <View style={styles.logoStyle}>
-                <Image
+                {/* <Image
                 style={{width: 300, height: 300, borderRadius:20}}
                 source={require('../../assets/images/icon.png')}
-              />
+              /> */}
+                <Text
+                  style={{
+                    fontSize: Dimensions.get('screen').width * 0.12,
+                    fontFamily: 'nunito-SemiBold'
+                  }}
+                >
+                  CarGo
+                </Text>
+
               </View>
-
-          {/* <View style={styles.buttonsWithLogo}> */}
-
-            {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-              <Button primary rounded large style={styles.button}  >
-                <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})} style={styles.lightText}>Login</Text>
-              </Button>
-            </TouchableOpacity> 
-
-            <TouchableOpacity  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-              <Button primary rounded large style={styles.button} >
-                <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})} style={styles.lightText}>SignUp</Text>
-              </Button>
-            </TouchableOpacity> */}
 
             <View style={styles.bigButton}>
 
+            <Button large-green style={styles.loginbutton} onPress ={this.googleLoginAsync}>
+              <Ionicons
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='logo-google'
+              />
+              <Text style={styles.lightText}>Google Login</Text>
+            </Button>
+
+            <Text>Or</Text>
+
               <Button large-green   style={styles.loginbutton}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-                <Text style={{justifyContent: 'center',fontSize: 20,  textAlign: 'center',
-                fontFamily: 'nunito-SemiBold'}}>Login</Text>
+              <Ionicons
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='ios-mail'
+              />
+              <Text style={styles.lightText}>Email SignUp</Text>
               </Button>
 
               <Button large-green style={styles.loginbutton} onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-                <Text style={{justifyContent: 'center',fontSize: 20,
-                fontFamily: 'nunito-SemiBold'}}>SignUp</Text>
+              <Ionicons
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='ios-mail'
+              />
+              <Text style={styles.lightText}>Email Login</Text>
               </Button>
 
             </View>
@@ -799,8 +817,10 @@ const styles = StyleSheet.create({
   },
 
   bigButton: {
-    flex: 0.15,
+    flex: 0.5,
     flexDirection: 'column',
+    alignItems:'center',
+    justifyContent: 'flex-end',
   },
 
   
@@ -892,7 +912,7 @@ const styles = StyleSheet.create({
   height:Dimensions.get('window').width*0.32,
 },
 logoStyle:{
-  flex:0.7,
+  flex:0.2,
   justifyContent:'center',
 
 },
