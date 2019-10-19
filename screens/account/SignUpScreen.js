@@ -203,17 +203,22 @@ emailSignUp = async (email, password)=>{
   //saving email and password as the state
   this.setState({email:email, password:password});
   try{
-    firebase.auth().fetchSignInMethodsForEmail(email).then(async (result)=>{
-      console.log("I am aliiiiiiiiiivvvvvvveeee");
-    if(result.length > 0){  
-      console.log("I am there");
-      this.setState({showOverlay:true});
-      var user = firebase.auth().currentUser;
-      await user.delete();
-      await console.log(this.state.showAlert);
+    
+      //get the curent user
+      var currentUser = firebase.auth().currentUser;
 
-    }
-    else{
+      if(currentUser!=null){
+        //if user already signed up before and has not verified the email just send the verification email again
+        currentUser.sendEmailVerification().then((result)=>{
+          console.log('email verification sent');
+          var uid_ = currentUser.uid;  
+          this.setState({UID:uid_, user:currentUser});
+          //set the overlay parameter to tru
+          this.setState({showOverlay:true});
+  
+        });
+      }
+      else{
       await firebase.auth().createUserWithEmailAndPassword(email,password).then(async(result)=>{
         console.log('Done creating the credentials');
         
@@ -234,11 +239,8 @@ emailSignUp = async (email, password)=>{
         });
         //See if the email is verified or not
       });
-
     }
-    }).catch((error)=>{
-      console.log("We got the following error: ", error);
-    });
+  
   }catch (error){
     alert(error.toString(error));
     console.log(error.toString(error));
