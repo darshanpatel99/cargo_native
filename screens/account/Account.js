@@ -942,16 +942,14 @@ finishFunc =() =>{
                   </Button>
                 </View>
               </View>
-
           </View>
       );
-
       }
-        
     }
     else{
       console.log('User not logged in');
         return (
+          <ImageBackground source={require('../../assets/images/background.jpg')} style={{width: '100%', height: '100%'}}>
             <View style={styles.viewStyle}>
               <View style={styles.logoStyle}>
               <Spinner
@@ -965,12 +963,20 @@ finishFunc =() =>{
               /> */}
                 <Text
                   style={{
-                    fontSize: Dimensions.get('screen').width * 0.12,
-                    fontFamily: 'nunito-SemiBold'
+                    fontSize: Dimensions.get('screen').width * 0.18,
+                    fontFamily: 'origo',
+                    fontWeight: 'bold',
                   }}
                 >
                   CarGo
                 </Text>
+
+                  <Text style={{
+                    fontSize:20,
+                    fontFamily: 'nunito-SemiBold',
+                    textAlign:'center',
+                    marginTop:20,
+                  }}>Post, buy, sell and watch as your items are delivered right to your door.</Text>
 
               </View>
 
@@ -983,34 +989,28 @@ finishFunc =() =>{
                 style={styles.icon}
                 name='logo-google'
               />
-              <Text style={styles.lightText}>Google Login</Text>
+              <Text style={styles.lightText}>Continue with Google</Text>
             </Button>
 
-            <Text>Or</Text>
-
-              <Button large-green   style={styles.loginbutton}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-              <Ionicons
-                size={30}
-                color="#fff"
-                style={styles.icon}
-                name='ios-mail'
-              />
-              <Text style={styles.lightText}>Email SignUp</Text>
-              </Button>
+            <Text  style={{
+                    fontSize:20,
+                    fontFamily: 'nunito-SemiBold',
+                    textAlign:'center',
+                  }} > Or </Text>
 
               <Button large-green style={styles.loginbutton} onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-              <Ionicons
-                size={30}
-                color="#fff"
-                style={styles.icon}
-                name='ios-mail'
-              />
-              <Text style={styles.lightText}>Email Login</Text>
+                <Ionicons
+                  size={30}
+                  color="#fff"
+                  style={styles.icon}
+                  name='ios-mail'
+                />
+                <Text style={styles.lightText}>Continue with Email</Text>
               </Button>
 
             </View>
           </View>
-       
+          </ImageBackground>
         );
       }
   }
@@ -1027,11 +1027,6 @@ const styles = StyleSheet.create({
   screen:{
     flex:12,
   },
-  
-  headbuttons:{
-    flex:1,
-  },
-  
   pictureHolder:{          
     flex: 3,
     marginTop:Dimensions.get('window').height * 0.00,
@@ -1101,7 +1096,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: Dimensions.get('window').width - 80,
     margin: 5,
     borderRadius: 100,
     backgroundColor: Colors.primary,
@@ -1111,10 +1106,11 @@ const styles = StyleSheet.create({
   },
 
   bigButton: {
-    flex: 0.5,
+    flex: 0.7,
     flexDirection: 'column',
     alignItems:'center',
     justifyContent: 'flex-end',
+    marginBottom: 50,
   },
 
   
@@ -1206,9 +1202,10 @@ const styles = StyleSheet.create({
   height:Dimensions.get('window').width*0.32,
 },
 logoStyle:{
-  flex:0.2,
+  flex:0.3,
   justifyContent:'center',
-
+  alignItems:'center',
+  marginTop:50,
 },
 buttonsWithLogo:{
   flex:0.3,
