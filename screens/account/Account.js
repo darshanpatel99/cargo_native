@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView} from 'react-native';
+import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Platform} from 'react-native';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button, Text} from "native-base";
@@ -9,7 +9,10 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import { FontAwesome} from '@expo/vector-icons';
 import { Ionicons } from "@expo/vector-icons";
-
+import * as Google from 'expo-google-app-auth'
+import * as AppAuth from 'expo-app-auth';
+import {Notifications} from 'expo';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 let storageRef;
 
@@ -37,6 +40,30 @@ export default class AccountScreen extends React.Component {
     currentFolio:'',
     Address:'',
     UnitNumber:'',
+    loading:false,
+    phoneNumber:'',
+    remove:true,
+    buttonOn:false,           
+    user: null,
+    phone:'',
+    confirmationResult: undefined,
+    code: '',
+    Token: '',
+    valid:false,
+    emailRegistration:false,
+    nameRegistration:false,
+    firstName:'',
+    lastname:'',
+    email:'',
+    country:'',
+    city:'',
+    street:'',
+    UID:'',
+    profilePic:'',
+    showAlert: true,
+    showOverlay: false,
+    deviceNotificationToken: '',
+    expoNotificationToken:'',
     }
 
     //checking the current user and setting uid
@@ -127,6 +154,268 @@ onAuthStateChanged = (user) => {
     this.setState({ User: null});
   }
 };  
+
+/**
+ * Function Description: Google login, get the user access token 
+ */
+//google login function
+async googleLogin(){
+
+  try{
+  
+
+
+    //Configuration File
+    const configDev ={ 
+        expoClientId:'12592995924-cmat1v9r7i2muq4j14ilfjcbbdcftod7.apps.googleusercontent.com', // cargo-dev
+        iosClientId:'12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5.apps.googleusercontent.com', //cargo-dev
+        androidClientId:'12592995924-6sul322o56a88e3cs0o6627jlfq22l88.apps.googleusercontent.com', //cargo-dev
+        iosStandaloneAppClientId: '12592995924-kcoo3s6sgqhkh46ggap62e36dgjhbq4o.apps.googleusercontent.com',//cargo-dev
+        androidStandaloneAppClientId:'12592995924-c6jjfdudjgk0t8n3pumj2obti504edrv.apps.googleusercontent.com', //cargo-dev
+        scopes:['profile', 'email'],
+        redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google` // this is the LINE 
+
+    };
+
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+    //this.setState({ loading: false });
+   
+    console.log('Going to open a web view');
+    const {type, accessToken} = await Google.logInAsync(configDev);
+
+    if(type=='success'){
+
+      //alert('You got looged in with google');
+
+      // Alert.alert(
+      //   'Alert',
+      //   'You got logged in with google',
+      //   [
+      //     // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+      //     {text: 'OK'},
+      //   ],
+      //   {cancelable: true},
+      // );
+      
+      //start the loader again
+      console.log('successfully got the access topken');
+      this.setState({ loading: true });
+
+      return accessToken;
+    }
+    else{
+      this.setState({ loading: false });
+    }
+
+  }catch({message}){
+    this.setState({ loading: false });
+    //alert('');
+  }
+}
+
+
+//Google Login Async functions
+googleLoginAsync = async () => {
+
+
+  this.setState({ loading: true });
+  console.log('statettttttttttttttttttttttttttttttt: '+this.state.loading);
+  // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const accessToken = await this.googleLogin();
+
+  if (!accessToken) return;
+  // Use the google token to authenticate our user in firebase.
+  const credential = firebase.auth.GoogleAuthProvider.credential(null,accessToken);
+
+  console.log('Got the credentials from Google SignIn');
+  try {
+    // login with credential
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the Google');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      this.setState({UID:uid, user:user, email:user.email, firstName:user.displayName});
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            
+            console.log('The uid that is going to be verified: ' + userUID);
+
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                 
+                  console.log('2--inside firebase snap');
+                  
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
+                  this.setState({ loading: false });
+                  // const resetAction = StackActions.reset({
+                  //   index: 0, // <-- currect active route from actions array
+                  //   //params: {userId: this.state.UID},
+                  //   actions: [
+                  //     NavigationActions.navigate({ routeName: 'Account', params: { userId: userUID}} ),
+                  //   ],
+                  // });
+                  
+                  // this.props.navigation.dispatch(resetAction);
+
+                  //this.props.navigation.navigate('Account', {userID: userUID,});
+                }
+                else{
+                  console.log('User is not sign up');
+                  //add user to the database using the finishFunc
+
+                  this.finishFunc();
+              
+                }
+               
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+      
+    });;
+  } catch ({ message }) {
+    alert(message);
+  }
+};
+
+
+//Getting the push token for the device
+getNotificationToken = async (userUID) =>{
+  try{
+      
+      console.log('Getting the Notification Token');
+      const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+      );
+      let finalStatus = existingStatus;
+    
+      // only ask if permissions have not already been determined, because
+      // iOS won't necessarily prompt the user a second time.
+      if (existingStatus !== 'granted') {
+        // Android remote notification permissions are granted during the app
+        // install, so this will only ask on iOS
+        console.log('Notification permission is not granted');
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+    
+      // Stop here if the user did not grant permissions
+      if (finalStatus !== 'granted') {
+        return;
+      }
+    // Get the token that uniquely identifies this device
+      
+    console.log('going to get the notification token');
+    
+     await Notifications.getDevicePushTokenAsync().then((token)=>{
+        console.log('Got the following device notification token: '+ token);
+        console.log('Type of token: '+ typeof(token));
+        //this.setState({deviceNotificationToken:token});
+        this.firebaseRef.doc(userUID).update({NotificationToken:token});
+        
+      });
+
+      await Notifications.getExpoPushTokenAsync().then((token)=>{
+        console.log('Got the following device expo notification token: '+ token);
+        console.log('Type of token: '+ typeof(token));
+        //this.setState({expoNotificationToken:token});
+        this.firebaseRef.doc(userUID).update({ExpoNotificationToken:token});
+      });
+
+
+    
+  }
+  catch(error){
+    alert(error);
+  }
+}
+
+finishFunc =() =>{
+
+  console.log('In the finishFunc function');
+  
+  //Sample dat object for each user
+  var data={
+    ActiveProducts : [],
+    BoughtProducts : [],
+    Cart : [],
+    City : '',
+    Country : '',
+    Email : this.state.email,
+    FirstName : this.state.firstName,
+    LastName : this.state.lastname,
+    PhoneNumber : this.state.phoneNumber,
+    ProfilePicture :'',
+    SoldProducts : [],
+    Street : '',
+    Address:'',
+    UnitNumber:'',
+    UID: this.state.UID.toString(),
+    NotificationToken: this.state.deviceNotificationToken,
+    ExpoNotificationToken: this.state.expoNotificationToken,
+  }
+
+  // const resetAction = StackActions.reset({
+  //   index: 0,
+  //   //action:[NavigationActions.navigate({routeName: 'AccountInfo'})]
+  // })
+  //adding the suer with the all the information we have to firebase
+  AddUser(data).then(()=>{
+      //Get the notification token
+      this.getNotificationToken(this.state.UID);
+
+  });
+  
+  console.log('Hello! finished adding data');
+  console.log('following data is added ' + data);
+  this.setState({ loading: false });
+  const resetAction = StackActions.reset({
+    index: 0, // <-- currect active route from actions array
+    //params: {userId: this.state.UID},
+    actions: [
+      NavigationActions.navigate({ routeName: 'UserAddressScreen', params: { userId: this.state.UID }} ),
+    ],
+  });
+  
+  this.props.navigation.dispatch(resetAction);
+  // this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
+  // this.props.navigation.dispatch(resetAction);
+  // this.setState({
+  //     phone: '',
+  //     phoneCompleted: false,
+  //     confirmationResult: undefined,
+  //     code: '',
+  //     email:'',
+  //     userName:'',
+  //     phoneNumber:'',
+  //     nameRegistration:false,
+  //     emailRegistration:false,
+
+  // });
+}
+
+
+
 
   //Function to logo out user21`22122
   async logoutAsync() {
@@ -665,6 +954,11 @@ onAuthStateChanged = (user) => {
         return (
             <View style={styles.viewStyle}>
               <View style={styles.logoStyle}>
+              <Spinner
+                visible={this.state.loading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+                />
                 {/* <Image
                 style={{width: 300, height: 300, borderRadius:20}}
                 source={require('../../assets/images/icon.png')}
