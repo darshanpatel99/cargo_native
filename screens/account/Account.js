@@ -15,6 +15,7 @@ import {Notifications} from 'expo';
 import Spinner from 'react-native-loading-spinner-overlay';
 import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
+import * as Facebook from 'expo-facebook';
 
 let storageRef;
 
@@ -25,6 +26,9 @@ const DismissKeyboard = ({ children }) => (
  );
 
 export default class AccountScreen extends React.Component {
+
+  //facebook api
+  FacebookApiKey= '2872116616149463';
 
   constructor(props){
     super(props);
@@ -71,6 +75,7 @@ export default class AccountScreen extends React.Component {
     deviceNotificationToken: '',
     expoNotificationToken:'',
     firstTimeGoogleSignUp:true,
+
     }
 
     //checking the current user and setting uid
@@ -107,11 +112,13 @@ export default class AccountScreen extends React.Component {
     
 }
 
+//component did mount
 componentDidMount() {
   const { navigation } = this.props;
-    
+
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
+    
     let user = firebase.auth().currentUser;
 
     if (user != null) {
@@ -155,8 +162,9 @@ componentWillUnmount() {
 onAuthStateChanged = (user) => {
   // if the user logs in or out, this will be called and the state will update.
   // This value can also be accessed via: firebase.auth().currentUser
-  if (user != null){
-    if(user.emailVerified){ // note difference on this line
+  if (user != null ){
+    if(user.emailVerified || user.providerData[0].providerId=='facebook.com'){ // note difference on this line
+     
       this.setState({ User: user});
     }
   }
@@ -244,8 +252,6 @@ googleLoginAsync = async () => {
     await firebase.auth().signInWithCredential(credential).then((result)=>{
       console.log('Done creating credentials with the Google');
 
-
-
       var user = result.user;
       var uid = user.uid;
       tempUID = uid;
@@ -322,6 +328,135 @@ googleLoginAsync = async () => {
     alert(message);
   }
 };
+
+//facebook Login Function
+async facebookLogin() {
+  console.log("in facebookLogin() method");
+  try{
+    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
+      permissions:['public_profile', 'email']
+    });
+
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+  
+    console.log(authData);
+    if (!authData) return;
+    const { type, token } = authData;
+    if (type === 'success') {
+      console.log('facebook auth success and the token is' + token);
+
+      //set the loading state to true
+      this.setState({loading:true});
+
+      return token;
+    } else {
+      // Maybe the user cancelled...
+    }
+  }
+  catch(message){
+    console.log(message);
+    alert(message);
+    
+  }
+}
+
+
+//Facebook Login Async Function
+facebookLoginAsync = async () => {
+
+  this.setState({ loading: true });
+  console.log('in facebookLoginAsync() method');
+  // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const token = await this.facebookLogin();
+  if (!token) return;
+  try {
+  //get the required user information related to the 
+  const userInfo = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+
+  var userJson = (await userInfo.json());
+  console.log(userJson.name);
+  
+  //user information
+  var firstName = userJson.name;
+
+  console.log(firstName);
+
+
+  //setting all the user information
+  this.setState({firstName:firstName });
+
+
+  // Use the facebook token to authenticate our user in firebase.
+  const credential = firebase.auth.FacebookAuthProvider.credential(token);
+ 
+    // login with credential
+    var tempUID = null ;
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the facebook');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      console.log('User email is: ' + user.email);
+      this.setState({UID:uid, user:user, email:user.email});
+
+      console.log(user.providerData)
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            console.log('The uid that is going to be verified: ' + userUID);
+        
+             
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
+                  this.setState({ loading: false, isFacebookAuth:true });
+                }
+                else{
+                  console.log('User is not sign up');
+                  //Add user to the database
+                  this.finishFunc();
+                  
+                }
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+    });
+  } catch ({ message }) {
+    alert(message);
+  }
+}
 
 
 //Getting the push token for the device
@@ -1022,6 +1157,16 @@ finishFunc =() =>{
 
             <View style={styles.bigButton}>
 
+            <Button large-green style={styles.loginbutton} onPress ={this.facebookLoginAsync}>
+              <FontAwesome
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='facebook-square'
+              />
+              <Text style={styles.lightText}>Continue with Facebook</Text>
+            </Button>
+
             <Button large-green style={styles.loginbutton} onPress ={this.googleLoginAsync}>
               <Ionicons
                 size={30}
@@ -1136,7 +1281,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 80,
+    width: Dimensions.get('window').width - 60,
     margin: 5,
     borderRadius: 100,
     backgroundColor: Colors.primary,
