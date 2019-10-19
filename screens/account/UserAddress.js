@@ -54,7 +54,7 @@ export default class UserAddress extends React.Component {
 
     var userCollectionReference = firebase.firestore().collection('Users').doc(this.state.UID);
 
-    if(this.state.Address != '' && this.state.PhoneNumber != ''){
+    if(this.state.PhoneNumber != ''){
 
     // const {navigation} = this.props;
     // navigation.navigate('Account');
@@ -79,7 +79,7 @@ export default class UserAddress extends React.Component {
 
     }
     else{
-        alert('Please enter required fields!')
+        alert('Please enter phone number!')
     }
   }
 
@@ -124,13 +124,13 @@ export default class UserAddress extends React.Component {
               fontFamily: 'nunito-SemiBold',
               color:'white',
 
-            }}>Phone no. & Address</Text>
+            }}>Phone no.</Text>
 
           </View>
 
           <View style={styles.bottomContainer}>
             <View>
-            <TextInput
+            {/* <TextInput
                 style={styles.textInputStyle}
                 //keyboardType='numeric'
                 returnKeyType='done'
@@ -138,7 +138,7 @@ export default class UserAddress extends React.Component {
                 onChangeText={(text) => this.setState({UnitNumber: text})}
                 value={this.state.UnitNumber}
                 maxLength ={8}
-            />
+            /> */}
 
             <TextInput
                 style={styles.textInputStyle}
@@ -154,7 +154,7 @@ export default class UserAddress extends React.Component {
           </View>
             
 
-        <View style={this.ifInputEmpty()? styles.inputAddressContainer : styles.inputAddressContainer}>
+        {/* <View style={this.ifInputEmpty()? styles.inputAddressContainer : styles.inputAddressContainer}>
           <GooglePlacesAutocomplete
             ref={c => this.googlePlacesAutocomplete = c}
             placeholder='Your Address'
@@ -239,7 +239,7 @@ export default class UserAddress extends React.Component {
             currentLocation={false}
             />
 
-        </View>
+        </View> */}
 
         <View style ={{flexDirection:'row',justifyContent:'space-evenly',}}>
           <Button large-green style={styles.button} onPress={this.finishFunc}>
