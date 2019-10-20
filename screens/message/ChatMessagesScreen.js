@@ -39,7 +39,12 @@ export default class ChatScreen extends React.Component {
       .then(querySnapshot => {
         console.log('profile image querysnap -->')
         console.log(querySnapshot.docs[0].data().ProfilePicture)
-        this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+        if (querySnapshot.docs[0].data().ProfilePicture != ''){
+          this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+        }
+        else{
+          this.setState({ post_user_name: 'https://firebasestorage.googleapis.com/v0/b/cargo-488e8.appspot.com/o/UserImages%2Favatar.png?alt=media&token=91ea9f59-11a8-4928-9963-0235a0cd5201' });
+        }
       });
       
       this.state = {

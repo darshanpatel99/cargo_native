@@ -150,7 +150,7 @@ class Chat extends React.Component {
 
         <Spinner
             visible={this.state.loading}
-            textContent={'Loading...'}
+            textContent={'Loading.'}
             textStyle={styles.spinnerTextStyle}
           />
         <ChatDynamicFlatList navigation = {this.props.navigation}/>

@@ -66,6 +66,7 @@ export default class PostProductScreen extends Component {
       price : "",
       thumbnail : " ",
       image: [],
+      imageSizes:[],
       newImage:[],
       downloadURLs : [],
       User:null,
@@ -298,17 +299,18 @@ export default class PostProductScreen extends Component {
   
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
+    var arraySizes = this.state.imageSizes;
     var array = this.state.newImage; //getting the uri array
     console.log(array.length);
     var first = this.state.firstTimeOnly;
     var allDeleted = this.state.allOldDeleted;
     this.setState({ loading: true });
-    array.forEach(async (element) => {
+    array.forEach(async (element , index) => {
 
       if(first && allDeleted){
         first=false;
         this.setState({firstTimeOnly:false});
-        await this.uploadThumbnailToFirebase(element)
+        await this.uploadThumbnailToFirebase(element , arraySizes[index])
         .then(()=>{
           
           console.log('Thumbnail got uploaded');
@@ -319,7 +321,7 @@ export default class PostProductScreen extends Component {
         });
       }
 
-      await this.uploadImageToFirebase(element, uuid.v1())
+      await this.uploadImageToFirebase(element,  arraySizes[index])
       .then(() => {
         console.log('Success' + uuid.v1());
         
@@ -479,32 +481,11 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        newImage: this.state.Image.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri])
+        newImage: this.state.Image.concat([result.uri]), 
+        isImagesChanged:true, 
+        image: this.state.image.concat([result.uri]),
+        imageSizes : this.state.imageSizes.concat([this.sizeOfImageObj(result)]),
       });
-
-    //   console.log(this.state.firstTimeOnly);
-    //   if(this.state.firstTimeOnly){
-    //     console.log('I am first time');
-    //     await this.uploadThumbnailToFirebase(result.uri)
-    //       .then(()=>{
-    //         this.setState({firstTimeOnly:false});
-    //         console.log('Thumbnail got uploaded');
-    //       })
-    //       .catch(error=>{
-    //         console.log("Hey there is an error:  " +error);
-    //       })
-    //     }
-    
-
-
-    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
-    //     .then(() => {
-    //       console.log('Success' + uuid.v1());  
-    //     })
-    //     .catch(error => {
-    //       console.log('Success' + uuid.v1()); 
-    //       console.log(error);
-    //     });
     }
   };
 
@@ -533,45 +514,98 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        newImage: this.state.newImage.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri])
+        newImage: this.state.newImage.concat([result.uri]), isImagesChanged:true, image: this.state.image.concat([result.uri]),
+        imageSizes : this.state.imageSizes.concat([this.sizeOfImageObj(result)]),
       });
-
-
-    //   console.log(this.state.firstTimeOny);
-
-    //   if(this.state.firstTimeOnly){
-    //    //Create Thumbnail only FirstTime
-    //      console.log('I am first time');
-    //     await this.uploadThumbnailToFirebase(result.uri)
-    //       .then(()=>{
-    //         this.setState({firstTimeOnly:false});
-    //         console.log('Thumbnail got uploaded');
-    //       })
-    //       .catch(error=>{
-    //         console.log(error);
-    //       })
-    //     }
-
-    //  await this.uploadImageToFirebase(result.uri, uuid.v1())
-    //     .then(() => {
-    //       console.log('Success' + uuid.v1());  
-    //     })
-    //     .catch(error => {
-    //       console.log('Success' + uuid.v1()); 
-    //       console.log(error);
-    //     });
     }
   };
 
+  // find the width and height of the image and put it to the object
+  sizeOfImageObj = (result) =>{
 
+    var imageWidth = result.width;
+    var imageHeigth = result.height;
+    var biggerSide =0;
+    var smallerSide = 0 ;
+
+    if(imageHeigth>imageWidth){
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+    if(imageHeigth<imageWidth){
+      biggerSide = imageWidth;
+      smallerSide = imageHeigth;
+    }
+    if(imageHeigth == imageWidth)
+    {
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+
+    var localSizeObject = {
+      'height' : imageHeigth,
+      'width' : imageWidth,
+    }
+
+    return localSizeObject;
+  }
 
   //Uploading the thumbnail to the Firebase Storage
-  uploadThumbnailToFirebase = async (uri)=>{
+  uploadThumbnailToFirebase = async (uri, localSizeObject)=>{
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 400){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 400){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/400);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/400) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + "  " + finalH)
+
     console.log('inside the upload thumbnial function');
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize:{width:200, height:200} }],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -641,11 +675,60 @@ export default class PostProductScreen extends Component {
 
 
  //Uploading an Image to the Firebase
- uploadImageToFirebase = async (uri, imageName) => {
+ uploadImageToFirebase = async (uri, localSizeObject) => {
+
+  console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 800){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 800){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/800);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/800) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + "  " + finalH)
+
 
   const manipResult = await ImageManipulator.manipulateAsync(
     uri,
-    [],
+    [{ resize:{width:finalW, height:finalH} }],
     { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
   )
 
