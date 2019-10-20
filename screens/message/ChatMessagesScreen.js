@@ -21,7 +21,10 @@ export default class ChatScreen extends React.Component {
 
 
     if(previousScreen == 'Details') {
-
+      //alert('Came from Details screen')
+      //const completeChatThread = navigation.getParam('completeChatThread')
+      //console.log(JSON.stringify(completeChatThread.reciverId))
+      // var reciverId = completeChatThread.reciverId;
       if(owner < firebaseChat.uid) {
         chatDocumentReferenceId = owner+firebaseChat.uid
       } else {

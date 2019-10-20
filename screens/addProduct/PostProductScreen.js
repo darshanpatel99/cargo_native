@@ -83,6 +83,7 @@ export default class PostProductScreen extends Component {
       sellerName:'',
       uploadCounter:0,
       loading: false,
+      completeStringAddress:'',
     }
 
     this.categoryRemover = React.createRef();
@@ -213,8 +214,6 @@ export default class PostProductScreen extends Component {
       console.log("Total number of uris we have"+ array.length)
       this.setState({ loading: true });
       array.forEach(async (element,index) => {
-
-        console.log("b " + arraySizes[index].bigSide + " s " + arraySizes[index].smallSide);
    
         if(first){
 
@@ -231,7 +230,7 @@ export default class PostProductScreen extends Component {
           
         }
 
-        await this.uploadImageToFirebase(element, uuid.v1())
+        await this.uploadImageToFirebase(element, arraySizes[index])
         .then(() => {
           console.log('Success' + uuid.v1());
           
@@ -259,7 +258,8 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    let completeStringAddress = this.state.completeStringAddress;
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && this.state.completeStringAddress != '')  {
     await this.uploadImageData();
     }
     else {
@@ -276,9 +276,9 @@ export default class PostProductScreen extends Component {
         })
       }
   
-      console.log(address)
+      console.log(completeStringAddress)
   
-      if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      if( completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
         this.setState({
           showAddressAlert:true,
         })
@@ -301,6 +301,7 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
+    let completeStringAddress = this.state.completeStringAddress;
 
     console.log('length of the price' + priceLength.length);
 
@@ -333,7 +334,6 @@ export default class PostProductScreen extends Component {
       TotalFee:'',
       BoughtStatus:'false',
       OrderNumber: -1,
-
     }
 
     //Getting the current time stamp
@@ -372,9 +372,9 @@ export default class PostProductScreen extends Component {
       })
     }
 
-    console.log(address)
+    console.log(completeStringAddress)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    if(completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         showAddressAlert:true,
       })
@@ -487,6 +487,7 @@ export default class PostProductScreen extends Component {
     var changedH = {
       'isBiggest' : false,
       'value' : localSizeObject.height,
+      'valid' : true,
     }
    var changedW = {
     'isBiggest' : false,
@@ -602,11 +603,60 @@ export default class PostProductScreen extends Component {
 
  
   //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, imageName) => {
+  uploadImageToFirebase = async (uri, localSizeObject) => {
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 800){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 800){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/800);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/800) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + " those are with 800  " + finalH)
+
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -971,6 +1021,8 @@ export default class PostProductScreen extends Component {
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
                 this.setState({googleAddressEmpty: 'Added stuff'})
+                let completeStringAddress= JSON.stringify(details.formatted_address)
+                this.setState({completeStringAddress})
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
@@ -1047,14 +1099,14 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Alert"
-            message={'Successfully Posted!!\n'}
+            title="Nice"
+            message={'You just added a post!\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
             showConfirmButton={true}
             cancelText="No, cancel"
-            confirmText="Go to Home !!"
+            confirmText=" OK "
             confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert2();

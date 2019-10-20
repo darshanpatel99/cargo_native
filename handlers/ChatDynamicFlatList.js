@@ -18,7 +18,7 @@ class ChatDyanmicFlatList extends React.Component {
         filteredChats:{},
         firstNames:[],
         isChatEmpty:true,
-        //loading:true,
+        loading:true,
         showAlert: false,
         };
 
@@ -26,7 +26,6 @@ class ChatDyanmicFlatList extends React.Component {
 
     }
 
-    
 
     componentWillUnmount() {
         firebaseChat.refOff();
@@ -61,9 +60,24 @@ class ChatDyanmicFlatList extends React.Component {
     }
 
     componentDidMount(){
+
+        // const {navigation} = this.props;
+        // this.focusListener = navigation.addListener('didFocus', () => {
+        //     refreshStatus = navigation.getParam('refresh')
+        // });
+
+        console.log("before waiting");  
+
         this.setState({ loading: true });
-        firebase.database().ref('Chat').on('value', snapshot => {
+
+        console.log(firebase.database().ref('Chat'));
+        
+            firebase.database().ref('Chat').on('value', (snapshot) => {
             this.setState({ loading: false });
+
+
+            console.log("waiting fot the loading");  
+
 
             this.setState({snapshot: snapshot.val()})
             let chatCardsArray=[];
@@ -89,7 +103,7 @@ class ChatDyanmicFlatList extends React.Component {
                 })
             }
         }
-
+  
         this.setState({chatCardsArray: chatCardsArray})
 
         this.setState({snapshot: snapshot.val()})
@@ -100,8 +114,17 @@ class ChatDyanmicFlatList extends React.Component {
         //     console.log(chatCardsArray[i].chat[0]);
         //    // console.log(this.getUserDetailsFromUid(chatCardsArray[i].chat[0]))
         //   }
-    });    
-
+    });
+       
+        
+    
+    console.log("after waiting" + this.state.loading);
+    // if(this.state.loading == true){
+    //     this.setState({
+    //         loading:false,
+    //         isChatEmpty:true,
+    //     })
+    // }
 }
 
     goToChatScreen = (item) => {
@@ -146,12 +169,10 @@ class ChatDyanmicFlatList extends React.Component {
                       <View style={styles.noChatBox}>
                           <Text style={styles.noChatText}>
                           {<Text style={styles.heading}>Hey!</Text>}  {<Icon type ="MaterialCommunityIcons" name ="human-greeting" style={{fontSize:30, color: '#FBA21C'}}/>} {"\n"}
-                          You don't have any chats currently!!!{"\n"} 
+                          Currently you don't have any chats!{"\n"} 
                          </Text>
                       </View>
-                    
                   </View>
-                  
                 )
                }
                else{

@@ -258,6 +258,7 @@ onAuthStateChanged = (user) => {
     var changedH = {
       'isBiggest' : false,
       'value' : localSizeObject.height,
+      'valid' : true,
     }
    var changedW = {
     'isBiggest' : false,
@@ -284,6 +285,7 @@ onAuthStateChanged = (user) => {
    }
 
     if(changedH.isBiggest == true && changedH.valid == true){
+      console.log("inside of the if statements");
       difValue = Math.round(changedH.value/400);
     }
 
@@ -500,7 +502,7 @@ onAuthStateChanged = (user) => {
           editable={true}
           value={this.state.UnitNumber}
           onChangeText={ (value) => {this.setState({UnitNumber:value})}}
-          keyboardType='number-pad'
+          //keyboardType='number-pad'
           returnKeyType='done'
           autoCorrect={false}
           placeholder='Unit Number'
