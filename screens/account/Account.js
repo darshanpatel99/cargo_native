@@ -16,6 +16,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
 import * as Facebook from 'expo-facebook';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 let storageRef;
 
@@ -70,13 +71,17 @@ export default class AccountScreen extends React.Component {
     street:'',
     UID:'',
     profilePic:'',
-    showAlert: true,
+    //showAlert: true,
     showOverlay: false,
     deviceNotificationToken: '',
     expoNotificationToken:'',
     firstTimeGoogleSignUp:true,
-
+    showAlert: false,
+    showAlert3: false,
+    isFacebookAuth: false,
+    pendingCred:null,
     }
+
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -109,7 +114,8 @@ export default class AccountScreen extends React.Component {
 
   //bind the function
   this.logoutAsync = this.logoutAsync.bind(this);
-    
+  this.showAlert = this.showAlert.bind(this);
+  this.hideAlert = this.hideAlert.bind(this);
 }
 
 //component did mount
@@ -172,6 +178,42 @@ onAuthStateChanged = (user) => {
     this.setState({ User: null});
   }
 };  
+
+showAlert = () => {
+  this.setState({
+    loading:false,
+    showAlert: true
+  });
+};
+
+hideAlert = async () => {
+  const { navigate } = this.props.navigation;
+
+  console.log('Hide alert called')
+  this.setState({
+    showAlert: false
+  });
+  //call the google login async, becasue this time we only two methods 
+  await this.googleLoginAsync(); 
+};
+
+     //hide the alert
+     hideAlert3(){
+      const { navigate } = this.props.navigation;
+      this.setState({
+        showAlert3: false,
+      });   
+      navigate('SignUp',{magic: 'Login', pendingCred : this.state.pendingCred})   
+    };
+  
+    //function to show the alert
+    showAlert3(){
+      this.setState({
+        loading:false,
+        showAlert3: true,
+        
+      });
+    };
 
 /**
  * Function Description: Google login, get the user access token 
@@ -293,6 +335,25 @@ googleLoginAsync = async () => {
                     picture:docSnapshot.data().ProfilePicture,
                     }); 
 
+
+                    //link the facebook credentials if user is trying to login with facebook but have same email used with facebook
+
+                    if(this.state.isFacebookAuth){
+
+                      var pendingFacebookCredentialsToLink = this.state.pendingCred;
+
+                      user.linkAndRetrieveDataWithCredential(pendingFacebookCredentialsToLink).then(function(usercred) {
+                        // Facebook account successfully linked to the existing Firebase user.
+                        console.log('Your facebook account is successfully linked with google now, you can nytime login with facebook');
+                      });
+
+
+                    }
+
+
+
+
+
                   this.setState({ loading: false });
 
                   // const resetAction = StackActions.reset({
@@ -329,10 +390,15 @@ googleLoginAsync = async () => {
   }
 };
 
+
+
 //facebook Login Function
 async facebookLogin() {
   console.log("in facebookLogin() method");
   try{
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
     const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
       permissions:['public_profile', 'email']
     });
@@ -452,6 +518,40 @@ facebookLoginAsync = async () => {
               console.warn(e);
             } 
       }
+    }).catch(async (error)=>{
+      console.log('In the error');
+      if(error.code === 'auth/account-exists-with-different-credential')
+        {
+          console.log('Its Duplicate');
+
+          var pendingCred = error.credential;
+          var email = error.email;
+          console.log(JSON.stringify(error));
+
+          //set the pending credentials state
+          this.setState({pendingCred:pendingCred, isFacebookAuth:true});
+
+          
+
+          firebase.auth().fetchSignInMethodsForEmail(email).then(async (method)=>{
+
+            //If first sign in method is password it is important to prompt user for login with email and password
+            if(method[0]=='password'){
+              this.showAlert3();
+            }
+            else{
+              console.log('Alert Called')
+              await this.showAlert();
+            }
+
+
+
+
+          }).catch((error)=>{
+            console.log(error);
+          })
+
+        }
     });
   } catch ({ message }) {
     alert(message);
@@ -459,7 +559,28 @@ facebookLoginAsync = async () => {
 }
 
 
-//Getting the push token for the device
+/**
+ * Function Description: Get the provider for provid
+ */
+getProviderForProviderId = async(providerId)=>{
+
+  if(providerId=='firebase.com'){
+    return 'facebookProvider';
+  }
+  else if(providerId=='google.com'){
+
+    return 'googelProvider';
+  }
+
+
+
+}
+
+
+
+/**
+ * Function Description: Get the device notification token
+ */
 getNotificationToken = async (userUID) =>{
   try{
       
@@ -592,6 +713,8 @@ finishFunc =() =>{
         Email:'',
         PhoneNumber:'',
         picture:'',
+        isFacebookAuth:false,
+        pendingCred:null
         });
     
      await firebase.auth().signOut();
@@ -971,6 +1094,8 @@ finishFunc =() =>{
 
   render() {
     const {navigate} = this.props.navigation;
+    const {showAlert} = this.state;
+    const {showAlert3} = this.state;
     let profileImage=''
 
     if(this.state.picture == '') {
@@ -1124,7 +1249,7 @@ finishFunc =() =>{
     else{
       console.log('User not logged in');
         return (
-          <ImageBackground source={require('../../assets/images/background.jpg')} style={{width: '100%', height: '100%'}}>
+          <ImageBackground source={require('../../assets/images/Signup.png')} style={{width: '100%', height: '100%'}}>         
             <View style={styles.viewStyle}>
               <View style={styles.logoStyle}>
               <Spinner
@@ -1141,16 +1266,18 @@ finishFunc =() =>{
                     fontSize: Dimensions.get('screen').width * 0.18,
                     fontFamily: 'origo',
                     fontWeight: 'bold',
+                    color:'white'
                   }}
                 >
                   CarGo
                 </Text>
-
                   <Text style={{
                     fontSize:20,
                     fontFamily: 'nunito-SemiBold',
                     textAlign:'center',
                     marginTop:20,
+                    color:'white',
+                    fontWeight: 'bold',
                   }}>Post, buy, sell and watch as your items are delivered right to your door.</Text>
 
               </View>
@@ -1181,6 +1308,7 @@ finishFunc =() =>{
                     fontSize:20,
                     fontFamily: 'nunito-SemiBold',
                     textAlign:'center',
+                    color:'white'
                   }} > Or </Text>
 
               <Button large-green style={styles.loginbutton} onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
@@ -1194,6 +1322,35 @@ finishFunc =() =>{
               </Button>
 
             </View>
+
+            <AwesomeAlert
+                show={showAlert}
+                showProgress={false}
+                title="Oops!"
+                message={'You are logged in different provider\n Link your facebook account'}
+                closeOnTouchOutside={false}
+                closeOnHardwareBackPress={false}
+                showConfirmButton={true}
+                cancelText="No, cancel"
+                confirmText="Link now"
+                confirmButtonColor= {Colors.primary}
+                onConfirmPressed={() => this.hideAlert()}
+              />
+
+            <AwesomeAlert
+              show={showAlert3}
+              showProgress={false}
+              title="Oops!"
+              message={'You are signed up with email before \n Link your email account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert3()}
+          />
+
           </View>
           </ImageBackground>
         );
