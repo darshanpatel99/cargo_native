@@ -3,6 +3,7 @@ import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
@@ -13,7 +14,9 @@ import * as AppAuth from 'expo-app-auth';
 import {Notifications} from 'expo';
 import * as Permissions from 'expo-permissions';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import SwitchToggle from 'react-native-switch-toggle';
+import { colors } from "react-native-elements";
+import * as Facebook from 'expo-facebook';
 
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
@@ -35,7 +38,7 @@ export default class SignUpScreen extends Component {
     //Following is the state of this  component
     this.state ={
       password:'',
-      prevPage:'Signup',
+      prevPage:'',
       phoneNumber:'',
       remove:true,
       buttonOn:false,           
@@ -56,21 +59,29 @@ export default class SignUpScreen extends Component {
       UID:'',
       profilePic:'',
       showAlert: true,
+      showAlert2: false,
+      showAlert3: false,
       showOverlay: false,
       deviceNotificationToken: '',
       expoNotificationToken:'',
       loading: false,
+      switchOn1: false,
+      isFacebookAuth:false,
+      pendingCred:null
     }
-
-    
-
   }
 
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-
-    
+    const magic = this.props.navigation.getParam('magic');
+  
+    if(magic == 'Login'){
+      const pendingCredentials = this.props.navigation.getParam('pendingCred');
+      console.log('Pending Crednetials', JSON.stringify(pendingCredentials));
+      this.setState({pendingCred : pendingCredentials, isFacebookAuth:true});
+      this.setState({switchOn1: true})
+    }
   }
  
   componentWillUnmount() {
@@ -110,23 +121,91 @@ export default class SignUpScreen extends Component {
     });
   };
 
+    //hide the alert
+    hideAlert2(){
+      this.setState({
+        showAlert2: false
+      });
 
+       //call the google login async, becasue this time we only two methods 
+       this.googleLoginAsync(); 
+    };
+  
+    //function to show the alert
+    showAlert2(){
+      this.setState({
+        showAlert2: true,
+        
+      });
+    };
 
+     //hide the alert
+     hideAlert3(){
+      this.setState({
+        showAlert2: false,
+        switchOn1: true,
+      });
+
+       //call the google login async, becasue this time we only two methods 
+       
+    };
+  
+    //function to show the alert
+    showAlert3(){
+      this.setState({
+        loading:false,
+        showAlert3: true,
+        
+      });
+    };
+  
+
+  getButtonText() {
+    return this.state.switchOn1 ? 'Login' : 'Signup';
+  }
+  
+  getRightText() {
+    return this.state.switchOn1 ? '' : 'Login';
+    //return 'Signup';
+  }
+
+  
+  getLeftText() {
+    //return this.state.switchOn1 ? 'Signup' : '';
+    return 'Signup';
+  }
+
+  onPress1 = () => {
+    this.setState({switchOn1: !this.state.switchOn1});
+  };
 
 
 //facebook Login Function
 async facebookLogin() {
   console.log("in facebookLogin() method");
   try{
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+
     const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
-      permissions:['public_profile']
+      permissions:['public_profile', 'email']
     });
+
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+    console.log('fffffffffffffffffffaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccccccccccccccccccccccc');
   
     console.log(authData);
     if (!authData) return;
     const { type, token } = authData;
     if (type === 'success') {
       console.log('facebook auth success and the token is' + token);
+
+      //set the loading state to true
+      this.setState({loading:true});
+
       return token;
     } else {
       // Maybe the user cancelled...
@@ -143,9 +222,6 @@ async facebookLogin() {
 async googleLogin(){
 
   try{
-  
-
-
     //Configuration File
     const configDev ={ 
         expoClientId:'12592995924-cmat1v9r7i2muq4j14ilfjcbbdcftod7.apps.googleusercontent.com', // cargo-dev
@@ -238,6 +314,8 @@ emailSignUp = async (email, password)=>{
   
         });
         //See if the email is verified or not
+      }).catch((error)=>{
+
       });
     }
   
@@ -280,6 +358,16 @@ emailLogin = async (email, password) =>{
 
                 //get the token and update the value
                 this.getNotificationToken(userUID);
+
+                if(this.state.isFacebookAuth){
+
+                  var pendingFacebookCredentialsToLink = this.state.pendingCred;
+
+                  user.linkAndRetrieveDataWithCredential(pendingFacebookCredentialsToLink).then(function(usercred) {
+                    // Facebook account successfully linked to the existing Firebase user.
+                    console.log('Your facebook account is successfully linked with google now, you can nytime login with facebook');
+                  });
+                }
 
                 this.props.navigation.navigate('Account', {userid:this.state.UID});
               }
@@ -370,11 +458,11 @@ emailSignUpAsync=async()=>{
   console.log('In emailSignUpAsync method');
   console.log(this.state.email);
 
-  if(this.state.firstName.length==0 || this.state.lastName.length==0 ){
+  if(this.state.firstName.length==0 ){
     alert('Please dont leave any field empty')
   }else{
-        //only of the email is verified, than only call create the firebase user
-        await this.emailSignUp(this.state.email, this.state.password);
+      //only of the email is verified, than only call create the firebase user
+      await this.emailSignUp(this.state.email, this.state.password);
   }
 
 }
@@ -435,6 +523,15 @@ googleLoginAsync = async () => {
                   this.getNotificationToken(userUID);
                   console.log('Notification token has been updated');
                   console.log('2--inside firebase snap');
+                  if(this.state.isFacebookAuth){
+
+                    var pendingFacebookCredentialsToLink = this.state.pendingCred;
+
+                    user.linkAndRetrieveDataWithCredential(pendingFacebookCredentialsToLink).then(function(usercred) {
+                      // Facebook account successfully linked to the existing Firebase user.
+                      console.log('Your facebook account is successfully linked with google now, you can nytime login with facebook');
+                    });
+                  }
                   this.setState({ loading: false });
                   const resetAction = StackActions.reset({
                     index: 0, // <-- currect active route from actions array
@@ -472,6 +569,8 @@ googleLoginAsync = async () => {
 
 //Facebook Login Async Function
 facebookLoginAsync = async () => {
+
+  this.setState({ loading: true });
   console.log('in facebookLoginAsync() method');
   // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
   const token = await this.facebookLogin();
@@ -505,8 +604,10 @@ facebookLoginAsync = async () => {
       var uid = user.uid;
       tempUID = uid;
       console.log('Your user get the following user uid: '+ uid);
-      console.log('User phone number is: ' + user.email);
+      console.log('User email is: ' + user.email);
       this.setState({UID:uid, user:user, email:user.email});
+
+      console.log(user.providerData)
 
        //setting the UID
        if(tempUID!=null){
@@ -517,14 +618,41 @@ facebookLoginAsync = async () => {
             var userUID = this.state.UID;
             console.log('The uid that is going to be verified: ' + userUID);
         
-              
+             
             this.firebaseRef.doc(userUID)
               .get()
               .then(docSnapshot => {
                 console.log('1--inside firebase snap')
                 if(docSnapshot.exists){
-                  console.log('2--inside firebase snap')
-                  this.props.navigation.navigate('Account');
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
+                  this.setState({ loading: false, isFacebookAuth:true });
+                  const resetAction = StackActions.reset({
+                    index: 0, // <-- currect active route from actions array
+                    //params: {userId: this.state.UID},
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Account', params: { userId: userUID}} ),
+                    ],
+                  });
+                  
+                  this.props.navigation.dispatch(resetAction);
+
+
                 }
                 else{
                   console.log('User is not sign up');
@@ -539,6 +667,34 @@ facebookLoginAsync = async () => {
               console.warn(e);
             } 
       }
+    }).catch(async (error)=>{
+      console.log('In the error');
+      if(error.code === 'auth/account-exists-with-different-credential')
+        {
+          console.log('Its Duplicate');
+
+          var pendingCred = error.credential;
+          var email = error.email;
+          console.log(JSON.stringify(error));
+
+          //set the pending credentials state
+          this.setState({pendingCred:pendingCred, isFacebookAuth:true});
+          firebase.auth().fetchSignInMethodsForEmail(email).then(async (method)=>{
+            //If first sign in method is password it is important to prompt user for login with email and password
+            if(method[0]=='password'){
+              console.log(' show alert 3 called')
+              this.showAlert3();
+            }
+
+            else{
+              console.log('Alert Called')
+              await this.showAlert2();
+            }
+          }).catch((error)=>{
+            console.log(error);
+          })
+
+        }
     });
   } catch ({ message }) {
     alert(message);
@@ -754,11 +910,12 @@ deleteUserFromAuthDatabase() {
     const prevPage = navigation.getParam('prevPage');
     console.log('This is signup screen ' + prevPage);
     const {showAlert} = this.state;
-    
+    const {showAlert2} = this.state;
+    const {showAlert3} = this.state;    
 
     if(this.state.showOverlay==false){
     //if the prevPage is SignUp screen than ask for first name and last name 
-    if(prevPage=='Login'){
+    if(this.state.switchOn1 == true){
 
       return(
 
@@ -770,6 +927,50 @@ deleteUserFromAuthDatabase() {
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
+
+      <SwitchToggle
+          buttonText={this.getButtonText()}
+          backTextRight={this.getRightText()}
+          backTextLeft={this.getLeftText()}
+          
+          type={1}
+          buttonStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute'
+          }}
+          
+          rightContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          leftContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}
+        
+          buttonTextStyle={{fontSize: 20}}
+          textRightStyle={{fontSize: 20}}
+          textLeftStyle={{fontSize: 20}}
+        
+          containerStyle={{
+            marginTop: 16,
+            width: 200,
+            height: 50,
+            borderRadius: 27.5,
+            padding: 5,
+            borderWidth:1,
+            borderColor:'black',
+            marginBottom: 100,
+          }}
+          backgroundColorOn='#fff'
+          backgroundColorOff='#fff'
+          circleStyle={{
+            width: 100,
+            height: 40,
+            borderRadius: 27.5,
+            backgroundColor: 'blue', // rgb(102,134,205)
+          }}
+          switchOn={this.state.switchOn1}
+          onPress={this.onPress1}
+          circleColorOff={colors.primary}
+          circleColorOn={colors.primary}
+          duration={0}
+        />
 
       <View style={styles.container}>
           <TextInput
@@ -794,10 +995,26 @@ deleteUserFromAuthDatabase() {
       </Item>
 
         <Button large-green style={styles.button} onPress={this.emailLoginAsync}>
-            <Text style={styles.lightText} >{prevPage}</Text>
+        <Ionicons
+                  size={30}
+                  color="#fff"
+                  style={styles.icon}
+                  name='ios-mail'
+                />
+            <Text style={styles.lightText} >Login</Text>
         </Button>
 
       <Text>Or</Text>
+
+      <Button large-green style={styles.button} onPress ={this.facebookLoginAsync}>
+        <FontAwesome
+          size={30}
+          color="#fff"
+          style={styles.icon}
+          name='facebook-square'
+        />
+        <Text style={styles.lightText}>Facebook Login</Text>
+      </Button>
 
       <Button large-green style={styles.button} onPress ={this.googleLoginAsync}>
         <Ionicons
@@ -806,7 +1023,7 @@ deleteUserFromAuthDatabase() {
           style={styles.icon}
           name='logo-google'
         />
-        <Text style={styles.lightText}>Google {prevPage}</Text>
+        <Text style={styles.lightText}>Google Login</Text>
       </Button>
 
       <Text>Or</Text>
@@ -833,18 +1050,60 @@ deleteUserFromAuthDatabase() {
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-
+          <SwitchToggle
+          buttonText={this.getButtonText()}
+          backTextRight={this.getRightText()}
+          backTextLeft={this.getLeftText()}
+          
+          type={1}
+          buttonStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute'
+          }}
+          
+          rightContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          leftContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}
+        
+          buttonTextStyle={{fontSize: 20}}
+          textRightStyle={{fontSize: 20}}
+          textLeftStyle={{fontSize: 20}}
+        
+          containerStyle={{
+            marginTop: 16,
+            width: 200,
+            height: 50,
+            borderRadius: 27.5,
+            padding: 5,
+            borderWidth:1,
+            borderColor:'black',
+            marginBottom: 100,
+          }}
+          backgroundColorOn='#fff'
+          backgroundColorOff='#fff'
+          circleStyle={{
+            width: 100,
+            height: 40,
+            borderRadius: 27.5,
+            backgroundColor: 'blue', // rgb(102,134,205)
+          }}
+          switchOn={this.state.switchOn1}
+          onPress={this.onPress1}
+          circleColorOff={colors.primary}
+          circleColorOn={colors.primary}
+          duration={0}
+        />
         <View style={styles.container}>
-              <TextInput
-                  placeholder= 'First Name'
-                  underlineColorAndroid="transparent"
-                  autoCorrect={false}
-                  style={styles.TextInputStyle}
-                  onChangeText = { firstName=> this.setState({firstName:firstName})}
-                  />
+          <TextInput
+              placeholder= 'Full Name'
+              underlineColorAndroid="transparent"
+              autoCorrect={false}
+              style={styles.TextInputStyle}
+              onChangeText = { firstName=> this.setState({firstName:firstName})}
+              />
           </View>
 
-          <View style={styles.container}>
+          {/* <View style={styles.container}>
               <TextInput
                   placeholder= 'Last Name'
                   underlineColorAndroid="transparent"
@@ -852,7 +1111,7 @@ deleteUserFromAuthDatabase() {
                   style={styles.TextInputStyle}
                   onChangeText = { lastName=> this.setState({lastName:lastName})}
                   />
-          </View>
+          </View> */}
 
 
         <View style={styles.container}>
@@ -879,10 +1138,26 @@ deleteUserFromAuthDatabase() {
 
 
           <Button large-green style={styles.button} onPress={this.emailSignUpAsync}>
+          <Ionicons
+                  size={30}
+                  color="#fff"
+                  style={styles.icon}
+                  name='ios-mail'
+                />
               <Text style={styles.lightText} >Signup</Text>
           </Button>
                 
         <Text>Or</Text>
+
+        <Button large-green style={styles.button} onPress ={this.facebookLoginAsync}>
+              <FontAwesome
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='facebook-square'
+              />
+              <Text style={styles.lightText}>Facebook Signup</Text>
+            </Button>
 
           <Button large-green style={styles.button}  onPress ={this.googleLoginAsync}>
             <Ionicons
@@ -893,7 +1168,35 @@ deleteUserFromAuthDatabase() {
             />
             <Text style={styles.lightText} onPress ={this.googleLoginAsync}>Google Signup</Text>
           </Button>
+
+          <AwesomeAlert
+              show={showAlert2}
+              showProgress={false}
+              title="Oops!"
+              message={'You are signed up with different provider\n Link your facebook account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert2()}
+          />
+          <AwesomeAlert
+              show={showAlert3}
+              showProgress={false}
+              title="Oops!"
+              message={'You are signed up with email before \n Link your email account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert3()}
+          />
       </KeyboardAvoidingView>
+
       </DismissKeyboard>
     );
     }
@@ -910,7 +1213,7 @@ deleteUserFromAuthDatabase() {
             show={showAlert}
             showProgress={false}
             title="Alert"
-            message="Please verify email first! After verification press SignIn Button"
+            message="Please verify email first After verification press SignIn Button"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             showCancelButton={true}
@@ -945,7 +1248,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
+    //justifyContent: 'center'
   },
 
   button: {
