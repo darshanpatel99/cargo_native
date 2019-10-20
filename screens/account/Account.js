@@ -355,7 +355,7 @@ googleLoginAsync = async () => {
 
 
 
-                  this.setState({ loading: false });
+                  this.setState({ loading: false, firstTimeGoogleSignUp : false });
 
                   // const resetAction = StackActions.reset({
                   //   index: 0, // <-- currect active route from actions array
@@ -504,7 +504,7 @@ facebookLoginAsync = async () => {
                     picture:docSnapshot.data().ProfilePicture,
                     }); 
 
-                  this.setState({ loading: false, isFacebookAuth:true });
+                  this.setState({ loading: false, isFacebookAuth:true, firstTimeGoogleSignUp:false });
                 }
                 else{
                   console.log('User is not sign up');
