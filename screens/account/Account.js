@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView} from 'react-native';
+import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Platform} from 'react-native';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button, Text} from "native-base";
@@ -9,7 +9,15 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { FontAwesome} from '@expo/vector-icons';
-
+import { Ionicons } from "@expo/vector-icons";
+import * as Google from 'expo-google-app-auth'
+import * as AppAuth from 'expo-app-auth';
+import {Notifications} from 'expo';
+import Spinner from 'react-native-loading-spinner-overlay';
+import AddUser from '../../functions/AddUser';
+import { StackActions, NavigationActions } from 'react-navigation';
+import * as Facebook from 'expo-facebook';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 let storageRef;
 
@@ -21,9 +29,16 @@ const DismissKeyboard = ({ children }) => (
 
 export default class AccountScreen extends React.Component {
 
+  //facebook api
+  FacebookApiKey= '2872116616149463';
+
   constructor(props){
     super(props);
     storageRef = firebase.storage().ref();
+
+    //creating the firebase reference for the users collection
+    this.firebaseRef = firebase.firestore().collection('Users');
+
     this.state = {
     data: {},
     name:'',
@@ -37,7 +52,37 @@ export default class AccountScreen extends React.Component {
     currentFolio:'',
     Address:'',
     UnitNumber:'',
+    loading:false,
+    phoneNumber:'',
+    remove:true,
+    buttonOn:false,           
+    user: null,
+    phone:'',
+    confirmationResult: undefined,
+    code: '',
+    Token: '',
+    valid:false,
+    emailRegistration:false,
+    nameRegistration:false,
+    firstName:'',
+    lastname:'',
+    email:'',
+    country:'',
+    city:'',
+    street:'',
+    UID:'',
+    profilePic:'',
+    //showAlert: true,
+    showOverlay: false,
+    deviceNotificationToken: '',
+    expoNotificationToken:'',
+    firstTimeGoogleSignUp:true,
+    showAlert: false,
+    showAlert3: false,
+    isFacebookAuth: false,
+    pendingCred:null,
     }
+
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -67,18 +112,24 @@ export default class AccountScreen extends React.Component {
     //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
-    
+
+  //bind the function
+  this.logoutAsync = this.logoutAsync.bind(this);
+  this.showAlert = this.showAlert.bind(this);
+  this.hideAlert = this.hideAlert.bind(this);
 }
 
+//component did mount
 componentDidMount() {
   const { navigation } = this.props;
-    
+
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
+    
     let user = firebase.auth().currentUser;
 
     if (user != null) {
-
+      this.setState({firstTimeGoogleSignUp:false});
       //firebase.auth().signInWithEmailAndPassword(email, password)
 
       this.state.userID = user.uid;
@@ -118,8 +169,9 @@ componentWillUnmount() {
 onAuthStateChanged = (user) => {
   // if the user logs in or out, this will be called and the state will update.
   // This value can also be accessed via: firebase.auth().currentUser
-  if (user != null){
-    if(user.emailVerified){ // note difference on this line
+  if (user != null ){
+    if(user.emailVerified || user.providerData[0].providerId=='facebook.com'){ // note difference on this line
+     
       this.setState({ User: user});
     }
   }
@@ -128,15 +180,551 @@ onAuthStateChanged = (user) => {
   }
 };  
 
+showAlert = () => {
+  this.setState({
+    loading:false,
+    showAlert: true
+  });
+};
+
+hideAlert = async () => {
+  const { navigate } = this.props.navigation;
+
+  console.log('Hide alert called')
+  this.setState({
+    showAlert: false
+  });
+  //call the google login async, becasue this time we only two methods 
+  await this.googleLoginAsync(); 
+};
+
+     //hide the alert
+     hideAlert3(){
+      const { navigate } = this.props.navigation;
+      this.setState({
+        showAlert3: false,
+      });   
+      navigate('SignUp',{magic: 'Login', pendingCred : this.state.pendingCred})   
+    };
+  
+    //function to show the alert
+    showAlert3(){
+      this.setState({
+        loading:false,
+        showAlert3: true,
+        
+      });
+    };
+
+/**
+ * Function Description: Google login, get the user access token 
+ */
+//google login function
+async googleLogin(){
+
+  try{
+  
+
+
+    //Configuration File
+    const configDev ={ 
+        expoClientId:'12592995924-cmat1v9r7i2muq4j14ilfjcbbdcftod7.apps.googleusercontent.com', // cargo-dev
+        iosClientId:'12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5.apps.googleusercontent.com', //cargo-dev
+        androidClientId:'12592995924-6sul322o56a88e3cs0o6627jlfq22l88.apps.googleusercontent.com', //cargo-dev
+        iosStandaloneAppClientId: '12592995924-kcoo3s6sgqhkh46ggap62e36dgjhbq4o.apps.googleusercontent.com',//cargo-dev
+        androidStandaloneAppClientId:'12592995924-c6jjfdudjgk0t8n3pumj2obti504edrv.apps.googleusercontent.com', //cargo-dev
+        scopes:['profile', 'email'],
+        redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google` // this is the LINE 
+
+    };
+
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+    //this.setState({ loading: false });
+   
+    console.log('Going to open a web view');
+    const {type, accessToken} = await Google.logInAsync(configDev);
+
+    if(type=='success'){
+
+      //alert('You got looged in with google');
+
+      // Alert.alert(
+      //   'Alert',
+      //   'You got logged in with google',
+      //   [
+      //     // {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+      //     {text: 'OK'},
+      //   ],
+      //   {cancelable: true},
+      // );
+      
+      //start the loader again
+      console.log('successfully got the access topken');
+      this.setState({ loading: true });
+
+      return accessToken;
+    }
+    else{
+      this.setState({ loading: false });
+    }
+
+  }catch({message}){
+    this.setState({ loading: false });
+    //alert('');
+  }
+}
+
+
+//Google Login Async functions
+googleLoginAsync = async () => {
+
+  this.setState({ loading: true });
+  console.log('statettttttttttttttttttttttttttttttt: '+this.state.loading);
+  // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const accessToken = await this.googleLogin();
+
+  if (!accessToken) return;
+  // Use the google token to authenticate our user in firebase.
+  const credential = firebase.auth.GoogleAuthProvider.credential(null,accessToken);
+
+  console.log('Got the credentials from Google SignIn');
+  try {
+    // login with credential
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the Google');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      this.setState({UID:uid, user:user, email:user.email, firstName:user.displayName});
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            
+            console.log('The uid that is going to be verified: ' + userUID);
+
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                 
+                  console.log('2--inside firebase snap');
+                  
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
+
+                    //link the facebook credentials if user is trying to login with facebook but have same email used with facebook
+
+                    if(this.state.isFacebookAuth){
+
+                      var pendingFacebookCredentialsToLink = this.state.pendingCred;
+
+                      user.linkAndRetrieveDataWithCredential(pendingFacebookCredentialsToLink).then(function(usercred) {
+                        // Facebook account successfully linked to the existing Firebase user.
+                        console.log('Your facebook account is successfully linked with google now, you can nytime login with facebook');
+                      });
+
+
+                    }
+
+
+
+
+
+                  this.setState({ loading: false });
+
+                  // const resetAction = StackActions.reset({
+                  //   index: 0, // <-- currect active route from actions array
+                  //   //params: {userId: this.state.UID},
+                  //   actions: [
+                  //     NavigationActions.navigate({ routeName: 'Account', params: { userId: userUID}} ),
+                  //   ],
+                  // });
+                  
+                  // this.props.navigation.dispatch(resetAction);
+
+                  //this.props.navigation.navigate('Account', {userID: userUID,});
+                }
+                else{
+                  console.log('User is not sign up');
+                  //add user to the database using the finishFunc
+
+                  this.finishFunc();
+              
+                }
+               
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+      
+    });;
+  } catch ({ message }) {
+    alert(message);
+  }
+};
+
+
+
+//facebook Login Function
+async facebookLogin() {
+  console.log("in facebookLogin() method");
+  try{
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
+      permissions:['public_profile', 'email']
+    });
+
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+  
+    console.log(authData);
+    if (!authData) return;
+    const { type, token } = authData;
+    if (type === 'success') {
+      console.log('facebook auth success and the token is' + token);
+
+      //set the loading state to true
+      this.setState({loading:true});
+
+      return token;
+    } else {
+      // Maybe the user cancelled...
+    }
+  }
+  catch(message){
+    console.log(message);
+    alert(message);
+    
+  }
+}
+
+
+//Facebook Login Async Function
+facebookLoginAsync = async () => {
+
+  this.setState({ loading: true });
+  console.log('in facebookLoginAsync() method');
+  // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const token = await this.facebookLogin();
+  if (!token) return;
+  try {
+  //get the required user information related to the 
+  const userInfo = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+
+  var userJson = (await userInfo.json());
+  console.log(userJson.name);
+  
+  //user information
+  var firstName = userJson.name;
+
+  console.log(firstName);
+
+
+  //setting all the user information
+  this.setState({firstName:firstName });
+
+
+  // Use the facebook token to authenticate our user in firebase.
+  const credential = firebase.auth.FacebookAuthProvider.credential(token);
+ 
+    // login with credential
+    var tempUID = null ;
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the facebook');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      console.log('User email is: ' + user.email);
+      this.setState({UID:uid, user:user, email:user.email});
+
+      console.log(user.providerData)
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            console.log('The uid that is going to be verified: ' + userUID);
+        
+             
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
+                  this.setState({ loading: false, isFacebookAuth:true });
+                }
+                else{
+                  console.log('User is not sign up');
+                  //Add user to the database
+                  this.finishFunc();
+                  
+                }
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+    }).catch(async (error)=>{
+      console.log('In the error');
+      if(error.code === 'auth/account-exists-with-different-credential')
+        {
+          console.log('Its Duplicate');
+
+          var pendingCred = error.credential;
+          var email = error.email;
+          console.log(JSON.stringify(error));
+
+          //set the pending credentials state
+          this.setState({pendingCred:pendingCred, isFacebookAuth:true});
+
+          
+
+          firebase.auth().fetchSignInMethodsForEmail(email).then(async (method)=>{
+
+            //If first sign in method is password it is important to prompt user for login with email and password
+            if(method[0]=='password'){
+              this.showAlert3();
+            }
+            else{
+              console.log('Alert Called')
+              await this.showAlert();
+            }
+
+
+
+
+          }).catch((error)=>{
+            console.log(error);
+          })
+
+        }
+    });
+  } catch ({ message }) {
+    alert(message);
+  }
+}
+
+
+/**
+ * Function Description: Get the provider for provid
+ */
+getProviderForProviderId = async(providerId)=>{
+
+  if(providerId=='firebase.com'){
+    return 'facebookProvider';
+  }
+  else if(providerId=='google.com'){
+
+    return 'googelProvider';
+  }
+
+
+
+}
+
+
+
+/**
+ * Function Description: Get the device notification token
+ */
+getNotificationToken = async (userUID) =>{
+  try{
+      
+      console.log('Getting the Notification Token');
+      const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+      );
+      let finalStatus = existingStatus;
+    
+      // only ask if permissions have not already been determined, because
+      // iOS won't necessarily prompt the user a second time.
+      if (existingStatus !== 'granted') {
+        // Android remote notification permissions are granted during the app
+        // install, so this will only ask on iOS
+        console.log('Notification permission is not granted');
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+    
+      // Stop here if the user did not grant permissions
+      if (finalStatus !== 'granted') {
+        return;
+      }
+    // Get the token that uniquely identifies this device
+      
+    console.log('going to get the notification token');
+    
+     await Notifications.getDevicePushTokenAsync().then((token)=>{
+        console.log('Got the following device notification token: '+ token);
+        console.log('Type of token: '+ typeof(token));
+        //this.setState({deviceNotificationToken:token});
+        this.firebaseRef.doc(userUID).update({NotificationToken:token});
+        
+      });
+
+      await Notifications.getExpoPushTokenAsync().then((token)=>{
+        console.log('Got the following device expo notification token: '+ token);
+        console.log('Type of token: '+ typeof(token));
+        //this.setState({expoNotificationToken:token});
+        this.firebaseRef.doc(userUID).update({ExpoNotificationToken:token});
+      });
+
+
+    
+  }
+  catch(error){
+    alert(error);
+  }
+}
+
+
+/**
+ * Function Description: Finish It Bruh
+ */
+finishFunc =() =>{
+
+  console.log('In the finishFunc function');
+  
+  //Sample dat object for each user
+  var data={
+    ActiveProducts : [],
+    BoughtProducts : [],
+    Cart : [],
+    City : '',
+    Country : '',
+    Email : this.state.email,
+    FirstName : this.state.firstName,
+    LastName : this.state.lastname,
+    PhoneNumber : this.state.phoneNumber,
+    ProfilePicture :'',
+    SoldProducts : [],
+    Street : '',
+    Address:'',
+    UnitNumber:'',
+    UID: this.state.UID.toString(),
+    NotificationToken: this.state.deviceNotificationToken,
+    ExpoNotificationToken: this.state.expoNotificationToken,
+  }
+
+  // const resetAction = StackActions.reset({
+  //   index: 0,
+  //   //action:[NavigationActions.navigate({routeName: 'AccountInfo'})]
+  // })
+  //adding the suer with the all the information we have to firebase
+  AddUser(data).then(()=>{
+      //Get the notification token
+      this.getNotificationToken(this.state.UID);
+
+  });
+  
+  console.log('Hello! finished adding data');
+  console.log('following data is added ' + data);
+  this.setState({ loading: false });
+  const resetAction = StackActions.reset({
+    index: 0, // <-- currect active route from actions array
+    //params: {userId: this.state.UID},
+    actions: [
+      NavigationActions.navigate({ routeName: 'UserAddressScreen', params: { userId: this.state.UID }} ),
+    ],
+  });
+  
+  this.props.navigation.dispatch(resetAction);
+
+
+
+  // this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
+  // this.props.navigation.dispatch(resetAction);
+  // this.setState({
+  //     phone: '',
+  //     phoneCompleted: false,
+  //     confirmationResult: undefined,
+  //     code: '',
+  //     email:'',
+  //     userName:'',
+  //     phoneNumber:'',
+  //     nameRegistration:false,
+  //     emailRegistration:false,
+
+  // });
+}
+
   //Function to logo out user21`22122
   async logoutAsync() {
     try {
-      await firebase.auth().signOut();
+      this.setState({
+        name:'',
+        //globalAddress:doc.data().City + ', ' + doc.data().Country,
+        UnitNumber:'',
+        Address:'',
+        Email:'',
+        PhoneNumber:'',
+        picture:'',
+        isFacebookAuth:false,
+        pendingCred:null
+        });
+    
+     await firebase.auth().signOut();
+     
       //props.navigation.navigate('Home');
       // const { navigate } = this.props.navigation;
       // navigate('ChatScreen')
     } catch ({ message }) {
-      //alert('You are logged out!!');
+      alert('You are logged out!! ' + message);
     }
   }
 
@@ -599,6 +1187,8 @@ onAuthStateChanged = (user) => {
 
   render() {
     const {navigate} = this.props.navigation;
+    const {showAlert} = this.state;
+    const {showAlert3} = this.state;
     let profileImage=''
 
     if(this.state.picture == '') {
@@ -608,7 +1198,7 @@ onAuthStateChanged = (user) => {
       profileImage= {uri:this.state.picture}
     }
     
-    if(this.state.User != null){
+    if(this.state.User != null && this.state.firstTimeGoogleSignUp==false){
 
       if(this.state.editMode){
         console.log('editing');
@@ -745,53 +1335,117 @@ onAuthStateChanged = (user) => {
                   </Button>
                 </View>
               </View>
-
           </View>
       );
-
       }
-        
     }
     else{
       console.log('User not logged in');
         return (
+          <ImageBackground source={require('../../assets/images/Signup.png')} style={{width: '100%', height: '100%'}}>         
             <View style={styles.viewStyle}>
               <View style={styles.logoStyle}>
-                <Image
+              <Spinner
+                visible={this.state.loading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+                />
+                {/* <Image
                 style={{width: 300, height: 300, borderRadius:20}}
                 source={require('../../assets/images/icon.png')}
-              />
+              /> */}
+                <Text
+                  style={{
+                    fontSize: Dimensions.get('screen').width * 0.18,
+                    fontFamily: 'origo',
+                    fontWeight: 'bold',
+                    color:'white'
+                  }}
+                >
+                  CarGo
+                </Text>
+                  <Text style={{
+                    fontSize:20,
+                    fontFamily: 'nunito-SemiBold',
+                    textAlign:'center',
+                    marginTop:20,
+                    color:'white',
+                    fontWeight: 'bold',
+                  }}>Post, buy, sell and watch as your items are delivered right to your door.</Text>
+
               </View>
-
-          {/* <View style={styles.buttonsWithLogo}> */}
-
-            {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-              <Button primary rounded large style={styles.button}  >
-                <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})} style={styles.lightText}>Login</Text>
-              </Button>
-            </TouchableOpacity> 
-
-            <TouchableOpacity  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-              <Button primary rounded large style={styles.button} >
-                <Text onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})} style={styles.lightText}>SignUp</Text>
-              </Button>
-            </TouchableOpacity> */}
 
             <View style={styles.bigButton}>
 
-              <Button large-green   style={styles.loginbutton}  onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'Login'})}>
-                <Text style={{justifyContent: 'center',fontSize: 20,  textAlign: 'center',
-                fontFamily: 'nunito-SemiBold'}}>Login</Text>
-              </Button>
+            <Button large-green style={styles.loginbutton} onPress ={this.facebookLoginAsync}>
+              <FontAwesome
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='facebook-square'
+              />
+              <Text style={styles.lightText}>Continue with Facebook</Text>
+            </Button>
+
+            <Button large-green style={styles.loginbutton} onPress ={this.googleLoginAsync}>
+              <Ionicons
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='logo-google'
+              />
+              <Text style={styles.lightText}>Continue with Google</Text>
+            </Button>
+
+            <Text  style={{
+                    fontSize:20,
+                    fontFamily: 'nunito-SemiBold',
+                    textAlign:'center',
+                    color:'white'
+                  }} > Or </Text>
 
               <Button large-green style={styles.loginbutton} onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
-                <Text style={{justifyContent: 'center',fontSize: 20,
-                fontFamily: 'nunito-SemiBold'}}>SignUp</Text>
+                <Ionicons
+                  size={30}
+                  color="#fff"
+                  style={styles.icon}
+                  name='ios-mail'
+                />
+                <Text style={styles.lightText}>Continue with Email</Text>
               </Button>
 
             </View>
+
+            <AwesomeAlert
+                show={showAlert}
+                showProgress={false}
+                title="Oops!"
+                message={'You are logged in different provider\n Link your facebook account'}
+                closeOnTouchOutside={false}
+                closeOnHardwareBackPress={false}
+                showConfirmButton={true}
+                cancelText="No, cancel"
+                confirmText="Link now"
+                confirmButtonColor= {Colors.primary}
+                onConfirmPressed={() => this.hideAlert()}
+              />
+
+            <AwesomeAlert
+              show={showAlert3}
+              showProgress={false}
+              title="Oops!"
+              message={'You are signed up with email before \n Link your email account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert3()}
+          />
+
           </View>
-       
+          </ImageBackground>
         );
       }
   }
@@ -808,11 +1462,6 @@ const styles = StyleSheet.create({
   screen:{
     flex:12,
   },
-  
-  headbuttons:{
-    flex:1,
-  },
-  
   pictureHolder:{          
     flex: 3,
     marginTop:Dimensions.get('window').height * 0.00,
@@ -882,7 +1531,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 100,
+    width: Dimensions.get('window').width - 60,
     margin: 5,
     borderRadius: 100,
     backgroundColor: Colors.primary,
@@ -892,8 +1541,11 @@ const styles = StyleSheet.create({
   },
 
   bigButton: {
-    flex: 0.15,
+    flex: 0.7,
     flexDirection: 'column',
+    alignItems:'center',
+    justifyContent: 'flex-end',
+    marginBottom: 50,
   },
 
   
@@ -985,9 +1637,10 @@ const styles = StyleSheet.create({
   height:Dimensions.get('window').width*0.32,
 },
 logoStyle:{
-  flex:0.7,
+  flex:0.3,
   justifyContent:'center',
-
+  alignItems:'center',
+  marginTop:50,
 },
 buttonsWithLogo:{
   flex:0.3,

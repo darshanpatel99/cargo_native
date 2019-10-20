@@ -17,6 +17,7 @@ let config = {
     appId: "1:572236256696:web:297a96ed7048a797"
 }
 
+//cargo development configuration
 var devConfig = {
     apiKey: "AIzaSyBrySojH8TyaXm-a5SF7Ij6PgyeL4Ry2bw",
     authDomain: "cargo-dev-84da1.firebaseapp.com",
