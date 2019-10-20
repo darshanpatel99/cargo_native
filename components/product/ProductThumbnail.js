@@ -30,7 +30,7 @@ const styles = {
     imageItself: {
         flex: 1,
         overflow:'hidden',
-        width: 60,
+        width: 100,
         height:100,
         borderRadius: 10,
         shadowOpacity: 0.2,

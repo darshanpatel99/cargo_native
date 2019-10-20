@@ -214,8 +214,6 @@ export default class PostProductScreen extends Component {
       console.log("Total number of uris we have"+ array.length)
       this.setState({ loading: true });
       array.forEach(async (element,index) => {
-
-        console.log("b " + arraySizes[index].bigSide + " s " + arraySizes[index].smallSide);
    
         if(first){
 
@@ -232,7 +230,7 @@ export default class PostProductScreen extends Component {
           
         }
 
-        await this.uploadImageToFirebase(element, uuid.v1())
+        await this.uploadImageToFirebase(element, arraySizes[index])
         .then(() => {
           console.log('Success' + uuid.v1());
           
@@ -489,6 +487,7 @@ export default class PostProductScreen extends Component {
     var changedH = {
       'isBiggest' : false,
       'value' : localSizeObject.height,
+      'valid' : true,
     }
    var changedW = {
     'isBiggest' : false,
@@ -524,6 +523,7 @@ export default class PostProductScreen extends Component {
 
     var finalH = 1 ; 
     var finalW = 1 ;
+    
     finalH = changedH.value/difValue;
 
     finalW = changedW.value/difValue;
@@ -603,11 +603,60 @@ export default class PostProductScreen extends Component {
 
  
   //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, imageName) => {
+  uploadImageToFirebase = async (uri, localSizeObject) => {
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 800){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 800){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/800);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/800) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + " those are with 800  " + finalH)
+
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     )
 
