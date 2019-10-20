@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, Dimensions, KeyboardAvoidingView, Platform} from "react-native";
+import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback, ImageBackground, Dimensions, KeyboardAvoidingView, Platform} from "react-native";
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -920,7 +920,7 @@ deleteUserFromAuthDatabase() {
       return(
 
         <DismissKeyboard>
-
+          <ImageBackground source={require('../../assets/images/bg2.png')} style={{width: '100%', height: '100%'}}>
         <View style={styles.viewStyle}>
         <Spinner
             visible={this.state.loading}
@@ -1033,6 +1033,7 @@ deleteUserFromAuthDatabase() {
       </Button>
  
     </View>
+    </ImageBackground>
     </DismissKeyboard>
     );
 
@@ -1043,7 +1044,7 @@ deleteUserFromAuthDatabase() {
     return (
 
       <DismissKeyboard>
-        
+      <ImageBackground source={require('../../assets/images/bg2.png')} style={{width: '100%', height: '100%'}}>
       <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
         <Spinner
             visible={this.state.loading}
@@ -1196,7 +1197,7 @@ deleteUserFromAuthDatabase() {
               onConfirmPressed={() => this.hideAlert3()}
           />
       </KeyboardAvoidingView>
-
+      </ImageBackground>
       </DismissKeyboard>
     );
     }

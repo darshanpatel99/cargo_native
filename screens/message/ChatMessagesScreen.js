@@ -206,7 +206,7 @@ export default class ChatScreen extends React.Component {
     headerLeft: (
       <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.previousScreen)}>
           <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 5 , marginTop: 10, fontSize:30}} />
+            <Ionicons name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 15 , marginTop: 10, fontSize:35}} />
             {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:23, marginRight:10}}>{navigation.state.params.previousScreen}</Text> */}
           </View>
       </TouchableOpacity>

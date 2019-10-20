@@ -30,6 +30,21 @@ const CONTENT = [
       'You will be prompted to update your delivery address before your purchase.',
   },
   {
+    title: 'Can I return a purchased item if it is not what was displayed in the ad?',
+    content:
+      'Yes. You may return a purchased item if the item does not match what was displayed in the ad or the quality is not what was advertised. Upon arrival of your item, you will have a 5 minute window in the app, to either accept the item or return it. If you choose to return the item, you will not be refunded the delivery fee.',
+  },
+  {
+    title: 'Why am I being charged a 5% convenience fee when I buy or sell an item on CarGo Marketplace?',
+    content:
+      'The 5% convenience fee is charged to both the buyer and the seller upon a completed transaction. This fee is charged so you can buy and sell completely from the safety of your home. We take care of the rest!',
+  },
+  {
+    title: 'When I sell an item on CarGo Marketplace, when am I charged the 5% convenience fee?',
+    content:
+      'When you sell an item on CarGo Marketplace, you will receive 5% less than the price you sold your item for. Example, if you sold an item for $25, you will receive $23.75 back.',
+  },
+  {
     title: 'What can I do if my item never makes it to my address? ',
     content:
       'If you haven’t received your item within an hour and a half of your transaction, please send an email to info@meetcargo.com',
