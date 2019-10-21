@@ -1324,7 +1324,7 @@ container: {
     height: 50,
     width: Dimensions.get('window').width - 100,
     margin:10,
-    backgroundColor: "#f8f8f8",
+    //backgroundColor: "#f8f8f8",
 },
 alertContainer:{
   flex: 1,
