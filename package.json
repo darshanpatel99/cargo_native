@@ -21,7 +21,7 @@
     "expo-asset": "^5.0.0",
     "expo-av": "^7.0.1",
     "expo-camera": "~5.0.1",
-    "expo-cli": "^3.1.2",
+    "expo-cli": "^3.4.1",
     "expo-constants": "^7.0.0",
     "expo-facebook": "^7.0.0",
     "expo-font": "^7.0.0",
@@ -67,6 +67,7 @@
     "react-navigation-stack": "^1.9.0",
     "react-navigation-tabs": "^2.5.5",
     "react-stripe-elements": "^4.0.0",
+    "rx-core": "^4.0.8",
     "sentry-expo": "^2.0.0",
     "stripe-client": "^1.1.5",
     "yarn": "^1.17.3"

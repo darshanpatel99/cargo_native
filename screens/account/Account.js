@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Platform} from 'react-native';
+import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, WebView, Platform} from 'react-native';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button, Text} from "native-base";
@@ -18,6 +18,9 @@ import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
 import * as Facebook from 'expo-facebook';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import {AuthSession} from 'expo';
+import { CompositeDisposable } from 'rx-core';
+import { readDirectoryAsync } from 'expo-file-system';
 
 let storageRef;
 
@@ -355,7 +358,7 @@ googleLoginAsync = async () => {
 
 
 
-                  this.setState({ loading: false });
+                  this.setState({ loading: false, firstTimeGoogleSignUp : false });
 
                   // const resetAction = StackActions.reset({
                   //   index: 0, // <-- currect active route from actions array
@@ -400,8 +403,21 @@ async facebookLogin() {
     if(Platform.OS=='ios'){
       this.setState({ loading: false });
     }
-    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
-      permissions:['public_profile', 'email']
+
+    const redirectUrl = AuthSession.getRedirectUrl();
+
+    console.log(redirectUrl);
+    // const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
+    //   permissions:['public_profile', 'email']
+    // });
+
+    //facebook auth with the auth session
+    const authData = await AuthSession.startAsync({
+      authUrl:
+      `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` +
+      `&client_id=${this.FacebookApiKey}` +
+      `&redirect_uri=${encodeURIComponent(redirectUrl)}`,
+
     });
 
     if(Platform.OS=='ios'){
@@ -411,13 +427,14 @@ async facebookLogin() {
     console.log(authData);
     if (!authData) return;
     const { type, token } = authData;
+    const accessToken = authData.params.access_token;
     if (type === 'success') {
       console.log('facebook auth success and the token is' + token);
 
       //set the loading state to true
       this.setState({loading:true});
 
-      return token;
+      return accessToken;
     } else {
       // Maybe the user cancelled...
     }
@@ -504,7 +521,7 @@ facebookLoginAsync = async () => {
                     picture:docSnapshot.data().ProfilePicture,
                     }); 
 
-                  this.setState({ loading: false, isFacebookAuth:true });
+                  this.setState({ loading: false, isFacebookAuth:true, firstTimeGoogleSignUp:false });
                 }
                 else{
                   console.log('User is not sign up');
@@ -1185,6 +1202,16 @@ finishFunc =() =>{
       }
     }
 
+    termandCondition(){
+      console.log('Inside function')
+        return (
+          <WebView
+            source={{uri: 'https://github.com/facebook/react-native'}}
+            style={{flex: 1, marginTop: 20}}
+          />
+        );
+    }
+
   render() {
     const {navigate} = this.props.navigation;
     const {showAlert} = this.state;
@@ -1415,6 +1442,12 @@ finishFunc =() =>{
               </Button>
 
             </View>
+            <Text style={{
+                    fontSize:14,
+                    fontFamily: 'nunito-SemiBold',
+                    textAlign:'center',
+                    color:'white'}} >By signing up or logging in, you agree our <Text onPress={ ()=> this.termandCondition()} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}>Terms & Condition</Text> and 
+                    <Text onPress={ ()=> console.log('terms pressed')} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}> Privacy Policy</Text></Text>
 
             <AwesomeAlert
                 show={showAlert}

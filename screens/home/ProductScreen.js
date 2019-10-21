@@ -375,7 +375,7 @@ export class ProductScreen extends Component {
       headerLeft: (
         <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.prevPage)}>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 10 , marginTop: 10, fontSize:30}} />
+              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 13 , marginTop: 10, fontSize:35}} />
               {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:13, marginRight:10}}>{navigation.state.params.prevPage}</Text> */}
             </View>
         </TouchableOpacity>
