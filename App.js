@@ -21,6 +21,7 @@ const customViewProps = {
   }
 };
 
+
 export default class App extends React.Component {
 //export default function App(props) {
 //const [isLoadingComplete, setLoadingComplete] = useState(false);

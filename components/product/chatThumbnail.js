@@ -52,6 +52,8 @@ const styles = {
     imageItself: {
         flex: 1,       
         shadowOpacity: 0.2,
+        alignItems:'center',
+        justifyContent:'center',
         shadowOffset: {
         width: 0,
         height: 4

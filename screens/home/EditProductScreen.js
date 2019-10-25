@@ -8,7 +8,8 @@ import {
   Image,
   View,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 import {
   Form,
@@ -1159,7 +1160,7 @@ export default class PostProductScreen extends Component {
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
 
-              <GooglePlacesAutocomplete
+              {/* <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Pickup Address'
                 minLength={2}
@@ -1231,9 +1232,16 @@ export default class PostProductScreen extends Component {
                     color: '#1faadb'
                     },
                 }}
-                />
+                /> */}
 
-            
+        <TextInput
+            placeholder= 'Pickup Address'
+            underlineColorAndroid="transparent"
+            autoCapitalize='none'
+            autoCorrect={false}
+            style={styles.TextInputStyle}
+            onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
+          />
             
             </Content>
             <View
@@ -1508,5 +1516,25 @@ const styles = {
   },
   spinnerTextStyle: {
     color: '#0000FF'
+  },
+
+  TextInputStyle: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    //textAlign: "center",
+    alignItems: "center",
+    height: 40,
+    //width: 120,
+    borderRadius: 5,
+    //margin: 10,
+    marginTop:10,
+    padding:10,
+    //backgroundColor: "#f8f8f8",
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.5,
+    borderWidth: 0.5,
+    borderColor: Colors.primary,
   },
 };

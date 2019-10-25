@@ -3,7 +3,106 @@ import { View } from 'react-native';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import Colors from '../../constants/Colors'
 
+
 const items = [
+  // this is the parent or 'item'
+  {
+    name: 'Electronics',
+    id: 1,
+  },
+  {
+    name: 'Home',
+    id: 3,
+  },
+  {
+    name: 'Fashion',
+    id: 4,
+  },
+  {
+    name: 'Pet',
+    id: 5,
+  },
+  {
+    name: 'Garden',
+    id: 6,
+  },
+  {
+    name: 'Sports',
+    id: 7,
+  },
+  {
+    name: 'Entertainment',
+    id: 8,
+  },
+  {
+    name: 'Family',
+    id: 9,
+  },
+  {
+    name: 'Hobbies',
+    id: 10, 
+  },
+  {
+    name: 'Others',
+    id: 2,
+  },
+]
+
+export default class extends Component {
+  constructor() {
+    super();
+    this.state = {
+      selectedItems:[],
+    };
+  }
+  onSelectedItemsChange = (selectedItems) => {
+    this.setState({ selectedItems });
+    console.log(typeof selectedItems);
+    this.props.parentCallback(selectedItems);
+  };
+
+  changeState = () => {
+    this.setState({
+      selectedItems: [],
+    });
+  };
+
+  render() {
+    return (
+        <View >
+        <SectionedMultiSelect
+          items={items}
+          uniqueKey="id"
+          subKey="children"
+          selectText="Select Category"
+          hideSearch={true}
+          showDropDowns={true}
+          readOnlyHeadings={false}
+          onSelectedItemsChange={this.onSelectedItemsChange}
+          selectedItems={this.state.selectedItems}
+          single={true}
+          colors= {{chipColor: Colors.primary}}
+        //   selectToggleIconComponent = "filter-list"
+          styles = {{
+            backdrop: {
+              justifyContent: 'center',
+            },
+            container: {
+              width: '80%',
+              height: '60%',
+              flex: 0,
+              alignSelf: 'center',
+              marginTop:100
+            }}
+          }
+        />
+      </View>
+    );
+  }
+}
+
+
+const itemsLater = [
   // this is the parent or 'item'
   {
     name: 'Arts & Collectibles',
@@ -248,56 +347,3 @@ const items = [
     id: 55,
   },
 ];
-
-export default class extends Component {
-  constructor() {
-    super();
-    this.state = {
-      selectedItems:[],
-    };
-  }
-  onSelectedItemsChange = (selectedItems) => {
-    this.setState({ selectedItems });
-    console.log(typeof selectedItems);
-    this.props.parentCallback(selectedItems);
-  };
-
-  changeState = () => {
-    this.setState({
-      selectedItems: [],
-    });
-  };
-
-  render() {
-    return (
-        <View >
-        <SectionedMultiSelect
-          items={items}
-          uniqueKey="id"
-          subKey="children"
-          selectText="Select Category"
-          hideSearch={true}
-          showDropDowns={true}
-          readOnlyHeadings={false}
-          onSelectedItemsChange={this.onSelectedItemsChange}
-          selectedItems={this.state.selectedItems}
-          single={true}
-          colors= {{chipColor: Colors.primary}}
-        //   selectToggleIconComponent = "filter-list"
-          styles = {{
-            backdrop: {
-              justifyContent: 'center',
-            },
-            container: {
-              width: '80%',
-              height: '80%',
-              flex: 0,
-              alignSelf: 'center',
-              marginTop:50
-            }}
-          }
-        />
-      </View>
-    );
-  }
-}
