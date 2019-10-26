@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5.apps.googleusercontent.com</string>
+	<string>572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5</string>
+	<string>com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>572236256696-vmjaebnsmv5hg99f2os0bj5oc2ii2f30.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDhHyNkhVM7ZQb2_0ApcYYT0H-lzv4dT74</string>
+	<string>AIzaSyCyzo9qI-kAjUzqK8h7hDdBcUHfKXNZD1I</string>
 	<key>GCM_SENDER_ID</key>
-	<string>12592995924</string>
+	<string>572236256696</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.developer.cargo-dev</string>
+	<string>com.developer.cargo</string>
 	<key>PROJECT_ID</key>
-	<string>cargo-dev-84da1</string>
+	<string>cargo-488e8</string>
 	<key>STORAGE_BUCKET</key>
-	<string>cargo-dev-84da1.appspot.com</string>
+	<string>cargo-488e8.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:12592995924:ios:d680c56881fbcc4b9697c1</string>
+	<string>1:572236256696:ios:0f39b4ad0037ba79876b4d</string>
 	<key>DATABASE_URL</key>
-	<string>https://cargo-dev-84da1.firebaseio.com</string>
+	<string>https://cargo-488e8.firebaseio.com</string>
 </dict>
 </plist>

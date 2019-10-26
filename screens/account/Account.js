@@ -223,9 +223,6 @@ hideAlert = async () => {
 async googleLogin(){
 
   try{
-  
-
-
     //Configuration File
     const configDev ={ 
         expoClientId:'12592995924-cmat1v9r7i2muq4j14ilfjcbbdcftod7.apps.googleusercontent.com', // cargo-dev

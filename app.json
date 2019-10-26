@@ -5,6 +5,9 @@
     "privacy": "unlisted",
     "sdkVersion": "35.0.0",
     "scheme": "cargo",
+    "facebookScheme": "fb2872116616149463",
+    "facebookAppId": "2872116616149463",
+    "facebookDisplayName": "CarGo Marketplace",
     "notification": {
       "icon": "./assets/images/icon.png"
     },
@@ -13,7 +16,7 @@
       "android",
       "web"
     ],
-    "version": "2.1.0",
+    "version": "2.1.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -29,7 +32,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.developer.cargodev",
+      "bundleIdentifier": "com.developer.cargo",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take product images.",
         "NSPhotoLibraryUsageDescription": "Please give photos permission to upload product images to your ad"
@@ -41,9 +44,9 @@
       }
     },
     "android": {
-      "package": "com.developer.cargodev",
+      "package": "com.developer.cargo",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 5
+      "versionCode": 6
     },
     "hooks": {
       "postPublish": [
