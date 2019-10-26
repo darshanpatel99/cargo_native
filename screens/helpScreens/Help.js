@@ -22,7 +22,7 @@ const CONTENT = [
   {
     title: 'When I buy an item, how long does delivery take?',
     content:
-      'Our drivers strive to get you your items as quickly as possible. You will have your item no later than one hour after the transaction.',
+      'Our drivers strive to get you your items as quickly as possible.',
   },
   {
     title: 'Can I change my delivery address after I have bought an item?',
@@ -47,7 +47,7 @@ const CONTENT = [
   {
     title: 'What can I do if my item never makes it to my address? ',
     content:
-      'If you haven’t received your item within an hour and a half of your transaction, please send an email to info@meetcargo.com',
+      'If you haven’t received your item within 24 hours of your transaction, please send an email to info@meetcargo.com',
   },
   {
     title: 'Will I receive a confirmation email after a transaction?',

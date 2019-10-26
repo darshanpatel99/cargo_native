@@ -21,6 +21,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import {AuthSession} from 'expo';
 import { CompositeDisposable } from 'rx-core';
 import { readDirectoryAsync } from 'expo-file-system';
+import * as WebBrowser from 'expo-web-browser';
 
 let storageRef;
 
@@ -43,47 +44,50 @@ export default class AccountScreen extends React.Component {
     this.firebaseRef = firebase.firestore().collection('Users');
 
     this.state = {
-    data: {},
-    name:'',
-    globalAddress:'',
-    User:null,
-    userID:'',
-    editMode:false,
-    newData:[],
-    newPicture:[],
-    picture:'',
-    currentFolio:'',
-    Address:'',
-    UnitNumber:'',
-    loading:false,
-    phoneNumber:'',
-    remove:true,
-    buttonOn:false,           
-    user: null,
-    phone:'',
-    confirmationResult: undefined,
-    code: '',
-    Token: '',
-    valid:false,
-    emailRegistration:false,
-    nameRegistration:false,
-    firstName:'',
-    lastname:'',
-    email:'',
-    country:'',
-    city:'',
-    street:'',
-    UID:'',
-    profilePic:'',
-    //showAlert: true,
-    showOverlay: false,
-    deviceNotificationToken: '',
-    expoNotificationToken:'',
-    firstTimeGoogleSignUp:true,
-    showAlert: false,
-    showAlert3: false,
-    isFacebookAuth: false,
-    pendingCred:null,
+      data: {},
+      name:'',
+      globalAddress:'',
+      User:null,
+      userID:'',
+      editMode:false,
+      newData:[],
+      newPicture:[],
+      picture:'',
+      currentFolio:'',
+      Address:'',
+      UnitNumber:'',
+      loading:false,
+      phoneNumber:'',
+      remove:true,
+      buttonOn:false,           
+      user: null,
+      phone:'',
+      confirmationResult: undefined,
+      code: '',
+      Token: '',
+      valid:false,
+      emailRegistration:false,
+      nameRegistration:false,
+      firstName:'',
+      lastname:'',
+      email:'',
+      country:'',
+      city:'',
+      street:'',
+      UID:'',
+      profilePic:'',
+      //showAlert: true,
+      showOverlay: false,
+      deviceNotificationToken: '',
+      expoNotificationToken:'',
+      firstTimeGoogleSignUp:true,
+      showAlert: false,
+      showAlert3: false,
+      isFacebookAuth: false,
+      pendingCred:null,
+      showWebView: false,
+      result: null,
+      result2: null,
     }
 
 
@@ -404,21 +408,21 @@ async facebookLogin() {
       this.setState({ loading: false });
     }
 
-    const redirectUrl = AuthSession.getRedirectUrl();
+    //const redirectUrl = AuthSession.getRedirectUrl();
 
-    console.log(redirectUrl);
-    // const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
-    //   permissions:['public_profile', 'email']
-    // });
+    //console.log(redirectUrl);
+    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
+      permissions:['public_profile', 'email']
+    });
 
     //facebook auth with the auth session
-    const authData = await AuthSession.startAsync({
-      authUrl:
-      `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` +
-      `&client_id=${this.FacebookApiKey}` +
-      `&redirect_uri=${encodeURIComponent(redirectUrl)}`,
+    // const authData = await AuthSession.startAsync({
+    //   authUrl:
+    //   `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` +
+    //   `&client_id=${this.FacebookApiKey}` +
+    //   `&redirect_uri=${encodeURIComponent(redirectUrl)}`,
 
-    });
+    // });
 
     if(Platform.OS=='ios'){
       this.setState({ loading: false });
@@ -427,14 +431,14 @@ async facebookLogin() {
     console.log(authData);
     if (!authData) return;
     const { type, token } = authData;
-    const accessToken = authData.params.access_token;
+    
     if (type === 'success') {
       console.log('facebook auth success and the token is' + token);
 
       //set the loading state to true
       this.setState({loading:true});
 
-      return accessToken;
+      return token;
     } else {
       // Maybe the user cancelled...
     }
@@ -1193,24 +1197,25 @@ finishFunc =() =>{
     })
   }
 
-    showDefaultPhoneNum =()=>{
-      if(this.state.PhoneNumber ==''){
-        return 'no phone number'
-      }
-      else{
-        return this.state.PhoneNumber
-      }
+  showDefaultPhoneNum =()=>{
+    if(this.state.PhoneNumber ==''){
+      return 'no phone number'
     }
+    else{
+      return this.state.PhoneNumber
+    }
+  }
 
-    termandCondition(){
-      console.log('Inside function')
-        return (
-          <WebView
-            source={{uri: 'https://github.com/facebook/react-native'}}
-            style={{flex: 1, marginTop: 20}}
-          />
-        );
-    }
+  _handlePressButtonAsync = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://www.cargomarketplace.ca/privacy-policy/');
+    this.setState({ result });
+  };
+
+  _handlePressButtonAsync2 = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://www.cargomarketplace.ca/terms-conditions/');
+    this.setState({ result2 });
+  };
+  
 
   render() {
     const {navigate} = this.props.navigation;
@@ -1368,9 +1373,11 @@ finishFunc =() =>{
     }
     else{
       console.log('User not logged in');
-        return (
-          <ImageBackground source={require('../../assets/images/Signup.png')} style={{width: '100%', height: '100%'}}>         
+        return ( 
+          
+          <ImageBackground source={require('../../assets/images/Signup.png')} style={{width: '100%', height: '100%'}}> 
             <View style={styles.viewStyle}>
+                
               <View style={styles.logoStyle}>
               <Spinner
                 visible={this.state.loading}
@@ -1404,7 +1411,7 @@ finishFunc =() =>{
 
             <View style={styles.bigButton}>
 
-            <Button large-green style={styles.loginbutton} onPress ={this.facebookLoginAsync}>
+            {/* <Button large-green style={styles.loginbutton} onPress ={this.facebookLoginAsync}>
               <FontAwesome
                 size={30}
                 color="#fff"
@@ -1412,7 +1419,7 @@ finishFunc =() =>{
                 name='facebook-square'
               />
               <Text style={styles.lightText}>Continue with Facebook</Text>
-            </Button>
+            </Button> */}
 
             <Button large-green style={styles.loginbutton} onPress ={this.googleLoginAsync}>
               <Ionicons
@@ -1442,27 +1449,22 @@ finishFunc =() =>{
               </Button>
 
             </View>
-            <Text style={{
-                    fontSize:14,
-                    fontFamily: 'nunito-SemiBold',
-                    textAlign:'center',
-                    color:'white'}} >By signing up or logging in, you agree our <Text onPress={ ()=> this.termandCondition()} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}>Terms & Condition</Text> and 
-                    <Text onPress={ ()=> console.log('terms pressed')} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}> Privacy Policy</Text></Text>
+            <Text style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',color:'white'}} >By signing up or logging in, you agree our <Text onPress={this._handlePressButtonAsync2} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}>Terms & Condition</Text> and 
+                <Text onPress={this._handlePressButtonAsync} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}> Privacy Policy</Text></Text>
 
             <AwesomeAlert
-                show={showAlert}
-                showProgress={false}
-                title="Oops!"
-                message={'You are logged in different provider\n Link your facebook account'}
-                closeOnTouchOutside={false}
-                closeOnHardwareBackPress={false}
-                showConfirmButton={true}
-                cancelText="No, cancel"
-                confirmText="Link now"
-                confirmButtonColor= {Colors.primary}
-                onConfirmPressed={() => this.hideAlert()}
-              />
-
+              show={showAlert}
+              showProgress={false}
+              title="Oops!"
+              message={'You are logged in different provider\n Link your facebook account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert()}
+            />
             <AwesomeAlert
               show={showAlert3}
               showProgress={false}
@@ -1475,8 +1477,7 @@ finishFunc =() =>{
               confirmText="Link now"
               confirmButtonColor= {Colors.primary}
               onConfirmPressed={() => this.hideAlert3()}
-          />
-
+            />
           </View>
           </ImageBackground>
         );
@@ -1487,10 +1488,17 @@ const styles = StyleSheet.create({
   viewStyle: {
     flex: 1,
     flexDirection: 'column',
-//    height: '100%',
+    height: '100%',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
   },
   screen:{
     flex:12,

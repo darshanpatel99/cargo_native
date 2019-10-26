@@ -7,7 +7,8 @@ import {
   Image,
   View,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 import {
   Form,
@@ -162,7 +163,7 @@ export default class PostProductScreen extends Component {
     const { navigate } = this.props.navigation;
     this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
-    this.googlePlacesAutocomplete._handleChangeText('')
+    //this.googlePlacesAutocomplete._handleChangeText('')
     //this.addressRemover.current.changeAddressState();
 
     this.setState({
@@ -325,7 +326,7 @@ export default class PostProductScreen extends Component {
       Category: this.state.Category,
       Avability: this.state.Avability,
       Status:'active',
-      AddressArray: this.state.addressArray,
+      //AddressArray: this.state.addressArray,
       BuyerID:'',
       SellerName: this.state.sellerName,
       BuyerName:'',
@@ -340,7 +341,8 @@ export default class PostProductScreen extends Component {
     var currentDate = new Date();
     data.TimeStamp = currentDate.getTime();
     //if(this.checkFields == true)
-    //Posting the product
+    //Posting the product.
+    console.log("Product Posted---->" + data);
     PostProduct(data).then(()=>{
       this.setState({ loading: false });
       this.showAlert2();
@@ -590,7 +592,7 @@ export default class PostProductScreen extends Component {
 
   changeAddressState = () => {
      // this.GooglePlacesRef.setAddressText("");
-     this.googlePlacesAutocomplete._handleChangeText('')
+     //this.googlePlacesAutocomplete._handleChangeText('')
      let num =1 
      num = num + this.changeAddressState;
 
@@ -1001,7 +1003,7 @@ export default class PostProductScreen extends Component {
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
 
-              <GooglePlacesAutocomplete
+              {/* <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Pickup Address'
                 minLength={2}
@@ -1077,10 +1079,17 @@ export default class PostProductScreen extends Component {
                     color: '#1faadb'
                     },
                 }}
-                />
+                /> */}
 
-            
-            
+          <TextInput
+            placeholder= 'Pickup Address'
+            underlineColorAndroid="transparent"
+            autoCapitalize='none'
+            autoCorrect={false}
+            style={styles.TextInputStyle}
+            onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
+          />     
+
             </Content>
             <View
               style={{
@@ -1299,5 +1308,25 @@ const styles = {
   correctStyle:{
     borderColor: Colors.primary,
     borderWidth:0.5,
+  },
+
+  TextInputStyle: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    //textAlign: "center",
+    alignItems: "center",
+    height: 40,
+    //width: 120,
+    borderRadius: 5,
+    //margin: 10,
+    marginTop:10,
+    padding:10,
+    //backgroundColor: "#f8f8f8",
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.5,
+    borderWidth: 0.5,
+    borderColor: Colors.primary,
   },
 };
