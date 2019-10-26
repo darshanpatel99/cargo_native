@@ -7,7 +7,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Header } from 'react-navigation-stack';
 import Constants from 'expo-constants';
-import NumericInput from 'react-native-numeric-input'
+import NumericInput from 'react-native-numeric-input';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -110,11 +110,11 @@ export default class Checkout extends Component {
         if(distanceInMeters <= 5000) {
           deliveryCharge = 3.99;
         } else if(distanceInMeters >= 5000 && distanceInMeters <= 10000){
-          deliveryCharge = 6.99;
+          deliveryCharge = 3.99;
         } else if (deliveryCharge >= 10000 && deliveryCharge <= 17000){
-          deliveryCharge = 8.99;
+          deliveryCharge = 3.99;
         } else {
-          deliveryCharge = 9.99;
+          deliveryCharge = 3.99;
         }
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
@@ -237,7 +237,7 @@ export default class Checkout extends Component {
             Update Delivery Address
           </Text>
     
-              <GooglePlacesAutocomplete
+              {/* <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Delivery Address'
                 minLength={2}
@@ -294,7 +294,23 @@ export default class Checkout extends Component {
                   },
               }}
                 currentLocation={false}
-                />
+                /> */}
+
+        {/* <TextInput
+          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={text => this.setState({GPSStringFormat: JSON.stringify(text)})}
+          value={this.state.GPSStringFormat}
+        /> */}
+
+        <TextInput
+          placeholder= ' '
+          underlineColorAndroid="transparent"
+          autoCapitalize='none'
+          autoCorrect={false}
+          style={Styles.TextInputStyle}
+          onChangeText = {text => this.setState({GPSStringFormat: text})}
+        />
+
         <KeyboardAvoidingView
         //style={{ flex: 1 }}
         behavior='padding'
@@ -306,14 +322,14 @@ export default class Checkout extends Component {
             <Text
               style={{
                 marginLeft: 15,
-                // marginTop: 20,
+                marginTop: 50,
                 fontSize: 20,
                 fontFamily: 'nunito-SemiBold'
               }}
             >
               Tip $ :
             </Text>
-            <Item style={{marginLeft:10 }}>
+            <Item style={{marginLeft:10 ,marginTop: 50,}}>
               {/* <TextInput
                fontSize = {20}
                 keyboardType='numeric'
@@ -464,6 +480,22 @@ const Styles = StyleSheet.create({
       width: 0
     },
     fontSize: 20
+  },
+  TextInputStyle: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    //textAlign: "center",
+    alignItems: "center",
+    height: 40,
+    //width: 100,
+    borderRadius: 5,
+    margin: 10,
+    padding:10,
+    backgroundColor: "#f8f8f8",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
   },
   payButton: {
     // marginBottom: 5,

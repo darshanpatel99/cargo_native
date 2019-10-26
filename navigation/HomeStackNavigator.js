@@ -18,9 +18,10 @@ export default (HomeStack = createStackNavigator({
   },
   Details: {
     screen: ProductScreen,
-    // navigationOptions: {
-    //   //title: 'Detail',
-    // },
+    navigationOptions: {
+      //title: 'Detail',
+      //header: null
+    },
   },
 
   ChatDetailMessagesScreen:{

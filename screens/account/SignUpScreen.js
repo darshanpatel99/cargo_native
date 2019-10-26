@@ -920,7 +920,6 @@ deleteUserFromAuthDatabase() {
       return(
 
         <DismissKeyboard>
-          <ImageBackground source={require('../../assets/images/bg2.png')} style={{width: '100%', height: '100%'}}>
         <View style={styles.viewStyle}>
         <Spinner
             visible={this.state.loading}
@@ -1006,7 +1005,7 @@ deleteUserFromAuthDatabase() {
 
       <Text>Or</Text>
 
-      <Button large-green style={styles.button} onPress ={this.facebookLoginAsync}>
+      {/* <Button large-green style={styles.button} onPress ={this.facebookLoginAsync}>
         <FontAwesome
           size={30}
           color="#fff"
@@ -1014,7 +1013,7 @@ deleteUserFromAuthDatabase() {
           name='facebook-square'
         />
         <Text style={styles.lightText}>Facebook Login</Text>
-      </Button>
+      </Button> */}
 
       <Button large-green style={styles.button} onPress ={this.googleLoginAsync}>
         <Ionicons
@@ -1033,7 +1032,6 @@ deleteUserFromAuthDatabase() {
       </Button>
  
     </View>
-    </ImageBackground>
     </DismissKeyboard>
     );
 
@@ -1044,7 +1042,6 @@ deleteUserFromAuthDatabase() {
     return (
 
       <DismissKeyboard>
-      <ImageBackground source={require('../../assets/images/bg2.png')} style={{width: '100%', height: '100%'}}>
       <KeyboardAvoidingView style={styles.viewStyle} behavior="padding" enabled>
         <Spinner
             visible={this.state.loading}
@@ -1150,7 +1147,7 @@ deleteUserFromAuthDatabase() {
                 
         <Text>Or</Text>
 
-        <Button large-green style={styles.button} onPress ={this.facebookLoginAsync}>
+        {/* <Button large-green style={styles.button} onPress ={this.facebookLoginAsync}>
               <FontAwesome
                 size={30}
                 color="#fff"
@@ -1158,7 +1155,7 @@ deleteUserFromAuthDatabase() {
                 name='facebook-square'
               />
               <Text style={styles.lightText}>Facebook Signup</Text>
-            </Button>
+            </Button> */}
 
           <Button large-green style={styles.button}  onPress ={this.googleLoginAsync}>
             <Ionicons
@@ -1197,7 +1194,6 @@ deleteUserFromAuthDatabase() {
               onConfirmPressed={() => this.hideAlert3()}
           />
       </KeyboardAvoidingView>
-      </ImageBackground>
       </DismissKeyboard>
     );
     }
