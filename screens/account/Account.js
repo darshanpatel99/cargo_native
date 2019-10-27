@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, WebView, Platform} from 'react-native';
+import { StyleSheet,Text, View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, WebView, Platform} from 'react-native';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
-import { Button, Text} from "native-base";
+import { Button} from "native-base";
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -18,9 +18,6 @@ import AddUser from '../../functions/AddUser';
 import { StackActions, NavigationActions } from 'react-navigation';
 import * as Facebook from 'expo-facebook';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import {AuthSession} from 'expo';
-import { CompositeDisposable } from 'rx-core';
-import { readDirectoryAsync } from 'expo-file-system';
 import * as WebBrowser from 'expo-web-browser';
 
 let storageRef;
@@ -231,16 +228,17 @@ async googleLogin(){
 
   try{
     //Configuration File
-    const configDev ={ 
-        expoClientId:'12592995924-cmat1v9r7i2muq4j14ilfjcbbdcftod7.apps.googleusercontent.com', // cargo-dev
-        iosClientId:'12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5.apps.googleusercontent.com', //cargo-dev
-        androidClientId:'12592995924-6sul322o56a88e3cs0o6627jlfq22l88.apps.googleusercontent.com', //cargo-dev
-        iosStandaloneAppClientId: '12592995924-kcoo3s6sgqhkh46ggap62e36dgjhbq4o.apps.googleusercontent.com',//cargo-dev
-        androidStandaloneAppClientId:'12592995924-c6jjfdudjgk0t8n3pumj2obti504edrv.apps.googleusercontent.com', //cargo-dev
+    const config ={ 
+        expoClientId:'572236256696-192r30h6n62sreo89ctqcoq4e83jqrso.apps.googleusercontent.com',
+        iosClientId:'572236256696-rebjkd10nh1rbveidpq4d338nrgga709.apps.googleusercontent.com',
+        androidClientId:'572236256696-vmjaebnsmv5hg99f2os0bj5oc2ii2f30.apps.googleusercontent.com',
+        iosStandaloneAppClientId: '572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com',
+        androidStandaloneAppClientId:'572236256696-rh7v7sgsr0fj2v1crgvgh8efgpp831uk.apps.googleusercontent.com',
         scopes:['profile', 'email'],
-        redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google` // this is the LINE 
+        redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google` // this is the LINE
 
     };
+
 
     if(Platform.OS=='ios'){
       this.setState({ loading: false });
@@ -248,7 +246,7 @@ async googleLogin(){
     //this.setState({ loading: false });
    
     console.log('Going to open a web view');
-    const {type, accessToken} = await Google.logInAsync(configDev);
+    const {type, accessToken} = await Google.logInAsync(config);
 
     if(type=='success'){
 
@@ -1385,16 +1383,7 @@ finishFunc =() =>{
                 style={{width: 300, height: 300, borderRadius:20}}
                 source={require('../../assets/images/icon.png')}
               /> */}
-                <Text
-                  style={{
-                    fontSize: Dimensions.get('screen').width * 0.18,
-                    fontFamily: 'origo',
-                    fontWeight: 'bold',
-                    color:'white'
-                  }}
-                >
-                  CarGo
-                </Text>
+                <Text style={styles.logoText}>CarGo</Text>
                   <Text style={{
                     fontSize:20,
                     fontFamily: 'nunito-SemiBold',
@@ -1688,7 +1677,9 @@ lightText: {
   color: "#fff",
   fontSize: 18,
   fontWeight: "500",
-  letterSpacing: 1.2
+  letterSpacing: 1.2,
+  marginRight: 10,
+  marginLeft: 10
 },
 button: {
   flex: 0,
@@ -1739,5 +1730,11 @@ secondaryBlueButton: {
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.5
 },
+  logoText: {
+    fontFamily: 'origo',
+    fontSize: 60,
+    color: '#fff',
+    marginTop: 30
+  }
 
 })

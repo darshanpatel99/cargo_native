@@ -327,6 +327,7 @@ export default class PostProductScreen extends Component {
       Avability: this.state.Avability,
       Status:'active',
       //AddressArray: this.state.addressArray,
+      SellerAddress:this.state.completeStringAddress,
       BuyerID:'',
       SellerName: this.state.sellerName,
       BuyerName:'',
