@@ -912,7 +912,7 @@ export default class PostProductScreen extends Component {
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
-          behavior='padding'
+          behavior='position'
           keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
         >
           <InputScrollView>
@@ -1090,20 +1090,20 @@ export default class PostProductScreen extends Component {
             style={styles.TextInputStyle}
             onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
           />     
-
-            </Content>
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                //margin: 10
+                marginTop: Dimensions.get('screen').height*0.01,
               }}
             >
               <Button style={styles.postAdButton} onPress={this.startPostTheProduct}>
                 <Text>Post Ad</Text>
               </Button>
             </View>
+            </Content>
+            
           </InputScrollView>
           </KeyboardAvoidingView>
             <AwesomeAlert
