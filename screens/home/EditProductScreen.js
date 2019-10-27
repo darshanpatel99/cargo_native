@@ -157,7 +157,7 @@ export default class PostProductScreen extends Component {
   KEYBOARD_VERTICAL_OFFSET_HEIGHT =
     Platform.OS === 'ios'
       ? headerAndStatusBarHeight - 700
-      : headerAndStatusBarHeight;
+      : headerAndStatusBarHeight - 100;
 
       const newData = navigation.getParam('data');
 
@@ -1068,7 +1068,7 @@ export default class PostProductScreen extends Component {
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
-          behavior='padding'
+          behavior='position'
           keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
         >
           <InputScrollView>
@@ -1242,14 +1242,12 @@ export default class PostProductScreen extends Component {
             style={styles.TextInputStyle}
             onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
           />
-            
-            </Content>
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                //margin: 10
+                marginTop: Dimensions.get('screen').height*0.01,
               }}
             >
               {/* <Button style={styles.postAdButton} onPress={this.postTheProduct}>
@@ -1260,6 +1258,8 @@ export default class PostProductScreen extends Component {
             </Button>
               {this.saveButton()}               
             </View>
+            </Content>
+            
           </InputScrollView>
           </KeyboardAvoidingView>
 
