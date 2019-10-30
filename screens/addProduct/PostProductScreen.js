@@ -126,7 +126,7 @@ export default class PostProductScreen extends Component {
     KEYBOARD_VERTICAL_OFFSET_HEIGHT =
       Platform.OS === 'ios'
         ? headerAndStatusBarHeight - 700
-        : headerAndStatusBarHeight;
+        : headerAndStatusBarHeight
   }
 
   componentWillUnmount() {
@@ -911,7 +911,7 @@ export default class PostProductScreen extends Component {
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
-          behavior='position'
+          behavior='height'
           keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
         >
           <InputScrollView>
