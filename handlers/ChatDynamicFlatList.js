@@ -18,7 +18,7 @@ class ChatDyanmicFlatList extends React.Component {
         filteredChats:{},
         firstNames:[],
         isChatEmpty:true,
-        //loading:true,
+        loading:true,
         showAlert: false,
         };
 
@@ -66,9 +66,18 @@ class ChatDyanmicFlatList extends React.Component {
         //     refreshStatus = navigation.getParam('refresh')
         // });
 
+        console.log("before waiting");  
+
         this.setState({ loading: true });
-        firebase.database().ref('Chat').on('value', snapshot => {
+
+        console.log(firebase.database().ref('Chat'));
+        
+            firebase.database().ref('Chat').on('value', (snapshot) => {
             this.setState({ loading: false });
+
+
+            console.log("waiting fot the loading");  
+
 
             this.setState({snapshot: snapshot.val()})
             let chatCardsArray=[];
@@ -94,7 +103,7 @@ class ChatDyanmicFlatList extends React.Component {
                 })
             }
         }
-
+  
         this.setState({chatCardsArray: chatCardsArray})
 
         this.setState({snapshot: snapshot.val()})
@@ -105,8 +114,17 @@ class ChatDyanmicFlatList extends React.Component {
         //     console.log(chatCardsArray[i].chat[0]);
         //    // console.log(this.getUserDetailsFromUid(chatCardsArray[i].chat[0]))
         //   }
-    });    
-
+    });
+       
+        
+    
+    console.log("after waiting" + this.state.loading);
+    // if(this.state.loading == true){
+    //     this.setState({
+    //         loading:false,
+    //         isChatEmpty:true,
+    //     })
+    // }
 }
 
     goToChatScreen = (item) => {

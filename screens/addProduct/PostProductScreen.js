@@ -7,7 +7,8 @@ import {
   Image,
   View,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 import {
   Form,
@@ -162,7 +163,7 @@ export default class PostProductScreen extends Component {
     const { navigate } = this.props.navigation;
     this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
-    this.googlePlacesAutocomplete._handleChangeText('')
+    //this.googlePlacesAutocomplete._handleChangeText('')
     //this.addressRemover.current.changeAddressState();
 
     this.setState({
@@ -214,8 +215,6 @@ export default class PostProductScreen extends Component {
       console.log("Total number of uris we have"+ array.length)
       this.setState({ loading: true });
       array.forEach(async (element,index) => {
-
-        console.log("b " + arraySizes[index].bigSide + " s " + arraySizes[index].smallSide);
    
         if(first){
 
@@ -232,7 +231,7 @@ export default class PostProductScreen extends Component {
           
         }
 
-        await this.uploadImageToFirebase(element, uuid.v1())
+        await this.uploadImageToFirebase(element, arraySizes[index])
         .then(() => {
           console.log('Success' + uuid.v1());
           
@@ -327,7 +326,7 @@ export default class PostProductScreen extends Component {
       Category: this.state.Category,
       Avability: this.state.Avability,
       Status:'active',
-      AddressArray: this.state.addressArray,
+      //AddressArray: this.state.addressArray,
       BuyerID:'',
       SellerName: this.state.sellerName,
       BuyerName:'',
@@ -342,7 +341,8 @@ export default class PostProductScreen extends Component {
     var currentDate = new Date();
     data.TimeStamp = currentDate.getTime();
     //if(this.checkFields == true)
-    //Posting the product
+    //Posting the product.
+    console.log("Product Posted---->" + data);
     PostProduct(data).then(()=>{
       this.setState({ loading: false });
       this.showAlert2();
@@ -489,6 +489,7 @@ export default class PostProductScreen extends Component {
     var changedH = {
       'isBiggest' : false,
       'value' : localSizeObject.height,
+      'valid' : true,
     }
    var changedW = {
     'isBiggest' : false,
@@ -524,6 +525,7 @@ export default class PostProductScreen extends Component {
 
     var finalH = 1 ; 
     var finalW = 1 ;
+    
     finalH = changedH.value/difValue;
 
     finalW = changedW.value/difValue;
@@ -590,7 +592,7 @@ export default class PostProductScreen extends Component {
 
   changeAddressState = () => {
      // this.GooglePlacesRef.setAddressText("");
-     this.googlePlacesAutocomplete._handleChangeText('')
+     //this.googlePlacesAutocomplete._handleChangeText('')
      let num =1 
      num = num + this.changeAddressState;
 
@@ -603,11 +605,60 @@ export default class PostProductScreen extends Component {
 
  
   //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, imageName) => {
+  uploadImageToFirebase = async (uri, localSizeObject) => {
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 800){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 800){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/800);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/800) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + " those are with 800  " + finalH)
+
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -860,7 +911,7 @@ export default class PostProductScreen extends Component {
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
-          behavior='padding'
+          behavior='position'
           keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
         >
           <InputScrollView>
@@ -952,7 +1003,7 @@ export default class PostProductScreen extends Component {
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
 
-              <GooglePlacesAutocomplete
+              {/* <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Pickup Address'
                 minLength={2}
@@ -1028,23 +1079,30 @@ export default class PostProductScreen extends Component {
                     color: '#1faadb'
                     },
                 }}
-                />
+                /> */}
 
-            
-            
-            </Content>
+          <TextInput
+            placeholder= 'Pickup Address'
+            underlineColorAndroid="transparent"
+            autoCapitalize='none'
+            autoCorrect={false}
+            style={styles.TextInputStyle}
+            onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
+          />     
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                //margin: 10
+                marginTop: Dimensions.get('screen').height*0.01,
               }}
             >
               <Button style={styles.postAdButton} onPress={this.startPostTheProduct}>
                 <Text>Post Ad</Text>
               </Button>
             </View>
+            </Content>
+            
           </InputScrollView>
           </KeyboardAvoidingView>
             <AwesomeAlert
@@ -1250,5 +1308,25 @@ const styles = {
   correctStyle:{
     borderColor: Colors.primary,
     borderWidth:0.5,
+  },
+
+  TextInputStyle: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    //textAlign: "center",
+    alignItems: "center",
+    height: 40,
+    //width: 120,
+    borderRadius: 5,
+    //margin: 10,
+    marginTop:10,
+    padding:10,
+    //backgroundColor: "#f8f8f8",
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.5,
+    borderWidth: 0.5,
+    borderColor: Colors.primary,
   },
 };

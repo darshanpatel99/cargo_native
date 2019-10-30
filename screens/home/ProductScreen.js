@@ -314,7 +314,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatDetailMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'Details'})
+      navigate('ChatDetailMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'Details', sellerName : this.state.sellerName})
   }
     else{
       this.setState({
@@ -375,7 +375,7 @@ export class ProductScreen extends Component {
       headerLeft: (
         <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.prevPage)}>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 10 , marginTop: 10, fontSize:30}} />
+              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 13 , marginTop: 10, fontSize:35}} />
               {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:13, marginRight:10}}>{navigation.state.params.prevPage}</Text> */}
             </View>
         </TouchableOpacity>

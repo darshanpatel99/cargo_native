@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Platform} from 'react-native';
+import { StyleSheet,View,Dimensions, Image, ImageBackground,TextInput,KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, WebView, Platform} from 'react-native';
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase.js';
 import { Button, Text} from "native-base";
@@ -7,12 +7,21 @@ import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { FontAwesome} from '@expo/vector-icons';
 import { Ionicons } from "@expo/vector-icons";
 import * as Google from 'expo-google-app-auth'
 import * as AppAuth from 'expo-app-auth';
 import {Notifications} from 'expo';
 import Spinner from 'react-native-loading-spinner-overlay';
+import AddUser from '../../functions/AddUser';
+import { StackActions, NavigationActions } from 'react-navigation';
+import * as Facebook from 'expo-facebook';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import {AuthSession} from 'expo';
+import { CompositeDisposable } from 'rx-core';
+import { readDirectoryAsync } from 'expo-file-system';
+import * as WebBrowser from 'expo-web-browser';
 
 let storageRef;
 
@@ -24,47 +33,63 @@ const DismissKeyboard = ({ children }) => (
 
 export default class AccountScreen extends React.Component {
 
+  //facebook api
+  FacebookApiKey= '2872116616149463';
+
   constructor(props){
     super(props);
     storageRef = firebase.storage().ref();
+
+    //creating the firebase reference for the users collection
+    this.firebaseRef = firebase.firestore().collection('Users');
+
     this.state = {
-    data: {},
-    name:'',
-    globalAddress:'',
-    User:null,
-    userID:'',
-    editMode:false,
-    newData:[],
-    newPicture:[],
-    picture:'',
-    currentFolio:'',
-    Address:'',
-    UnitNumber:'',
-    loading:false,
-    phoneNumber:'',
-    remove:true,
-    buttonOn:false,           
-    user: null,
-    phone:'',
-    confirmationResult: undefined,
-    code: '',
-    Token: '',
-    valid:false,
-    emailRegistration:false,
-    nameRegistration:false,
-    firstName:'',
-    lastname:'',
-    email:'',
-    country:'',
-    city:'',
-    street:'',
-    UID:'',
-    profilePic:'',
-    showAlert: true,
-    showOverlay: false,
-    deviceNotificationToken: '',
-    expoNotificationToken:'',
+      data: {},
+      name:'',
+      globalAddress:'',
+      User:null,
+      userID:'',
+      editMode:false,
+      newData:[],
+      newPicture:[],
+      picture:'',
+      currentFolio:'',
+      Address:'',
+      UnitNumber:'',
+      loading:false,
+      phoneNumber:'',
+      remove:true,
+      buttonOn:false,           
+      user: null,
+      phone:'',
+      confirmationResult: undefined,
+      code: '',
+      Token: '',
+      valid:false,
+      emailRegistration:false,
+      nameRegistration:false,
+      firstName:'',
+      lastname:'',
+      email:'',
+      country:'',
+      city:'',
+      street:'',
+      UID:'',
+      profilePic:'',
+      //showAlert: true,
+      showOverlay: false,
+      deviceNotificationToken: '',
+      expoNotificationToken:'',
+      firstTimeGoogleSignUp:true,
+      showAlert: false,
+      showAlert3: false,
+      isFacebookAuth: false,
+      pendingCred:null,
+      showWebView: false,
+      result: null,
+      result2: null,
     }
+
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -94,18 +119,24 @@ export default class AccountScreen extends React.Component {
     //this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
 
   }
-    
+
+  //bind the function
+  this.logoutAsync = this.logoutAsync.bind(this);
+  this.showAlert = this.showAlert.bind(this);
+  this.hideAlert = this.hideAlert.bind(this);
 }
 
+//component did mount
 componentDidMount() {
   const { navigation } = this.props;
-    
+
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
+    
     let user = firebase.auth().currentUser;
 
     if (user != null) {
-
+      this.setState({firstTimeGoogleSignUp:false});
       //firebase.auth().signInWithEmailAndPassword(email, password)
 
       this.state.userID = user.uid;
@@ -145,8 +176,9 @@ componentWillUnmount() {
 onAuthStateChanged = (user) => {
   // if the user logs in or out, this will be called and the state will update.
   // This value can also be accessed via: firebase.auth().currentUser
-  if (user != null){
-    if(user.emailVerified){ // note difference on this line
+  if (user != null ){
+    if(user.emailVerified || user.providerData[0].providerId=='facebook.com'){ // note difference on this line
+     
       this.setState({ User: user});
     }
   }
@@ -154,6 +186,42 @@ onAuthStateChanged = (user) => {
     this.setState({ User: null});
   }
 };  
+
+showAlert = () => {
+  this.setState({
+    loading:false,
+    showAlert: true
+  });
+};
+
+hideAlert = async () => {
+  const { navigate } = this.props.navigation;
+
+  console.log('Hide alert called')
+  this.setState({
+    showAlert: false
+  });
+  //call the google login async, becasue this time we only two methods 
+  await this.googleLoginAsync(); 
+};
+
+     //hide the alert
+     hideAlert3(){
+      const { navigate } = this.props.navigation;
+      this.setState({
+        showAlert3: false,
+      });   
+      navigate('SignUp',{magic: 'Login', pendingCred : this.state.pendingCred})   
+    };
+  
+    //function to show the alert
+    showAlert3(){
+      this.setState({
+        loading:false,
+        showAlert3: true,
+        
+      });
+    };
 
 /**
  * Function Description: Google login, get the user access token 
@@ -219,7 +287,6 @@ async googleLogin(){
 //Google Login Async functions
 googleLoginAsync = async () => {
 
-
   this.setState({ loading: true });
   console.log('statettttttttttttttttttttttttttttttt: '+this.state.loading);
   // First we login to google and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
@@ -263,7 +330,40 @@ googleLoginAsync = async () => {
                   this.getNotificationToken(userUID);
                   console.log('Notification token has been updated');
                   console.log('2--inside firebase snap');
-                  this.setState({ loading: false });
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
+
+                    //link the facebook credentials if user is trying to login with facebook but have same email used with facebook
+
+                    if(this.state.isFacebookAuth){
+
+                      var pendingFacebookCredentialsToLink = this.state.pendingCred;
+
+                      user.linkAndRetrieveDataWithCredential(pendingFacebookCredentialsToLink).then(function(usercred) {
+                        // Facebook account successfully linked to the existing Firebase user.
+                        console.log('Your facebook account is successfully linked with google now, you can nytime login with facebook');
+                      });
+
+
+                    }
+
+
+
+
+
+                  this.setState({ loading: false, firstTimeGoogleSignUp : false });
+
                   // const resetAction = StackActions.reset({
                   //   index: 0, // <-- currect active route from actions array
                   //   //params: {userId: this.state.UID},
@@ -299,7 +399,210 @@ googleLoginAsync = async () => {
 };
 
 
-//Getting the push token for the device
+
+//facebook Login Function
+async facebookLogin() {
+  console.log("in facebookLogin() method");
+  try{
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+
+    //const redirectUrl = AuthSession.getRedirectUrl();
+
+    //console.log(redirectUrl);
+    const authData = await Facebook.logInWithReadPermissionsAsync(this.FacebookApiKey,{
+      permissions:['public_profile', 'email']
+    });
+
+    //facebook auth with the auth session
+    // const authData = await AuthSession.startAsync({
+    //   authUrl:
+    //   `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` +
+    //   `&client_id=${this.FacebookApiKey}` +
+    //   `&redirect_uri=${encodeURIComponent(redirectUrl)}`,
+
+    // });
+
+    if(Platform.OS=='ios'){
+      this.setState({ loading: false });
+    }
+  
+    console.log(authData);
+    if (!authData) return;
+    const { type, token } = authData;
+    
+    if (type === 'success') {
+      console.log('facebook auth success and the token is' + token);
+
+      //set the loading state to true
+      this.setState({loading:true});
+
+      return token;
+    } else {
+      // Maybe the user cancelled...
+    }
+  }
+  catch(message){
+    console.log(message);
+    alert(message);
+    
+  }
+}
+
+
+//Facebook Login Async Function
+facebookLoginAsync = async () => {
+
+  this.setState({ loading: true });
+  console.log('in facebookLoginAsync() method');
+  // First we login to facebook and get an "Auth Token" then we use that token to create an account or login. This concept can be applied to github, twitter, google, ect...
+  const token = await this.facebookLogin();
+  if (!token) return;
+  try {
+  //get the required user information related to the 
+  const userInfo = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+
+  var userJson = (await userInfo.json());
+  console.log(userJson.name);
+  
+  //user information
+  var firstName = userJson.name;
+
+  console.log(firstName);
+
+
+  //setting all the user information
+  this.setState({firstName:firstName });
+
+
+  // Use the facebook token to authenticate our user in firebase.
+  const credential = firebase.auth.FacebookAuthProvider.credential(token);
+ 
+    // login with credential
+    var tempUID = null ;
+    await firebase.auth().signInWithCredential(credential).then((result)=>{
+      console.log('Done creating credentials with the facebook');
+
+      var user = result.user;
+      var uid = user.uid;
+      tempUID = uid;
+      console.log('Your user get the following user uid: '+ uid);
+      console.log('User email is: ' + user.email);
+      this.setState({UID:uid, user:user, email:user.email});
+
+      console.log(user.providerData)
+
+       //setting the UID
+       if(tempUID!=null){
+          console.log("THIS is UUID =-=-=> " + tempUID)
+          this.setState({UID:tempUID});
+          try{
+            //verify user is signed up or not
+            var userUID = this.state.UID;
+            console.log('The uid that is going to be verified: ' + userUID);
+        
+             
+            this.firebaseRef.doc(userUID)
+              .get()
+              .then(docSnapshot => {
+                console.log('1--inside firebase snap')
+                if(docSnapshot.exists){
+                  
+                  this.getNotificationToken(userUID);
+                  console.log('Notification token has been updated');
+                  console.log('2--inside firebase snap');
+                  
+                  //set the states to the enw values
+                  this.setState({
+                    data: docSnapshot.data(),
+                    name:docSnapshot.data().FirstName,
+                    //globalAddress:doc.data().City + ', ' + doc.data().Country,
+                    UnitNumber:docSnapshot.data().UnitNumber,
+                    Address:docSnapshot.data().Address,
+                    Email:docSnapshot.data().Email,
+                    PhoneNumber:docSnapshot.data().PhoneNumber,
+                    picture:docSnapshot.data().ProfilePicture,
+                    }); 
+
+                  this.setState({ loading: false, isFacebookAuth:true, firstTimeGoogleSignUp:false });
+                }
+                else{
+                  console.log('User is not sign up');
+                  //Add user to the database
+                  this.finishFunc();
+                  
+                }
+              });
+            }
+            catch (e) {
+              alert('Following error occured during checking whether user exists or not:  ' + e)
+              console.warn(e);
+            } 
+      }
+    }).catch(async (error)=>{
+      console.log('In the error');
+      if(error.code === 'auth/account-exists-with-different-credential')
+        {
+          console.log('Its Duplicate');
+
+          var pendingCred = error.credential;
+          var email = error.email;
+          console.log(JSON.stringify(error));
+
+          //set the pending credentials state
+          this.setState({pendingCred:pendingCred, isFacebookAuth:true});
+
+          
+
+          firebase.auth().fetchSignInMethodsForEmail(email).then(async (method)=>{
+
+            //If first sign in method is password it is important to prompt user for login with email and password
+            if(method[0]=='password'){
+              this.showAlert3();
+            }
+            else{
+              console.log('Alert Called')
+              await this.showAlert();
+            }
+
+
+
+
+          }).catch((error)=>{
+            console.log(error);
+          })
+
+        }
+    });
+  } catch ({ message }) {
+    alert(message);
+  }
+}
+
+
+/**
+ * Function Description: Get the provider for provid
+ */
+getProviderForProviderId = async(providerId)=>{
+
+  if(providerId=='firebase.com'){
+    return 'facebookProvider';
+  }
+  else if(providerId=='google.com'){
+
+    return 'googelProvider';
+  }
+
+
+
+}
+
+
+
+/**
+ * Function Description: Get the device notification token
+ */
 getNotificationToken = async (userUID) =>{
   try{
       
@@ -350,6 +653,10 @@ getNotificationToken = async (userUID) =>{
   }
 }
 
+
+/**
+ * Function Description: Finish It Bruh
+ */
 finishFunc =() =>{
 
   console.log('In the finishFunc function');
@@ -398,6 +705,9 @@ finishFunc =() =>{
   });
   
   this.props.navigation.dispatch(resetAction);
+
+
+
   // this.props.navigation.navigate('UserAddressScreen', {userId: this.state.UID });
   // this.props.navigation.dispatch(resetAction);
   // this.setState({
@@ -414,18 +724,28 @@ finishFunc =() =>{
   // });
 }
 
-
-
-
   //Function to logo out user21`22122
   async logoutAsync() {
     try {
-      await firebase.auth().signOut();
+      this.setState({
+        name:'',
+        //globalAddress:doc.data().City + ', ' + doc.data().Country,
+        UnitNumber:'',
+        Address:'',
+        Email:'',
+        PhoneNumber:'',
+        picture:'',
+        isFacebookAuth:false,
+        pendingCred:null
+        });
+    
+     await firebase.auth().signOut();
+     
       //props.navigation.navigate('Home');
       // const { navigate } = this.props.navigation;
       // navigate('ChatScreen')
     } catch ({ message }) {
-      //alert('You are logged out!!');
+      alert('You are logged out!! ' + message);
     }
   }
 
@@ -540,8 +860,67 @@ finishFunc =() =>{
     })
   }
 
-  uploadImageToFirebase = async (uri, imageName) => {
-    const response = await fetch(uri);
+  uploadImageToFirebase = async (uri, localSizeObject) => {
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 400){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 400){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      console.log("inside of the if statements");
+      difValue = Math.round(changedH.value/400);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/400) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + "  " + finalH)
+
+
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize:{width:finalW, height:finalH} }],
+      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+    )
+
+      console.log("Hey I  am the ManipResult:  "+ manipResult.uri);
+
+    const response = await fetch(manipResult.uri);
     const blob = await response.blob();
     console.log('Inside upload Image to Firebase')
     var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
@@ -633,14 +1012,18 @@ finishFunc =() =>{
       quality:0.1,      
     });
 
+    console.log("W2 " + result.width + "  H2" + result.height);
+    console.log(result);
+
     this.setState({
       newPicture:[this.state.data.ProfilePicture],
+      
     });
 
     if(!result.cancelled){
       console.log(result.uri);   
     
-    await this.uploadImageToFirebase(result.uri, uuid.v1())
+    await this.uploadImageToFirebase(result.uri,  this.sizeOfImageObj(result))
         .then(() => {
           console.log('Success' + uuid.v1());
             
@@ -650,6 +1033,35 @@ finishFunc =() =>{
           console.log(error);
         });
       }
+  }
+
+  sizeOfImageObj = (result) =>{
+
+    var imageWidth = result.width;
+    var imageHeigth = result.height;
+    var biggerSide =0;
+    var smallerSide = 0 ;
+
+    if(imageHeigth>imageWidth){
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+    if(imageHeigth<imageWidth){
+      biggerSide = imageWidth;
+      smallerSide = imageHeigth;
+    }
+    if(imageHeigth == imageWidth)
+    {
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+
+    var localSizeObject = {
+      'height' : imageHeigth,
+      'width' : imageWidth,
+    }
+
+    return localSizeObject;
   }
 
   changeCurrentFolio =()=>{
@@ -785,17 +1197,30 @@ finishFunc =() =>{
     })
   }
 
-    showDefaultPhoneNum =()=>{
-      if(this.state.PhoneNumber ==''){
-        return 'no phone number'
-      }
-      else{
-        return this.state.PhoneNumber
-      }
+  showDefaultPhoneNum =()=>{
+    if(this.state.PhoneNumber ==''){
+      return 'no phone number'
     }
+    else{
+      return this.state.PhoneNumber
+    }
+  }
+
+  _handlePressButtonAsync = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://www.cargomarketplace.ca/privacy-policy/');
+    this.setState({ result });
+  };
+
+  _handlePressButtonAsync2 = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://www.cargomarketplace.ca/terms-conditions/');
+    this.setState({ result2 });
+  };
+  
 
   render() {
     const {navigate} = this.props.navigation;
+    const {showAlert} = this.state;
+    const {showAlert3} = this.state;
     let profileImage=''
 
     if(this.state.picture == '') {
@@ -805,7 +1230,7 @@ finishFunc =() =>{
       profileImage= {uri:this.state.picture}
     }
     
-    if(this.state.User != null){
+    if(this.state.User != null && this.state.firstTimeGoogleSignUp==false){
 
       if(this.state.editMode){
         console.log('editing');
@@ -948,9 +1373,11 @@ finishFunc =() =>{
     }
     else{
       console.log('User not logged in');
-        return (
-          <ImageBackground source={require('../../assets/images/background.jpg')} style={{width: '100%', height: '100%'}}>
+        return ( 
+          
+          <ImageBackground source={require('../../assets/images/Signup.png')} style={{width: '100%', height: '100%'}}> 
             <View style={styles.viewStyle}>
+                
               <View style={styles.logoStyle}>
               <Spinner
                 visible={this.state.loading}
@@ -966,21 +1393,33 @@ finishFunc =() =>{
                     fontSize: Dimensions.get('screen').width * 0.18,
                     fontFamily: 'origo',
                     fontWeight: 'bold',
+                    color:'white'
                   }}
                 >
                   CarGo
                 </Text>
-
                   <Text style={{
                     fontSize:20,
                     fontFamily: 'nunito-SemiBold',
                     textAlign:'center',
                     marginTop:20,
+                    color:'white',
+                    fontWeight: 'bold',
                   }}>Post, buy, sell and watch as your items are delivered right to your door.</Text>
 
               </View>
 
             <View style={styles.bigButton}>
+
+            {/* <Button large-green style={styles.loginbutton} onPress ={this.facebookLoginAsync}>
+              <FontAwesome
+                size={30}
+                color="#fff"
+                style={styles.icon}
+                name='facebook-square'
+              />
+              <Text style={styles.lightText}>Continue with Facebook</Text>
+            </Button> */}
 
             <Button large-green style={styles.loginbutton} onPress ={this.googleLoginAsync}>
               <Ionicons
@@ -996,6 +1435,7 @@ finishFunc =() =>{
                     fontSize:20,
                     fontFamily: 'nunito-SemiBold',
                     textAlign:'center',
+                    color:'white'
                   }} > Or </Text>
 
               <Button large-green style={styles.loginbutton} onPress={() => this.props.navigation.navigate('SignUp', {prevPage: 'SignUp'})}>
@@ -1009,6 +1449,35 @@ finishFunc =() =>{
               </Button>
 
             </View>
+            <Text style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',color:'white'}} >By signing up or logging in, you agree our <Text onPress={this._handlePressButtonAsync2} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}>Terms & Condition</Text> and 
+                <Text onPress={this._handlePressButtonAsync} style={{fontSize:14,fontFamily: 'nunito-SemiBold',textAlign:'center',}}> Privacy Policy</Text></Text>
+
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Oops!"
+              message={'You are logged in different provider\n Link your facebook account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert()}
+            />
+            <AwesomeAlert
+              show={showAlert3}
+              showProgress={false}
+              title="Oops!"
+              message={'You are signed up with email before \n Link your email account'}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              cancelText="No, cancel"
+              confirmText="Link now"
+              confirmButtonColor= {Colors.primary}
+              onConfirmPressed={() => this.hideAlert3()}
+            />
           </View>
           </ImageBackground>
         );
@@ -1019,10 +1488,17 @@ const styles = StyleSheet.create({
   viewStyle: {
     flex: 1,
     flexDirection: 'column',
-//    height: '100%',
+    height: '100%',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
   },
   screen:{
     flex:12,
@@ -1096,7 +1572,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
-    width: Dimensions.get('window').width - 80,
+    width: Dimensions.get('window').width - 60,
     margin: 5,
     borderRadius: 100,
     backgroundColor: Colors.primary,

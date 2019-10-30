@@ -39,7 +39,12 @@ export default class ChatScreen extends React.Component {
       .then(querySnapshot => {
         console.log('profile image querysnap -->')
         console.log(querySnapshot.docs[0].data().ProfilePicture)
-        this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+        if (querySnapshot.docs[0].data().ProfilePicture != ''){
+          this.setState({ post_user_name: querySnapshot.docs[0].data().ProfilePicture });
+        }
+        else{
+          this.setState({ post_user_name: 'https://firebasestorage.googleapis.com/v0/b/cargo-488e8.appspot.com/o/UserImages%2Favatar.png?alt=media&token=91ea9f59-11a8-4928-9963-0235a0cd5201' });
+        }
       });
       
       this.state = {
@@ -206,7 +211,7 @@ export default class ChatScreen extends React.Component {
     headerLeft: (
       <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.previousScreen)}>
           <View style={{flex: 1, flexDirection: 'row'}}>
-            <Ionicons name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 5 , marginTop: 10, fontSize:30}} />
+            <Ionicons name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 15 , marginTop: 10, fontSize:35}} />
             {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:23, marginRight:10}}>{navigation.state.params.previousScreen}</Text> */}
           </View>
       </TouchableOpacity>
