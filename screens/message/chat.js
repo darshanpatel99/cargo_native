@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View,Text} from 'react-native';
 import firebaseChat from '../../FirebaseChat';
 import ChatDynamicFlatList from '../../handlers/ChatDynamicFlatList';
 import firebase from 'firebase';
@@ -22,6 +22,7 @@ class Chat extends React.Component {
       showAlert: true,
       User:null,
       loading: false,
+      isChatEmpty:true,
     };
   //checking the current user and setting uid
   let user = firebase.auth().currentUser;
@@ -125,7 +126,19 @@ class Chat extends React.Component {
     navigate('Account');
   };
 
-
+  // showChats =() =>{
+    
+  //   if(this.state.isChatEmpty && !this.state.loading){
+  //    return(
+  //      <View style={styles.nochats}>
+  //        <Text style={{fontSize:20,color:'grey'}}>
+  //         No chats yet
+  //       </Text>
+  //      </View>
+       
+  //    )
+  //   }
+  // }
 
   render() {
 
@@ -134,9 +147,10 @@ class Chat extends React.Component {
     if(this.state.User != null){ 
       return (
       <View style ={styles.containerStyle}>
+
         <Spinner
             visible={this.state.loading}
-            textContent={'Loading...'}
+            textContent={'Loading.'}
             textStyle={styles.spinnerTextStyle}
           />
         <ChatDynamicFlatList navigation = {this.props.navigation}/>
@@ -191,6 +205,17 @@ const styles = {
   },
     spinnerTextStyle: {
     color: '#0000FF'
+  },
+
+  nochats:{
+    flex:1,
+     borderRadius:20,
+     alignItems:'center',
+     justifyContent:'center',
+     shadowColor: "#000",
+     shadowOffset: { width: 0, height: 2 },
+     shadowOpacity: 0.5,
+     backgroundColor:"white",
   },
 }
 

@@ -17,6 +17,18 @@ let config = {
     appId: "1:572236256696:web:297a96ed7048a797"
 }
 
+//cargo development configuration
+var devConfig = {
+    apiKey: "AIzaSyBrySojH8TyaXm-a5SF7Ij6PgyeL4Ry2bw",
+    authDomain: "cargo-dev-84da1.firebaseapp.com",
+    databaseURL: "https://cargo-dev-84da1.firebaseio.com",
+    projectId: "cargo-dev-84da1",
+    storageBucket: "cargo-dev-84da1.appspot.com",
+    messagingSenderId: "12592995924",
+    appId: "1:12592995924:web:f0da78ae301477599697c1",
+    measurementId: "G-DHSCZVLZL5"
+  };
+
 
 //We have to initialize firebase before doing anything with it
 firebase.initializeApp(config);

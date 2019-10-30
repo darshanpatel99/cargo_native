@@ -1,23 +1,23 @@
-import {
-  createStackNavigator
-} from 'react-navigation';
-import TestScreen from '../screens/testScreens/Test'; 
+import { createStackNavigator } from 'react-navigation-stack';
+import HelpScreen from '../screens/helpScreens/Help'; 
+import PaymentSuccessScreen from '../screens/home/PaymentSuccessScreen'
 
-export default TestStack = createStackNavigator({
-  Test:{
-    screen: TestScreen,
+export default HelpStack = createStackNavigator({
+  Help:{
+    screen: HelpScreen,
       navigationOptions: {
-        title: 'Help'
+        //title: 'Help'
+        header: null,
       },
   },
 });
 
-TestStack.navigationOptions = ({ navigation }) => {
+HelpStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible= true;
   
   if (navigation.state.routes.length > 0) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'Test' || 'UserAddressScreen') {
+      if (route.routeName === 'Help' || 'PaymentSuccessScreen') {
         tabBarVisible = true;
       } else {
         tabBarVisible = false;

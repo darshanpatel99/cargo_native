@@ -5,8 +5,9 @@ import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { Header } from 'react-navigation';
+import { Header } from 'react-navigation-stack';
 import Constants from 'expo-constants';
+import NumericInput from 'react-native-numeric-input';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -19,13 +20,14 @@ export default class Checkout extends Component {
   constructor(props) {
     super(props);
     const { navigation } = this.props;
-    const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount')) ;
+    const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount'));
     const DeliveryCharge = parseFloat(navigation.getParam('DeliveryCharge'));
     const userId = navigation.getParam('userID');
     const sellerAddress = navigation.getParam('SellerAddress');
     const productTitle = navigation.getParam('Title');
-    const GPSStringFormat = navigation.getParam('GPSLocation')
-    const productID = navigation.getParam('productID')
+    const GPSStringFormat = navigation.getParam('GPSLocation');
+    const productID = navigation.getParam('productID');
+
     this.state = {
       defaultAddress: '',
       deliveryAddress: defaultAddress,
@@ -36,7 +38,7 @@ export default class Checkout extends Component {
       editDialogVisible: false,
       isLoading: false,
       tempAddressStore:'',
-      userId,
+      userId,     
       buyerName: '',
       sellerAddress: sellerAddress,
       productTitle: productTitle,
@@ -44,10 +46,12 @@ export default class Checkout extends Component {
       GPSStringFormat: GPSStringFormat,
       productID: productID,
       showAlert: false,
+      convenienceFee: (TotalCartAmount * 0.05 ).toFixed(2),
     };
+
     let {City, Street, Country, Buyer} ='';
     let defaultAddress='' ;
-    let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
+    let amount = parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
 
     this.NavigateToPay = this.NavigateToPay.bind(this);    
     amount = amount.toFixed(2)
@@ -69,7 +73,7 @@ export default class Checkout extends Component {
         Buyer = doc.data().FirstName;
         Email = doc.data().Email;
         this.setState({deliveryAddress: defaultAddress,
-        totalAmount: this.state.tipAmount+this.state.deliveryFee + this.state.subTotal,
+        //totalAmount: parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee),
         // totalAmount: amount,
         buyerName: Buyer,
         Email
@@ -79,9 +83,7 @@ export default class Checkout extends Component {
     .catch(err => {
       console.log('Error getting document', err);
     });
-  
     this.unsubscribe = null;
-
   }
   googleAddressCallback = (latitude, longitude) => {
     console.log('Product SellerAddress ' + this.state.sellerAddress )
@@ -103,27 +105,22 @@ export default class Checkout extends Component {
       .then((response) => response.json())
       .then((responseJson) => {
         //return responseJson.movies;
-        console.log(productLocationLatitude);
-        console.log(productLocationLongitude)
-        console.log('&&&&&&&&&&&&&&&&&')
-        console.log(responseJson.rows[0].elements[0].distance.value);
-
         const distanceInMeters = responseJson.rows[0].elements[0].distance.value;
         let deliveryCharge;
         if(distanceInMeters <= 5000) {
           deliveryCharge = 3.99;
         } else if(distanceInMeters >= 5000 && distanceInMeters <= 10000){
-          deliveryCharge = 6.99;
+          deliveryCharge = 3.99;
         } else if (deliveryCharge >= 10000 && deliveryCharge <= 17000){
-          deliveryCharge = 8.99;
+          deliveryCharge = 3.99;
         } else {
-          deliveryCharge = 9.99;
+          deliveryCharge = 3.99;
         }
         console.log('THIS is delivery charge checkout screen -- ' + deliveryCharge)
         //deliveryCharge = deliveryCharge.toFixed(2);
         this.setState({
           deliveryFee: deliveryCharge,
-          totalAmount: (deliveryCharge+this.state.subTotal).toFixed(2)
+          totalAmount: (parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2),
         })
       })
       .catch((error) => {
@@ -133,8 +130,8 @@ export default class Checkout extends Component {
   
   componentWillMount(){
     const { navigation } = this.props;
-    let amount = this.state.tipAmount+this.state.deliveryFee + this.state.subTotal;
-    amount = amount.toFixed(2)
+    let amount = (parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2);
+    //amount = amount.toFixed(2)
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
     console.log('Header and Status Bar --> ' + headerAndStatusBarHeight);
@@ -148,7 +145,6 @@ export default class Checkout extends Component {
         totalAmount: amount,
       })
     }); 
-
   }
 
   componentWillUnmount() {
@@ -157,7 +153,10 @@ export default class Checkout extends Component {
     this.focusListener.remove();
   }
  
+  afterSetStateFinished(){
+    this.setState({ totalAmount: (this.state.tipAmount+ parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
 
+  }
 
   componentDidMount(props) {
     //this.unsubscribe = this.ref.onSnapshot(this.onDocumentUpdate);
@@ -238,7 +237,7 @@ export default class Checkout extends Component {
             Update Delivery Address
           </Text>
     
-              <GooglePlacesAutocomplete
+              {/* <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Delivery Address'
                 minLength={2}
@@ -248,11 +247,11 @@ export default class Checkout extends Component {
                 listViewDisplayed='false'    // true/false/undefined
                 renderDescription={row => row.description} // custom description render
                 onPress={(data, details = null) => {
-                console.log(Object.values(details.geometry.location))
+                console.log('******************************' + JSON.stringify(details.formatted_address))
                 let lat = Object.values(details.geometry.location)[0];
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
-                this.setState({GPSStringFormat: (Object.values(details.geometry.location))});
+                this.setState({GPSStringFormat: JSON.stringify(details.formatted_address)});
                 this._getLocationAsync(lat, long)
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
@@ -264,9 +263,6 @@ export default class Checkout extends Component {
                 getDefaultValue={() => {
                     return this.state.GPSStringFormat; // text input default value
                 }}
-
- 
-
                 query={{
                     // available options: https://developers.google.com/places/web-service/autocomplete
                     key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
@@ -298,7 +294,23 @@ export default class Checkout extends Component {
                   },
               }}
                 currentLocation={false}
-                />
+                /> */}
+
+        {/* <TextInput
+          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={text => this.setState({GPSStringFormat: JSON.stringify(text)})}
+          value={this.state.GPSStringFormat}
+        /> */}
+
+        <TextInput
+          placeholder= ' '
+          underlineColorAndroid="transparent"
+          autoCapitalize='none'
+          autoCorrect={false}
+          style={Styles.TextInputStyle}
+          onChangeText = {text => this.setState({GPSStringFormat: text})}
+        />
+
         <KeyboardAvoidingView
         //style={{ flex: 1 }}
         behavior='padding'
@@ -310,31 +322,53 @@ export default class Checkout extends Component {
             <Text
               style={{
                 marginLeft: 15,
-                // marginTop: 20,
+                marginTop: 50,
                 fontSize: 20,
                 fontFamily: 'nunito-SemiBold'
               }}
             >
               Tip $ :
             </Text>
-            <Item style={{marginLeft:10 }}>
-              <TextInput
+            <Item style={{marginLeft:10 ,marginTop: 50,}}>
+              {/* <TextInput
                fontSize = {20}
                 keyboardType='numeric'
-                maxLength={3}
+                maxLength={2}
                 value={this.state.tipAmount}
                 returnKeyType='done'
                 onChangeText={value => { if(value){
-                  this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+this.state.deliveryFee + this.state.subTotal).toFixed(2) });
+                  this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
                   console.log(this.state.tipAmount);
                 }else{
-                  this.setState({ tipAmount: 0, totalAmount: 0 + this.state.deliveryFee + this.state.subTotal });
+                  this.setState({ tipAmount: 0, totalAmount: (parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
                 }
                 }}
+                // onChangeText={(text) => { this.setState({ tipAmount: parseFloat(text)})}}
                 placeholder='Enter Tip amound in CAD'
-              />
+              /> */}
+
+            <NumericInput 
+              value={this.state.tipAmount} 
+              onChange={value => this.setState({tipAmount:value }, () => {
+                this.afterSetStateFinished();
+            })}
+              onLimitReached={(isMax,msg) => console.log(isMax,msg)}
+              totalWidth={140} 
+              totalHeight={40} 
+              iconSize={25}
+              step={1}
+              minValue={0}
+              maxValue={99}
+              valueType='integer'
+              rounded 
+              textColor='#000000' 
+              iconStyle={{ color: 'white' }} 
+              rightButtonBackgroundColor='#0000cc' 
+              leftButtonBackgroundColor='#0080ff'/>
+
             </Item>
           </View>
+          
           </KeyboardAvoidingView>
           <Text
             style={{
@@ -351,7 +385,7 @@ export default class Checkout extends Component {
             <Text>Subtotal: ${this.state.subTotal}</Text>
             <Text>Tip: ${this.state.tipAmount}</Text>
             <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
-            {/* <Text>Convienence Fee (5%): ${this.state.deliveryFee}</Text> */}
+            <Text>Convenience Fee (5%): ${this.state.convenienceFee}</Text>
             <Text>Total Amount: ${this.state.totalAmount} </Text>
           </View>
           <View style={Styles.payButton}>
@@ -446,6 +480,22 @@ const Styles = StyleSheet.create({
       width: 0
     },
     fontSize: 20
+  },
+  TextInputStyle: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    //textAlign: "center",
+    alignItems: "center",
+    height: 40,
+    //width: 100,
+    borderRadius: 5,
+    margin: 10,
+    padding:10,
+    backgroundColor: "#f8f8f8",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
   },
   payButton: {
     // marginBottom: 5,

@@ -8,79 +8,44 @@ const items = [
   {
     name: 'Electronics',
     id: 1,
-    children: [
-      {
-        name: 'Mobile Phone',
-        id: 2,
-      },
-      {
-        name: 'Computers',
-        id: 3,
-      },
-      {
-        name: 'Other Electronics',
-        id: 4,
-      },
-    ],
   },
-
   {
-    name: 'Home Products',
+    name: 'Home',
+    id: 3,
+  },
+  {
+    name: 'Fashion',
+    id: 4,
+  },
+  {
+    name: 'Pet',
     id: 5,
-    children: [
-      {
-        name: 'Home Décor',
-        id: 6,
-      },
-      {
-        name: 'Kitchen and dining wares',
-        id: 7,
-      },
-      {
-        name: 'Other Home Products',
-        id: 8,
-      },
-    ],
   },
-
   {
-    name: 'Baby Products',
+    name: 'Garden',
+    id: 6,
+  },
+  {
+    name: 'Sports',
+    id: 7,
+  },
+  {
+    name: 'Entertainment',
+    id: 8,
+  },
+  {
+    name: 'Family',
     id: 9,
-    children: [
-      {
-        name: 'Clothing',
-        id: 10,
-      },
-      {
-        name: 'Toys',
-        id: 11,
-      },
-      {
-        name: 'Cribs',
-        id: 12,
-      },
-    ],
   },
   {
-    name: 'Clothing',
-    id: 13,
-    children: [
-      {
-        name: "Men's clothing",
-        id: 14,
-      },
-      {
-        name: "Women's clothing",
-        id: 15,
-      },
-      {
-        name: 'Other',
-        id: 16,
-      },
-    ],
-  }
-
-];
+    name: 'Hobbies',
+    id: 10, 
+  },
+  {
+    name: 'Others',
+    id: 2,
+  },
+]
 
 export default class RefineCategoryHomeScreen extends Component {
   constructor() {
@@ -94,9 +59,7 @@ export default class RefineCategoryHomeScreen extends Component {
     this.props.parentCallback(selectedItems);
     console.log(selectedItems)
   };
-
-
-
+  
   render() {
     return (
         <View >
@@ -105,9 +68,9 @@ export default class RefineCategoryHomeScreen extends Component {
           uniqueKey="id"
           hideSelect={false}
           subKey="children"
-          selectText="Refine"
+          selectText=" Filter"
           showDropDowns={true}
-          readOnlyHeadings={true}
+          readOnlyHeadings={false}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
           single={false}
@@ -122,8 +85,8 @@ export default class RefineCategoryHomeScreen extends Component {
               justifyContent: 'center',
             },
             container: {
-              width: '80%',
-              height: '60%',
+              width: '90%',
+              height: '80%',
               flex: 0,
               alignSelf: 'center',
               marginTop:50

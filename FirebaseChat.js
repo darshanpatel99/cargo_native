@@ -182,6 +182,41 @@ class FirebaseChat {
     });
   }
   
+  //this function will delete chat thread if user choose to delete the chat
+  deleteChatThread(deleteChatThreadId) {
+        var urlRef = firebase.database().ref('Chat/'+deleteChatThreadId).remove();
+  }
+
+  blockChatUser(chatThreadId, userBlocked){
+    firebase.database().ref('Chat/'+chatThreadId).child('ChatStatus').update({'Blocked' : userBlocked})
+  }
+
+  //checks if the chatstatus child exists int the realtime db
+  checkChildExist(chatThreadId){
+    var blockStatus= ''
+    firebase.database().ref('Chat/'+chatThreadId).once('value', function(snapshot) {
+      if (snapshot.hasChild('ChatStatus')) {
+        //alert('exists');
+        blockStatus = 'true'
+      }else{
+        //alert('doesnt exist')
+        blockStatus='false'
+      }
+    });
+    //alert(blockStatus)
+    return blockStatus;
+  }
+
+  //checks if the chat is blocked
+  checkStatusOfChat(chatThreadId){
+    var currentChatStatus='';
+    firebase.database().ref('Chat/'+chatThreadId).once('value', function(snapshot){
+      var data = snapshot.val();
+      //console.log(JSON.stringify(data.ChatStatus.Blocked))
+      currentChatStatus= data.ChatStatus.Blocked
+    })
+    return currentChatStatus;
+  }
 
 
 

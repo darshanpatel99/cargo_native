@@ -294,12 +294,10 @@ export class ProductScreen extends Component {
         Status:'active'
     })
     .then(function() {
-        console.log("Document successfully updated!");
         //alert('Your order has cancelled!');
-
         Alert.alert(  
-          'Alert !',  
-          'Your product is cancelled!',  
+          'Thank You',  
+          'Your product is activated!',  
           [ 
             {text: 'OK', onPress: () => navigation.navigate('Home')},  
           ]  
@@ -316,7 +314,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
     const { navigate } = this.props.navigation;
     //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('ChatDetailMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'Details'})
+      navigate('ChatDetailMessagesScreen', {completeChatThread: this.state.completeChatThread, userID:this.state.userID, owner: this.state.owner, previousScreen: 'Details', sellerName : this.state.sellerName})
   }
     else{
       this.setState({
@@ -377,7 +375,7 @@ export class ProductScreen extends Component {
       headerLeft: (
         <TouchableOpacity onPress={ () => navigation.navigate(navigation.state.params.prevPage)}>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 10 , marginTop: 10, fontSize:30}} />
+              <Ionicons  name={Platform.OS === "ios" ? `ios-arrow-back` : `md-arrow-back`} color={Colors.primary} style={{ marginLeft: 13 , marginTop: 10, fontSize:35}} />
               {/* <Text style={{ color:Colors.primary, marginLeft: 5 , marginTop: 10, fontSize:13, marginRight:10}}>{navigation.state.params.prevPage}</Text> */}
             </View>
         </TouchableOpacity>
@@ -564,8 +562,8 @@ export class ProductScreen extends Component {
             showProgress={false}
             title="   Alert   "
             message="Please login first!"
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={true}
             //showCancelButton={true}
             showConfirmButton={true}
             cancelText="No, cancel"
@@ -619,7 +617,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     alignItems: 'flex-start',
-    marginHorizontal:Dimensions.get('screen').width*0.01,
+    paddingTop:Dimensions.get('screen').height*0.01,
+    paddingHorizontal:Dimensions.get('screen').width*0.03,
     flexWrap: 'wrap',
     flex: 0.7,
   },
@@ -629,6 +628,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flex:0.3,
     textAlign:'right',
+    paddingHorizontal:Dimensions.get('screen').width*0.03,
+    paddingTop:Dimensions.get('screen').height*0.01,
   },
   nameAndPrice: {
     flex: 1,
@@ -647,10 +648,12 @@ const styles = StyleSheet.create({
   },
   productDesc: {
     fontSize: 15,
-    fontWeight: '100',
+    //fontWeight: '100',
     marginTop:10,
-    marginLeft: 10,
-    marginRight: 10 
+    //marginLeft: 10,
+    marginRight: 10,
+    alignItems: 'center',
+    paddingHorizontal:Dimensions.get('screen').width*0.03, 
   },
   price: {
     fontSize: 18,
@@ -699,6 +702,7 @@ const styles = StyleSheet.create({
   reportAd: {
     color: Colors.primary,
     alignSelf: 'flex-end',
+    paddingHorizontal:Dimensions.get('screen').width*0.03,
   },
   buttonLarge: {
     flex: 0,

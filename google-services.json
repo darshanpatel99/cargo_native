@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "572236256696-fergtsju84ade8lnro6au83sdaknnn4i.apps.googleusercontent.com",
+              "client_id": "572236256696-rebjkd10nh1rbveidpq4d338nrgga709.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.developer.cargo"
+                "bundle_id": "host.exp.exponent"
               }
             }
           ]

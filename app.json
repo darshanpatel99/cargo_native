@@ -3,8 +3,11 @@
     "name": "CarGo",
     "slug": "cargo-native",
     "privacy": "unlisted",
-    "sdkVersion": "33.0.0",
+    "sdkVersion": "35.0.0",
     "scheme": "cargo",
+    "facebookScheme": "fb2872116616149463",
+    "facebookAppId": "2872116616149463",
+    "facebookDisplayName": "CarGo Marketplace",
     "notification": {
       "icon": "./assets/images/icon.png"
     },
@@ -13,7 +16,7 @@
       "android",
       "web"
     ],
-    "version": "2.0.7",
+    "version": "2.1.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -22,7 +25,7 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "enabled": false 
     },
     "assetBundlePatterns": [
       "**/*"
@@ -36,14 +39,14 @@
       },
       "config": {
         "googleSignIn": {
-          "reservedClientId": "com.googleusercontent.apps.572236256696-fergtsju84ade8lnro6au83sdaknnn4i"
+          "reservedClientId": "com.googleusercontent.apps.12592995924-93bvpjbll346oa2kg33kfm574lg7r2q5"
         }
       }
     },
     "android": {
       "package": "com.developer.cargo",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 3
+      "versionCode": 6
     },
     "hooks": {
       "postPublish": [

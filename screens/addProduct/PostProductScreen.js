@@ -7,7 +7,8 @@ import {
   Image,
   View,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 import {
   Form,
@@ -23,7 +24,7 @@ import {
   
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
-import { Header } from 'react-navigation';
+import { Header } from 'react-navigation-stack';
 import Colors from '../../constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -47,6 +48,9 @@ let width = Dimensions.get('window').width;
 
 let checkGoogleAddress= '';
 
+
+
+
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
@@ -60,6 +64,7 @@ export default class PostProductScreen extends Component {
       price : "",
       thumbnail : " ",
       image: [],
+      imageSizes:[],
       downloadURLs : [],
       User:null,
       Category: 0,
@@ -79,6 +84,7 @@ export default class PostProductScreen extends Component {
       sellerName:'',
       uploadCounter:0,
       loading: false,
+      completeStringAddress:'',
     }
 
     this.categoryRemover = React.createRef();
@@ -96,18 +102,14 @@ export default class PostProductScreen extends Component {
   }
 
   componentDidMount() {
-
     const { navigation } = this.props;
-    
     this.focusListener = navigation.addListener('didFocus', () => { 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
    
     if (user != null) {
-        
       this.state.owner = user.uid;
       console.log(" State UID ==> from  " + this.state.Owner);
-
     }
   });
 
@@ -130,7 +132,6 @@ export default class PostProductScreen extends Component {
   componentWillUnmount() {
 
     //clearing the arrays
-    console.log("commponent will unmouutn tdsl;jfsaksf;jg");
     this.setState({image:[], downloadURLs:[], addressArray:[],Avability:[], thumbnail:' ' });
     // Clean up: remove the listener
     this._unsubscribe();
@@ -162,7 +163,7 @@ export default class PostProductScreen extends Component {
     const { navigate } = this.props.navigation;
     this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
-    this.googlePlacesAutocomplete._handleChangeText('')
+    //this.googlePlacesAutocomplete._handleChangeText('')
     //this.addressRemover.current.changeAddressState();
 
     this.setState({
@@ -208,19 +209,18 @@ export default class PostProductScreen extends Component {
 
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
-    
+      var arraySizes = this.state.imageSizes;
       var array = this.state.image; //getting the uri array
       var first = this.state.firstTimeOnly;
       console.log("Total number of uris we have"+ array.length)
       this.setState({ loading: true });
-      array.forEach(async (element) => {
-
+      array.forEach(async (element,index) => {
    
         if(first){
 
           first=false;
           this.setState({firstTimeOnly:false});
-          await this.uploadThumbnailToFirebase(element)
+          await this.uploadThumbnailToFirebase(element, arraySizes[index])
           .then(()=>{   
             
             console.log('Thumbnail got uploaded');
@@ -231,7 +231,7 @@ export default class PostProductScreen extends Component {
           
         }
 
-        await this.uploadImageToFirebase(element, uuid.v1())
+        await this.uploadImageToFirebase(element, arraySizes[index])
         .then(() => {
           console.log('Success' + uuid.v1());
           
@@ -259,7 +259,8 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    let completeStringAddress = this.state.completeStringAddress;
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && this.state.completeStringAddress != '')  {
     await this.uploadImageData();
     }
     else {
@@ -276,9 +277,9 @@ export default class PostProductScreen extends Component {
         })
       }
   
-      console.log(address)
+      console.log(completeStringAddress)
   
-      if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      if( completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
         this.setState({
           showAddressAlert:true,
         })
@@ -301,6 +302,7 @@ export default class PostProductScreen extends Component {
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
+    let completeStringAddress = this.state.completeStringAddress;
 
     console.log('length of the price' + priceLength.length);
 
@@ -324,7 +326,8 @@ export default class PostProductScreen extends Component {
       Category: this.state.Category,
       Avability: this.state.Avability,
       Status:'active',
-      AddressArray: this.state.addressArray,
+      //AddressArray: this.state.addressArray,
+      SellerAddress:this.state.completeStringAddress,
       BuyerID:'',
       SellerName: this.state.sellerName,
       BuyerName:'',
@@ -333,14 +336,14 @@ export default class PostProductScreen extends Component {
       TotalFee:'',
       BoughtStatus:'false',
       OrderNumber: -1,
-
     }
 
     //Getting the current time stamp
     var currentDate = new Date();
     data.TimeStamp = currentDate.getTime();
     //if(this.checkFields == true)
-    //Posting the product
+    //Posting the product.
+    console.log("Product Posted---->" + data);
     PostProduct(data).then(()=>{
       this.setState({ loading: false });
       this.showAlert2();
@@ -372,9 +375,9 @@ export default class PostProductScreen extends Component {
       })
     }
 
-    console.log(address)
+    console.log(completeStringAddress)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    if(completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
       this.setState({
         showAddressAlert:true,
       })
@@ -410,7 +413,8 @@ export default class PostProductScreen extends Component {
 
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]),
+        imageSizes : this.state.imageSizes.concat([this.sizeOfImageObj(result)])
       });
     }
   };
@@ -434,25 +438,104 @@ export default class PostProductScreen extends Component {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality:0.2      
     });
+    console.log("res is below");
     
-    console.log(result);
 
+    console.log("W2 " + result.width + "  H2" + result.height);
+    console.log(result);
+    
     if (!result.cancelled) {
       this.setState({
-        image: this.state.image.concat([result.uri])
+        image: this.state.image.concat([result.uri]),
+        imageSizes : this.state.imageSizes.concat([this.sizeOfImageObj(result)])
       });
     }
   };
 
+  sizeOfImageObj = (result) =>{
 
+    var imageWidth = result.width;
+    var imageHeigth = result.height;
+    var biggerSide =0;
+    var smallerSide = 0 ;
+
+    if(imageHeigth>imageWidth){
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+    if(imageHeigth<imageWidth){
+      biggerSide = imageWidth;
+      smallerSide = imageHeigth;
+    }
+    if(imageHeigth == imageWidth)
+    {
+      biggerSide = imageHeigth;
+      smallerSide = imageWidth;
+    }
+
+    var localSizeObject = {
+      'height' : imageHeigth,
+      'width' : imageWidth,
+    }
+
+    return localSizeObject;
+  }
 
   //Uploading the thumbnail to the Firebase Storage
-  uploadThumbnailToFirebase = async (uri)=>{
+  uploadThumbnailToFirebase = async (uri, localSizeObject)=>{
     console.log('inside the upload thumbnial function');
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 400){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 400){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/400);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/400) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + "  " + finalH)
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize:{width:400, height:400} }],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -510,7 +593,7 @@ export default class PostProductScreen extends Component {
 
   changeAddressState = () => {
      // this.GooglePlacesRef.setAddressText("");
-     this.googlePlacesAutocomplete._handleChangeText('')
+     //this.googlePlacesAutocomplete._handleChangeText('')
      let num =1 
      num = num + this.changeAddressState;
 
@@ -523,11 +606,60 @@ export default class PostProductScreen extends Component {
 
  
   //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, imageName) => {
+  uploadImageToFirebase = async (uri, localSizeObject) => {
+
+    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
+
+    var changedH = {
+      'isBiggest' : false,
+      'value' : localSizeObject.height,
+      'valid' : true,
+    }
+   var changedW = {
+    'isBiggest' : false,
+    'value' : localSizeObject.width,
+    'valid' : true,
+  }
+
+  var difValue = 1 ;
+   
+   if(changedH.value < changedW.value){
+     changedW.isBiggest = true;
+
+    if(changedW.value  <= 800){
+      changedW.valid = false
+    }
+    
+   }
+   else{
+     changedH.isBiggest = true;
+     if(changedH.value  <= 800){
+       changedH.valid = false
+     }
+      
+   }
+
+    if(changedH.isBiggest == true && changedH.valid == true){
+      difValue = Math.round(changedH.value/800);
+    }
+
+    if(changedW.isBiggest == true && changedW.valid == true){
+      difValue =Math.round(changedW.value/800) ;
+    }
+
+    var finalH = 1 ; 
+    var finalW = 1 ;
+    
+    finalH = changedH.value/difValue;
+
+    finalW = changedW.value/difValue;
+
+    console.log(finalW + " those are with 800  " + finalH)
+
 
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [],
+      [{ resize:{width:finalW, height:finalH} }],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     )
 
@@ -780,7 +912,7 @@ export default class PostProductScreen extends Component {
         <KeyboardAvoidingView
 
           style={{ flex: 1 }}
-          behavior='padding'
+          behavior='position'
           keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
         >
           <InputScrollView>
@@ -872,7 +1004,7 @@ export default class PostProductScreen extends Component {
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
 
-              <GooglePlacesAutocomplete
+              {/* <GooglePlacesAutocomplete
                 ref={c => this.googlePlacesAutocomplete = c}
                 placeholder='Pickup Address'
                 minLength={2}
@@ -892,6 +1024,8 @@ export default class PostProductScreen extends Component {
                 let long = Object.values(details.geometry.location)[1];
                 this.setState({addressArray: [lat, long]})
                 this.setState({googleAddressEmpty: 'Added stuff'})
+                let completeStringAddress= JSON.stringify(details.formatted_address)
+                this.setState({completeStringAddress})
                 //this.props.parentCallback(this.state.lat, this.state.long);
                 //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
                 }}
@@ -946,36 +1080,43 @@ export default class PostProductScreen extends Component {
                     color: '#1faadb'
                     },
                 }}
-                />
+                /> */}
 
-            
-            
-            </Content>
+          <TextInput
+            placeholder= 'Pickup Address'
+            underlineColorAndroid="transparent"
+            autoCapitalize='none'
+            autoCorrect={false}
+            style={styles.TextInputStyle}
+            onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
+          />     
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                //margin: 10
+                marginTop: Dimensions.get('screen').height*0.01,
               }}
             >
               <Button style={styles.postAdButton} onPress={this.startPostTheProduct}>
                 <Text>Post Ad</Text>
               </Button>
             </View>
+            </Content>
+            
           </InputScrollView>
           </KeyboardAvoidingView>
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Alert"
-            message={'Successfully Posted!!\n'}
+            title="Thank you"
+            message={'Your add has been successfully submitted\n'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
             showConfirmButton={true}
             cancelText="No, cancel"
-            confirmText="Go to Home !!"
+            confirmText=" OK "
             confirmButtonColor={Colors.primary}
             onCancelPressed={() => {
               this.hideAlert2();
@@ -1168,5 +1309,25 @@ const styles = {
   correctStyle:{
     borderColor: Colors.primary,
     borderWidth:0.5,
+  },
+
+  TextInputStyle: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    //textAlign: "center",
+    alignItems: "center",
+    height: 40,
+    //width: 120,
+    borderRadius: 5,
+    //margin: 10,
+    marginTop:10,
+    padding:10,
+    //backgroundColor: "#f8f8f8",
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.5,
+    borderWidth: 0.5,
+    borderColor: Colors.primary,
   },
 };
