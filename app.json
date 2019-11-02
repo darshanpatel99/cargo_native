@@ -32,7 +32,8 @@
       "bundleIdentifier": "com.developer.cargodev",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take product images.",
-        "NSPhotoLibraryUsageDescription": "Please give photos permission to upload product images to your ad"
+        "NSPhotoLibraryUsageDescription": "Please give photos permission to upload product images to your ad",
+        "LSApplicationQueriesSchemes":["cargo"]
       },
       "config": {
         "googleSignIn": {
