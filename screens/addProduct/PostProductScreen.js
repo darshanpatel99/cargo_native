@@ -242,9 +242,7 @@ export default class PostProductScreen extends Component {
 
         await this.uploadImageToFirebase(element, arraySizes[index])
         .then(() => {
-          console.log('Success' + uuid.v1());
-          
-          
+          console.log('Success' + uuid.v1());         
         })
         .catch(error => {
           console.log('Success' + uuid.v1()); 
@@ -269,13 +267,19 @@ export default class PostProductScreen extends Component {
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
     let completeStringAddress = this.state.completeStringAddress;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && this.state.completeStringAddress != '')  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && this.state.completeStringAddress != '')  {
     await this.uploadImageData();
     }
     else {
       console.log('hello');
-  
-      if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      if(picArray.length < 3){
+
+        this.setState({
+          picAlert:true,
+        })
+
+      }
+      else if((priceLength < 10 || priceLength > 1000) && picArray.length > 2){
         this.setState({
           priceAlert:true,
         })      
@@ -315,7 +319,7 @@ export default class PostProductScreen extends Component {
 
     console.log('length of the price' + priceLength.length);
 
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && address != '')  {
 
     console.log("Uploading the images");
   
@@ -1157,7 +1161,7 @@ export default class PostProductScreen extends Component {
             show={this.state.picAlert}
             showProgress={false}
             title="Alert"
-            message={'Upload images please!'}
+            message={'Please upload at least 3 images!'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
