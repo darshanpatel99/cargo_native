@@ -389,7 +389,7 @@ export default class PostProductScreen extends Component {
 
   };  
   /**
-   * Function Description:
+   * Function Description: PIck the image
    */
   _pickImage = async () => {
 
