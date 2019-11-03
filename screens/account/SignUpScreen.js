@@ -845,7 +845,7 @@ deleteUserFromAuthDatabase() {
 
     console.log('In the finishFunc function');
     
-    //Sample dat object for each user
+    //Sample data object for each user
     var data={
       ActiveProducts : [],
       BoughtProducts : [],
