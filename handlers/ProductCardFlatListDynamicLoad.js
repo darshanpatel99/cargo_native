@@ -137,8 +137,29 @@ export default class ProductCardFlatListDynamicLoad extends Component {
                       //console.log(""+item)
                       if (itemData.indexOf(textData) > -1 && nextProps.filters.length > 0) {
                         console.log("item " + item.Name)
-                        if(item.Category == nextProps.filters[0])
-                          filteredProducts.push(item)
+                        //if the user choose the parent categry load all the products that are in all the sub-categories
+                        var parentCategoryList= [];
+                        parentCategoryList.push(1);
+                        parentCategoryList.push(10);
+                        parentCategoryList.push(21);
+                        parentCategoryList.push(26);
+                        parentCategoryList.push(31);
+                        parentCategoryList.push(34);
+                        parentCategoryList.push(43);
+
+                        if(parentCategoryList.includes(nextProps.filters[0])){
+                          var start=  parentCategoryList.indexOf(nextProps.filters[0]);
+                          var end = parentCategoryList[start+1];
+
+                          for(var i=start+1; i< end; i++ ){
+                            if(item.Category == i)
+                            filteredProducts.push(item)
+                          }
+
+                        }else{
+                          if(item.Category == nextProps.filters[0])
+                            filteredProducts.push(item)
+                        }
                       } else if(itemData.indexOf(textData) > -1) {
                         filteredProducts.push(item)                        
                       }
