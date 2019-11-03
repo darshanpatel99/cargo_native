@@ -18,7 +18,8 @@ const DismissKeyboard = ({ children }) => (
   </TouchableWithoutFeedback>
 );
 
-var stripe = require('stripe-client')('pk_live_of6EOjVKyDp28G3j4E24iTKG00iSxdEJ3B');
+
+var stripe = require('stripe-client')('pk_test_L2nP2Q4EJa9fa7TBGsLmsaBV00yAW5Pe6c');
 
 export default class Stripe extends React.Component {
     
@@ -223,7 +224,7 @@ export default class Stripe extends React.Component {
         this.state.loading =true;
         console.log('Loading state before ' + this.state.loading);
 
-      fetch('https://5nhq1a2ccj.execute-api.us-west-1.amazonaws.com/dev/processStripePayment', {
+      fetch('https://7w745rxni6.execute-api.us-west-1.amazonaws.com/development', {
         method: 'POST',
         headers: {
           Accept: '*/*',
