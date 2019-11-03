@@ -70,7 +70,7 @@
     "rx-core": "^4.0.8",
     "sentry-expo": "^2.0.0",
     "stripe-client": "^1.1.5",
-    "yarn": "^1.17.3"
+    "yarn": "^1.19.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.1.0",
