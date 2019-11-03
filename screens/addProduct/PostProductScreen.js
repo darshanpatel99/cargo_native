@@ -85,6 +85,15 @@ export default class PostProductScreen extends Component {
       uploadCounter:0,
       loading: false,
       completeStringAddress:'',
+      deliveryProvider:0, //0 means cargo is handling everyhing
+      fic:true, // true means the item can be fit in car otherwise not, fic= fit in car
+      brandName:0,
+      dimensionHeight:0,
+      dimensionWidth:0,
+      dimensionLength:0,
+      age:0,
+      condition:'',
+      color:''
     }
 
     this.categoryRemover = React.createRef();
@@ -233,9 +242,7 @@ export default class PostProductScreen extends Component {
 
         await this.uploadImageToFirebase(element, arraySizes[index])
         .then(() => {
-          console.log('Success' + uuid.v1());
-          
-          
+          console.log('Success' + uuid.v1());         
         })
         .catch(error => {
           console.log('Success' + uuid.v1()); 
@@ -260,13 +267,19 @@ export default class PostProductScreen extends Component {
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
     let completeStringAddress = this.state.completeStringAddress;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && this.state.completeStringAddress != '')  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && this.state.completeStringAddress != '')  {
     await this.uploadImageData();
     }
     else {
       console.log('hello');
-  
-      if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+      if(picArray.length < 3){
+
+        this.setState({
+          picAlert:true,
+        })
+
+      }
+      else if((priceLength < 10 || priceLength > 1000) && picArray.length > 2){
         this.setState({
           priceAlert:true,
         })      
@@ -306,12 +319,28 @@ export default class PostProductScreen extends Component {
 
     console.log('length of the price' + priceLength.length);
 
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && address != '')  {
 
     console.log("Uploading the images");
   
 
     console.log('Download urls --> '+this.state.downloadURLs)
+    
+    //Additional data 
+    var additionalData = {
+      BrandName:this.state.brandName,
+      Dimensions:{
+        Height:this.state.dimensionHeight,
+        Length: this.state.dimensionLength,
+        Width: this.state.dimensionWidth
+      },
+      Age : this.state.age,
+      Condition : this.state.condition,
+      Color: this.state.color,
+    }
+    
+    
+    //sample data object 
     var data = {
       Description : this.state.description,
       Name : this.state.title,
@@ -335,6 +364,9 @@ export default class PostProductScreen extends Component {
       TotalFee:'',
       BoughtStatus:'false',
       OrderNumber: -1,
+      DeliveryProvider:0, //0 means cargo is hande
+      FIC: true,
+      AdditionalData: additionalData
     }
 
     //Getting the current time stamp
@@ -389,7 +421,7 @@ export default class PostProductScreen extends Component {
 
   };  
   /**
-   * Function Description:
+   * Function Description: PIck the image
    */
   _pickImage = async () => {
 
@@ -1129,7 +1161,7 @@ export default class PostProductScreen extends Component {
             show={this.state.picAlert}
             showProgress={false}
             title="Alert"
-            message={'Upload images please!'}
+            message={'Please upload at least 3 images!'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
