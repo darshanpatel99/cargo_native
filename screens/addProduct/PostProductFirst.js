@@ -261,16 +261,24 @@ export default class PostProductScreen extends Component {
   startPostTheProduct = async () =>{
     let titleLength = this.state.title;
     let priceLength = parseInt( this.state.price);
-    let descriptionLength = this.state.description;
     let productCategory = this.state.Category;
     let picArray = this.state.image;
-    let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
-    let completeStringAddress = this.state.completeStringAddress;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && this.state.completeStringAddress != '')  {
-    await this.uploadImageData();
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>2)  {
+    //await this.uploadImageData();
+
+        this.props.navigation.navigate('AddProduct', {
+            title: this.state.title,
+            price:  this.state.price,
+            productCategory: this.state.Category,
+            picArray: this.state.image,
+            imageSizes: this.state.imageSizes,
+          });
     }
     else {
+        
+        this.setState({
+        postAdClicked: true,
+      })
       console.log('hello');
       if(picArray.length < 3){
 
@@ -284,23 +292,12 @@ export default class PostProductScreen extends Component {
           priceAlert:true,
         })      
       }
-      else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
-        this.setState({
-          availableAlert:true,
-        })
-      }
   
-      console.log(completeStringAddress)
+    
   
-      if( completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
-        this.setState({
-          showAddressAlert:true,
-        })
-      }
-  
-      this.setState({
-        postAdClicked: true,
-      })
+    //   this.setState({
+    //     postAdClicked: true,
+    //   })
     }
   }
 
@@ -921,6 +918,8 @@ export default class PostProductScreen extends Component {
     
   }
 
+
+
   render() {
 
     let { image } = this.state;
@@ -1002,7 +1001,7 @@ export default class PostProductScreen extends Component {
               
               
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
-              <Form>
+              {/* <Form>
                 {Platform.OS === 'ios' ? (
                   <Textarea
                     rowSpan={5}
@@ -1111,7 +1110,7 @@ export default class PostProductScreen extends Component {
                     color: '#1faadb'
                     },
                 }}
-                /> */}
+                /> 
 
           <TextInput
             placeholder= 'Pickup Address'
@@ -1120,7 +1119,7 @@ export default class PostProductScreen extends Component {
             autoCorrect={false}
             style={styles.TextInputStyle}
             onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
-          />     
+          />      */}
             <View
               style={{
                 flexDirection: 'row',
@@ -1130,8 +1129,9 @@ export default class PostProductScreen extends Component {
               }}
             >
               <Button style={styles.postAdButton} onPress={this.startPostTheProduct}>
-                <Text>Post Ad</Text>
+                <Text>Next</Text>
               </Button>
+              
             </View>
             </Content>
             
