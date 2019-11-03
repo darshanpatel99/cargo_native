@@ -54,20 +54,28 @@ let checkGoogleAddress= '';
 export default class PostProductScreen extends Component {
   constructor(props) {
     super(props);
+
+    const { navigation } = this.props;
+    const title = navigation.getParam('title');
+    const price = navigation.getParam('price');
+    const productCategory = navigation.getParam('productCategory');
+    const picArray = navigation.getParam('picArray');
+    const imageSizes = navigation.getParam('imageSizes');
+
     storageRef = firebase.storage().ref();
     this.state={
       postAdClicked: false,
       showAlert: true,
       showAlert2: false,
-      title : "",
+      title : title,
       description : "",
-      price : "",
+      price :price,
       thumbnail : " ",
-      image: [],
-      imageSizes:[],
+      image: picArray,
+      imageSizes:imageSizes,
       downloadURLs : [],
       User:null,
-      Category: 0,
+      Category: productCategory,
       Avability:[],
       owner: "",
       addressArray:[],
@@ -170,7 +178,7 @@ export default class PostProductScreen extends Component {
 
   hideAlert2(){
     const { navigate } = this.props.navigation;
-    this.categoryRemover.current.changeState();
+    //this.categoryRemover.current.changeState();
     this.avabilityRemover.current.changeState();
     //this.googlePlacesAutocomplete._handleChangeText('')
     //this.addressRemover.current.changeAddressState();
@@ -948,59 +956,6 @@ export default class PostProductScreen extends Component {
         >
           <InputScrollView>
             <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
-
-              <Card style={this.forPictures(this.state.image) ? styles.correctStyle : styles.errorStyle}>
-                <View  style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between',}}>
-
-                  <TouchableOpacity onPress={this._pickImage}>
-                    <CardItem style={styles.imageUploadStyle}>
-                      <Ionicons name='ios-images' size={32} />
-                    </CardItem>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={this._pickImageCamera}>
-                    <CardItem style={styles.imageUploadStyle}>
-                      <Foundation name='camera' size={32} />
-                    </CardItem>
-                  </TouchableOpacity>
-                </View>
-                <CardItem>
-                  <ScrollView style={styles.scrollStyle} horizontal={true}>
-                    {this._renderImages()}
-                  </ScrollView>
-                </CardItem>
-              </Card>
-
-              <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.title) ? styles.correctStyle : styles.errorStyle]}>
-                <Input placeholder='Title' 
-                  name="title" 
-                  onChangeText={(text)=>this.setState({title:text})}
-                  value={this.state.title}
-                  maxLength={50}
-                  returnKeyType='done'
-                    />
-              </Item>
-              <Item style={[{ marginBottom: 10},this.forPrice(this.state.price) ? styles.correctStyle : styles.errorStyle]}>
-                <Foundation name='dollar' size={32} style={{ padding: 10 }} />
-                <Input keyboardType='numeric' 
-                  placeholder='0.00'
-                  name="price"
-                  onChangeText={(text)=>this.setState({price:text})}
-                  value={this.state.price} 
-                  maxLength={4}
-                  returnKeyType='done'
-                  />
-                  
-              </Item>
-
-              {/* Pick category for the product */}
-              <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
-              <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
-              
-              </View>
-              
-              
-              
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
               <Form>
                 {Platform.OS === 'ios' ? (
