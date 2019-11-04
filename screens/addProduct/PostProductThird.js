@@ -39,6 +39,7 @@ import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as ImageManipulator from 'expo-image-manipulator';
 import Spinner from 'react-native-loading-spinner-overlay';
+import {StackActions, NavigationActions} from 'react-navigation';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -177,27 +178,40 @@ export default class PostProductScreen extends Component {
   };
 
   hideAlert2(){
-    const { navigate } = this.props.navigation;
-    //this.categoryRemover.current.changeState();
-    this.avabilityRemover.current.changeState();
-    //this.googlePlacesAutocomplete._handleChangeText('')
-    //this.addressRemover.current.changeAddressState();
+    // const { navigate } = this.props.navigation;
+    // //this.categoryRemover.current.changeState();
+    // this.avabilityRemover.current.changeState();
+    // //this.googlePlacesAutocomplete._handleChangeText('')
+    // //this.addressRemover.current.changeAddressState();
 
-    this.setState({
-      showAlert2: false,
-      title : "",
-      description : "",
-      price : "",
-      thumbnail : " ",
-      image: [],
-      downloadURLs : [],
-      addressArray:[],
-      uploadCounter:0,
-      firstTimeOnly:true,
-    });
-    navigate('Home');
+    // this.setState({
+    //   showAlert2: false,
+    //   title : "",
+    //   description : "",
+    //   price : "",
+    //   thumbnail : " ",
+    //   image: [],
+    //   downloadURLs : [],
+    //   addressArray:[],
+    //   uploadCounter:0,
+    //   firstTimeOnly:true,
+    // });
+    // navigate('Home');
+    this.resetStack();
   };
 
+  resetStack = () => {
+   this.props
+     .navigation
+     .dispatch(StackActions.reset({
+       index: 0,
+       actions: [
+         NavigationActions.navigate({
+           routeName: 'FirstPostProduct',
+         }),
+       ],
+     }))
+  }
   // getPermissionAsync = async () => {
   //   if (Constants.platform.ios) {
   //     console.log('ask permission');
