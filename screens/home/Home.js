@@ -10,6 +10,7 @@ import { Notifications } from 'expo';
 import firebase from '../../Firebase';
 
 
+
 export default class HomeScreen extends React.Component {
 
 
@@ -38,12 +39,24 @@ export default class HomeScreen extends React.Component {
     }
 
     
-   // this.createNotificationAsync();
+    //register the listeners for the depp links to your app
+    Linking.addEventListener('url', this.handleDeepLinkingURL);
 
     //register the listener for messages channel
     this._notificationSubscription =  Notifications.addListener(this.handleNotification);
 
 
+  }
+
+
+  /**
+   * Function Description: Handle the deep linking urls
+   */
+  handleDeepLinkingURL = (event)=>{
+    console.log(event.url);
+    const route = event.url.replace(/.*?:\/\//g, '');
+
+    //Do something with the route
   }
 
 
