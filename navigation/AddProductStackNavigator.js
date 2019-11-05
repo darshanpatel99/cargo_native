@@ -25,7 +25,7 @@ AddProductStack.navigationOptions = ({ navigation }) => {
   
   if (navigation.state.routes.length > 0) {
     navigation.state.routes.map(route => {
-      if (route.routeName === 'AddProduct') {
+      if (route.routeName === 'FirstPostProduct') {
         tabBarVisible = true;
       } else {
         tabBarVisible = false;

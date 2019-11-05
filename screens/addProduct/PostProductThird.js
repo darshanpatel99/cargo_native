@@ -99,14 +99,14 @@ export default class PostProductScreen extends Component {
       uploadCounter:0,
       loading: false,
       completeStringAddress:'',
-      deliveryProvider:0, //0 means cargo is handling everyhing
+      deliveryProvider: false, //false means cargo is handling everyhing
       fic:true, // true means the item can be fit in car otherwise not, fic= fit in car
-      brandName:0,
+      brandName,
       dimensionHeight:0,
       dimensionWidth:0,
       dimensionLength:0,
       age:0,
-      condition:'',
+      condition,
       color:'',
       switchValue: false,//This is for delivery
       switchOn1: false,//This one is for car and truck
@@ -305,36 +305,27 @@ export default class PostProductScreen extends Component {
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
     let completeStringAddress = this.state.completeStringAddress;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && this.state.completeStringAddress != '')  {
+    let deliveryProvider = this.state.deliveryProvider;
+    let SellerDeliveryPrice =this.state.sellerDeliveryPrice;
+
+    if( descriptionLength.length > 0  && timeArray.length>0 && this.state.completeStringAddress != '' )  {
     await this.uploadImageData();
     }
     else {
       console.log('hello');
-      if(picArray.length < 3){
-
-        this.setState({
-          picAlert:true,
-        })
-
-      }
-      else if((priceLength < 10 || priceLength > 1000) && picArray.length > 2){
-        this.setState({
-          priceAlert:true,
-        })      
-      }
-      else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+       if(timeArray.length==0){
         this.setState({
           availableAlert:true,
         })
       }
-  
-      console.log(completeStringAddress)
-  
-      if( completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      else if( completeStringAddress == ''  && timeArray.length!=0){
         this.setState({
           showAddressAlert:true,
         })
       }
+      
+      
+       //console.log(completeStringAddress)
   
       this.setState({
         postAdClicked: true,
@@ -367,14 +358,14 @@ export default class PostProductScreen extends Component {
     //Additional data 
     var additionalData = {
       BrandName:this.state.brandName,
-      Dimensions:{
-        Height:this.state.dimensionHeight,
-        Length: this.state.dimensionLength,
-        Width: this.state.dimensionWidth
-      },
-      Age : this.state.age,
       Condition : this.state.condition,
-      Color: this.state.color,
+      // Dimensions:{
+      //   Height:this.state.dimensionHeight,
+      //   Length: this.state.dimensionLength,
+      //   Width: this.state.dimensionWidth
+      // },
+      //Age : this.state.age,
+      //Color: this.state.color,
     }
     
     
@@ -404,7 +395,7 @@ export default class PostProductScreen extends Component {
       OrderNumber: -1,
       DeliveryProvider: this.state.switchValue, //false means cargo is hande
       AdditionalData: additionalData,
-      DeliveryVehicle : this.state.deliveryVehicle,
+      DeliveryVehicle : this.state.deliveryVehicle.slice(2),
       SellerDeliveryPrice : this.state.sellerDeliveryPrice,
     }
 
