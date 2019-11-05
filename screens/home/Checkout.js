@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput, Dimensions } from 'react-native';
+import {Platform, View, StyleSheet, ActivityIndicator, TouchableHighlight,TouchableWithoutFeedback,Keyboard, KeyboardAvoidingView, TextInput, Dimensions, Switch } from 'react-native';
 import {Button,Text,Item,Container,Icon,} from 'native-base';
 import Colors from '../../constants/Colors.js';
 import firebase from '../../Firebase';
@@ -47,14 +47,19 @@ export default class Checkout extends Component {
       productID: productID,
       showAlert: false,
       convenienceFee: (TotalCartAmount * 0.05 ).toFixed(2),
+      switchValue:true
     };
+
+
+
+    this.toggleSwitch = this.toggleSwitch.bind(this)
 
     let {City, Street, Country, Buyer} ='';
     let defaultAddress='' ;
-    let amount = parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
+    //let amount = parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
 
     this.NavigateToPay = this.NavigateToPay.bind(this);    
-    amount = amount.toFixed(2)
+    //amount = amount.toFixed(2)
 
     this.ref = firebase.firestore();
 
@@ -85,6 +90,22 @@ export default class Checkout extends Component {
     });
     this.unsubscribe = null;
   }
+
+      //toggle switch this function is called upon delivery switch is turned on or off
+    toggleSwitch() {
+      if(this.state.switchValue == false) {
+        let totalAmount = parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
+        this.setState({totalAmount})
+        this.setState({switchValue: true})
+      }
+      else {
+        let totalAmount = parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
+        this.setState({totalAmount})       
+        this.setState({switchValue: false})
+      }
+    }
+
+
   googleAddressCallback = (latitude, longitude) => {
     console.log('Product SellerAddress ' + this.state.sellerAddress )
     let addressArray = [latitude, longitude];
@@ -130,7 +151,7 @@ export default class Checkout extends Component {
   
   componentWillMount(){
     const { navigation } = this.props;
-    let amount = (parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2);
+    let amount = (parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2);
     //amount = amount.toFixed(2)
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
@@ -154,7 +175,7 @@ export default class Checkout extends Component {
   }
  
   afterSetStateFinished(){
-    this.setState({ totalAmount: (this.state.tipAmount+ parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
+    this.setState({ totalAmount: (parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
 
   }
 
@@ -178,12 +199,17 @@ export default class Checkout extends Component {
 
   NavigateToPay(){
     const { navigate } = this.props.navigation;
-    if(this.state.GPSStringFormat != ''){
+    if(this.state.switchValue) {
+      if(this.state.GPSStringFormat != ''){
       navigate('StripeScreen', {deliveryFee:this.state.deliveryFee,  GPSStringFormat:this.state.GPSStringFormat, Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})
-    }
-    else{
+    } else{
       this.showAlert();
     }
+  } else {
+      navigate('StripeScreen', {deliveryFee:this.state.deliveryFee,  GPSStringFormat:this.state.GPSStringFormat, Email: this.state.Email, TotalCartAmount:this.state.totalAmount, BuyerName: this.state.buyerName, Title: this.state.productTitle, sellerAddress: this.state.sellerAddress, Email: this.state.Email, productID:this.state.productID, userId:this.state.userId})
+
+  }
+
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -203,6 +229,50 @@ export default class Checkout extends Component {
       )
     };
   };
+
+
+  //this function will render delivery address component if delivery is needed
+  askForDeliveryAddress() {
+
+    if(this.state.switchValue)
+      return(  
+        <View style = {{marginTop: 50, marginBottom: 50}}>
+        <Text>
+          Delivery Address
+        </Text>
+        <TextInput
+          placeholder= 'Please input delivery address here'
+          underlineColorAndroid="transparent"
+          autoCapitalize='none'
+          autoCorrect={false}
+          style={Styles.deliveryAddressStyle}
+          onChangeText = {text => this.setState({GPSStringFormat: text})}
+        />
+        </View>
+      );
+      else {
+        console.log('delivery not needed')
+        return(
+          <View style ={{margin: 5}}>
+          <Text>Note: </Text>
+          <Text>Please coordinate with seller to arrange pickup</Text>
+          <Text>Seller contact information will revel upon successful transaction</Text>
+          </View>
+        )
+      }
+  }
+
+  //add delivery charge
+  addDeliveryCharge() {
+    if(this.state.switchValue) {
+      return (
+        <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
+      );
+    } else {
+      console.log('delivery not needed');    
+    }
+  }
+
   render() {
     const {showAlert} = this.state;
     console.log('Product ID ==> ' + this.state.productID)
@@ -221,95 +291,10 @@ export default class Checkout extends Component {
         style={{ flex: 1 }}
         // behavior='padding'
         // keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
-
         >
 
         <Container>
 
-          <Text
-            style={{
-              marginLeft: 15,
-              marginTop: 20,
-              fontSize: Dimensions.get('screen').width * 0.04,
-              fontFamily: 'nunito-SemiBold'
-            }}
-          >
-            Update Delivery Address
-          </Text>
-    
-              {/* <GooglePlacesAutocomplete
-                ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Delivery Address'
-                minLength={2}
-                autoFocus={false}
-                returnKeyType={'default'}
-                fetchDetails={true}
-                listViewDisplayed='false'    // true/false/undefined
-                renderDescription={row => row.description} // custom description render
-                onPress={(data, details = null) => {
-                console.log('******************************' + JSON.stringify(details.formatted_address))
-                let lat = Object.values(details.geometry.location)[0];
-                let long = Object.values(details.geometry.location)[1];
-                this.setState({addressArray: [lat, long]})
-                this.setState({GPSStringFormat: JSON.stringify(details.formatted_address)});
-                this._getLocationAsync(lat, long)
-                //this.props.parentCallback(this.state.lat, this.state.long);
-                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
-                }}
-                GoogleReverseGeocodingQuery={{
-                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                }}
-
-                getDefaultValue={() => {
-                    return this.state.GPSStringFormat; // text input default value
-                }}
-                query={{
-                    // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                    language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
-                    location: '50.66648,-120.3192',
-                    region: 'Canada',
-                    radius: 20000,
-                    strictbounds: true,
-                }}
-
-                styles={{
-                  textInputContainer: {
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  borderTopWidth: 0,
-                  borderBottomWidth:0
-                  },
-                  textInput: {
-                  height: 38,
-                  color: '#5d5d5d',
-                  fontSize: 16,
-                  borderWidth: 1,
-                  borderColor:'blue',
-                  marginLeft: 0,
-                  marginRight: 0,
-                  },
-                  predefinedPlacesDescription: {
-                  color: '#1faadb'
-                  },
-              }}
-                currentLocation={false}
-                /> */}
-
-        {/* <TextInput
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={text => this.setState({GPSStringFormat: JSON.stringify(text)})}
-          value={this.state.GPSStringFormat}
-        /> */}
-
-        <TextInput
-          placeholder= ' '
-          underlineColorAndroid="transparent"
-          autoCapitalize='none'
-          autoCorrect={false}
-          style={Styles.TextInputStyle}
-          onChangeText = {text => this.setState({GPSStringFormat: text})}
-        />
 
         <KeyboardAvoidingView
         //style={{ flex: 1 }}
@@ -318,8 +303,22 @@ export default class Checkout extends Component {
 
         >
 
-          <View style={Styles.AddressFunctionButtonView}>
-            <Text
+        <View style={Styles.textContainer}>
+          <View style={Styles.leftContainer}>
+          <Text> Do you need delivery ? </Text>
+          </View>
+
+          <View style={Styles.rightContainer}>
+            <Switch
+              onValueChange = {this.toggleSwitch}
+              value = {this.state.switchValue}/>
+          </View>
+
+        </View>
+            {this.askForDeliveryAddress()}
+            <View style={Styles.AddressFunctionButtonView}>
+
+            {/* <Text
               style={{
                 marginLeft: 15,
                 marginTop: 50,
@@ -330,22 +329,6 @@ export default class Checkout extends Component {
               Tip $ :
             </Text>
             <Item style={{marginLeft:10 ,marginTop: 50,}}>
-              {/* <TextInput
-               fontSize = {20}
-                keyboardType='numeric'
-                maxLength={2}
-                value={this.state.tipAmount}
-                returnKeyType='done'
-                onChangeText={value => { if(value){
-                  this.setState({ tipAmount: parseFloat(value), totalAmount: (parseFloat(value)+parseFloat(this.state.tipAmount) + parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
-                  console.log(this.state.tipAmount);
-                }else{
-                  this.setState({ tipAmount: 0, totalAmount: (parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
-                }
-                }}
-                // onChangeText={(text) => { this.setState({ tipAmount: parseFloat(text)})}}
-                placeholder='Enter Tip amound in CAD'
-              /> */}
 
             <NumericInput 
               value={this.state.tipAmount} 
@@ -366,7 +349,7 @@ export default class Checkout extends Component {
               rightButtonBackgroundColor='#0000cc' 
               leftButtonBackgroundColor='#0080ff'/>
 
-            </Item>
+            </Item> */}
           </View>
           
           </KeyboardAvoidingView>
@@ -383,8 +366,8 @@ export default class Checkout extends Component {
           </Text>
           <View style={Styles.priceCard}>
             <Text>Subtotal: ${this.state.subTotal}</Text>
-            <Text>Tip: ${this.state.tipAmount}</Text>
-            <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
+            {/* <Text>Tip: ${this.state.tipAmount}</Text> */}
+            {this.addDeliveryCharge()}
             <Text>Convenience Fee (5%): ${this.state.convenienceFee}</Text>
             <Text>Total Amount: ${this.state.totalAmount} </Text>
           </View>
@@ -401,7 +384,7 @@ export default class Checkout extends Component {
             show={showAlert}
             showProgress={false}
             title="   Alert   "
-            message="Please update your address!"
+            message="Please input your address!"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
             //showCancelButton={true}
@@ -423,7 +406,7 @@ export default class Checkout extends Component {
     );
   }
 }
-const Styles = StyleSheet.create({
+const Styles = {
   Container: {
     display: 'flex',
     flex: 1,
@@ -506,5 +489,28 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     textAlign: "center",
+  },
+    textContainer:{
+    flexDirection: 'row',
+    height: 30,
+  },
+  leftContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems:'center',
+  },
+  rightContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  deliveryAddressStyle: {
+    marginTop: 20,
+    alignSelf: 'stretch',
+    borderBottomColor:'#000',
+    marginRight:50,
+    borderBottomColor: '#000', // Add this to specify bottom border color
+    borderBottomWidth: 2     // Add this to specify bottom border thickness
   }
-});
+}
+
