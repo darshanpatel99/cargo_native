@@ -10,19 +10,7 @@ import {
   ScrollView,
   TextInput
 } from 'react-native';
-import {
-  Form,
-  Container,
-  Content,
-  Input,
-  CardItem,
-  Text,
-  Card,
-  Item,
-  Textarea,
-  Button,
-  
-} from 'native-base';
+import { Form,  Container,  Content,  Input,  CardItem,  Text,  Card,  Item,  Textarea,  Button } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation-stack';
 import Colors from '../../constants/Colors';
@@ -117,14 +105,13 @@ export default class PostProductScreen extends Component {
   componentDidMount() {
     const { navigation } = this.props;
     this.focusListener = navigation.addListener('didFocus', () => { 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-   
-    if (user != null) {
-      this.state.owner = user.uid;
-      console.log(" State UID ==> from  " + this.state.Owner);
-    }
-  });
+        //checking the current user and setting uid
+        let user = firebase.auth().currentUser;
+        if (user != null) {
+        this.state.owner = user.uid;
+        console.log(" State UID ==> from  " + this.state.Owner);
+        }
+    });
 
     //this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -267,7 +254,7 @@ export default class PostProductScreen extends Component {
     let priceLength = parseInt( this.state.price);
     let productCategory = this.state.Category;
     let picArray = this.state.image;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>2)  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>0)  {
     //await this.uploadImageData();
 
         this.props.navigation.navigate('AddProduct', {
@@ -298,12 +285,6 @@ export default class PostProductScreen extends Component {
           priceAlert:true,
         })      
       }
-  
-    
-  
-    //   this.setState({
-    //     postAdClicked: true,
-    //   })
     }
   }
 

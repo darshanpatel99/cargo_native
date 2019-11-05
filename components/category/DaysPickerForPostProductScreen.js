@@ -73,7 +73,7 @@ export default class extends Component {
           items={shift}
           uniqueKey="id"
           subKey="children"
-          selectText="Availability"
+          selectText="Delivery/Pickup Availability"
           hideSearch={true}
           showDropDowns={true}
           readOnlyHeadings={true}

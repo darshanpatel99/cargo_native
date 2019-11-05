@@ -3,7 +3,6 @@ import { View, StyleSheet,Text,TextInput,Alert,Keyboard,TouchableWithoutFeedback
 //Import related to Fancy Buttons
 import { Button, Item } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
 import Colors from "../../constants/Colors.js";
 import firebase from '../../Firebase';
 import AddUser from '../../functions/AddUser';
@@ -1063,7 +1062,7 @@ deleteUserFromAuthDatabase() {
           rightContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
           leftContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}
         
-          buttonTextStyle={{fontSize: 20}}
+          buttonTextStyle={{fontSize: 20, color:'white'}}
           textRightStyle={{fontSize: 20}}
           textLeftStyle={{fontSize: 20}}
         
@@ -1089,7 +1088,7 @@ deleteUserFromAuthDatabase() {
           onPress={this.onPress1}
           circleColorOff={colors.primary}
           circleColorOn={colors.primary}
-          duration={0}
+          duration={500}
         />
         <View style={styles.container}>
           <TextInput
