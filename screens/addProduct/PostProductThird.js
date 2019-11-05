@@ -231,18 +231,18 @@ export default class PostProductScreen extends Component {
 
   getButtonText() {
     
-    return this.state.switchOn1 ? 'Car' : 'Truck';
+    return this.state.switchOn1 ? '🚗Car' : '🚚Truck';
     
   }
   
   getRightText() {
-    return this.state.switchOn1 ? '' : 'Car';
+    return this.state.switchOn1 ? '' : '🚗Car';
     //return 'Signup';
   }
 
   getLeftText() {
     //return this.state.switchOn1 ? 'Signup' : '';
-    return 'Truck';
+    return '🚚Truck';
   }
 
   onPress1 = () => {
@@ -1085,7 +1085,7 @@ export default class PostProductScreen extends Component {
 
           containerStyle={{
             marginLeft:5,
-            width: 140,
+            width: 160,
             height: 50,
             borderRadius: 27.5,
             padding: 3,
@@ -1095,7 +1095,7 @@ export default class PostProductScreen extends Component {
           backgroundColorOn='#fff'
           backgroundColorOff='#fff'
           circleStyle={{
-            width: 70,
+            width: 80,
             height: 40,
             borderRadius: 27.5,
             backgroundColor: 'blue', // rgb(102,134,205)
