@@ -63,6 +63,10 @@ export default class PostProductScreen extends Component {
     const productCategory = navigation.getParam('productCategory');
     const picArray = navigation.getParam('picArray');
     const imageSizes = navigation.getParam('imageSizes');
+    const brandName = navigation.getParam('brandName');
+    const condition = navigation.getParam('condition');
+
+    console.log(brandName + " bN");
 
     storageRef = firebase.storage().ref();
     this.state={
