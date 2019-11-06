@@ -4,46 +4,22 @@ import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import Colors from '../../constants/Colors'
 
 const shift = [
-  // this is the parent or 'item'
-  {
-    name: 'Weekdays',
-    id: 0,
-    // these are the children or 'sub items'
-    children: [
       {
-        name: 'Morning  7am to 12pm',
+        name: 'New : Product has not been unwrapped from the box',
         id: 1,
       },
       {
-        name: 'Afternoon 12pm to 5pm',
+        name: 'Good : Minor blemishes that most people will not notice',
         id: 2,
       },
       {
-        name: 'Evening 5pm to 10pm',
+        name: 'Satisfactory : Moderate wear and tear, but stil has many good years left',
         id: 3,
       },
-    ],
-  },
-  {
-    name: 'Weekends',
-    id: 7,
-    // these are the children or 'sub items'
-    children: [
       {
-        name: 'Morning  7am to 12pm',
+        name: 'Age-worn : Has lived a full life and has a "distressed" look with noticeable wear',
         id: 4,
       },
-      {
-        name: 'Afternoon 12pm to 5pm',
-        id: 5,
-      },
-      {
-        name: 'Evening 5pm to 10pm',
-        id: 6,
-      },
-    ],
-
-  },
 ];
 
 export default class extends Component {
@@ -55,6 +31,7 @@ export default class extends Component {
   }
 
   onSelectedItemsChange = (selectedItems) => {
+      console.log(selectedItems);
     this.setState({ selectedItems });
     console.log(typeof selectedItems);
     this.props.parentCallback(selectedItems);
@@ -73,12 +50,13 @@ export default class extends Component {
           items={shift}
           uniqueKey="id"
           subKey="children"
-          selectText="Delivery/Pickup Availability"
+          selectText="Condition"
           hideSearch={true}
           showDropDowns={true}
-          readOnlyHeadings={true}
+          readOnlyHeadings={false}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
+          single={true}
         //single={true}
         colors= {{chipColor: Colors.primary}}
         //   selectToggleIconComponent = "filter-list"

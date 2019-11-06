@@ -10,19 +10,7 @@ import {
   ScrollView,
   TextInput
 } from 'react-native';
-import {
-  Form,
-  Container,
-  Content,
-  Input,
-  CardItem,
-  Text,
-  Card,
-  Item,
-  Textarea,
-  Button,
-  
-} from 'native-base';
+import { Form,  Container,  Content,  Input,  CardItem,  Text,  Card,  Item,  Textarea,  Button } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation-stack';
 import Colors from '../../constants/Colors';
@@ -39,6 +27,8 @@ import InputScrollView from 'react-native-input-scroll-view';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as ImageManipulator from 'expo-image-manipulator';
 import Spinner from 'react-native-loading-spinner-overlay';
+import AdditionalInfo from '../../components/product/AdditionalInfo';
+import Conditions from '../../components/product/conditions';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -56,6 +46,7 @@ export default class PostProductScreen extends Component {
     super(props);
     storageRef = firebase.storage().ref();
     this.state={
+      preChoice : 0,
       postAdClicked: false,
       showAlert: true,
       showAlert2: false,
@@ -87,7 +78,7 @@ export default class PostProductScreen extends Component {
       completeStringAddress:'',
       deliveryProvider:0, //0 means cargo is handling everyhing
       fic:true, // true means the item can be fit in car otherwise not, fic= fit in car
-      brandName:0,
+      brandName:'',
       dimensionHeight:0,
       dimensionWidth:0,
       dimensionLength:0,
@@ -99,6 +90,7 @@ export default class PostProductScreen extends Component {
     this.categoryRemover = React.createRef();
     this.avabilityRemover = React.createRef();
     this.addressRemover = React.createRef();
+    this.conditionRemover = React.createRef();
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -113,14 +105,13 @@ export default class PostProductScreen extends Component {
   componentDidMount() {
     const { navigation } = this.props;
     this.focusListener = navigation.addListener('didFocus', () => { 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-   
-    if (user != null) {
-      this.state.owner = user.uid;
-      console.log(" State UID ==> from  " + this.state.Owner);
-    }
-  });
+        //checking the current user and setting uid
+        let user = firebase.auth().currentUser;
+        if (user != null) {
+        this.state.owner = user.uid;
+        console.log(" State UID ==> from  " + this.state.Owner);
+        }
+    });
 
     //this.getPermissionAsync();
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
@@ -263,7 +254,7 @@ export default class PostProductScreen extends Component {
     let priceLength = parseInt( this.state.price);
     let productCategory = this.state.Category;
     let picArray = this.state.image;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>2)  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>0)  {
     //await this.uploadImageData();
 
         this.props.navigation.navigate('AddProduct', {
@@ -272,6 +263,8 @@ export default class PostProductScreen extends Component {
             productCategory: this.state.Category,
             picArray: this.state.image,
             imageSizes: this.state.imageSizes,
+            condition: this.state.condition,
+            brandName:this.state.brandName,
           });
     }
     else {
@@ -292,12 +285,6 @@ export default class PostProductScreen extends Component {
           priceAlert:true,
         })      
       }
-  
-    
-  
-    //   this.setState({
-    //     postAdClicked: true,
-    //   })
     }
   }
 
@@ -918,7 +905,12 @@ export default class PostProductScreen extends Component {
     
   }
 
-
+  conditionCallBack = (callBack)=>{
+    console.log( callBack[0]);
+      this.setState({
+        condition:callBack[0],
+      })
+  }
 
   render() {
 
@@ -927,6 +919,18 @@ export default class PostProductScreen extends Component {
     const {showAlert} = this.state;
     const {showAlert2} = this.state;
     const {noPictures} = this.state.picAlert;
+
+    var addInfo = {
+      fic : this.state.fic,
+      deliveryProvider : this.state.deliveryProvider,
+      age:this.state.age,
+      brandName:this.state.brandName,
+      dimensionsWidth : this.state.dimensionWidth,
+      dimensionHeight:this.state.dimensionHeight,
+      dimensionLength:this.state.dimensionLength,
+      color : this.state.color,
+      condition:this.state.condition,
+    }
     
     if(this.state.User != null){
       return (
@@ -995,9 +999,131 @@ export default class PostProductScreen extends Component {
               {/* Pick category for the product */}
               <View style={[styles.productCategoryStyle, this.forCategoryColor(this.state.Category) ? styles.correctStyle : styles.errorStyle]}>
               <CategoryPickerForPostProduct parentCallback = {this.callbackFunction} ref={this.categoryRemover}/>
-              
               </View>
               
+              {/* <AdditionalInfo 
+              preChoice = {addInfo}/> */}
+
+              <View
+              style= {{
+                borderColor:"blue",
+                borderWidth:0.5,
+                marginVertical: 10,
+                padding : 4,
+                backgroundColor:'white',
+                
+              }}>
+
+              <Text style={
+               {
+                 marginLeft:5,
+                 fontSize:20,
+                 fontWeight:'500'
+               } 
+              }>
+                Additional Information
+              </Text>
+              <Item
+                 style={{
+                 marginVertical:10,
+                 backgroundColor:'white',
+                 borderBottomColor:Colors.primary,
+                 borderWidth:1,
+               }}>
+                <Input
+               placeholder="Brand Name"
+               name="Brand" 
+               onChangeText={(text)=>this.setState({brandName:text})}
+               value={this.state.brandName}
+               maxLength={50}
+               returnKeyType='done'
+              />
+              </Item>
+              
+              
+                <Conditions ref ={this.condition} parentCallback={this.conditionCallBack} />
+             
+
+              {/* <Text style={
+                {
+                  marginLeft:5,
+                  fontSize:18,
+                  fontWeight:'200'
+                }
+              }>
+                Dimensions
+              </Text>
+
+              <View
+               style={{
+                 
+                 flexDirection:'row',
+                 justifyContent:'space-evenly',
+                
+              }}
+              >
+                <Item
+                 style={{
+                  width:65,
+                 marginVertical:10,
+                 backgroundColor:'white',
+                 borderBottomColor:Colors.primary,
+                 borderWidth:1,
+               }}>
+                  <Input
+               placeholder="Width"
+               name="width" 
+               onChangeText={(text)=>this.setState({dimensionWidth:text})}
+               value={this.state.dimensionWidth}
+               maxLength={4}
+               keyboardType='decimal-pad'
+               returnKeyType='done'
+              />
+                </Item>
+
+                <Item
+                 style={{
+                  width:65,
+                 marginVertical:10,
+                 backgroundColor:'white',
+                 borderBottomColor:Colors.primary,
+                 borderWidth:1,
+               }}>
+                  <Input
+               placeholder="Height"
+               name="height" 
+               onChangeText={(text)=>this.setState({dimensionHeight:text})}
+               value={this.state.dimensionHeight}
+               maxLength={4}
+               keyboardType='decimal-pad'
+               returnKeyType='done'
+              />
+              </Item>
+
+              <Item
+                 style={{
+                  width:64,
+                 marginVertical:10,
+                 backgroundColor:'white',
+                 borderBottomColor:Colors.primary,
+                 borderWidth:1,
+               }}>
+                  <Input
+               placeholder="Length"
+               name="length" 
+               onChangeText={(text)=>this.setState({dimensionLength:text})}
+               value={this.state.dimensionLength}
+               maxLength={4}
+               keyboardType='decimal-pad'
+               returnKeyType='done'
+              />
+              </Item>              
+              </View> */}
+              
+              </View>
+
+
+
               
               
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}

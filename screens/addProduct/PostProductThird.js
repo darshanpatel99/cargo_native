@@ -8,7 +8,8 @@ import {
   View,
   Dimensions,
   ScrollView,
-  TextInput
+  TextInput,
+  Switch,
 } from 'react-native';
 import {
   Form,
@@ -25,6 +26,7 @@ import {
 } from 'native-base';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-navigation-stack';
+import SwitchToggle from 'react-native-switch-toggle';
 import Colors from '../../constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -62,6 +64,10 @@ export default class PostProductScreen extends Component {
     const productCategory = navigation.getParam('productCategory');
     const picArray = navigation.getParam('picArray');
     const imageSizes = navigation.getParam('imageSizes');
+    const brandName = navigation.getParam('brandName');
+    const condition = navigation.getParam('condition');
+
+    console.log(brandName + " bN");
 
     storageRef = firebase.storage().ref();
     this.state={
@@ -94,15 +100,19 @@ export default class PostProductScreen extends Component {
       uploadCounter:0,
       loading: false,
       completeStringAddress:'',
-      deliveryProvider:0, //0 means cargo is handling everyhing
+      deliveryProvider: false, //false means cargo is handling everyhing
       fic:true, // true means the item can be fit in car otherwise not, fic= fit in car
-      brandName:0,
+      brandName,
       dimensionHeight:0,
       dimensionWidth:0,
       dimensionLength:0,
       age:0,
-      condition:'',
-      color:''
+      condition,
+      color:'',
+      switchValue: false,//This is for delivery
+      switchOn1: false,//This one is for car and truck
+      deliveryVehicle:'',
+      sellerDeliveryPrice:'',
     }
 
     this.categoryRemover = React.createRef();
@@ -237,6 +247,26 @@ export default class PostProductScreen extends Component {
 
   };
 
+  getButtonText() {
+    
+    return this.state.switchOn1 ? '🚗Car' : '🚚Truck';
+    
+  }
+  
+  getRightText() {
+    return this.state.switchOn1 ? '' : '🚗Car';
+    //return 'Signup';
+  }
+
+  getLeftText() {
+    //return this.state.switchOn1 ? 'Signup' : '';
+    return '🚚Truck';
+  }
+
+  onPress1 = () => {
+    this.setState({switchOn1: !this.state.switchOn1});
+  };
+
 
   //Uploading all the product related stuff
   uploadImageData =  async () =>{
@@ -289,36 +319,27 @@ export default class PostProductScreen extends Component {
     let timeArray = this.state.Avability;
     let address = this.state.googleAddressEmpty;
     let completeStringAddress = this.state.completeStringAddress;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && this.state.completeStringAddress != '')  {
+    let deliveryProvider = this.state.deliveryProvider;
+    let SellerDeliveryPrice =this.state.sellerDeliveryPrice;
+
+    if( descriptionLength.length > 0  && timeArray.length>0 && this.state.completeStringAddress != '' )  {
     await this.uploadImageData();
     }
     else {
       console.log('hello');
-      if(picArray.length < 3){
-
-        this.setState({
-          picAlert:true,
-        })
-
-      }
-      else if((priceLength < 10 || priceLength > 1000) && picArray.length > 2){
-        this.setState({
-          priceAlert:true,
-        })      
-      }
-      else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+       if(timeArray.length==0){
         this.setState({
           availableAlert:true,
         })
       }
-  
-      console.log(completeStringAddress)
-  
-      if( completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+      else if( completeStringAddress == ''  && timeArray.length!=0){
         this.setState({
           showAddressAlert:true,
         })
       }
+      
+      
+       //console.log(completeStringAddress)
   
       this.setState({
         postAdClicked: true,
@@ -351,14 +372,14 @@ export default class PostProductScreen extends Component {
     //Additional data 
     var additionalData = {
       BrandName:this.state.brandName,
-      Dimensions:{
-        Height:this.state.dimensionHeight,
-        Length: this.state.dimensionLength,
-        Width: this.state.dimensionWidth
-      },
-      Age : this.state.age,
       Condition : this.state.condition,
-      Color: this.state.color,
+      // Dimensions:{
+      //   Height:this.state.dimensionHeight,
+      //   Length: this.state.dimensionLength,
+      //   Width: this.state.dimensionWidth
+      // },
+      //Age : this.state.age,
+      //Color: this.state.color,
     }
     
     
@@ -386,9 +407,10 @@ export default class PostProductScreen extends Component {
       TotalFee:'',
       BoughtStatus:'false',
       OrderNumber: -1,
-      DeliveryProvider:0, //0 means cargo is hande
-      FIC: true,
-      AdditionalData: additionalData
+      DeliveryProvider: this.state.switchValue, //false means cargo is hande
+      AdditionalData: additionalData,
+      DeliveryVehicle : this.state.deliveryVehicle.slice(2),
+      SellerDeliveryPrice : this.state.sellerDeliveryPrice,
     }
 
     //Getting the current time stamp
@@ -943,6 +965,32 @@ export default class PostProductScreen extends Component {
     
   }
 
+  toggleSwitch = value => {
+    //onValueChange of the switch this function will be called
+    this.setState({ switchValue: value });
+    //state changes according to switch
+    //which will result in re-render the text
+  };
+
+  displayDeliveryPrice() {
+    if (this.state.switchValue) {
+        return <View style={{flex: 1, flexDirection: 'row', marginLeft: 10}}>
+                  <Foundation name='dollar' size={28}/>
+                  <Input keyboardType='numeric' 
+                    placeholder='0.00'
+                    name="price"
+                    onChangeText={(text)=>this.setState({sellerDeliveryPrice:text})}
+                    value={this.state.sellerDeliveryPrice} 
+                    maxLength={3}
+                    returnKeyType='done'
+                    style={{borderColor:'blue', borderWidth: 0.5, height:30, marginLeft:5 }}
+                    />
+              </View> 
+    } else {
+        return null
+    }
+}
+
   render() {
 
     let { image } = this.state;
@@ -950,6 +998,10 @@ export default class PostProductScreen extends Component {
     const {showAlert} = this.state;
     const {showAlert2} = this.state;
     const {noPictures} = this.state.picAlert;
+    
+    this.state.deliveryVehicle = this.getButtonText();
+
+    console.log(this.state.deliveryVehicle);
     
     if(this.state.User != null){
       return (
@@ -971,116 +1023,99 @@ export default class PostProductScreen extends Component {
           <InputScrollView>
             <Content padder contentContainerStyle={{ justifyContent: 'center' }}>
               {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
-              <Form>
-                {Platform.OS === 'ios' ? (
-                  <Textarea
-                    rowSpan={5}
-                    bordered
-                    placeholder='Description'
-                    name="description" 
-                    onChangeText={(text)=>this.setState({description:text})}
-                    value={this.state.description}
-                    style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
-                    maxLength={500}
-                    //returnKeyType='return'
-                    
-                  />
-                ) : (
-                  <Textarea
-                    rowSpan={5}
-                    bordered
-                    placeholder='Description'
-                    name="description" 
-                    onChangeText={(text)=>this.setState({description:text})}
-                    value={this.state.description}
-                    style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
-                    maxLength={500}
-                    //3returnKeyType='return'
-                    
-                  />
-                )}
-              </Form>
-              <View style={[styles.productCategoryStyle, this.forPictures(this.state.Avability) ? styles.correctStyle : styles.errorStyle]}>
-                <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
-              </View>
+            <Form>
+              {Platform.OS === 'ios' ? (
+                <Textarea
+                  rowSpan={5}
+                  bordered
+                  placeholder='Description'
+                  name="description" 
+                  onChangeText={(text)=>this.setState({description:text})}
+                  value={this.state.description}
+                  style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
+                  maxLength={500}
+                  //returnKeyType='return'
+                  
+                />
+              ) : (
+                <Textarea
+                  rowSpan={5}
+                  bordered
+                  placeholder='Description'
+                  name="description" 
+                  onChangeText={(text)=>this.setState({description:text})}
+                  value={this.state.description}
+                  style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
+                  maxLength={500}
+                  //3returnKeyType='return'
+                  
+                />
+              )}
+            </Form>
 
-              {/* <GooglePlacesAutocomplete
-                ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
-                minLength={2}
-                autoFocus={false}
-                returnKeyType={'default'}
-                fetchDetails={true}
-                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-                listViewDisplayed='false'    // true/false/undefined
-                renderDescription={row => row.description} // custom description render
-                
-                textInputProps={{
-                  onChangeText: (text) => {this.testFunction(text)}
-                 }}
-                onPress={(data, details = null) => {
-                console.log(Object.values(details.geometry.location))
-                let lat = Object.values(details.geometry.location)[0];
-                let long = Object.values(details.geometry.location)[1];
-                this.setState({addressArray: [lat, long]})
-                this.setState({googleAddressEmpty: 'Added stuff'})
-                let completeStringAddress= JSON.stringify(details.formatted_address)
-                this.setState({completeStringAddress})
-                //this.props.parentCallback(this.state.lat, this.state.long);
-                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
-                }}
+          <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}>
+            <Text style={styles.deliveryText}>Do you want to deliver?</Text>
+            <Switch
+              style={{ marginLeft: 10 }}
+              onValueChange={this.toggleSwitch}
+              value={this.state.switchValue}
+            />
+          </View>
 
-                currentLocation={false}
-                
-                GoogleReverseGeocodingQuery={{
-                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                }}
+          <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}>
+            <Text>{this.state.switchValue ? 'How much for delivery ?': 'CarGo will take care of delivery!'}</Text>
+            {this.displayDeliveryPrice()}
+          </View>
 
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'distance',
-                  input :'address',
-                  circle: '5000@50.676609,-120.339020',
-                }}
+          <View style={[styles.productCategoryStyle, this.forPictures(this.state.Avability) ? styles.correctStyle : styles.errorStyle]}>
+            <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
+          </View>
 
-               
+          <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}> 
+          <Text style={styles.carText}>Does item fit in?</Text>
+          <SwitchToggle
+          buttonText={this.getButtonText()}
+          backTextRight={this.getRightText()}
+          backTextLeft={this.getLeftText()}
+          
+          type={1}
+          buttonStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute'
+          }}
+          
+          rightContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          leftContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}
+        
+          buttonTextStyle={{fontSize: 15, color:'white'}}
+          textRightStyle={{fontSize: 15}}
+          textLeftStyle={{fontSize: 15}}
 
-                getDefaultValue={() => {
-                    return ''; // text input default value
-                }}
-                query={{
-                    // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                    language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
-                    location: '50.66648,-120.3192',
-                    region: 'Canada',
-                    radius: 20000,
-                    strictbounds: true,
-
-                    types: 'address', // default: 'geocode'
-                }}
-
-                styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16,
-                    borderWidth: 1,
-                    borderColor:'blue',
-                    marginLeft: 0,
-                    marginRight: 0,
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
-                /> */}
+          containerStyle={{
+            marginLeft:5,
+            width: 160,
+            height: 50,
+            borderRadius: 27.5,
+            padding: 3,
+            borderWidth:1,
+            borderColor:Colors.primary,
+          }}
+          backgroundColorOn='#fff'
+          backgroundColorOff='#fff'
+          circleStyle={{
+            width: 80,
+            height: 40,
+            borderRadius: 27.5,
+            backgroundColor: 'blue', // rgb(102,134,205)
+          }}
+          switchOn={this.state.switchOn1}
+          onPress={this.onPress1}
+          circleColorOff={Colors.primary}
+          circleColorOn={Colors.primary}
+          duration={100}
+        />
+        </View>
 
           <TextInput
             placeholder= 'Pickup Address'
@@ -1283,6 +1318,14 @@ const styles = {
     paddingVertical: 7,
     borderRadius: 5,
     backgroundColor: "#AEDEF4",
+  },
+  deliveryText:{
+    fontSize: 15,
+    marginTop: 5,
+  },
+  carText:{
+    fontSize: 15,
+    marginTop: 15,
   },
   text: {
     color: '#fff',
