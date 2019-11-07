@@ -27,6 +27,9 @@ export default class Checkout extends Component {
     const productTitle = navigation.getParam('Title');
     const GPSStringFormat = navigation.getParam('GPSLocation');
     const productID = navigation.getParam('productID');
+    const deliveryVehicle = navigation.getParam('deliveryVehicle');
+    const deliveryProvider = navigation.getParam('deliveryProvider');
+    const sellerDeliveryPrice = navigation.getParam('sellerDeliveryPrice');
 
     this.state = {
       defaultAddress: '',
@@ -47,7 +50,10 @@ export default class Checkout extends Component {
       productID: productID,
       showAlert: false,
       convenienceFee: (TotalCartAmount * 0.05 ).toFixed(2),
-      switchValue:true
+      switchValue:true,
+      deliveryVehicle,
+      deliveryProvider,
+      sellerDeliveryPrice
     };
 
 
@@ -94,7 +100,13 @@ export default class Checkout extends Component {
       //toggle switch this function is called upon delivery switch is turned on or off
     toggleSwitch() {
       if(this.state.switchValue == false) {
-        let totalAmount = parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
+        //checking whos the delivery provider. True is sellerDelivery, false CarGo provides delivery
+        let totalAmount;
+        if(this.state.deliveryProvider == true) {
+            totalAmount = parseFloat(this.state.sellerDeliveryPrice) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
+        } else {
+            totalAmount = parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee);
+        }
         this.setState({totalAmount})
         this.setState({switchValue: true})
       }
@@ -151,7 +163,13 @@ export default class Checkout extends Component {
   
   componentWillMount(){
     const { navigation } = this.props;
-    let amount = (parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2);
+    let deliveryCharge;
+    if(this.state.deliveryProvider) {
+      deliveryCharge= this.state.sellerDeliveryPrice
+    } else {
+      deliveryCharge= this.state.deliveryFee
+    }
+    let amount = (parseFloat(deliveryCharge) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2);
     //amount = amount.toFixed(2)
     // Here Im calculating the height of the header and statusbar to set vertical ofset for keyboardavoidingview
     const headerAndStatusBarHeight = Header.HEIGHT + Constants.statusBarHeight;
@@ -175,7 +193,13 @@ export default class Checkout extends Component {
   }
  
   afterSetStateFinished(){
-    this.setState({ totalAmount: (parseFloat(this.state.deliveryFee) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
+    let deliveryCharge;
+    if(this.state.sellerAddress) {
+      deliveryCharge= this.state.sellerAddress
+    } else {
+      deliveryCharge= this.state.deliveryFee
+    }
+    this.setState({ totalAmount: (parseFloat(deliveryCharge) + parseFloat(this.state.subTotal) + parseFloat(this.state.convenienceFee)).toFixed(2) });
 
   }
 
@@ -264,11 +288,18 @@ export default class Checkout extends Component {
 
   //add delivery charge
   addDeliveryCharge() {
+    let deliveryChargeText;
+    if(this.state.deliveryProvider) {
+    deliveryChargeText = this.state.sellerDeliveryPrice
+    } else {
+    deliveryChargeText = this.state.deliveryFee
+    }
     if(this.state.switchValue) {
-      return (
-        <Text>Delivery Fee: ${this.state.deliveryFee}</Text>
+    return (
+        <Text>Delivery Fee: $ {deliveryChargeText}</Text>
       );
     } else {
+        <Text>Delivery Fee: ${deliveryChargeText}</Text>
       console.log('delivery not needed');    
     }
   }
