@@ -44,6 +44,9 @@ export class ProductScreen extends Component {
     const sellerName = navigation.getParam('sellerName');
     const BoughtStatus = navigation.getParam('BoughtStatus');
     const Category = navigation.getParam('Category');
+    const deliveryVehicle = navigation.getParam('deliveryVehicle');
+    const deliveryProvider = navigation.getParam('deliveryProvider');
+    const sellerDeliveryPrice = navigation.getParam('sellerDeliveryPrice')
 
     console.log("This is category" + Category);
 
@@ -79,7 +82,10 @@ export class ProductScreen extends Component {
       sellerName,
       BoughtStatus,
       prevPage,
-      completeChatThread: {'chat' : sellerName}
+      completeChatThread: {'chat' : sellerName},
+      sellerDeliveryPrice,
+      deliveryProvider,
+      deliveryVehicle
     };
     onLayout = e => {
       this.setState({
@@ -249,8 +255,7 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat, productID: this.state.id})
-    }
+      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat, productID: this.state.id, sellerDeliveryPrice: this.state.sellerDeliveryPrice, deliveryProvider: this.state.deliveryProvider, deliveryVehicle: this.state.deliveryVehicle })}
     else{
       this.setState({
         showAlert: true
