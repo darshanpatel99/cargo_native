@@ -8,12 +8,12 @@ class ProductCardComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:'', pickupAddress: '', BuyerID:'', Status:'',Category: 0};
+        this.state = {title: '', description: '', price :'', image: '', id:'' , owner:'', pickupAddress: '', BuyerID:'', Status:'',Category: 0, deliveryProvider: '', deliveryVehicle: '', sellerDeliveryPrice: ''};
     }
 
     render() {
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {prevPage:this.props.prevPage, BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID, thumbnail:this.props.thumbnail, Category : this.props.category} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {prevPage:this.props.prevPage, BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID, thumbnail:this.props.thumbnail, Category : this.props.category, deliveryVehicle: this.props.deliveryVehicle, deliveryProvider: this.props.deliveryProvider, sellerDeliveryPrice: this.props.sellerDeliveryPrice} ) } >
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
