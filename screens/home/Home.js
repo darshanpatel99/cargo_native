@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, PushNotificationIOS } from 'react-native';
+import { View, StyleSheet, PushNotificationIOS, Linking } from 'react-native';
 import ProductCardFlatListDynamicLoad from '../../handlers/ProductCardFlatListDynamicLoad';
 import SearchFilterFunction from '../../handlers/ProductCardFlatListDynamicLoad';
 import Header from '../../components/headerComponents/Header';
@@ -8,6 +8,7 @@ import RefineCategoryHomeScreen from '../../components/category/RefineCategoryHo
 import { Platform } from '@unimodules/core';
 import { Notifications } from 'expo';
 import firebase from '../../Firebase';
+
 
 
 
@@ -40,7 +41,13 @@ export default class HomeScreen extends React.Component {
 
     
     //register the listeners for the depp links to your app
-    Linking.addEventListener('url', this.handleDeepLinkingURL);
+    if (Platform.OS === 'android') {
+      Linking.getInitialURL().then(url => {
+        this.navigate(url);
+      });
+    } else {
+        Linking.addEventListener('url', this.handleOpenURL);
+      }
 
     //register the listener for messages channel
     this._notificationSubscription =  Notifications.addListener(this.handleNotification);
@@ -57,6 +64,55 @@ export default class HomeScreen extends React.Component {
     const route = event.url.replace(/.*?:\/\//g, '');
 
     //Do something with the route
+    this.navigateToPoduct(even.url);
+  }
+
+
+  /**
+   * Function Description: navigate to the specific route
+   */
+  navigate = (uri)=>{
+    console.log(uri);
+    //get the product id from the deep linking uri
+    var poduct_id = uri.split('?')[1].split('=')[1]
+    
+    firebase.firestore().collection('Products').doc(product_id).get().then((result)=>{
+      var data = result.data();
+
+      //props oject o be passed
+      var props_to_detail = {
+        prevPage:'Home', 
+        BoughtStatus:data.BoughtStatus,  
+        Status:data.Status, 
+        itemId:product_id, 
+        owner:data.Owner, 
+        title:data.Name, 
+        description:data.Description, 
+        price:data.price, 
+        pictures:data.Pictures, 
+        pickupAddress:'', 
+        sellerName: data.SellerName, 
+        BuyerID:data.BuyerID, 
+        thumbnail:data.Thumbnail, 
+        Category : data.Category, 
+        deliveryVehicle: data.DeliveryVehicle, 
+        deliveryProvider: data.DeliveryProvider, 
+        sellerDeliveryPrice: data.SellerDeliveryPrice}
+
+        //Navigate to the Product Detail Screen
+      this.props.nvigaton.push('Detail', props_to_detail);
+
+    }).catch((error)=>{
+      console.log(error);
+    });
+
+
+
+
+    
+    
+
+
   }
 
 
