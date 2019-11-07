@@ -159,38 +159,6 @@ export default class PostProductScreen extends Component {
     });
   };
 
-  hideAlert2(){
-    const { navigate } = this.props.navigation;
-    this.categoryRemover.current.changeState();
-    this.avabilityRemover.current.changeState();
-    //this.googlePlacesAutocomplete._handleChangeText('')
-    //this.addressRemover.current.changeAddressState();
-
-    this.setState({
-      showAlert2: false,
-      title : "",
-      description : "",
-      price : "",
-      thumbnail : " ",
-      image: [],
-      downloadURLs : [],
-      addressArray:[],
-      uploadCounter:0,
-      firstTimeOnly:true,
-    });
-    navigate('Home');
-  };
-
-  // getPermissionAsync = async () => {
-  //   if (Constants.platform.ios) {
-  //     console.log('ask permission');
-  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL && Permissions.CAMERA);
-  //     if (status !== 'granted') {
-  //       alert('Sorry, we need camera roll permissions to make this work!');
-  //     }
-  //   }
-  // };
-
   //listens to the change in auth state
   onAuthStateChanged = user => {
     // if the user logs in or out, this will be called and the state will update.
@@ -206,48 +174,6 @@ export default class PostProductScreen extends Component {
 
   };
 
-
-  //Uploading all the product related stuff
-  uploadImageData =  async () =>{
-      var arraySizes = this.state.imageSizes;
-      var array = this.state.image; //getting the uri array
-      var first = this.state.firstTimeOnly;
-      console.log("Total number of uris we have"+ array.length)
-      this.setState({ loading: true });
-      array.forEach(async (element,index) => {
-   
-        if(first){
-
-          first=false;
-          this.setState({firstTimeOnly:false});
-          await this.uploadThumbnailToFirebase(element, arraySizes[index])
-          .then(()=>{   
-            
-            console.log('Thumbnail got uploaded');
-          })
-          .catch(error=>{
-            console.log("Hey there is an error:  " +error);
-          });
-          
-        }
-
-        await this.uploadImageToFirebase(element, arraySizes[index])
-        .then(() => {
-          console.log('Success' + uuid.v1());         
-        })
-        .catch(error => {
-          console.log('Success' + uuid.v1()); 
-          console.log(error);
-        });
-
-        
-      });
-
-
-
-  }
-
-
   //start post the add button
   startPostTheProduct = async () =>{
     let titleLength = this.state.title;
@@ -255,7 +181,6 @@ export default class PostProductScreen extends Component {
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>0)  {
-    //await this.uploadImageData();
 
         this.props.navigation.navigate('AddProduct', {
             title: this.state.title,
@@ -288,122 +213,6 @@ export default class PostProductScreen extends Component {
     }
   }
 
-
-  //post the product
-  postTheProduct = async() =>{
-
-    let titleLength = this.state.title;
-    let priceLength = parseInt( this.state.price);
-    let descriptionLength = this.state.description;
-    let productCategory = this.state.Category;
-    let picArray = this.state.image;
-    let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
-    let completeStringAddress = this.state.completeStringAddress;
-
-    console.log('length of the price' + priceLength.length);
-
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && address != '')  {
-
-    console.log("Uploading the images");
-  
-
-    console.log('Download urls --> '+this.state.downloadURLs)
-    
-    //Additional data 
-    var additionalData = {
-      BrandName:this.state.brandName,
-      Dimensions:{
-        Height:this.state.dimensionHeight,
-        Length: this.state.dimensionLength,
-        Width: this.state.dimensionWidth
-      },
-      Age : this.state.age,
-      Condition : this.state.condition,
-      Color: this.state.color,
-    }
-    
-    
-    //sample data object 
-    var data = {
-      Description : this.state.description,
-      Name : this.state.title,
-      Price : this.state.price,
-      Pictures : this.state.downloadURLs,
-      Thumbnail : this.state.thumbnail,
-      Owner : this.state.owner,
-      Flag : true,
-      FavouriteUsers:[],
-      TimeStamp: null,
-      UserClicks:[],
-      Category: this.state.Category,
-      Avability: this.state.Avability,
-      Status:'active',
-      //AddressArray: this.state.addressArray,
-      BuyerID:'',
-      SellerName: this.state.sellerName,
-      BuyerName:'',
-      BuyerAddress:'',
-      DeliveryFee:'',
-      TotalFee:'',
-      BoughtStatus:'false',
-      OrderNumber: -1,
-      DeliveryProvider:0, //0 means cargo is hande
-      FIC: true,
-      AdditionalData: additionalData
-    }
-
-    //Getting the current time stamp
-    var currentDate = new Date();
-    data.TimeStamp = currentDate.getTime();
-    //if(this.checkFields == true)
-    //Posting the product.
-    console.log("Product Posted---->" + data);
-    PostProduct(data).then(()=>{
-      this.setState({ loading: false });
-      this.showAlert2();
-    });
-    console.log("Product Posted---->" + data);
-
-    //change the overlay visibility to visible
-    //this.setState({isOverlayVisible:true});
-   
-
-
-  } else {
-    console.log('hello' + typeof(priceLength));
-
-    if(picArray.length==0){
-      this.setState({
-        picAlert:true,
-      })      
-    }
-
-    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
-      this.setState({
-        priceAlert:true,
-      })      
-    }
-    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
-      this.setState({
-        availableAlert:true,
-      })
-    }
-
-    console.log(completeStringAddress)
-
-    if(completeStringAddress == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
-      this.setState({
-        showAddressAlert:true,
-      })
-    }
-
-    this.setState({
-      postAdClicked: true,
-    })
-  }
-
-  };  
   /**
    * Function Description: PIck the image
    */
@@ -616,114 +425,6 @@ export default class PostProductScreen extends Component {
          changingAddress: num
      })
   };
-
-
-
- 
-  //Uploading an Image to the Firebase
-  uploadImageToFirebase = async (uri, localSizeObject) => {
-
-    console.log("width " + localSizeObject.width + " height " + localSizeObject.height)
-
-    var changedH = {
-      'isBiggest' : false,
-      'value' : localSizeObject.height,
-      'valid' : true,
-    }
-   var changedW = {
-    'isBiggest' : false,
-    'value' : localSizeObject.width,
-    'valid' : true,
-  }
-
-  var difValue = 1 ;
-   
-   if(changedH.value < changedW.value){
-     changedW.isBiggest = true;
-
-    if(changedW.value  <= 800){
-      changedW.valid = false
-    }
-    
-   }
-   else{
-     changedH.isBiggest = true;
-     if(changedH.value  <= 800){
-       changedH.valid = false
-     }
-      
-   }
-
-    if(changedH.isBiggest == true && changedH.valid == true){
-      difValue = Math.round(changedH.value/800);
-    }
-
-    if(changedW.isBiggest == true && changedW.valid == true){
-      difValue =Math.round(changedW.value/800) ;
-    }
-
-    var finalH = 1 ; 
-    var finalW = 1 ;
-    
-    finalH = changedH.value/difValue;
-
-    finalW = changedW.value/difValue;
-
-    console.log(finalW + " those are with 800  " + finalH)
-
-
-    const manipResult = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize:{width:finalW, height:finalH} }],
-      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
-    )
-
-
-    const response = await fetch(manipResult.uri);
-    const blob = await response.blob();
-    console.log('INside upload Image to Firebase')
-    var uploadTask = storageRef.child('images/'+uuid.v1()).put(blob);
-    const that = this;
-    
-    // Register three observers:
-    // 1. 'state_changed' observer, called any time the state changes
-    // 2. Error observer, called on failure
-    // 3. Completion observer, called on successful completion
-    uploadTask.on('state_changed', function(snapshot){
-      // Observe state change events such as progress, pause, and resume
-      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case firebase.storage.TaskState.PAUSED: // or 'paused'
-          console.log('Upload is paused');
-          break;
-        case firebase.storage.TaskState.RUNNING: // or 'running'
-          console.log('Upload is running');
-          break;
-      }
-    }, function(error) {
-      // Handle unsuccessful uploads
-    }, function() {
-      // Handle successful uploads on complete
-      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        console.log('File available at', downloadURL);
-        that.state.downloadURLs.push(downloadURL);
-
-        //some funcky stuff
-        var uploadC = that.state.uploadCounter+1;
-        that.setState({uploadCounter:uploadC});
-        var array = that.state.image;
-          if(uploadC==array.length+1){
-            //call the post product function
-            console.log("Number of products uploaded:" + uploadC);
-            that.postTheProduct();
-          }
-      });
-    });
-    return 'Success';
-  };
  
 
   //Delete Image on Remove
@@ -896,15 +597,6 @@ export default class PostProductScreen extends Component {
     })
   }
 
-  testFunction(text){
-    console.log('test fucntion');
-    checkGoogleAddress = 'lalalals'
-    console.log(checkGoogleAddress)
-    this.state.googleAddressEmpty = text;
-    //this.setState({googleAddressEmpty: 'test'})
-    
-  }
-
   conditionCallBack = (callBack)=>{
     console.log( callBack[0]);
       this.setState({
@@ -1044,208 +736,7 @@ export default class PostProductScreen extends Component {
                 <Conditions ref ={this.condition} parentCallback={this.conditionCallBack} />
              
 
-              {/* <Text style={
-                {
-                  marginLeft:5,
-                  fontSize:18,
-                  fontWeight:'200'
-                }
-              }>
-                Dimensions
-              </Text>
-
-              <View
-               style={{
-                 
-                 flexDirection:'row',
-                 justifyContent:'space-evenly',
-                
-              }}
-              >
-                <Item
-                 style={{
-                  width:65,
-                 marginVertical:10,
-                 backgroundColor:'white',
-                 borderBottomColor:Colors.primary,
-                 borderWidth:1,
-               }}>
-                  <Input
-               placeholder="Width"
-               name="width" 
-               onChangeText={(text)=>this.setState({dimensionWidth:text})}
-               value={this.state.dimensionWidth}
-               maxLength={4}
-               keyboardType='decimal-pad'
-               returnKeyType='done'
-              />
-                </Item>
-
-                <Item
-                 style={{
-                  width:65,
-                 marginVertical:10,
-                 backgroundColor:'white',
-                 borderBottomColor:Colors.primary,
-                 borderWidth:1,
-               }}>
-                  <Input
-               placeholder="Height"
-               name="height" 
-               onChangeText={(text)=>this.setState({dimensionHeight:text})}
-               value={this.state.dimensionHeight}
-               maxLength={4}
-               keyboardType='decimal-pad'
-               returnKeyType='done'
-              />
-              </Item>
-
-              <Item
-                 style={{
-                  width:64,
-                 marginVertical:10,
-                 backgroundColor:'white',
-                 borderBottomColor:Colors.primary,
-                 borderWidth:1,
-               }}>
-                  <Input
-               placeholder="Length"
-               name="length" 
-               onChangeText={(text)=>this.setState({dimensionLength:text})}
-               value={this.state.dimensionLength}
-               maxLength={4}
-               keyboardType='decimal-pad'
-               returnKeyType='done'
-              />
-              </Item>              
-              </View> */}
-              
-              </View>
-
-
-
-              
-              
-              {/* Depending on device(ios or android) we'll change padding to textarea inputs  */}
-              {/* <Form>
-                {Platform.OS === 'ios' ? (
-                  <Textarea
-                    rowSpan={5}
-                    bordered
-                    placeholder='Description'
-                    name="description" 
-                    onChangeText={(text)=>this.setState({description:text})}
-                    value={this.state.description}
-                    style={[styles.iosDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
-                    maxLength={500}
-                    //returnKeyType='return'
-                    
-                  />
-                ) : (
-                  <Textarea
-                    rowSpan={5}
-                    bordered
-                    placeholder='Description'
-                    name="description" 
-                    onChangeText={(text)=>this.setState({description:text})}
-                    value={this.state.description}
-                    style={[styles.androidDescriptionStyle, this.changeInputFieldFunction(this.state.description) ? styles.correctStyle : styles.errorStyle]}
-                    maxLength={500}
-                    //3returnKeyType='return'
-                    
-                  />
-                )}
-              </Form>
-              <View style={[styles.productCategoryStyle, this.forPictures(this.state.Avability) ? styles.correctStyle : styles.errorStyle]}>
-                <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
-              </View>
-
-              {/* <GooglePlacesAutocomplete
-                ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
-                minLength={2}
-                autoFocus={false}
-                returnKeyType={'default'}
-                fetchDetails={true}
-                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-                listViewDisplayed='false'    // true/false/undefined
-                renderDescription={row => row.description} // custom description render
-                
-                textInputProps={{
-                  onChangeText: (text) => {this.testFunction(text)}
-                 }}
-                onPress={(data, details = null) => {
-                console.log(Object.values(details.geometry.location))
-                let lat = Object.values(details.geometry.location)[0];
-                let long = Object.values(details.geometry.location)[1];
-                this.setState({addressArray: [lat, long]})
-                this.setState({googleAddressEmpty: 'Added stuff'})
-                let completeStringAddress= JSON.stringify(details.formatted_address)
-                this.setState({completeStringAddress})
-                //this.props.parentCallback(this.state.lat, this.state.long);
-                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
-                }}
-
-                currentLocation={false}
-                
-                GoogleReverseGeocodingQuery={{
-                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                }}
-
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'distance',
-                  input :'address',
-                  circle: '5000@50.676609,-120.339020',
-                }}
-
-               
-
-                getDefaultValue={() => {
-                    return ''; // text input default value
-                }}
-                query={{
-                    // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                    language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
-                    location: '50.66648,-120.3192',
-                    region: 'Canada',
-                    radius: 20000,
-                    strictbounds: true,
-
-                    types: 'address', // default: 'geocode'
-                }}
-
-                styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16,
-                    borderWidth: 1,
-                    borderColor:'blue',
-                    marginLeft: 0,
-                    marginRight: 0,
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
-                /> 
-
-          <TextInput
-            placeholder= 'Pickup Address'
-            underlineColorAndroid="transparent"
-            autoCapitalize='none'
-            autoCorrect={false}
-            style={styles.TextInputStyle}
-            onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
-          />      */}
+            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -1263,30 +754,12 @@ export default class PostProductScreen extends Component {
             
           </InputScrollView>
           </KeyboardAvoidingView>
-            <AwesomeAlert
-            show={showAlert2}
-            showProgress={false}
-            title="Thank you"
-            message={'Your add has been successfully submitted\n'}
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}
-            cancelText="No, cancel"
-            confirmText=" OK "
-            confirmButtonColor={Colors.primary}
-            onCancelPressed={() => {
-              this.hideAlert2();
-            }}
-            onConfirmPressed={() => {
-              this.hideAlert2();
-            }}
-          />
+
 
             <AwesomeAlert
             show={this.state.picAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Please upload at least 3 images!'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1303,7 +776,7 @@ export default class PostProductScreen extends Component {
           <AwesomeAlert
             show={this.state.availableAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Choose availability'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1319,7 +792,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.showAddressAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Choose pick up address'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1335,7 +808,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.priceAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'price should be from 10 to 1000 $'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1358,19 +831,11 @@ export default class PostProductScreen extends Component {
       return (
        
         <View style={styles.container}>   
-{/* 
-        <TouchableOpacity onPress={() => {
-          this.showAlert();
-        }}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Try me!</Text>
-          </View>
-        </TouchableOpacity> */}
 
           <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message="Please login first!"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
