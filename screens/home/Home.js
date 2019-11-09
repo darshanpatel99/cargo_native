@@ -43,7 +43,7 @@ export default class HomeScreen extends React.Component {
     //register the listeners for the depp links to your app
     if (Platform.OS === 'android') {
       Linking.getInitialURL().then(url => {
-        this.navigate(url);
+        this.navigateToProduct(url);
       });
     } else {
         Linking.addEventListener('url', this.handleOpenURL);
@@ -71,7 +71,7 @@ export default class HomeScreen extends React.Component {
   /**
    * Function Description: navigate to the specific route
    */
-  navigate = (uri)=>{
+  navigateToProduct = (uri)=>{
     console.log(uri);
     //get the product id from the deep linking uri
     var poduct_id = uri.split('?')[1].split('=')[1]
