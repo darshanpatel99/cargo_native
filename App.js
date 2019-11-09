@@ -181,7 +181,7 @@ const slides = [
   {
     key: 's1',
     title: 'Welcome to CarGo',
-    text: 'CarGo is a next generation used goods marketplace.\nCreate an account and get started today.\nStart shopping now, stress free.',
+    text: 'CarGo is a next generation marketplace for new and used furniture.\nCreate an account and get started today.\nStart shopping now, stress free.',
     image: require('./assets/images/welcome.png'),
     backgroundColor: '#f6437b',
     
@@ -189,14 +189,14 @@ const slides = [
   {
     key: 's2',
     title: 'Post, Buy and Sell',
-    text: 'Simply post your used goods.\nBrowse and buy items on our extensive online marketplace.\nWatch as your items leave your hands and arrive in another.',
+    text: 'Simply post any pieces of furniture you wish to sell.\nBrowse and buy furniture using our extensive marketplace.\nWatch as your items leave your hands and arrive in another.',
     image: require('./assets/images/pay.png'),
     backgroundColor: '#3395ff',
   },
   {
     key: 's3',
     title: 'Delivery on Demand',
-    text: 'Our drivers show up at your door and deliver your sold items.\nPurchase an item and have it delivered directly to you.\nOur reliable drivers deliver items quickly and efficiently.',
+    text: 'Our drivers deliver your items to your doorstep.\nPurchase an item and have it delivered directly to you.\nOur reliable drivers deliver items quickly and efficiently.',
     image: require('./assets/images/delivery.png'),
     backgroundColor: '#febe29',
   },
