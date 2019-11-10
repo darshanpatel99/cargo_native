@@ -74,8 +74,7 @@ export default class HomeScreen extends React.Component {
   navigateToProduct = (uri)=>{
     console.log(uri);
     //get the product id from the deep linking uri
-    var poduct_id = uri.split('?')[1].split('=')[1]
-    
+    var product_id = uri.split('?')[1].split('=')[1]
     firebase.firestore().collection('Products').doc(product_id).get().then((result)=>{
       var data = result.data();
 
@@ -100,7 +99,7 @@ export default class HomeScreen extends React.Component {
         sellerDeliveryPrice: data.SellerDeliveryPrice}
 
         //Navigate to the Product Detail Screen
-      this.props.nvigaton.push('Detail', props_to_detail);
+      this.props.navigation.push('Details', { completeProductObject: data});
 
     }).catch((error)=>{
       console.log(error);
