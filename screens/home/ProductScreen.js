@@ -32,25 +32,25 @@ export class ProductScreen extends Component {
     super(props);
     const { navigation } = this.props;
 
-    const title = navigation.getParam('title');
-    const description = navigation.getParam('description');
-    const price = navigation.getParam('price');
-    const pictures = navigation.getParam('pictures');
-    const id = navigation.getParam('itemId');
-    const owner = navigation.getParam('owner');
-    const pickupAddress = navigation.getParam('pickupAddress');
-    const BuyerID = navigation.getParam('BuyerID');
-    const Status = navigation.getParam('Status');
-    const sellerName = navigation.getParam('sellerName');
-    const BoughtStatus = navigation.getParam('BoughtStatus');
-    const Category = navigation.getParam('Category');
-    const deliveryVehicle = navigation.getParam('deliveryVehicle');
-    const deliveryProvider = navigation.getParam('deliveryProvider');
-    const sellerDeliveryPrice = navigation.getParam('sellerDeliveryPrice')
+    console.log('$$$$$$$$');
+    const productObject= navigation.getParam('completeProductObject')
 
-    console.log("This is category" + Category);
-
-    const thumbnail = navigation.getParam('thumbnail');
+    const title = productObject.Name;
+    const description = productObject.Description;
+    const price = productObject.Price;
+    const pictures = productObject.Pictures;
+    const id = productObject.Description;
+    const owner = productObject.Description;
+    const pickupAddress = productObject.Description;
+    const BuyerID = productObject.Owner;
+    const Status = productObject.Status;
+    const sellerName = productObject.SellerName;
+    const BoughtStatus = productObject.BoughtStatus;
+    const Category = productObject.Category;
+    const deliveryVehicle = productObject.DeliveryVehicle;
+    const deliveryProvider = productObject.DeliveryProvider;
+    const sellerDeliveryPrice = productObject.SellerDeliveryPrice;
+    const thumbnail = productObject.Thumbnail;
     const prevPage = navigation.getParam('prevPage');
 
     this.state = {
