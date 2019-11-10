@@ -9,6 +9,7 @@ import {
   Platform,
   Alert,
   Text,
+  Share,
 } from 'react-native';
 import { Button} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -23,6 +24,7 @@ import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
 
 
 let storageRef;
@@ -164,6 +166,8 @@ export class ProductScreen extends Component {
 
 
   }
+
+
   /**
    * Function Desription: Generate a sharable link
    */
@@ -175,6 +179,35 @@ export class ProductScreen extends Component {
 
   }
 
+  /**
+   * Function Description: Share yout product
+   */
+  shareAsync = async()=>{
+    console.log('Starting share async');
+    url='https://cargodev.page.link/bAmq';
+    try {
+      const result = await Share.share({
+        message: url,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+    
+  }
+
+  /**
+   * Function Description: Get the location async
+   */
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -562,6 +595,9 @@ export class ProductScreen extends Component {
         
           <Text style={styles.productDesc}>{this.state.description}</Text>
         {/* </View> */}
+        <Button light rounded large style={styles.secondaryBlueButton} onPress={this.shareAsync}>
+            <Text style={styles.secondaryWhiteText}>share</Text>
+          </Button>
 
         </ScrollView>
          <View >
