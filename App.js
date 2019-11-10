@@ -9,11 +9,11 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 
 // import { SentrySeverity, SentryLog } from 'react-native-sentry';
 //Sentry.config('https://18325944fed842348b66ce82bf59467d@sentry.io/1727748').install();
-// Sentry.init({
-//   dsn: 'https://18325944fed842348b66ce82bf59467d@sentry.io/1727748',
-//   enableInExpoDevelopment: false,
-//   debug: true
-// });
+Sentry.init({
+  dsn: 'https://18325944fed842348b66ce82bf59467d@sentry.io/1727748',
+  enableInExpoDevelopment: false,
+  debug: true
+});
 
 const customViewProps = {
   style: {
