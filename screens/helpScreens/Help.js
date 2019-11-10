@@ -14,6 +14,22 @@ import Communications from 'react-native-communications';
 
 //You can also use dynamic data by calling web service
 const CONTENT = [
+
+  {
+    title: 'What kind of items can be posted on CarGo Marketplace?',
+    content:
+      'We specialize in on demand-delivery services for new and used furniture. Post, buy and sell all things furniture.',
+  },
+  {
+    title: 'Do I have the option of picking up the item I have just purchased?',
+    content:
+      'Yes. If you wish to arrange pick up with the seller, you may choose this option.',
+  },
+  {
+    title: 'Will I be charged the 5% convenience fee if I choose to arrange my own pick up with the seller?',
+    content:
+      'No. If you choose to arrange your own pick up, you will not be charged the 5% convenience fee.',
+  },
   {
     title: 'How long does it take to receive my money once I have sold an item?',
     content:
