@@ -1161,27 +1161,13 @@ export default class PostProductScreen extends Component {
             }}
           />
 
-            <AwesomeAlert
-            show={this.state.picAlert}
-            showProgress={false}
-            title="Alert"
-            message={'Please upload at least 3 images!'}
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}            
-            confirmText="OK"
-            confirmButtonColor="#DD6B55"            
-            onConfirmPressed={() => {
-              this.hidePicAlert();
-            }}
-          />
+            
           
 
           <AwesomeAlert
             show={this.state.availableAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops"
             message={'Choose availability'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1197,7 +1183,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.showAddressAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops"
             message={'Choose pick up address'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}

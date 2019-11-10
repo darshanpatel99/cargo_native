@@ -9,7 +9,8 @@ import {
   View,
   Dimensions,
   ScrollView,
-  TextInput
+  TextInput,
+  Switch
 } from 'react-native';
 import {
   Form,
@@ -42,6 +43,8 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import * as ImageManipulator from 'expo-image-manipulator';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
+import Conditions from '../../components/product/conditions'
+import SwitchToggle from 'react-native-switch-toggle';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -89,12 +92,14 @@ export default class PostProductScreen extends Component {
       loading: false,
       isImagesChanged: false,
       allOldDeleted: false,
-
+      switchValue: false,
+      
     }
 
     this.categoryRemover = React.createRef();
     this.avabilityRemover = React.createRef();
     this.addressRemover = React.createRef();
+    this.conditionRemover = React.createRef();
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -121,6 +126,7 @@ export default class PostProductScreen extends Component {
         downloadURLs:newData.pictures,
         description:newData.description,
         thumbnail:newData.thumbnail,
+        
     })
 
     if (user != null) {
@@ -432,7 +438,7 @@ export default class PostProductScreen extends Component {
     //if(this.checkFields == true)
     //Posting the product
     PostProduct(data);
-    console.log("Product Posted---->" + data);
+    console.log("Product Posted---->" + JSON.stringify(data));
 
     //change the overlay visibility to visible
     //this.setState({isOverlayVisible:true});
@@ -1056,6 +1062,59 @@ export default class PostProductScreen extends Component {
       }))
    }
 
+   displayDeliveryPrice() {
+    if (this.state.switchValue) {
+        return <View style={{flex: 1, flexDirection: 'row', marginLeft: 10}}>
+                  <Foundation name='dollar' size={28}/>
+                  <Input keyboardType='numeric' 
+                    placeholder='0.00'
+                    name="price"
+                    onChangeText={(text)=>this.setState({sellerDeliveryPrice:text})}
+                    value={this.state.sellerDeliveryPrice} 
+                    maxLength={3}
+                    returnKeyType='done'
+                    style={{borderColor:'blue', borderWidth: 0.5, height:30, marginLeft:5 }}
+                    />
+              </View> 
+    } else {
+        return null
+    }
+}
+
+getButtonText() {
+    
+  return this.state.switchOn1 ? '🚗Car' : '🚚Truck';
+  
+}
+
+getRightText() {
+  return this.state.switchOn1 ? '' : '🚗Car';
+  //return 'Signup';
+}
+
+getLeftText() {
+  //return this.state.switchOn1 ? 'Signup' : '';
+  return '🚚Truck';
+}
+
+toggleSwitch = value => {
+  //onValueChange of the switch this function will be called
+  this.setState({ switchValue: value });
+  //state changes according to switch
+  //which will result in re-render the text
+};
+
+
+onPress1 = () => {
+  this.setState({switchOn1: !this.state.switchOn1});
+};
+
+conditionCallBack = (callBack)=>{
+  console.log( callBack[0]);
+    this.setState({
+      condition:callBack[0],
+    })
+}
   render() {
 
     let { image } = this.state;
@@ -1167,79 +1226,105 @@ export default class PostProductScreen extends Component {
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
 
-              {/* <GooglePlacesAutocomplete
-                ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
-                minLength={2}
-                autoFocus={false}
-                returnKeyType={'default'}
-                fetchDetails={true}
-                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-                listViewDisplayed='false'    // true/false/undefined
-                renderDescription={row => row.description} // custom description render
+              <View
+              style= {{
+                borderColor:"blue",
+                borderWidth:0.5,
+                marginVertical: 10,
+                padding : 4,
+                backgroundColor:'white',
                 
-                textInputProps={{
-                  onChangeText: (text) => {this.testFunction(text)}
-                 }}
-                onPress={(data, details = null) => {
-                console.log(Object.values(details.geometry.location))
-                let lat = Object.values(details.geometry.location)[0];
-                let long = Object.values(details.geometry.location)[1];
-                this.setState({addressArray: [lat, long]})
-                this.setState({googleAddressEmpty: 'Added stuff'})
-                //this.props.parentCallback(this.state.lat, this.state.long);
-                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
-                }}
+              }}>
 
-                currentLocation={false}
-                
-                GoogleReverseGeocodingQuery={{
-                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                }}
+              <Text style={
+               {
+                 marginLeft:5,
+                 fontSize:20,
+                 fontWeight:'500'
+               } 
+              }>
+                Additional Information
+              </Text>
+              <Item
+                 style={{
+                 marginVertical:10,
+                 backgroundColor:'white',
+                 borderBottomColor:Colors.primary,
+                 borderWidth:1,
+               }}>
+                <Input
+               placeholder="Brand Name"
+               name="Brand" 
+               onChangeText={(text)=>this.setState({brandName:text})}
+               value={this.state.brandName}
+               maxLength={50}
+               returnKeyType='done'
+              />
+              </Item>
+              
+              
+                <Conditions ref ={this.condition} parentCallback={this.conditionCallBack} />
+             
 
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'distance',
-                  input :'address',
-                  circle: '5000@50.676609,-120.339020',
-                }}
+            </View>
+            <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}>
+            <Text style={styles.deliveryText}>Do you want to deliver?</Text>
+            <Switch
+              style={{ marginLeft: 10 }}
+              onValueChange={this.toggleSwitch}
+              value={this.state.switchValue}
+            />
+          </View>
+            <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}>
+            <Text>{this.state.switchValue ? 'How much for delivery ?': 'CarGo will take care of delivery!'}</Text>
+            {this.displayDeliveryPrice()}
+          </View>
 
-               
+          <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}> 
+          <Text style={styles.carText}>Does item fit in?</Text>
+          <SwitchToggle
+          buttonText={this.getButtonText()}
+          backTextRight={this.getRightText()}
+          backTextLeft={this.getLeftText()}
+          
+          type={1}
+          buttonStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute'
+          }}
+          
+          rightContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          leftContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}
+        
+          buttonTextStyle={{fontSize: 15, color:'white'}}
+          textRightStyle={{fontSize: 15}}
+          textLeftStyle={{fontSize: 15}}
 
-                getDefaultValue={() => {
-                    return ''; // text input default value
-                }}
-                query={{
-                    // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                    language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
-                    location: '50.66648,-120.3192',
-                    region: 'Canada',
-                    radius: 20000,
-                    strictbounds: true,
-                }}
-
-                styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16,
-                    borderWidth: 1,
-                    borderColor:'blue',
-                    marginLeft: 0,
-                    marginRight: 0,
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
-                /> */}
+          containerStyle={{
+            marginLeft:5,
+            width: 160,
+            height: 50,
+            borderRadius: 27.5,
+            padding: 3,
+            borderWidth:1,
+            borderColor:Colors.primary,
+          }}
+          backgroundColorOn='#fff'
+          backgroundColorOff='#fff'
+          circleStyle={{
+            width: 80,
+            height: 40,
+            borderRadius: 27.5,
+            backgroundColor: 'blue', // rgb(102,134,205)
+          }}
+          switchOn={this.state.switchOn1}
+          onPress={this.onPress1}
+          circleColorOff={Colors.primary}
+          circleColorOn={Colors.primary}
+          duration={100}
+        />
+        </View>
 
         <TextInput
             placeholder= 'Pickup Address'
@@ -1249,6 +1334,8 @@ export default class PostProductScreen extends Component {
             style={styles.TextInputStyle}
             onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
           />
+
+          
             <View
               style={{
                 flexDirection: 'row',
