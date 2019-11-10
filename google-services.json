@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:12592995924:android:5e99f0a391b0dfce9697c1",
+        "mobilesdk_app_id": "1:12592995924:android:12cadebe4324a7a89697c1",
         "android_client_info": {
-          "package_name": "com.developer.cargo_dev"
+          "package_name": "com.developer.cargodev"
         }
       },
       "oauth_client": [
@@ -30,6 +30,13 @@
             {
               "client_id": "12592995924-oihqp1oe39rji359jaee4hj99ch2u5iq.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "12592995924-8aa9cu4fm2khdneqed3fljfc0cgak9jv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.developer.cargo-dev"
+              }
             }
           ]
         }
