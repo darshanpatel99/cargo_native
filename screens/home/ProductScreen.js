@@ -164,6 +164,16 @@ export class ProductScreen extends Component {
 
 
   }
+  /**
+   * Function Desription: Generate a sharable link
+   */
+  getSharableLink=(productID)=>{
+
+    var sharable_link = `cargo://?Product=${productID}`
+
+    return sharable_link;
+
+  }
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);

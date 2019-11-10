@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CarGo",
-    "slug": "cargo-native",
+    "slug": "cargo",
     "privacy": "unlisted",
     "sdkVersion": "35.0.0",
     "scheme": "cargo",
