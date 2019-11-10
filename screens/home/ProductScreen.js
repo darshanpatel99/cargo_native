@@ -34,25 +34,25 @@ export class ProductScreen extends Component {
     super(props);
     const { navigation } = this.props;
 
-    const title = navigation.getParam('title');
-    const description = navigation.getParam('description');
-    const price = navigation.getParam('price');
-    const pictures = navigation.getParam('pictures');
-    const id = navigation.getParam('itemId');
-    const owner = navigation.getParam('owner');
-    const pickupAddress = navigation.getParam('pickupAddress');
-    const BuyerID = navigation.getParam('BuyerID');
-    const Status = navigation.getParam('Status');
-    const sellerName = navigation.getParam('sellerName');
-    const BoughtStatus = navigation.getParam('BoughtStatus');
-    const Category = navigation.getParam('Category');
-    const deliveryVehicle = navigation.getParam('deliveryVehicle');
-    const deliveryProvider = navigation.getParam('deliveryProvider');
-    const sellerDeliveryPrice = navigation.getParam('sellerDeliveryPrice')
+    console.log('$$$$$$$$');
+    const productObject= navigation.getParam('completeProductObject')
 
-    console.log("This is category" + Category);
-
-    const thumbnail = navigation.getParam('thumbnail');
+    const title = productObject.Name;
+    const description = productObject.Description;
+    const price = productObject.Price;
+    const pictures = productObject.Pictures;
+    const id = productObject.key; //document id
+    const owner = productObject.Description;
+    const pickupAddress = productObject.Description;
+    const BuyerID = productObject.Owner;
+    const Status = productObject.Status;
+    const sellerName = productObject.SellerName;
+    const BoughtStatus = productObject.BoughtStatus;
+    const Category = productObject.Category;
+    const deliveryVehicle = productObject.DeliveryVehicle;
+    const deliveryProvider = productObject.DeliveryProvider;
+    const sellerDeliveryPrice = productObject.SellerDeliveryPrice;
+    const thumbnail = productObject.Thumbnail;
     const prevPage = navigation.getParam('prevPage');
 
     this.state = {
@@ -163,18 +163,32 @@ export class ProductScreen extends Component {
     // else {
     //   this._getLocationAsync();
     // }
-
-
   }
 
 
   /**
    * Function Desription: Generate a sharable link
    */
-  getSharableLink=(productID)=>{
+  getSharableLink= async (productID)=>{
 
-    var sharable_link = `cargo://?Product=${productID}`
+    var sharable_link = `https://cargodev.page.link/?link=https://cargodev.page.link/?product=${productID}&apn=com.developer.cargodev&afl=https://play.google.com/store/apps/details?id=com.developer.cargo&ibi=com.developer.cargo-dev&ifl=https://apps.apple.com/us/app/cargo-marketplace/id1477725337?ls=1`
+    //have a post reques to firebase dynamic links to get the short link
+    // fetch('https://firebasedynamiclinks.googleapis.com/v1/shortLinks', {
+    //     method: 'POST',
+    //     headers: {
+    //       Accept: '*/*',
+    //       'key': 'AIzaSyBrySojH8TyaXm-a5SF7Ij6PgyeL4Ry2bw',
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body:JSON.stringify({
+    //       "longDynamicLink":sharable_link
+    //     }),
+    //   }).then((response)=>{
+    //       console.log(response);
 
+    //     }).catch((error)=>{
+    //       console.log('We got the following error when building the: ' +error);
+    //     });
     return sharable_link;
 
   }
@@ -184,7 +198,9 @@ export class ProductScreen extends Component {
    */
   shareAsync = async()=>{
     console.log('Starting share async');
-    url='https://cargodev.page.link/bAmq';
+    //url='https://cargodev.page.link/bAmq';
+    url= await this.getSharableLink(this.state.id);//get the sharable link
+    console.log('Product Sharable Link: '+url);
     try {
       const result = await Share.share({
         message: url,

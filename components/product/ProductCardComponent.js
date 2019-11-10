@@ -11,26 +11,27 @@ class ProductCardComponent extends React.Component {
         this.state = {title: '', description: '', price :'', image: '', id:'' , owner:'', pickupAddress: '', BuyerID:'', Status:'',Category: 0, deliveryProvider: '', deliveryVehicle: '', sellerDeliveryPrice: ''};
     }
 
-    render() {
+    render() { 
         return (
-            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {prevPage:this.props.prevPage, BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID, thumbnail:this.props.thumbnail, Category : this.props.category, deliveryVehicle: this.props.deliveryVehicle, deliveryProvider: this.props.deliveryProvider, sellerDeliveryPrice: this.props.sellerDeliveryPrice} ) } >
+            // <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  {prevPage:this.props.prevPage, BoughtStatus:this.props.BoughtStatus,  Status:this.props.Status, itemId:this.props.id, owner:this.props.owner, title:this.props.title, description:this.props.description, price:this.props.price, pictures:this.props.pictures, pickupAddress:this.props.pickupAddress, sellerName: this.props.sellerName, BuyerID:this.props.BuyerID, thumbnail:this.props.thumbnail, Category : this.props.category, deliveryVehicle: this.props.deliveryVehicle, deliveryProvider: this.props.deliveryProvider, sellerDeliveryPrice: this.props.sellerDeliveryPrice} ) } >
+            <TouchableOpacity onPress={ () => this.props.navigation.push('Details',  { completeProductObject: this.props.completeProductObject, prevPage: 'Home' } ) } > 
             <View style = {styles.containerStyle}>
                 
              {/* This is thumbnail container  */}
                 <View style = {styles.thumbnailContainer}>
-                    <ProductThumbnail url = {this.props.thumbnail}/>    
+                    <ProductThumbnail url = {this.props.completeProductObject.Thumbnail}/>    
                 </View>
             {/* This is main content container with title and desc */}
                 <View style = {styles.contentContainer}>
-                    <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.title} </Text>
-                    <Text style = {styles.descriptionStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.description}</Text> 
+                    <Text style = {styles.titleStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.completeProductObject.Name} </Text>
+                    <Text style = {styles.descriptionStyle} numberOfLines={2} ellipsizeMode="tail">{this.props.completeProductObject.Description}</Text> 
                     {/* <SmallButtonComponent text ={this.props.price} buttonColor = {Colors.secondary}/> */}
                 </View>
             {/* This is right icons container */}
                 <View style = {styles.rightSideIconsContainer}>
                     {/* <ProductVerticalBar /> */}
 
-                    <Text style={[styles.priceStyle,{color:Colors.secondary}]}>${this.props.price}</Text>
+                    <Text style={[styles.priceStyle,{color:Colors.secondary}]}>${this.props.completeProductObject.Price}</Text>
                 </View>
             </View>
             {/* <Text>{this.props.id}</Text> */}
