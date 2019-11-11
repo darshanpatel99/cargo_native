@@ -112,10 +112,6 @@ export default class PostProductScreen extends Component {
   componentDidMount() {
 
     const { navigation } = this.props;
-    
-    this.focusListener = navigation.addListener('didFocus', () => { 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
 
     const newData = navigation.getParam('data');
 
@@ -126,26 +122,15 @@ export default class PostProductScreen extends Component {
         downloadURLs:newData.pictures,
         description:newData.description,
         thumbnail:newData.thumbnail,
+        ategory:newData.category,
         
     })
-
-    if (user != null) {
-        
-      this.state.owner = user.uid;
-      console.log(" State UID ==> from  " + this.state.Owner);
-
-    }
-  });
 
   console.log("This is a cat " + this.state.Category);
   
   var arrayTest = [this.state.Category];
   
-  //this.categoryRemover.current.presetState(arrayTest);
-
-    //this.getPermissionAsync();
-    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-    console.log('component did mount');
+  
   }
 
   componentWillUnmount() {
