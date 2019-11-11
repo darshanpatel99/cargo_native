@@ -1,15 +1,5 @@
 import React, { Component } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  TouchableHighlight,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-  Alert,
-  Text,
-} from 'react-native';
+import { ScrollView, StyleSheet,  View,  TouchableHighlight,  TouchableOpacity,  Dimensions,  Platform,  Alert,  Text,  Share} from 'react-native';
 import { Button} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
@@ -23,7 +13,7 @@ import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons } from '@expo/vector-icons';
-
+import * as Sharing from 'expo-sharing';
 
 let storageRef;
 export class ProductScreen extends Component {
@@ -39,10 +29,10 @@ export class ProductScreen extends Component {
     const description = productObject.Description;
     const price = productObject.Price;
     const pictures = productObject.Pictures;
-    const id = productObject.Description;
-    const owner = productObject.Description;
+    const id = productObject.key; //document id
+    const owner = productObject.Owner;
     const pickupAddress = productObject.Description;
-    const BuyerID = productObject.Owner;
+    const BuyerID = '';
     const Status = productObject.Status;
     const sellerName = productObject.SellerName;
     const BoughtStatus = productObject.BoughtStatus;
@@ -51,7 +41,12 @@ export class ProductScreen extends Component {
     const deliveryProvider = productObject.DeliveryProvider;
     const sellerDeliveryPrice = productObject.SellerDeliveryPrice;
     const thumbnail = productObject.Thumbnail;
+    const availability = productObject.Avability;
+    const sellerAddress = productObject.SellerAddress;
+    const additionalData = productObject.AdditionalData;
     const prevPage = navigation.getParam('prevPage');
+
+    console.log(JSON.stringify(additionalData) + " super data")
 
     this.state = {
       location: null,
@@ -70,7 +65,7 @@ export class ProductScreen extends Component {
       price,
       id,
       owner,
-      userID:'',
+      userID: firebase.auth().currentUser.uid,
       Category,
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
@@ -85,7 +80,10 @@ export class ProductScreen extends Component {
       completeChatThread: {'chat' : sellerName},
       sellerDeliveryPrice,
       deliveryProvider,
-      deliveryVehicle
+      deliveryVehicle,
+      availability,
+      sellerAddress,
+      additionalData,
     };
     onLayout = e => {
       this.setState({
@@ -100,81 +98,77 @@ export class ProductScreen extends Component {
     this.flagTheItem = this.flagTheItem.bind(this);
     this.CancelOrder = this.CancelOrder.bind(this);
     this.ReactivateOrder = this.ReactivateOrder.bind(this);
+    this.shareAsync = this.shareAsync.bind(this);
 
     //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-
-    if (user != null) {
-      const that = this;
-      this.state.userID = user.uid;
-      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-      this.ref.get().then(function(doc) {
-        if (doc.exists) {
-            that.setState({
-              soldArray:doc.data().SoldProducts,
-            })
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-      });
-    }
+    let user = firebase.auth().currentUser.uid;
+    this.setState({userID: user})
   }
 
 
   componentWillMount() {
 
-    this.CheckIfProductAlreadyInCart();
-
-    const { navigation } = this.props;
-    
-    this.focusListener = navigation.addListener('didFocus', () => { 
-      //checking the current user and setting uid
-    
-    let user = firebase.auth().currentUser;
-    if (user != null) {
-      const that = this;
-      this.state.userID = user.uid;
-      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-      this.ref.get().then(function(doc) {
-        if (doc.exists) {
-            that.setState({
-              soldArray:doc.data().SoldProducts,
-            })
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-      });
-    }
-    });
-
-    if (Platform.OS === 'android' && !Constants.isDevice) {
-      this.setState({
-        errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
-      });
-    } 
-    // else {
-    //   this._getLocationAsync();
-    // }
-
-
   }
+
+
   /**
    * Function Desription: Generate a sharable link
    */
-  getSharableLink=(productID)=>{
+  getSharableLink= async (productID)=>{
 
-    var sharable_link = `cargo://?Product=${productID}`
+    var sharable_link = `https://cargodev.page.link/?link=https://cargodev.page.link/?product=${productID}&apn=com.developer.cargodev&afl=https://play.google.com/store/apps/details?id=com.developer.cargo&ibi=com.developer.cargo-dev&ifl=https://apps.apple.com/us/app/cargo-marketplace/id1477725337?ls=1`
+    //have a post reques to firebase dynamic links to get the short link
+    // fetch('https://firebasedynamiclinks.googleapis.com/v1/shortLinks', {
+    //     method: 'POST',
+    //     headers: {
+    //       Accept: '*/*',
+    //       'key': 'AIzaSyBrySojH8TyaXm-a5SF7Ij6PgyeL4Ry2bw',
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body:JSON.stringify({
+    //       "longDynamicLink":sharable_link
+    //     }),
+    //   }).then((response)=>{
+    //       console.log(response);
 
+    //     }).catch((error)=>{
+    //       console.log('We got the following error when building the: ' +error);
+    //     });
     return sharable_link;
 
   }
 
+  /**
+   * Function Description: Share yout product
+   */
+ async shareAsync  () {
+    console.log('Starting share async');
+    //url='https://cargodev.page.link/bAmq';
+    url= await this.getSharableLink(this.state.id);//get the sharable link
+    console.log('Product Sharable Link: '+url);
+    try {
+      const result = await Share.share({
+        message: url,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+    
+  }
+
+  /**
+   * Function Description: Get the location async
+   */
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -223,13 +217,14 @@ export class ProductScreen extends Component {
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    this.props.navigation.setParams({ shareAsync: this.shareAsync});
     //this._getLocationAsync();
   }
 
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
-    this.focusListener.remove();
+    // this.focusListener.remove();
   }
 
   onAuthStateChanged = user => {
@@ -351,6 +346,12 @@ export class ProductScreen extends Component {
       id:this.state.id,
       category: this.state.Category,
       thumbnail:this.state.thumbnail,
+      availability :this.state.availability,
+      sellerAddress : this.state.sellerAddress,
+      additionalData:this.state.additionalData,
+      deliveryVehicle:this.state.deliveryVehicle,
+      deliveryProvider:this.state.deliveryProvider,
+      sellerDeliveryPrice:this.state.sellerDeliveryPrice,
     }
 
     console.log("Before edit cat -->" + data.category);
@@ -375,16 +376,17 @@ export class ProductScreen extends Component {
       }))
    }
 
+
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
 
     return {
       headerRight: (
         <TouchableHighlight
-          onPress={ () => navigation.navigate('Chat')}
+          onPress={navigation.getParam('shareAsync')}
           style={{ marginRight: 10 }}
         >
-          <AntDesign name='message1' size={30} color={Colors.primary} />
+          <Ionicons name='md-share' size={30} color={Colors.primary} />
         </TouchableHighlight>
       ),
       headerLeft: (
@@ -410,9 +412,9 @@ export class ProductScreen extends Component {
   }
 
   CheckIfProductAlreadyInCart() { 
-    console.log(this.state.BoughtStatus)
+    console.log(this.state.BoughtStatus);
 
-    if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
+    if (this.state.Status === 'active' && this.state.owner === this.state.userID ) {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
@@ -562,6 +564,7 @@ export class ProductScreen extends Component {
         
           <Text style={styles.productDesc}>{this.state.description}</Text>
         {/* </View> */}
+
 
         </ScrollView>
          <View >

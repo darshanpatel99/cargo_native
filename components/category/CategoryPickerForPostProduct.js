@@ -231,6 +231,8 @@ export default class extends Component {
     };
   }
   onSelectedItemsChange = (selectedItems) => {
+
+    console.log(selectedItems[0] + "  that is cat in cat pick");
     this.setState({ selectedItems });
     console.log(typeof selectedItems);
     this.props.parentCallback(selectedItems);

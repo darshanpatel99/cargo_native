@@ -403,6 +403,7 @@ export default class PostProductScreen extends Component {
       SellerName: this.state.sellerName,
       BuyerName:'',
       BuyerAddress:'',
+      SellerAddress:this.state.completeStringAddress,
       DeliveryFee:'',
       TotalFee:'',
       BoughtStatus:'false',
@@ -1161,13 +1162,27 @@ export default class PostProductScreen extends Component {
             }}
           />
 
-            
+            <AwesomeAlert
+            show={this.state.picAlert}
+            showProgress={false}
+            title="Oops!"
+            message={'Please upload at least 3 images!'}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            //showCancelButton={true}
+            showConfirmButton={true}            
+            confirmText="OK"
+            confirmButtonColor="#DD6B55"            
+            onConfirmPressed={() => {
+              this.hidePicAlert();
+            }}
+          />
           
 
           <AwesomeAlert
             show={this.state.availableAlert}
             showProgress={false}
-            title="Oops"
+            title="Oops!"
             message={'Choose availability'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1183,7 +1198,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.showAddressAlert}
             showProgress={false}
-            title="Oops"
+            title="Oops!"
             message={'Choose pick up address'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1199,7 +1214,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.priceAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'price should be from 10 to 1000 $'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1234,7 +1249,7 @@ export default class PostProductScreen extends Component {
           <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message="Please login first!"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}

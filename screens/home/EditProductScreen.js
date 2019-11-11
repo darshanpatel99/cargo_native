@@ -93,7 +93,13 @@ export default class PostProductScreen extends Component {
       isImagesChanged: false,
       allOldDeleted: false,
       switchValue: false,
-      
+      completeStringAddress:'',
+      additionalData:null,
+      deliveryVehicle:'',
+      deliveryProvider:false,
+      sellerDeliveryPrice:'',
+      switchValue:false,
+      switchOn1:true,
     }
 
     this.categoryRemover = React.createRef();
@@ -111,32 +117,23 @@ export default class PostProductScreen extends Component {
 
   componentDidMount() {
 
-    const { navigation } = this.props;
+  var arrayCat = [this.state.Category]
 
-    const newData = navigation.getParam('data');
+  this.categoryRemover.current.onSelectedItemsChange(arrayCat);
 
-    this.setState({
-        title: newData.title,
-        price:newData.price,
-        image:newData.pictures,
-        downloadURLs:newData.pictures,
-        description:newData.description,
-        thumbnail:newData.thumbnail,
-        ategory:newData.category,
-        
-    })
+  this.avabilityRemover.current.onSelectedItemsChange(this.state.Avability);
 
-  console.log("This is a cat " + this.state.Category);
+  var arrayCond = [this.state.additionalData.Condition]
   
-  var arrayTest = [this.state.Category];
-  
-  
+  this.conditionRemover.current.onSelectedItemsChange(arrayCond)
+  console.log("Delivery prov" + this.state.switchValue)
+
+    
+
   }
 
   componentWillUnmount() {
-    // Clean up: remove the listener
-    //this._unsubscribe();
-    this.focusListener.remove();
+    
   }
  
 
@@ -150,9 +147,22 @@ export default class PostProductScreen extends Component {
       ? headerAndStatusBarHeight - 700
       : headerAndStatusBarHeight - 100;
 
-      const newData = navigation.getParam('data');
+      
 
-    console.log("This is a cat " + newData.category)
+    const newData = navigation.getParam('data');
+
+    console.log(JSON.stringify(newData.additionalData) + "  That is the data");
+
+    var truckOrCar = true;
+    
+    if(newData.deliveryVehicle == "Truck")
+    {
+     truckOrCar = false;
+    }
+    else
+    {
+      truckOrCar = true;
+    }
 
     this.setState({
         title: newData.title,
@@ -160,7 +170,20 @@ export default class PostProductScreen extends Component {
         image:newData.pictures,
         downloadURLs:newData.pictures,
         description:newData.description,
+        thumbnail:newData.thumbnail,
+        Category:newData.category,
+        Avability:newData.availability,
+        completeStringAddress:newData.sellerAddress,
+        brandName:newData.additionalData.BrandName,
+        additionalData:newData.additionalData,
+        switchOn1:truckOrCar,
+        deliveryVehicle:newData.additionalData,
+        switchValue:newData.deliveryProvider,
+        sellerDeliveryPrice:newData.sellerDeliveryPrice,
+
     })
+
+    
 
     console.log("This is a cat " + this.state.Category);
 
@@ -189,7 +212,9 @@ export default class PostProductScreen extends Component {
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
+    let address = this.state.completeStringAddress;
+
+    console.log(address + " that is the real address")
 
     if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
@@ -207,12 +232,12 @@ export default class PostProductScreen extends Component {
       })      
     }
 
-    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+    if((priceLength < 10 || priceLength > 1000)){
       this.setState({
         priceAlert:true,
       })      
     }
-    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    else if(timeArray.length==0){
       this.setState({
         availableAlert:true,
       })
@@ -220,7 +245,7 @@ export default class PostProductScreen extends Component {
 
     console.log(address)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    if(address == ''){
       this.setState({
         showAddressAlert:true,
       })
@@ -235,7 +260,7 @@ export default class PostProductScreen extends Component {
 
   hideAlert2(){
     const { navigate } = this.props.navigation;
-    // this.categoryRemover.current.changeState();
+    
     // this.avabilityRemover.current.changeState();
     // this.googlePlacesAutocomplete._handleChangeText('');
     // this.addressRemover.current.changeAddressState();
@@ -339,7 +364,7 @@ export default class PostProductScreen extends Component {
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
+    let address = this.state.completeStringAddress;
     if(titleLength.length > 0 &&priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && address != '')  {
     if(this.state.isImagesChanged){
       console.log(this.state.isImagesChanged);
@@ -1014,6 +1039,32 @@ export default class PostProductScreen extends Component {
 
     console.log('this is a length of the downloadURLs array' + this.state.downloadURLs.length);
     console.log('this is a length ' + this.state.price);
+
+    const additionaldataObject = {
+      BrandName:this.state.brandName,
+      Condition:this.state.condition
+    }
+
+    var truckOrCar = '';
+    
+    if(this.state.switchOn1 == false)
+    {
+     truckOrCar = "Truck"
+    }
+    else
+    {
+      truckOrCar = "Car"
+    }
+
+
+    var sellerPrice = ""
+    if(this.state.switchValue)
+    {
+      console.log(this.state.switchValue + " This is the switch")
+      sellerPrice = this.state.sellerDeliveryPrice
+    }
+
+    console.log(JSON.stringify(additionaldataObject)+ " Last obj ")
     this.productRef.update({
         Name:this.state.title,
         Pictures:this.state.downloadURLs,
@@ -1022,7 +1073,12 @@ export default class PostProductScreen extends Component {
         Description:this.state.description,
         Category: this.state.Category,
         Avability: this.state.Avability,
-        AddressArray:this.state.addressArray,    
+        SellerAddress:this.state.completeStringAddress,
+        AdditionalData:additionaldataObject,
+        DeliveryVehicle:truckOrCar,
+        DeliveryProvider:this.state.switchValue,
+        SellerDeliveryPrice:sellerPrice,
+
     }).then(()=>{
       //show the alert
       this.setState({ loading: false });
@@ -1108,7 +1164,7 @@ conditionCallBack = (callBack)=>{
     const {showAlert2} = this.state;
     const {noPictures} = this.state.picAlert;
     
-    if(this.state.User != null){
+   
       return (
         <View style={{flex:1}}>
         <Spinner
@@ -1248,7 +1304,7 @@ conditionCallBack = (callBack)=>{
               </Item>
               
               
-                <Conditions ref ={this.condition} parentCallback={this.conditionCallBack} />
+                <Conditions ref ={this.conditionRemover} parentCallback={this.conditionCallBack} />
              
 
             </View>
@@ -1311,14 +1367,24 @@ conditionCallBack = (callBack)=>{
         />
         </View>
 
-        <TextInput
+        {/* <TextInput
             placeholder= 'Pickup Address'
             underlineColorAndroid="transparent"
             autoCapitalize='none'
             autoCorrect={false}
             style={styles.TextInputStyle}
             onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
-          />
+          /> */}
+
+              <Input
+              style={styles.TextInputStyle}
+               placeholder="Pickup Address"
+               name="PickUp" 
+               onChangeText={(text)=>this.setState({completeStringAddress:text, googleAddressEmpty: text})}
+               value={this.state.completeStringAddress}
+               maxLength={100}
+               returnKeyType='done'
+              />
 
           
             <View
@@ -1362,7 +1428,7 @@ conditionCallBack = (callBack)=>{
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Alert"
+            title="Awesome!"
             message={'Successfully changes'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1382,7 +1448,7 @@ conditionCallBack = (callBack)=>{
             <AwesomeAlert
             show={this.state.picAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Please upload at least 3 images!'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1399,7 +1465,7 @@ conditionCallBack = (callBack)=>{
           <AwesomeAlert
             show={this.state.availableAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Choose availability'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1415,7 +1481,7 @@ conditionCallBack = (callBack)=>{
             <AwesomeAlert
             show={this.state.showAddressAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Choose pick up address'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1431,7 +1497,7 @@ conditionCallBack = (callBack)=>{
             <AwesomeAlert
             show={this.state.priceAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'price should be from 10 to 1000 $'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1448,45 +1514,7 @@ conditionCallBack = (callBack)=>{
         
       );
 
-    }
-    else{
-      
-      return (
-       
-        <View style={styles.container}>   
-{/* 
-        <TouchableOpacity onPress={() => {
-          this.showAlert();
-        }}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Try me!</Text>
-          </View>
-        </TouchableOpacity> */}
-
-          <AwesomeAlert
-            show={showAlert}
-            showProgress={false}
-            title="Alert"
-            message="Please login first!"
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}
-            cancelText="No, cancel"
-            confirmText="Go to login!!"
-            confirmButtonColor={Colors.primary}
-            onCancelPressed={() => {
-              this.hideAlert();
-            }}
-            onConfirmPressed={() => {
-              this.hideAlert();
-            }}
-          />
-
-
-        </View>
-      );
-    }
+    
   }
 }
 
