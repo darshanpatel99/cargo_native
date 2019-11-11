@@ -9,7 +9,8 @@ import {
   View,
   Dimensions,
   ScrollView,
-  TextInput
+  TextInput,
+  Switch
 } from 'react-native';
 import {
   Form,
@@ -42,6 +43,8 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import * as ImageManipulator from 'expo-image-manipulator';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
+import Conditions from '../../components/product/conditions'
+import SwitchToggle from 'react-native-switch-toggle';
 
 var KEYBOARD_VERTICAL_OFFSET_HEIGHT = 0;
 let storageRef;
@@ -89,12 +92,20 @@ export default class PostProductScreen extends Component {
       loading: false,
       isImagesChanged: false,
       allOldDeleted: false,
-
+      switchValue: false,
+      completeStringAddress:'',
+      additionalData:null,
+      deliveryVehicle:'',
+      deliveryProvider:false,
+      sellerDeliveryPrice:'',
+      switchValue:false,
+      switchOn1:true,
     }
 
     this.categoryRemover = React.createRef();
     this.avabilityRemover = React.createRef();
     this.addressRemover = React.createRef();
+    this.conditionRemover = React.createRef();
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -106,46 +117,23 @@ export default class PostProductScreen extends Component {
 
   componentDidMount() {
 
-    const { navigation } = this.props;
+  var arrayCat = [this.state.Category]
+
+  this.categoryRemover.current.onSelectedItemsChange(arrayCat);
+
+  this.avabilityRemover.current.onSelectedItemsChange(this.state.Avability);
+
+  var arrayCond = [this.state.additionalData.Condition]
+  
+  this.conditionRemover.current.onSelectedItemsChange(arrayCond)
+  console.log("Delivery prov" + this.state.switchValue)
+
     
-    this.focusListener = navigation.addListener('didFocus', () => { 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
 
-    const newData = navigation.getParam('data');
-
-    this.setState({
-        title: newData.title,
-        price:newData.price,
-        image:newData.pictures,
-        downloadURLs:newData.pictures,
-        description:newData.description,
-        thumbnail:newData.thumbnail,
-    })
-
-    if (user != null) {
-        
-      this.state.owner = user.uid;
-      console.log(" State UID ==> from  " + this.state.Owner);
-
-    }
-  });
-
-  console.log("This is a cat " + this.state.Category);
-  
-  var arrayTest = [this.state.Category];
-  
-  //this.categoryRemover.current.presetState(arrayTest);
-
-    //this.getPermissionAsync();
-    this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-    console.log('component did mount');
   }
 
   componentWillUnmount() {
-    // Clean up: remove the listener
-    //this._unsubscribe();
-    this.focusListener.remove();
+    
   }
  
 
@@ -159,9 +147,22 @@ export default class PostProductScreen extends Component {
       ? headerAndStatusBarHeight - 700
       : headerAndStatusBarHeight - 100;
 
-      const newData = navigation.getParam('data');
+      
 
-    console.log("This is a cat " + newData.category)
+    const newData = navigation.getParam('data');
+
+    console.log(JSON.stringify(newData.additionalData) + "  That is the data");
+
+    var truckOrCar = true;
+    
+    if(newData.deliveryVehicle == "Truck")
+    {
+     truckOrCar = false;
+    }
+    else
+    {
+      truckOrCar = true;
+    }
 
     this.setState({
         title: newData.title,
@@ -169,7 +170,20 @@ export default class PostProductScreen extends Component {
         image:newData.pictures,
         downloadURLs:newData.pictures,
         description:newData.description,
+        thumbnail:newData.thumbnail,
+        Category:newData.category,
+        Avability:newData.availability,
+        completeStringAddress:newData.sellerAddress,
+        brandName:newData.additionalData.BrandName,
+        additionalData:newData.additionalData,
+        switchOn1:truckOrCar,
+        deliveryVehicle:newData.additionalData,
+        switchValue:newData.deliveryProvider,
+        sellerDeliveryPrice:newData.sellerDeliveryPrice,
+
     })
+
+    
 
     console.log("This is a cat " + this.state.Category);
 
@@ -198,7 +212,9 @@ export default class PostProductScreen extends Component {
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
+    let address = this.state.completeStringAddress;
+
+    console.log(address + " that is the real address")
 
     if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>0 && timeArray.length>0 && address != '')  {
   
@@ -216,12 +232,12 @@ export default class PostProductScreen extends Component {
       })      
     }
 
-    if((priceLength < 10 || priceLength > 1000) && picArray.length!=0){
+    if((priceLength < 10 || priceLength > 1000)){
       this.setState({
         priceAlert:true,
       })      
     }
-    else if(timeArray.length==0 && picArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    else if(timeArray.length==0){
       this.setState({
         availableAlert:true,
       })
@@ -229,7 +245,7 @@ export default class PostProductScreen extends Component {
 
     console.log(address)
 
-    if(address == '' && picArray.length!=0 && timeArray.length!=0 && (priceLength >= 10 || priceLength <= 1000)){
+    if(address == ''){
       this.setState({
         showAddressAlert:true,
       })
@@ -244,7 +260,7 @@ export default class PostProductScreen extends Component {
 
   hideAlert2(){
     const { navigate } = this.props.navigation;
-    // this.categoryRemover.current.changeState();
+    
     // this.avabilityRemover.current.changeState();
     // this.googlePlacesAutocomplete._handleChangeText('');
     // this.addressRemover.current.changeAddressState();
@@ -348,7 +364,7 @@ export default class PostProductScreen extends Component {
     let productCategory = this.state.Category;
     let picArray = this.state.image;
     let timeArray = this.state.Avability;
-    let address = this.state.googleAddressEmpty;
+    let address = this.state.completeStringAddress;
     if(titleLength.length > 0 &&priceLength >= 10 && priceLength <= 1000 && descriptionLength.length > 0 && productCategory !=0 && picArray.length>2 && timeArray.length>0 && address != '')  {
     if(this.state.isImagesChanged){
       console.log(this.state.isImagesChanged);
@@ -432,7 +448,7 @@ export default class PostProductScreen extends Component {
     //if(this.checkFields == true)
     //Posting the product
     PostProduct(data);
-    console.log("Product Posted---->" + data);
+    console.log("Product Posted---->" + JSON.stringify(data));
 
     //change the overlay visibility to visible
     //this.setState({isOverlayVisible:true});
@@ -1023,6 +1039,32 @@ export default class PostProductScreen extends Component {
 
     console.log('this is a length of the downloadURLs array' + this.state.downloadURLs.length);
     console.log('this is a length ' + this.state.price);
+
+    const additionaldataObject = {
+      BrandName:this.state.brandName,
+      Condition:this.state.condition
+    }
+
+    var truckOrCar = '';
+    
+    if(this.state.switchOn1 == false)
+    {
+     truckOrCar = "Truck"
+    }
+    else
+    {
+      truckOrCar = "Car"
+    }
+
+
+    var sellerPrice = ""
+    if(this.state.switchValue)
+    {
+      console.log(this.state.switchValue + " This is the switch")
+      sellerPrice = this.state.sellerDeliveryPrice
+    }
+
+    console.log(JSON.stringify(additionaldataObject)+ " Last obj ")
     this.productRef.update({
         Name:this.state.title,
         Pictures:this.state.downloadURLs,
@@ -1031,7 +1073,12 @@ export default class PostProductScreen extends Component {
         Description:this.state.description,
         Category: this.state.Category,
         Avability: this.state.Avability,
-        AddressArray:this.state.addressArray,    
+        SellerAddress:this.state.completeStringAddress,
+        AdditionalData:additionaldataObject,
+        DeliveryVehicle:truckOrCar,
+        DeliveryProvider:this.state.switchValue,
+        SellerDeliveryPrice:sellerPrice,
+
     }).then(()=>{
       //show the alert
       this.setState({ loading: false });
@@ -1056,6 +1103,59 @@ export default class PostProductScreen extends Component {
       }))
    }
 
+   displayDeliveryPrice() {
+    if (this.state.switchValue) {
+        return <View style={{flex: 1, flexDirection: 'row', marginLeft: 10}}>
+                  <Foundation name='dollar' size={28}/>
+                  <Input keyboardType='numeric' 
+                    placeholder='0.00'
+                    name="price"
+                    onChangeText={(text)=>this.setState({sellerDeliveryPrice:text})}
+                    value={this.state.sellerDeliveryPrice} 
+                    maxLength={3}
+                    returnKeyType='done'
+                    style={{borderColor:'blue', borderWidth: 0.5, height:30, marginLeft:5 }}
+                    />
+              </View> 
+    } else {
+        return null
+    }
+}
+
+getButtonText() {
+    
+  return this.state.switchOn1 ? '🚗Car' : '🚚Truck';
+  
+}
+
+getRightText() {
+  return this.state.switchOn1 ? '' : '🚗Car';
+  //return 'Signup';
+}
+
+getLeftText() {
+  //return this.state.switchOn1 ? 'Signup' : '';
+  return '🚚Truck';
+}
+
+toggleSwitch = value => {
+  //onValueChange of the switch this function will be called
+  this.setState({ switchValue: value });
+  //state changes according to switch
+  //which will result in re-render the text
+};
+
+
+onPress1 = () => {
+  this.setState({switchOn1: !this.state.switchOn1});
+};
+
+conditionCallBack = (callBack)=>{
+  console.log( callBack[0]);
+    this.setState({
+      condition:callBack[0],
+    })
+}
   render() {
 
     let { image } = this.state;
@@ -1064,7 +1164,7 @@ export default class PostProductScreen extends Component {
     const {showAlert2} = this.state;
     const {noPictures} = this.state.picAlert;
     
-    if(this.state.User != null){
+   
       return (
         <View style={{flex:1}}>
         <Spinner
@@ -1167,88 +1267,126 @@ export default class PostProductScreen extends Component {
                 <DaysPickerForPostProductScreen parentCallback={this.avabilitycallbackFunction} ref={this.avabilityRemover} />
               </View>
 
-              {/* <GooglePlacesAutocomplete
-                ref={c => this.googlePlacesAutocomplete = c}
-                placeholder='Pickup Address'
-                minLength={2}
-                autoFocus={false}
-                returnKeyType={'default'}
-                fetchDetails={true}
-                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-                listViewDisplayed='false'    // true/false/undefined
-                renderDescription={row => row.description} // custom description render
+              <View
+              style= {{
+                borderColor:"blue",
+                borderWidth:0.5,
+                marginVertical: 10,
+                padding : 4,
+                backgroundColor:'white',
                 
-                textInputProps={{
-                  onChangeText: (text) => {this.testFunction(text)}
-                 }}
-                onPress={(data, details = null) => {
-                console.log(Object.values(details.geometry.location))
-                let lat = Object.values(details.geometry.location)[0];
-                let long = Object.values(details.geometry.location)[1];
-                this.setState({addressArray: [lat, long]})
-                this.setState({googleAddressEmpty: 'Added stuff'})
-                //this.props.parentCallback(this.state.lat, this.state.long);
-                //console.log('LAT --> ' + Object.values(details.geometry.location)[0])
-                }}
+              }}>
 
-                currentLocation={false}
-                
-                GoogleReverseGeocodingQuery={{
-                    // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                }}
+              <Text style={
+               {
+                 marginLeft:5,
+                 fontSize:20,
+                 fontWeight:'500'
+               } 
+              }>
+                Additional Information
+              </Text>
+              <Item
+                 style={{
+                 marginVertical:10,
+                 backgroundColor:'white',
+                 borderBottomColor:Colors.primary,
+                 borderWidth:1,
+               }}>
+                <Input
+               placeholder="Brand Name"
+               name="Brand" 
+               onChangeText={(text)=>this.setState({brandName:text})}
+               value={this.state.brandName}
+               maxLength={50}
+               returnKeyType='done'
+              />
+              </Item>
+              
+              
+                <Conditions ref ={this.conditionRemover} parentCallback={this.conditionCallBack} />
+             
 
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'distance',
-                  input :'address',
-                  circle: '5000@50.676609,-120.339020',
-                }}
+            </View>
+            <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}>
+            <Text style={styles.deliveryText}>Do you want to deliver?</Text>
+            <Switch
+              style={{ marginLeft: 10 }}
+              onValueChange={this.toggleSwitch}
+              value={this.state.switchValue}
+            />
+          </View>
+            <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}>
+            <Text>{this.state.switchValue ? 'How much for delivery ?': 'CarGo will take care of delivery!'}</Text>
+            {this.displayDeliveryPrice()}
+          </View>
 
-               
+          <View style={{flex: 1, flexDirection: 'row', marginTop: 10}}> 
+          <Text style={styles.carText}>Does item fit in?</Text>
+          <SwitchToggle
+          buttonText={this.getButtonText()}
+          backTextRight={this.getRightText()}
+          backTextLeft={this.getLeftText()}
+          
+          type={1}
+          buttonStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute'
+          }}
+          
+          rightContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          leftContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}
+        
+          buttonTextStyle={{fontSize: 15, color:'white'}}
+          textRightStyle={{fontSize: 15}}
+          textLeftStyle={{fontSize: 15}}
 
-                getDefaultValue={() => {
-                    return ''; // text input default value
-                }}
-                query={{
-                    // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: 'AIzaSyAIif9aCJcEjB14X6caHBBzB_MPSS6EbJE',
-                    language: 'en', // language of the results
-                    types: 'geocode', // default: 'geocode'
-                    location: '50.66648,-120.3192',
-                    region: 'Canada',
-                    radius: 20000,
-                    strictbounds: true,
-                }}
+          containerStyle={{
+            marginLeft:5,
+            width: 160,
+            height: 50,
+            borderRadius: 27.5,
+            padding: 3,
+            borderWidth:1,
+            borderColor:Colors.primary,
+          }}
+          backgroundColorOn='#fff'
+          backgroundColorOff='#fff'
+          circleStyle={{
+            width: 80,
+            height: 40,
+            borderRadius: 27.5,
+            backgroundColor: 'blue', // rgb(102,134,205)
+          }}
+          switchOn={this.state.switchOn1}
+          onPress={this.onPress1}
+          circleColorOff={Colors.primary}
+          circleColorOn={Colors.primary}
+          duration={100}
+        />
+        </View>
 
-                styles={{
-                    textInputContainer: {
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
-                    },
-                    textInput: {
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16,
-                    borderWidth: 1,
-                    borderColor:'blue',
-                    marginLeft: 0,
-                    marginRight: 0,
-                    },
-                    predefinedPlacesDescription: {
-                    color: '#1faadb'
-                    },
-                }}
-                /> */}
-
-        <TextInput
+        {/* <TextInput
             placeholder= 'Pickup Address'
             underlineColorAndroid="transparent"
             autoCapitalize='none'
             autoCorrect={false}
             style={styles.TextInputStyle}
             onChangeText = {text => this.setState({completeStringAddress: text, googleAddressEmpty: text})}
-          />
+          /> */}
+
+              <Input
+              style={styles.TextInputStyle}
+               placeholder="Pickup Address"
+               name="PickUp" 
+               onChangeText={(text)=>this.setState({completeStringAddress:text, googleAddressEmpty: text})}
+               value={this.state.completeStringAddress}
+               maxLength={100}
+               returnKeyType='done'
+              />
+
+          
             <View
               style={{
                 flexDirection: 'row',
@@ -1290,7 +1428,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Oops!"
+            title="Awesome!"
             message={'Successfully changes'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1376,45 +1514,7 @@ export default class PostProductScreen extends Component {
         
       );
 
-    }
-    else{
-      
-      return (
-       
-        <View style={styles.container}>   
-{/* 
-        <TouchableOpacity onPress={() => {
-          this.showAlert();
-        }}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Try me!</Text>
-          </View>
-        </TouchableOpacity> */}
-
-          <AwesomeAlert
-            show={showAlert}
-            showProgress={false}
-            title="Oops!"
-            message="Please login first!"
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}
-            cancelText="No, cancel"
-            confirmText="Go to login!!"
-            confirmButtonColor={Colors.primary}
-            onCancelPressed={() => {
-              this.hideAlert();
-            }}
-            onConfirmPressed={() => {
-              this.hideAlert();
-            }}
-          />
-
-
-        </View>
-      );
-    }
+    
   }
 }
 

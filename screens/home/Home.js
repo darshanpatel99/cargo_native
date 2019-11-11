@@ -80,7 +80,6 @@ export default class HomeScreen extends React.Component {
 
       //props oject o be passed
       var props_to_detail = {
-        prevPage:'Home', 
         BoughtStatus:data.BoughtStatus,  
         Status:data.Status, 
         itemId:product_id, 
@@ -104,13 +103,6 @@ export default class HomeScreen extends React.Component {
     }).catch((error)=>{
       console.log(error);
     });
-
-
-
-
-    
-    
-
 
   }
 

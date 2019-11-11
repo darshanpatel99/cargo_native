@@ -82,7 +82,7 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent prevPage={'Listing'} completeProductObject = {item} />
+          <ProductCardComponent prevPage={'Bought'} completeProductObject = {item} />
         </View>
       }
       />
