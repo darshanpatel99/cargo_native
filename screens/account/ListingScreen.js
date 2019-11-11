@@ -28,21 +28,25 @@ onDocumentUpdate = (querySnapshot) => {
   console.log('on collection update')
   const products = [];
   querySnapshot.forEach((doc) => {
-    const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status } = doc.data();
+    const {  SellerName, AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, DeliveryProvider, DeliveryVehicle, SellerDeliveryPrice } = doc.data();
       // console.log(typeof Pictures['0']);
     products.push({
-      key: doc.id,
-      doc,
-      Name,
-      Description,
-      Owner,
-      Price,
-      Thumbnail,
-      Pictures,
-      Category,
-      AddressArray,
-      BuyerID,
-      Status,
+            key: doc.id,
+            doc,
+            Name,
+            Description,
+            Owner,
+            Price,
+            Thumbnail,
+            Pictures,
+            Category,
+            AddressArray,
+            BuyerID, 
+            Status,
+            SellerName,
+            DeliveryProvider,
+            DeliveryVehicle,
+            SellerDeliveryPrice
     });
   });
   this.setState({
@@ -78,7 +82,7 @@ render(){
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent prevPage={'Listing'} Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
+          <ProductCardComponent prevPage={'Listing'} completeProductObject = {item} />
         </View>
       }
       />

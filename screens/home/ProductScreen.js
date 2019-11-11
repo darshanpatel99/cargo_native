@@ -42,9 +42,9 @@ export class ProductScreen extends Component {
     const price = productObject.Price;
     const pictures = productObject.Pictures;
     const id = productObject.key; //document id
-    const owner = productObject.Description;
+    const owner = productObject.Owner;
     const pickupAddress = productObject.Description;
-    const BuyerID = productObject.Owner;
+    const BuyerID = '';
     const Status = productObject.Status;
     const sellerName = productObject.SellerName;
     const BoughtStatus = productObject.BoughtStatus;
@@ -72,7 +72,7 @@ export class ProductScreen extends Component {
       price,
       id,
       owner,
-      userID:'',
+      userID: firebase.auth().currentUser.uid,
       Category,
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
@@ -104,65 +104,13 @@ export class ProductScreen extends Component {
     this.ReactivateOrder = this.ReactivateOrder.bind(this);
 
     //checking the current user and setting uid
-    let user = firebase.auth().currentUser;
-
-    if (user != null) {
-      const that = this;
-      this.state.userID = user.uid;
-      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-      this.ref.get().then(function(doc) {
-        if (doc.exists) {
-            that.setState({
-              soldArray:doc.data().SoldProducts,
-            })
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-      });
-    }
+    let user = firebase.auth().currentUser.uid;
+    this.setState({userID: user})
   }
 
 
   componentWillMount() {
 
-    this.CheckIfProductAlreadyInCart();
-
-    const { navigation } = this.props;
-    
-    this.focusListener = navigation.addListener('didFocus', () => { 
-      //checking the current user and setting uid
-    
-    let user = firebase.auth().currentUser;
-    if (user != null) {
-      const that = this;
-      this.state.userID = user.uid;
-      this.ref = firebase.firestore().collection('Users').doc(this.state.userID);
-      this.ref.get().then(function(doc) {
-        if (doc.exists) {
-            that.setState({
-              soldArray:doc.data().SoldProducts,
-            })
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-      });
-    }
-    });
-
-    if (Platform.OS === 'android' && !Constants.isDevice) {
-      this.setState({
-        errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
-      });
-    } 
-    // else {
-    //   this._getLocationAsync();
-    // }
   }
 
 
@@ -278,7 +226,7 @@ export class ProductScreen extends Component {
   componentWillUnmount() {
     // Clean up: remove the listener
     this._unsubscribe();
-    this.focusListener.remove();
+    // this.focusListener.remove();
   }
 
   onAuthStateChanged = user => {
@@ -459,9 +407,9 @@ export class ProductScreen extends Component {
   }
 
   CheckIfProductAlreadyInCart() { 
-    console.log(this.state.BoughtStatus)
+    console.log(this.state.BoughtStatus);
 
-    if (this.state.Status === 'active' && this.state.owner != '' && this.state.owner === this.state.userID && this.state.deliveryCharge != '' ) {
+    if (this.state.Status === 'active' && this.state.owner === this.state.userID ) {
 
       return (
         <View style ={{flexDirection:'row',justifyContent:'space-evenly'}}>
