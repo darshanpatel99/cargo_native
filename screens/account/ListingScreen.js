@@ -28,7 +28,7 @@ onDocumentUpdate = (querySnapshot) => {
   console.log('on collection update')
   const products = [];
   querySnapshot.forEach((doc) => {
-    const {  SellerName, AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, DeliveryProvider, DeliveryVehicle, SellerDeliveryPrice } = doc.data();
+    const {  SellerName, AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, DeliveryProvider, DeliveryVehicle, SellerDeliveryPrice, Avability,SellerAddress, AdditionalData, } = doc.data();
       // console.log(typeof Pictures['0']);
     products.push({
             key: doc.id,
@@ -46,7 +46,10 @@ onDocumentUpdate = (querySnapshot) => {
             SellerName,
             DeliveryProvider,
             DeliveryVehicle,
-            SellerDeliveryPrice
+            SellerDeliveryPrice,
+            Avability,
+            SellerAddress,
+            AdditionalData,
     });
   });
   this.setState({
