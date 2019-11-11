@@ -318,15 +318,9 @@ export default class Checkout extends Component {
       <DismissKeyboard>
       <View style={Styles.Container}>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        // behavior='padding'
-        // keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET_HEIGHT}
-        >
+      <KeyboardAvoidingView style={{ flex: 1 }}>
 
         <Container>
-
-
         <KeyboardAvoidingView
         //style={{ flex: 1 }}
         behavior='padding'
@@ -349,38 +343,6 @@ export default class Checkout extends Component {
             {this.askForDeliveryAddress()}
             <View style={Styles.AddressFunctionButtonView}>
 
-            {/* <Text
-              style={{
-                marginLeft: 15,
-                marginTop: 50,
-                fontSize: 20,
-                fontFamily: 'nunito-SemiBold'
-              }}
-            >
-              Tip $ :
-            </Text>
-            <Item style={{marginLeft:10 ,marginTop: 50,}}>
-
-            <NumericInput 
-              value={this.state.tipAmount} 
-              onChange={value => this.setState({tipAmount:value }, () => {
-                this.afterSetStateFinished();
-            })}
-              onLimitReached={(isMax,msg) => console.log(isMax,msg)}
-              totalWidth={140} 
-              totalHeight={40} 
-              iconSize={25}
-              step={1}
-              minValue={0}
-              maxValue={99}
-              valueType='integer'
-              rounded 
-              textColor='#000000' 
-              iconStyle={{ color: 'white' }} 
-              rightButtonBackgroundColor='#0000cc' 
-              leftButtonBackgroundColor='#0080ff'/>
-
-            </Item> */}
           </View>
           
           </KeyboardAvoidingView>

@@ -42,7 +42,14 @@ export class ProductScreen extends Component {
     const sellerDeliveryPrice = productObject.SellerDeliveryPrice;
     const thumbnail = productObject.Thumbnail;
     const prevPage = navigation.getParam('prevPage');
+    var userID= ''
 
+    var user = firebase.auth().currentUser;
+    if (user) {
+      userID = user.uid; 
+    } else {
+      // No user is signed in.
+    }
     this.state = {
       location: null,
       errorMessage: null,
@@ -60,7 +67,7 @@ export class ProductScreen extends Component {
       price,
       id,
       owner,
-      userID: firebase.auth().currentUser.uid,
+      userID: userID,
       Category,
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
@@ -83,6 +90,8 @@ export class ProductScreen extends Component {
       });
     };
 
+
+
     this.NavigateToCheckout = this.NavigateToCheckout.bind(this);
     this.NavigateToMessage = this.NavigateToMessage.bind(this);
     this.NavigateToEdit = this.NavigateToEdit.bind(this);
@@ -92,9 +101,8 @@ export class ProductScreen extends Component {
     this.ReactivateOrder = this.ReactivateOrder.bind(this);
     this.shareAsync = this.shareAsync.bind(this);
 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser.uid;
-    this.setState({userID: user})
+
+
   }
 
 
@@ -397,7 +405,8 @@ export class ProductScreen extends Component {
     alert('Ad was reported, Thanks for your feedback!')
   }
 
-  CheckIfProductAlreadyInCart() { 
+  CheckIfProductAlreadyInCart() {
+     
     console.log(this.state.BoughtStatus);
 
     if (this.state.Status === 'active' && this.state.owner === this.state.userID ) {
