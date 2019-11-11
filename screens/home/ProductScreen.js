@@ -26,7 +26,6 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
 
-
 let storageRef;
 export class ProductScreen extends Component {
   constructor(props) {
@@ -102,6 +101,7 @@ export class ProductScreen extends Component {
     this.flagTheItem = this.flagTheItem.bind(this);
     this.CancelOrder = this.CancelOrder.bind(this);
     this.ReactivateOrder = this.ReactivateOrder.bind(this);
+    this.shareAsync = this.shareAsync.bind(this);
 
     //checking the current user and setting uid
     let user = firebase.auth().currentUser;
@@ -196,7 +196,7 @@ export class ProductScreen extends Component {
   /**
    * Function Description: Share yout product
    */
-  shareAsync = async()=>{
+ async shareAsync  () {
     console.log('Starting share async');
     //url='https://cargodev.page.link/bAmq';
     url= await this.getSharableLink(this.state.id);//get the sharable link
@@ -272,6 +272,7 @@ export class ProductScreen extends Component {
   componentDidMount() {
     // List to the authentication state
     this._unsubscribe = firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+    this.props.navigation.setParams({ shareAsync: this.shareAsync});
     //this._getLocationAsync();
   }
 
@@ -424,16 +425,17 @@ export class ProductScreen extends Component {
       }))
    }
 
+
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
 
     return {
       headerRight: (
         <TouchableHighlight
-          onPress={ () => this.shareAsync}
+          onPress={navigation.getParam('shareAsync')}
           style={{ marginRight: 10 }}
         >
-          <AntDesign name='message1' size={30} color={Colors.primary} />
+          <Ionicons name='md-share' size={30} color={Colors.primary} />
         </TouchableHighlight>
       ),
       headerLeft: (
@@ -611,9 +613,7 @@ export class ProductScreen extends Component {
         
           <Text style={styles.productDesc}>{this.state.description}</Text>
         {/* </View> */}
-        <Button light rounded large style={styles.secondaryBlueButton} onPress={this.shareAsync}>
-            <Text style={styles.secondaryWhiteText}>share</Text>
-          </Button>
+
 
         </ScrollView>
          <View >
