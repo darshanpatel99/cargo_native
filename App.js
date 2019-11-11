@@ -4,7 +4,7 @@ import * as Font from 'expo-font';
 import React, { useState } from 'react';
 import {AsyncStorage, Platform, StatusBar, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
 import AppTabNavigator from './navigation/AppTabNavigator';
-// import * as Sentry from 'sentry-expo';
+import * as Sentry from 'sentry-expo';
 import AppIntroSlider from 'react-native-app-intro-slider';
 
 // import { SentrySeverity, SentryLog } from 'react-native-sentry';
