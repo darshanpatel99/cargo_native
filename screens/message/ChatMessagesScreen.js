@@ -323,7 +323,7 @@ export default class ChatScreen extends React.Component {
       <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Alert!!"
+            title="Oops!"
             message="This chat has been blocked."
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}

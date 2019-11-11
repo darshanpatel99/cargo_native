@@ -164,7 +164,7 @@ class Chat extends React.Component {
           <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message="Please login first!"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}

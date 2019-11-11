@@ -1290,7 +1290,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={showAlert2}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Successfully changes'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1310,7 +1310,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.picAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Please upload at least 3 images!'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1327,7 +1327,7 @@ export default class PostProductScreen extends Component {
           <AwesomeAlert
             show={this.state.availableAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Choose availability'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1343,7 +1343,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.showAddressAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'Choose pick up address'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1359,7 +1359,7 @@ export default class PostProductScreen extends Component {
             <AwesomeAlert
             show={this.state.priceAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message={'price should be from 10 to 1000 $'}
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
@@ -1394,7 +1394,7 @@ export default class PostProductScreen extends Component {
           <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message="Please login first!"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}

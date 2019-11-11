@@ -99,7 +99,7 @@ export default class HomeScreen extends React.Component {
         sellerDeliveryPrice: data.SellerDeliveryPrice}
 
         //Navigate to the Product Detail Screen
-      this.props.navigation.push('Details', { completeProductObject: data});
+      this.props.navigation.push('Details', { completeProductObject: data, prevPage: 'Home'});
 
     }).catch((error)=>{
       console.log(error);
