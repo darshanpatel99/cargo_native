@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
+import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
+
 
 export default class BoughtScreen extends Component{
 constructor(props){
@@ -16,52 +17,52 @@ constructor(props){
         isLoading: true,
         products: [],
         key :'',
-        sort: this.props.filtersAndSorts 
+        sort: this.props.filtersAndSorts, 
     };
     this.ref = firebase.firestore();
-    this.collectionRef = this.ref.collection('Products').where('Status', '==', 'bought').where('BuyerID','==',id);
+    this.collectionRef = firebase.firestore().collection('Products').where('Status', '==', 'bought').where('Owner' , '==' , id);
     this.unsubscribe = null;
-  }
+}
 
-  onDocumentUpdate = (querySnapshot) => {
-    console.log('on collection update')
-    const products = [];
-    querySnapshot.forEach((doc) => {
-      const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status} = doc.data();
-        // console.log(typeof Pictures['0']);
-      products.push({
-        key: doc.id,
-        doc,
-        Name,
-        Description,
-        Owner,
-        Price,
-        Thumbnail,
-        Pictures,
-        Category,
-        AddressArray,
-        BuyerID,
-        Status
-      });
+onDocumentUpdate = (querySnapshot) => {
+  console.log('on collection update')
+  const products = [];
+  querySnapshot.forEach((doc) => {
+    const {  SellerName, AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, DeliveryProvider, DeliveryVehicle, SellerDeliveryPrice } = doc.data();
+      // console.log(typeof Pictures['0']);
+    products.push({
+            key: doc.id,
+            doc,
+            Name,
+            Description,
+            Owner,
+            Price,
+            Thumbnail,
+            Pictures,
+            Category,
+            AddressArray,
+            BuyerID, 
+            Status,
+            SellerName,
+            DeliveryProvider,
+            DeliveryVehicle,
+            SellerDeliveryPrice
     });
-    this.setState({
-      products,
-      isLoading: false,
-    },
-  );
-  }
-
-
-
-componentWillUnmount() {
- 
-  this.unsubscribe();   
+  });
+  this.setState({
+    products,
+    isLoading: false,
+  },
+ );
 }
 
 componentDidMount(prevProps) {
   this.unsubscribe = this.collectionRef.onSnapshot(this.onDocumentUpdate);
 }
 
+componentWillUnmount() {
+  this.unsubscribe();   
+}
 
 
 render(){
@@ -74,17 +75,19 @@ render(){
         )
       }
       return (
-      <View style ={styles.container}>
-        <ScrollView style={styles.scrollContainer}>
-        <FlatList
-          data={this.state.products}
-          renderItem={({item}) =>
-          <View >
-            <ProductCardComponent prevPage={'Bought'}Status={item.Status} BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures}   />
-          </View>
-        }
-        />
-        </ScrollView>
+    <View style ={styles.container}>
+      <ScrollView style={styles.scrollContainer}>
+
+      <FlatList
+        data={this.state.products}
+        renderItem={({item}) =>
+        <View >
+          <ProductCardComponent prevPage={'Listing'} completeProductObject = {item} />
+        </View>
+      }
+      />
+
+      </ScrollView>
       </View>
     );
 }

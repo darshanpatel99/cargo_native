@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import {View, ActivityIndicator, ScrollView, FlatList} from 'react-native';
+import {Text, View, TouchableOpacity, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import firebase from '../../Firebase.js'; //Firebase.js C:\User1\CarGoDev\Relevent1 CarGo\cargo-native-v1\Firebase.js
 import ProductCardComponent from '../../components/product/ProductCardComponent'
 
-let products = [];
+
 export default class SoldScreen extends Component{
 constructor(props){
     super(props);
@@ -17,41 +17,36 @@ constructor(props){
         isLoading: true,
         products: [],
         key :'',
-        sort: this.props.filtersAndSorts 
+        sort: this.props.filtersAndSorts, 
     };
-    this.firebaseRef = firebase.firestore();
-    this.query1 =  this.firebaseRef.collection('Products').where('Status', '==', 'sold').where('Owner' , '==' , id)
-    this.query2 = this.firebaseRef.collection('Products').where('Owner' , '==' , id).where('BoughtStatus' , '==' , 'true')
-    // this.ref = query1 || query2;
-    //this.productsCollectionRef = firebase.firestore().collection('Products');
+    this.ref = firebase.firestore();
+    this.collectionRef = firebase.firestore().collection('Products').where('Status', '==', 'sold').where('Owner' , '==' , id);
     this.unsubscribe = null;
-    //this.loadCartItems = this.loadCartItems.bind(this); 
-    
-    // this.query1.get().then(this.onDocumentUpdate);
-    // this.query2.get().then(this.onDocumentUpdate);
 }
-
 
 onDocumentUpdate = (querySnapshot) => {
   console.log('on collection update')
-  
+  const products = [];
   querySnapshot.forEach((doc) => {
-    const { AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, BoughtStatus } = doc.data();
+    const {  SellerName, AddressArray, Description, Name, Price, Thumbnail, Pictures, Category, Owner, BuyerID, Status, DeliveryProvider, DeliveryVehicle, SellerDeliveryPrice } = doc.data();
       // console.log(typeof Pictures['0']);
     products.push({
-      key: doc.id,
-      doc,
-      Name,
-      Description,
-      Owner,
-      Price,
-      Thumbnail,
-      Pictures,
-      Category,
-      AddressArray,
-      BuyerID,
-      Status,
-      BoughtStatus,
+            key: doc.id,
+            doc,
+            Name,
+            Description,
+            Owner,
+            Price,
+            Thumbnail,
+            Pictures,
+            Category,
+            AddressArray,
+            BuyerID, 
+            Status,
+            SellerName,
+            DeliveryProvider,
+            DeliveryVehicle,
+            SellerDeliveryPrice
     });
   });
   this.setState({
@@ -62,14 +57,11 @@ onDocumentUpdate = (querySnapshot) => {
 }
 
 componentDidMount(prevProps) {
-  this.unsubscribe = this.query1.onSnapshot(this.onDocumentUpdate);
-  this.unsubscribe = this.query2.onSnapshot(this.onDocumentUpdate);
+  this.unsubscribe = this.collectionRef.onSnapshot(this.onDocumentUpdate);
 }
 
-
-componentWillUnmount(){
-  this.unsubscribe();
-  products=[];
+componentWillUnmount() {
+  this.unsubscribe();   
 }
 
 
@@ -83,14 +75,14 @@ render(){
         )
       }
       return (
-<View style ={styles.container}>
+    <View style ={styles.container}>
       <ScrollView style={styles.scrollContainer}>
 
       <FlatList
         data={this.state.products}
         renderItem={({item}) =>
         <View >
-          <ProductCardComponent  prevPage={'Sold'} BoughtStatus={item.BoughtStatus}  Status={item.Status}BuyerID={item.BuyerID} thumbnail={item.Thumbnail} pickupAddress={item.AddressArray} owner={item.Owner} id ={item.key} title = {item.Name} description = {item.Description} price = {item.Price}  pictures = {item.Pictures} />
+          <ProductCardComponent prevPage={'Listing'} completeProductObject = {item} />
         </View>
       }
       />
