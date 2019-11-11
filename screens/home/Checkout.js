@@ -20,8 +20,9 @@ export default class Checkout extends Component {
   constructor(props) {
     super(props);
     const { navigation } = this.props;
-    const TotalCartAmount = parseFloat(navigation.getParam('TotalCartAmount'));
-    const DeliveryCharge = parseFloat(navigation.getParam('DeliveryCharge'));
+    const productObject = navigation.getParam('productObject')
+    const TotalCartAmount = productObject.Price;
+    const DeliveryCharge = 0;
     const userId = navigation.getParam('userID');
     const sellerAddress = navigation.getParam('SellerAddress');
     const productTitle = navigation.getParam('Title');

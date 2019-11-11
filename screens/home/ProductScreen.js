@@ -51,6 +51,7 @@ export class ProductScreen extends Component {
       // No user is signed in.
     }
     this.state = {
+      productObject,
       location: null,
       errorMessage: null,
       deliveryCharge: 3.99,
@@ -260,7 +261,8 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat, productID: this.state.id, sellerDeliveryPrice: this.state.sellerDeliveryPrice, deliveryProvider: this.state.deliveryProvider, deliveryVehicle: this.state.deliveryVehicle })}
+      navigate('Checkoutscreen', {productObject: productObject, userID: this.state.userID})
+    }
     else{
       this.setState({
         showAlert: true
