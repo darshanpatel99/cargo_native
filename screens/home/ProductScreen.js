@@ -45,10 +45,16 @@ export class ProductScreen extends Component {
     const sellerAddress = productObject.SellerAddress;
     const additionalData = productObject.AdditionalData;
     const prevPage = navigation.getParam('prevPage');
+    var userID= ''
 
-    console.log(JSON.stringify(additionalData) + " super data")
-
+    var user = firebase.auth().currentUser;
+    if (user) {
+      userID = user.uid; 
+    } else {
+      // No user is signed in.
+    }
     this.state = {
+      productObject,
       location: null,
       errorMessage: null,
       deliveryCharge: 3.99,
@@ -65,7 +71,7 @@ export class ProductScreen extends Component {
       price,
       id,
       owner,
-      userID: firebase.auth().currentUser.uid,
+      userID: userID,
       Category,
       itemAlreadyInCart: false,
       buttonTitle: 'Add to Cart',
@@ -91,6 +97,8 @@ export class ProductScreen extends Component {
       });
     };
 
+
+
     this.NavigateToCheckout = this.NavigateToCheckout.bind(this);
     this.NavigateToMessage = this.NavigateToMessage.bind(this);
     this.NavigateToEdit = this.NavigateToEdit.bind(this);
@@ -100,9 +108,8 @@ export class ProductScreen extends Component {
     this.ReactivateOrder = this.ReactivateOrder.bind(this);
     this.shareAsync = this.shareAsync.bind(this);
 
-    //checking the current user and setting uid
-    let user = firebase.auth().currentUser.uid;
-    this.setState({userID: user})
+
+
   }
 
 
@@ -260,7 +267,8 @@ export class ProductScreen extends Component {
     if(this.state.User != null){
       const { navigate } = this.props.navigation;
       //this.props.navigation.dispatch(StackActions.popToTop());
-      navigate('Checkoutscreen', {userID:this.state.userID ,TotalCartAmount:this.state.price, DeliveryCharge: this.state.deliveryCharge, Title: this.state.title, SellerAddress: this.state.pickupAddress,  GPSLocation: this.state.currentGpsLocationStringFormat, productID: this.state.id, sellerDeliveryPrice: this.state.sellerDeliveryPrice, deliveryProvider: this.state.deliveryProvider, deliveryVehicle: this.state.deliveryVehicle })}
+      navigate('Checkoutscreen', {productObject: productObject, userID: this.state.userID})
+    }
     else{
       this.setState({
         showAlert: true
@@ -411,7 +419,8 @@ export class ProductScreen extends Component {
     alert('Ad was reported, Thanks for your feedback!')
   }
 
-  CheckIfProductAlreadyInCart() { 
+  CheckIfProductAlreadyInCart() {
+     
     console.log(this.state.BoughtStatus);
 
     if (this.state.Status === 'active' && this.state.owner === this.state.userID ) {
