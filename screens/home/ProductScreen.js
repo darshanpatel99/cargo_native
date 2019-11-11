@@ -430,7 +430,7 @@ export class ProductScreen extends Component {
     return {
       headerRight: (
         <TouchableHighlight
-          onPress={ () => navigation.navigate('Chat')}
+          onPress={ () => this.shareAsync}
           style={{ marginRight: 10 }}
         >
           <AntDesign name='message1' size={30} color={Colors.primary} />

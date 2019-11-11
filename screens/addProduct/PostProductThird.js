@@ -403,6 +403,7 @@ export default class PostProductScreen extends Component {
       SellerName: this.state.sellerName,
       BuyerName:'',
       BuyerAddress:'',
+      SellerAddress:this.state.completeStringAddress,
       DeliveryFee:'',
       TotalFee:'',
       BoughtStatus:'false',
