@@ -773,38 +773,6 @@ export default class PostProductScreen extends Component {
           />
           
 
-          <AwesomeAlert
-            show={this.state.availableAlert}
-            showProgress={false}
-            title="Oops!"
-            message={'Choose availability'}
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}            
-            confirmText="OK"
-            confirmButtonColor="#DD6B55"            
-            onConfirmPressed={() => {
-              this.availabilityAlertHide();
-            }}
-          />
-
-            <AwesomeAlert
-            show={this.state.showAddressAlert}
-            showProgress={false}
-            title="Oops!"
-            message={'Choose pick up address'}
-            closeOnTouchOutside={false}
-            closeOnHardwareBackPress={false}
-            //showCancelButton={true}
-            showConfirmButton={true}            
-            confirmText="OK"
-            confirmButtonColor="#DD6B55"            
-            onConfirmPressed={() => {
-              this.addressAlert();
-            }}
-          />
-
             <AwesomeAlert
             show={this.state.priceAlert}
             showProgress={false}

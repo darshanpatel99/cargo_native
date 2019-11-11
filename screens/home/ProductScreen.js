@@ -41,7 +41,12 @@ export class ProductScreen extends Component {
     const deliveryProvider = productObject.DeliveryProvider;
     const sellerDeliveryPrice = productObject.SellerDeliveryPrice;
     const thumbnail = productObject.Thumbnail;
+    const availability = productObject.Avability;
+    const sellerAddress = productObject.SellerAddress;
+    const additionalData = productObject.AdditionalData;
     const prevPage = navigation.getParam('prevPage');
+
+    console.log(JSON.stringify(additionalData) + " super data")
 
     this.state = {
       location: null,
@@ -75,7 +80,10 @@ export class ProductScreen extends Component {
       completeChatThread: {'chat' : sellerName},
       sellerDeliveryPrice,
       deliveryProvider,
-      deliveryVehicle
+      deliveryVehicle,
+      availability,
+      sellerAddress,
+      additionalData,
     };
     onLayout = e => {
       this.setState({
@@ -338,6 +346,12 @@ export class ProductScreen extends Component {
       id:this.state.id,
       category: this.state.Category,
       thumbnail:this.state.thumbnail,
+      availability :this.state.availability,
+      sellerAddress : this.state.sellerAddress,
+      additionalData:this.state.additionalData,
+      deliveryVehicle:this.state.deliveryVehicle,
+      deliveryProvider:this.state.deliveryProvider,
+      sellerDeliveryPrice:this.state.sellerDeliveryPrice,
     }
 
     console.log("Before edit cat -->" + data.category);
