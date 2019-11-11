@@ -1208,7 +1208,7 @@ deleteUserFromAuthDatabase() {
           <AwesomeAlert
             show={showAlert}
             showProgress={false}
-            title="Alert"
+            title="Oops!"
             message="Please verify email first After verification press SignIn Button"
             closeOnTouchOutside={false}
             closeOnHardwareBackPress={false}
