@@ -1,16 +1,5 @@
 import React, { Component } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  TouchableHighlight,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-  Alert,
-  Text,
-  Share,
-} from 'react-native';
+import { ScrollView, StyleSheet,  View,  TouchableHighlight,  TouchableOpacity,  Dimensions,  Platform,  Alert,  Text,  Share} from 'react-native';
 import { Button} from "native-base";
 import { StackActions, NavigationActions } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
