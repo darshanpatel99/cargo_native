@@ -1250,15 +1250,7 @@ finishFunc =() =>{
                       </View>
                       </ImageBackground>
                 </View>               
-                {/* <View style={styles.settingsButton}>
-                  <Button icon transparent>
-                    <FontAwesome name='cog' size={35} color={Colors.primary}/>                    
-                  </Button>
-
-                  <Button transparent> 
-                    <Text style={[styles.buttonText,{color:'white'}]}>Edit</Text>
-                  </Button>
-                </View>             */}
+                
               </View>
                               
               <KeyboardAvoidingView style={styles.infoHolder} behavior="padding" enabled>
@@ -1384,10 +1376,7 @@ finishFunc =() =>{
                 textContent={'Loading...'}
                 textStyle={styles.spinnerTextStyle}
                 />
-                {/* <Image
-                style={{width: 300, height: 300, borderRadius:20}}
-                source={require('../../assets/images/icon.png')}
-              /> */}
+               
                 <Text
                   style={{
                     fontSize: Dimensions.get('screen').width * 0.18,
@@ -1411,15 +1400,7 @@ finishFunc =() =>{
 
             <View style={styles.bigButton}>
 
-            {/* <Button large-green style={styles.loginbutton} onPress ={this.facebookLoginAsync}>
-              <FontAwesome
-                size={30}
-                color="#fff"
-                style={styles.icon}
-                name='facebook-square'
-              />
-              <Text style={styles.lightText}>Continue with Facebook</Text>
-            </Button> */}
+            
 
             <Button large-green style={styles.loginbutton} onPress ={this.googleLoginAsync}>
               <Ionicons
