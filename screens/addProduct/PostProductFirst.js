@@ -664,9 +664,9 @@ export default class PostProductScreen extends Component {
                     {this._renderImages()}
                   </ScrollView>
                 </CardItem>
-                {/* <Text style={{fontSize:12,margin:3}}>
+                <Text style={{fontSize:12,margin:3}}>
                 Tip: Please upload at least 3 images
-              </Text> */}
+              </Text>
               </Card>
 
               <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.title) ? styles.correctStyle : styles.errorStyle]}>
