@@ -180,7 +180,7 @@ export default class PostProductScreen extends Component {
     let priceLength = parseInt( this.state.price);
     let productCategory = this.state.Category;
     let picArray = this.state.image;
-    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length>0)  {
+    if(titleLength.length > 0 && priceLength >= 10 && priceLength <= 1000 && productCategory !=0 && picArray.length > 2 )  {
 
         this.props.navigation.navigate('AddProduct', {
             title: this.state.title,
@@ -664,9 +664,9 @@ export default class PostProductScreen extends Component {
                     {this._renderImages()}
                   </ScrollView>
                 </CardItem>
-                <Text style={{fontSize:12,margin:3}}>
+                {/* <Text style={{fontSize:12,margin:3}}>
                 Tip: Please upload at least 3 images
-              </Text>
+              </Text> */}
               </Card>
 
               <Item style={[{ marginBottom: 10},this.changeInputFieldFunction(this.state.title) ? styles.correctStyle : styles.errorStyle]}>
